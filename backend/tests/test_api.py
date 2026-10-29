@@ -236,8 +236,9 @@ def test_chat_route_search_respects_requested_time(client):
     assert resp.status_code == 200
     data = resp.json()
     assert data["intent"] == "find_route"
-    assert data["data"] is None
-    assert "at or after 10:00 on the weekday schedule" in data["reply"]
+    assert "at or after 10:00" in data["reply"]
+    assert "weekday" in data["reply"]
+    assert data["data"] is not None
 
 
 def test_chat_route_search_requires_departure_time(client):

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay, ModePreference } from '../types'
 import { getStops, getRoutes, searchJourneys, createSavedRoute } from '../services/api'
+import { formatTime12 } from '../utils/time'
 import RouteSearchForm from '../components/RouteSearchForm'
 import RouteResultCard from '../components/RouteResultCard'
 import TransportMap from '../components/TransportMap'
@@ -26,7 +27,7 @@ const FEATURED_CORRIDORS = [
     destId: 'S01',
     destName: 'Rajiv Chowk',
     departure: '08:00',
-    type: '🚇 Delhi Metro • 4 Stops',
+    type: '🚇 Delhi Metro • Morning Rush',
   },
   {
     routeId: 'R02',
@@ -37,8 +38,8 @@ const FEATURED_CORRIDORS = [
     originName: 'Kashmere Gate',
     destId: 'S09',
     destName: 'Hauz Khas',
-    departure: '08:00',
-    type: '🚇 Delhi Metro • 5 Stops',
+    departure: '13:30',
+    type: '🚇 Delhi Metro • Afternoon',
   },
   {
     routeId: 'R03',
@@ -49,8 +50,8 @@ const FEATURED_CORRIDORS = [
     originName: 'Connaught Place',
     destId: 'S08',
     destName: 'Saket',
-    departure: '08:00',
-    type: '🚌 Ring Bus • 5 Stops',
+    departure: '17:30',
+    type: '🚌 Ring Bus • Evening Peak',
   },
   {
     routeId: 'R04',
@@ -61,12 +62,12 @@ const FEATURED_CORRIDORS = [
     originName: 'New Delhi Stn',
     destId: 'S08',
     destName: 'Saket Express',
-    departure: '08:30',
-    type: '🚌 Express Bus • 4 Stops',
+    departure: '20:30',
+    type: '🚌 Express Bus • Night Express',
   },
 ]
 
-const ACTIVE_MORNING_HOURS = ['07:00', '08:00', '09:30', '11:30']
+const ACTIVE_SERVICE_HOURS = ['08:00', '13:30', '17:30', '20:30', '22:00']
 
 export default function PassengerPage() {
   const [stops, setStops] = useState<Stop[]>([])
@@ -154,7 +155,7 @@ export default function PassengerPage() {
           origin: originId,
           destination: destinationId,
           time: departureTime,
-          isOutOfHours: totalMinutes < 390 || totalMinutes > 750,
+          isOutOfHours: totalMinutes < 360 || totalMinutes > 1415,
         })
       }
     } catch (error: unknown) {
@@ -271,10 +272,10 @@ export default function PassengerPage() {
             </div>
             <div className="py-2.5">
               <div className="font-mono text-2xl font-extrabold tabular-nums tracking-tight text-white">
-                06:30 <span className="font-light text-slate-400">—</span> 12:30 <span className="text-xs font-semibold text-emerald-400">AM</span>
+                06:00 <span className="text-xs font-semibold text-emerald-400">AM</span> <span className="font-light text-slate-400">—</span> 11:35 <span className="text-xs font-semibold text-emerald-400">PM</span>
               </div>
               <p className="mt-1 text-xs text-slate-300">
-                19 demo timetable services across 4 bus corridors. Fares are synthetic demonstration data (Zone 1–3 model).
+                58 synchronized timetable trips across 4 metro & bus corridors (Day & Night). Fares are synthetic demonstration data.
               </p>
             </div>
             <div className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-400">
@@ -324,7 +325,7 @@ export default function PassengerPage() {
                     <span className={`rounded-md border px-2 py-0.5 text-[11px] font-black uppercase ${corridor.badgeBg}`}>
                       {corridor.routeId} • {corridor.lineName}
                     </span>
-                    <span className="font-mono text-xs font-bold text-slate-500">@{corridor.departure}</span>
+                    <span className="font-mono text-xs font-bold text-slate-500">@{formatTime12(corridor.departure)}</span>
                   </div>
                   <div className="pt-1.5 text-sm font-extrabold text-slate-900">
                     {corridor.originName} <span className="text-slate-400">➔</span> {corridor.destName}
@@ -410,19 +411,19 @@ export default function PassengerPage() {
                       Timetable Schedule Notice
                     </span>
                     <span className="rounded-full bg-amber-200/80 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-900">
-                      {noResultContext.time}
+                      {formatTime12(noResultContext.time)}
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm leading-relaxed text-amber-900">
                     {noResultContext.isOutOfHours ? (
                       <>
-                        The Delhi sample timetable operates between <strong>06:30 and 12:30</strong>. No trips run at{' '}
-                        <strong>{noResultContext.time}</strong> for <strong>{originName}</strong> ➔ <strong>{destinationName}</strong>.
+                        The Delhi timetable operates between <strong>06:00 AM and 11:35 PM</strong>. No trips run at{' '}
+                        <strong>{formatTime12(noResultContext.time)}</strong> for <strong>{originName}</strong> ➔ <strong>{destinationName}</strong>.
                       </>
                     ) : (
                       <>
                         No direct or connected trips found between <strong>{originName}</strong> and <strong>{destinationName}</strong> at{' '}
-                        <strong>{noResultContext.time}</strong> on the {serviceDay} timetable.
+                        <strong>{formatTime12(noResultContext.time)}</strong> on the {serviceDay} timetable.
                       </>
                     )}
                   </p>
@@ -435,7 +436,7 @@ export default function PassengerPage() {
                   ⚡ Jump to Active Scheduled Departures for this pair:
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {ACTIVE_MORNING_HOURS.filter(retryTime => retryTime !== noResultContext.time).map(retryTime => (
+                  {ACTIVE_SERVICE_HOURS.filter(retryTime => retryTime !== noResultContext.time).map(retryTime => (
                     <button
                       key={retryTime}
                       type="button"
@@ -452,7 +453,7 @@ export default function PassengerPage() {
                       className="group flex items-center gap-1.5 rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs font-extrabold text-amber-950 shadow-xs transition-all hover:bg-amber-100 hover:border-amber-400 active:scale-95 disabled:opacity-50"
                     >
                       <span>Check</span>
-                      <span className="font-mono">{retryTime}</span>
+                      <span className="font-mono">{formatTime12(retryTime)}</span>
                       <span className="transition-transform group-hover:translate-x-0.5">➔</span>
                     </button>
                   ))}

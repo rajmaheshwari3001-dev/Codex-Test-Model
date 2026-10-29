@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { JourneyOption } from '../types'
+import { formatTime12 } from '../utils/time'
 
 interface Props {
   option: JourneyOption
@@ -23,15 +24,15 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
     const summaryLines = [
       `🚍 Aaroh-Saarthi Transit Itinerary`,
       `• Preference: ${option.label} (${option.total_duration_minutes} min, ₹${option.total_fare ?? 'N/A'})`,
-      `• Departure: ${option.departure_time} | Arrival: ${option.arrival_time}`,
+      `• Departure: ${formatTime12(option.departure_time)} | Arrival: ${formatTime12(option.arrival_time)}`,
       `• Transfers: ${option.transfers.length === 0 ? 'Direct journey' : `${option.transfers.length} transfer(s)`}`,
       ``,
       ...option.legs.map((leg, i) => {
         const transfer = option.transfers[i]
         const legText = [
           `Leg ${i + 1}: ${leg.route_name} (Trip ${leg.trip_id})`,
-          `  • Board: ${leg.board_stop_name} @ ${leg.departure_time}`,
-          `  • Alight: ${leg.alight_stop_name} @ ${leg.arrival_time}`,
+          `  • Board: ${leg.board_stop_name} @ ${formatTime12(leg.departure_time)}`,
+          `  • Alight: ${leg.alight_stop_name} @ ${formatTime12(leg.arrival_time)}`,
         ]
         if (transfer) {
           legText.push(`  ↳ Transfer: Wait ${transfer.wait_minutes} min at ${transfer.at_stop_name}`)
@@ -158,11 +159,11 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <span className="font-mono text-2xl sm:text-3xl font-black text-slate-950">
-                {option.departure_time}
+                {formatTime12(option.departure_time)}
               </span>
               <span className="text-slate-400 text-base font-bold">➔</span>
               <span className="font-mono text-2xl sm:text-3xl font-black text-slate-950">
-                {option.arrival_time}
+                {formatTime12(option.arrival_time)}
               </span>
             </div>
             <div className="text-xs font-semibold text-slate-500">
@@ -258,7 +259,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                       <span className="font-medium text-slate-600">Board:</span>
                       <strong className="text-slate-950 font-bold">{leg.board_stop_name}</strong>
                     </div>
-                    <span className="font-mono font-bold text-slate-700">{leg.departure_time}</span>
+                    <span className="font-mono font-bold text-slate-700">{formatTime12(leg.departure_time)}</span>
                   </div>
 
                   {/* Intermediate Stops Toggle */}
@@ -290,7 +291,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                       <span className="font-medium text-slate-600">Alight:</span>
                       <strong className="text-slate-950 font-bold">{leg.alight_stop_name}</strong>
                     </div>
-                    <span className="font-mono font-bold text-slate-700">{leg.arrival_time}</span>
+                    <span className="font-mono font-bold text-slate-700">{formatTime12(leg.arrival_time)}</span>
                   </div>
                 </div>
 
@@ -301,7 +302,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                     <div>
                       <span>Wait {option.transfers[legIdx].wait_minutes} min at </span>
                       <span className="underline">{option.transfers[legIdx].at_stop_name}</span>
-                      <span> for connecting bus</span>
+                      <span> for connecting service</span>
                     </div>
                   </div>
                 )}

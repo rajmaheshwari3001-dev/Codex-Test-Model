@@ -23,7 +23,7 @@ export default function ChatAssistant({ serviceDay }: { serviceDay: ServiceDay }
     {
       id: 'welcome',
       role: 'assistant',
-      text: 'Namaste! I am your Aaroh-Saarthi transit copilot.\n\nI answer public-transit inquiries grounded strictly in our Delhi network GTFS timetable (operating 06:30 – 12:30) and simulated live delay telemetry. Ask about routes, stops, schedules, or live fleet status.',
+      text: 'Namaste! I am your Aaroh-Saarthi transit copilot.\n\nI answer public-transit inquiries grounded strictly in our Delhi network GTFS timetable (operating 06:00 AM – 11:35 PM) and simulated live delay telemetry. Ask about routes, stops, schedules, or live fleet status.',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ])
@@ -81,7 +81,7 @@ export default function ChatAssistant({ serviceDay }: { serviceDay: ServiceDay }
       {
         id: 'welcome-reset',
         role: 'assistant',
-        text: 'Chat history cleared. Inquire about Delhi transit lines, schedules (06:30 - 12:30), or live delays. Mention your planned departure time for exact timetable checks.',
+        text: 'Chat history cleared. Inquire about Delhi transit lines, schedules (06:00 AM – 11:35 PM), or live delays. Mention your planned departure time for exact timetable checks.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ])
@@ -130,7 +130,7 @@ export default function ChatAssistant({ serviceDay }: { serviceDay: ServiceDay }
       <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-4 py-2 text-xs font-medium text-slate-600">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          <span>Grounded in active timetable (06:30 – 12:30)</span>
+          <span>Grounded in active timetable (06:00 AM – 11:35 PM)</span>
         </div>
         <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 font-mono text-[11px] font-bold text-slate-700 uppercase">
           {serviceDay}

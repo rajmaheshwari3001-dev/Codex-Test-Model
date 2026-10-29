@@ -124,7 +124,9 @@ class FleetSimulator:
         One bus per trip, plus two spare buses.
         """
         buses: List[Bus] = []
-        for trip in td.trips:
+        # Monitored vehicle roster instrumented with simulated telemetry (T01 through T19)
+        monitored_trips = [t for t in td.trips if t.trip_id in {f"T{i:02d}" for i in range(1, 20)}]
+        for trip in monitored_trips:
             stop_times = td.stop_times_by_trip.get(trip.trip_id, [])
             if not stop_times:
                 continue
