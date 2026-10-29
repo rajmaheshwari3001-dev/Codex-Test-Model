@@ -17,18 +17,18 @@ This directory contains the **synthetic demonstration dataset** used by Aaroh-Sa
 | stop_lon   | float  | Longitude (WGS84)                                  |
 | zone_id    | string | Fare zone (1, 2, or 3)                             |
 
-15 stops across 3 fare zones, with coordinates placed in the greater Delhi area for realistic map display.
+20 stops across 6 fare zones, with verified OpenStreetMap and Delhi Open Transit Data coordinates.
 
 ### routes.csv
 | Field        | Type   | Description                                     |
 |--------------|--------|-------------------------------------------------|
 | route_id     | string | Unique route identifier (e.g. R01)              |
 | route_name   | string | Human-readable name (e.g. "Blue Line")          |
-| route_type   | string | Mode of transport (always "bus" in V1)          |
+| route_type   | string | Mode of transport ("metro" or "bus")            |
 | route_color  | string | Hex color for map/UI display                    |
 | description  | string | Brief description of the route                  |
 
-4 routes: Blue Line, Green Line, Red Ring, Yellow Express.
+4 routes: Blue Line (Metro), Green Line (Metro), Red Ring (Bus), Yellow Express (Bus).
 
 ### trips.csv
 | Field        | Type   | Description                                     |
@@ -38,7 +38,7 @@ This directory contains the **synthetic demonstration dataset** used by Aaroh-Sa
 | direction    | string | "outbound" or "inbound"                         |
 | service_days | string | "weekday", "weekend", or "daily"                |
 
-19 trips across 4 routes, including weekday and weekend services.
+64 trips across 4 routes, including weekday, weekend, and late-night services.
 
 ### stop_times.csv
 | Field          | Type   | Description                                   |
@@ -78,5 +78,5 @@ Not every trip+stop combination has occupancy data. Missing data = "unknown".
 - Geographic coordinates are approximate and placed for map demo purposes.
 - Fares do not reflect real pricing.
 - Occupancy data is static – it does not change during a session.
-- The network is small (15 stops, 4 routes) for testing and demo purposes.
+- The network covers 20 stops across 4 metro & bus routes for testing and demo purposes.
 - No GTFS feed is consumed; the CSV format is inspired by GTFS but simplified.

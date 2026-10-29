@@ -822,4 +822,3 @@ PS C:\Users\rajma\OneDrive\Desktop\PROJECT\Bootcamp\Codex  Invincibles> curl.exe
 
 ---
 *End of As-Built Documentation.*
-

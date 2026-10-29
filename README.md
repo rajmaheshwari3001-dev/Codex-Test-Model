@@ -83,20 +83,23 @@ Press `Ctrl+C` in each terminal window.
 
 ### Module A: Passenger Route Assistant
 
-- Select origin/destination stops and departure time
-- Find fastest and cheapest routes (schedule-aware)
-- View routes on an interactive Leaflet map
-- See transfer details, estimated duration, and fares
+- Select origin/destination stops with 1-click station swap and landmark metadata
+- Mode filter toggle: **🌐 Multimodal**, **🚇 Delhi Metro**, or **🚌 DTC Bus**
+- Budget target constraints with instant affordability validation
+- Subway tube strip timeline with transfer concourse walk nodes
+- Find fastest and cheapest routes (schedule-aware, independently calculated)
+- View routes on an interactive Leaflet GIS map with 1-click stop selection
+- See transfer details, estimated duration, and independent leg fares
 - Delay-aware routing with simulated disruptions
 - Crowding indicators when occupancy data is available
+- Full 12-hour AM/PM format support with active timetable recovery guidance
 - Save, reopen, and delete frequently used routes
-- Transit-focused chat for routes, departures, schedules, and delays; include
-  a departure time for journey or next-bus questions
+- Transit-focused chat for routes, departures, schedules, and delays
 - Clear data provenance labels (scheduled/simulated)
 
 ### Module B: Fleet Intelligence
 
-- View simulated bus fleet with status, occupancy, delays
+- View simulated bus fleet with status, occupancy, delays (zero control center required)
 - Trigger disruptions (bus breakdown, delay)
 - Compare baseline vs response options with calculated metrics
 - Approve or reject proposed responses
@@ -111,8 +114,8 @@ Press `Ctrl+C` in each terminal window.
 | Routing  | NetworkX, custom schedule-aware algorithm        |
 | Database | SQLite (saved routes)                           |
 | AI assist | Optional xAI Grok wording for selected help replies |
-| Testing  | Pytest (99 tests)                               |
-| Data     | Synthetic CSV dataset (15 stops, 4 routes)      |
+| Testing  | Pytest (108 tests passing)                      |
+| Data     | 20 Real-World Delhi Stations, 4 Corridors, 64 Trips |
 
 ## Project Structure
 
@@ -127,14 +130,15 @@ aaroh-saarthi/
 │   │   ├── data/         # CSV dataset files
 │   │   ├── config.py     # Environment configuration
 │   │   └── main.py       # Application entry point
-│   ├── tests/            # Pytest test suite
+│   ├── tests/            # Pytest test suite (108 tests)
 │   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   │   ├── components/   # React UI components
-│   │   ├── pages/        # Page-level components
+│   │   ├── components/   # React UI components (Search, Tube Strip, Map, Ticker)
+│   │   ├── pages/        # Page-level components (Passenger & Fleet)
 │   │   ├── services/     # API client
 │   │   ├── types/        # TypeScript interfaces
+│   │   ├── utils/        # Time formatting, Station metadata
 │   │   └── styles/       # Tailwind CSS
 │   └── package.json
 ├── docs/                 # Project documentation
@@ -144,14 +148,14 @@ aaroh-saarthi/
 
 ## Dataset
 
-The demo uses a **synthetic** transit network with:
-- 15 stops with Delhi-area coordinates
-- 4 bus routes (Blue Line, Green Line, Red Ring, Yellow Express)
-- 19 trips with weekday/weekend schedules
-- Zone-based fares (₹10–₹30)
-- Sample occupancy data
+The transit network models Delhi public transportation with:
+- **20 stops** with verified real-world Delhi GPS coordinates (OpenStreetMap & Delhi Open Transit Data) including major hubs: Dilli Haat - INA, Mandi House, Anand Vihar ISBT, Botanical Garden, and Sarai Kale Khan ISBT
+- **4 corridors**: Blue Line (Metro), Green Line (Metro), Red Ring (Bus), Yellow Express (Bus)
+- **64 trips** with full day and night schedules across weekday and weekend services
+- **36 zone tariff combinations** (demonstration matrix)
+- **Sample occupancy data**
 
-**All data is fictional.** See `backend/app/data/README.md` for details.
+**Provenance note:** Zone tariffs are synthetic demonstration data. See `backend/app/data/README.md` for details.
 
 ## Known Limitations
 
