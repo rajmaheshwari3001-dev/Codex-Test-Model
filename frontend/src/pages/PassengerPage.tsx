@@ -14,7 +14,7 @@ interface NoResultContext {
   isOutOfHours: boolean
 }
 
-// Delhi Metro Primary Corridor Presets for 1-Tap Search
+// Primary Delhi Bus Corridor Presets for 1-Tap Search
 const FEATURED_CORRIDORS = [
   {
     routeId: 'R01',
@@ -234,20 +234,20 @@ export default function PassengerPage() {
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-3 py-1 font-mono text-xs font-bold text-emerald-300 backdrop-blur-md">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-                DELHI TRANSIT NETWORK
+                DELHI BUS TRANSIT NETWORK
               </span>
               <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 font-mono text-xs font-medium text-slate-300 backdrop-blur-md">
-                GTFS Verified
+                Sample Schedule
               </span>
               <span className="rounded-full border border-blue-400/30 bg-blue-500/20 px-3 py-1 font-mono text-xs font-semibold text-blue-200">
-                15 Mapped Stations • 4 Corridors
+                15 Mapped Stops • 4 Bus Corridors
               </span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
               Passenger Transit Assistant
             </h1>
             <p className="max-w-2xl text-xs sm:text-sm text-slate-300">
-              Discover optimal routes, compare schedules, inspect real-time GTFS stop paths, and consult the Delhi Transit Copilot.
+              Discover optimal bus routes, compare schedules, inspect real-time stop paths, and consult the Delhi Transit Copilot.
             </p>
           </div>
 
@@ -264,18 +264,18 @@ export default function PassengerPage() {
                 06:30 <span className="font-light text-slate-400">—</span> 12:30 <span className="text-xs font-semibold text-emerald-400">AM</span>
               </div>
               <p className="mt-1 text-xs text-slate-300">
-                All 19 demo timetable services operate during morning peak hours.
+                19 demo timetable services across 4 bus corridors. Fares are synthetic demonstration data (Zone 1–3 model).
               </p>
             </div>
             <div className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-400">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              <span>Evening searches outside this window will show recovery chips.</span>
+              <span>Synthetic zone fares (₹10–₹30) are sample data only.</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. One-Tap Delhi Metro Corridor Quick Launch Bar */}
+      {/* 2. One-Tap Delhi Bus Corridor Quick Launch Bar */}
       <section className="space-y-2.5">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
@@ -283,7 +283,7 @@ export default function PassengerPage() {
               ⚡
             </span>
             <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-700">
-              1-Tap Primary Delhi Corridors
+              1-Tap Primary Delhi Bus Corridors
             </h2>
           </div>
           <span className="text-xs font-semibold text-slate-500">Click any corridor to run instant route search</span>
@@ -515,7 +515,7 @@ export default function PassengerPage() {
 
         {/* Right Column (7 cols): Map & Transit Copilot AI */}
         <div className="space-y-6 lg:col-span-7">
-          {/* Interactive Metro Map Container */}
+          {/* Interactive Bus Transit Map Container */}
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
@@ -523,7 +523,7 @@ export default function PassengerPage() {
                   🗺️
                 </span>
                 <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-700">
-                  Delhi Network & Interactive Stop GIS
+                  Delhi Bus Network & Interactive Stop GIS
                 </h2>
               </div>
               <span className="text-xs font-semibold text-slate-500">

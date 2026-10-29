@@ -108,9 +108,14 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
 
           {/* Fare Badge */}
           {option.fare_available && option.total_fare !== null ? (
-            <div className="flex items-baseline gap-1 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-1 text-emerald-900">
-              <span className="text-base font-black">₹{option.total_fare}</span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Fare</span>
+            <div className="flex flex-col items-end">
+              <div className="flex items-baseline gap-1 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-1 text-emerald-900 shadow-2xs">
+                <span className="text-base font-black">₹{option.total_fare}</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Total Fare</span>
+              </div>
+              <span className="mt-0.5 text-[10px] font-semibold text-slate-400">
+                Synthetic Zone Tariff
+              </span>
             </div>
           ) : (
             <span className="text-xs text-slate-400 italic">Fare not specified</span>
@@ -162,9 +167,17 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                       style={{ backgroundColor: leg.route_color || '#2563eb' }}
                     />
                     <span className="text-xs sm:text-sm font-bold text-slate-900">{leg.route_name}</span>
+                    <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-extrabold uppercase text-slate-700">
+                      {leg.route_type === 'subway' || leg.route_type === 'metro' ? '🚇 Metro' : '🚌 Bus'}
+                    </span>
                     <span className="rounded border border-slate-200 bg-white px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-600">
                       Trip {leg.trip_id}
                     </span>
+                    {leg.fare !== null && (
+                      <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-800">
+                        ₹{leg.fare}
+                      </span>
+                    )}
                   </div>
 
                   {/* Crowding badge */}

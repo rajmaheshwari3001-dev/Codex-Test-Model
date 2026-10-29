@@ -436,7 +436,7 @@ def _assemble_option(
     td: TransportData,
     delay_minutes: Dict[str, int],
     total_fare_override: Optional[float] = None,
-    fare_available: bool = False,
+    fare_available: Optional[bool] = None,
 ) -> JourneyOption:
     """
     Convert a Journey (list of raw connections) into a rich JourneyOption.
@@ -524,6 +524,7 @@ def _assemble_option(
             trip_id=trip_id,
             route_id=trip.route_id,
             route_name=route.route_name if route else trip.route_id,
+            route_type=route.route_type if route else "bus",
             route_color=route.route_color if route else "#666666",
             board_stop_id=first_conn.from_stop_id,
             board_stop_name=td.stops_by_id.get(
@@ -604,9 +605,28 @@ def _assemble_option(
 
     data_status = "simulated" if delay_minutes else "scheduled"
 
-    total_fare = total_fare_override
-    if total_fare is None and fare_available:
-        total_fare = sum(leg.fare or 0 for leg in legs)
+    # Calculate fare availability and total fare:
+    # 1. If an explicit fare override is provided (e.g. from cheapest-journey calculation),
+    #    preserve it and mark fare as available.
+    # 2. If fare_available was explicitly set to False, honor the override and suppress total fare.
+    # 3. Otherwise, check if every leg in the journey has a valid fare. If all legs have
+    #    a non-None fare, compute total_fare as the exact sum of leg fares and mark fare_available = True.
+    # 4. If any leg is missing fare data (leg.fare is None), do not report a partial total:
+    #    set total_fare = None and fare_available = False.
+    legs_have_all_fares = bool(legs) and all(leg.fare is not None for leg in legs)
+
+    if total_fare_override is not None:
+        total_fare = total_fare_override
+        is_fare_available = True if fare_available is None else fare_available
+    elif fare_available is False:
+        total_fare = None
+        is_fare_available = False
+    elif legs_have_all_fares:
+        total_fare = sum(leg.fare for leg in legs if leg.fare is not None)
+        is_fare_available = True
+    else:
+        total_fare = None
+        is_fare_available = False
 
     return JourneyOption(
         option_id=option_id,
@@ -617,7 +637,7 @@ def _assemble_option(
         legs=legs,
         transfers=transfers,
         total_fare=total_fare,
-        fare_available=fare_available,
+        fare_available=is_fare_available,
         crowding_warnings=crowding_warnings,
         delay_warnings=delay_warnings,
         data_status=data_status,

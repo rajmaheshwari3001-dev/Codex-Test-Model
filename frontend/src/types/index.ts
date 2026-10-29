@@ -24,6 +24,7 @@ export interface JourneyLeg {
   trip_id: string
   route_id: string
   route_name: string
+  route_type?: string
   route_color: string
   board_stop_id: string
   board_stop_name: string

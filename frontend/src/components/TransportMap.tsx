@@ -152,7 +152,7 @@ export default function TransportMap({
         { direction: 'top', offset: [0, -7] }
       )
 
-      // Rich interactive Metro Station Card in Popup
+      // Rich interactive Transit Stop Card in Popup
       const popupDiv = document.createElement('div')
       popupDiv.className = 'text-xs font-sans p-1 min-w-[210px]'
       popupDiv.innerHTML = `

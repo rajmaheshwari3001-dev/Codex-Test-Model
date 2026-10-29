@@ -443,3 +443,91 @@ def test_minutes_to_time():
     assert minutes_to_time(510) == "08:30"
     assert minutes_to_time(0) == "00:00"
     assert minutes_to_time(1455) == "24:15"
+
+
+# 11. Multi-leg transfer fare calculations and route_type verification
+def test_s02_to_s08_fastest_and_cheapest_fares_calculated_independently():
+    svc, _ = _make_service()
+    options = svc.search("S02", "S08", "08:00", preference="fastest")
+
+    assert len(options) == 2
+    fastest = options[0]
+    cheapest = options[1]
+
+    # Fastest journey: Green Line (S02->S10, ₹25) + Yellow Express (S10->S08, ₹15) = ₹40
+    assert fastest.option_id == "fastest"
+    assert fastest.fare_available is True
+    assert fastest.total_fare == 40.0
+    assert len(fastest.legs) == 2
+    assert all(leg.route_type == "bus" for leg in fastest.legs)
+    assert fastest.legs[0].fare == 25.0
+    assert fastest.legs[1].fare == 15.0
+
+    # Cheapest journey: Green Line (S02->S05, ₹10) + Red Ring (S05->S08, ₹20) = ₹30
+    assert cheapest.option_id == "cheapest"
+    assert cheapest.fare_available is True
+    assert cheapest.total_fare == 30.0
+    assert len(cheapest.legs) == 2
+    assert all(leg.route_type == "bus" for leg in cheapest.legs)
+    assert cheapest.legs[0].fare == 10.0
+    assert cheapest.legs[1].fare == 20.0
+
+
+def test_transfer_journey_with_missing_leg_fare_does_not_report_partial_fare():
+    # Leg 1 has a fare (1->2 = 5), Leg 2 has NO fare rule.
+    svc = _make_custom_service(
+        stop_specs=[("O", "1"), ("X", "2"), ("D", "3")],
+        trip_specs=[
+            ("T-LEG1", "R-LEG1", [
+                ("O", "08:00", "08:00"),
+                ("X", "08:10", "08:10"),
+            ]),
+            ("T-LEG2", "R-LEG2", [
+                ("X", "08:15", "08:15"),
+                ("D", "08:30", "08:30"),
+            ]),
+        ],
+        fare_specs=[
+            ("R-LEG1", "1", "2", 5),
+            # R-LEG2 from 2 to 3 is intentionally omitted
+        ],
+    )
+
+    options = svc.search("O", "D", "08:00", preference="fastest")
+    assert len(options) >= 1
+    fastest = options[0]
+    assert len(fastest.legs) == 2
+    assert fastest.legs[0].fare == 5.0
+    assert fastest.legs[1].fare is None
+    # Crucial: Must NOT report partial total_fare == 5.0
+    assert fastest.fare_available is False
+    assert fastest.total_fare is None
+
+
+def test_explicit_fare_override_honored():
+    from app.services.routing_service import _assemble_option, Journey, Connection
+
+    svc, td = _make_service()
+    dummy_conn = Connection(
+        trip_id="T01",
+        route_id="R01",
+        from_stop_id="S13",
+        to_stop_id="S01",
+        departure_minutes=420,
+        arrival_minutes=480,
+        stop_sequence_from=1,
+        stop_sequence_to=5,
+    )
+    journey = Journey(connections=[dummy_conn], total_fare=99.0, fare_available=True)
+    opt = _assemble_option(
+        journey=journey,
+        option_id="custom",
+        label="Custom",
+        td=td,
+        delay_minutes={},
+        total_fare_override=99.0,
+        fare_available=True,
+    )
+    assert opt.total_fare == 99.0
+    assert opt.fare_available is True
+

@@ -112,7 +112,7 @@ export default function RouteSearchForm({
       <div className="p-5 sm:p-6 space-y-5">
         {/* Connected Origin & Destination Station Console */}
         <div className="relative rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-          {/* Vertical Connecting Metro Track */}
+          {/* Vertical Connecting Transit Route Track */}
           <div className="absolute left-[27px] top-[42px] bottom-[42px] w-0.5 bg-gradient-to-b from-emerald-500 via-blue-500 to-rose-500 pointer-events-none" />
 
           {/* Origin Station */}
@@ -122,7 +122,7 @@ export default function RouteSearchForm({
             </div>
             <div className="flex-1 min-w-0">
               <label htmlFor="origin-stop" className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                From Station
+                From Bus Stop / Station
               </label>
               <select
                 id="origin-stop"
@@ -164,7 +164,7 @@ export default function RouteSearchForm({
             </div>
             <div className="flex-1 min-w-0">
               <label htmlFor="dest-stop" className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
-                To Station
+                To Bus Stop / Station
               </label>
               <select
                 id="dest-stop"

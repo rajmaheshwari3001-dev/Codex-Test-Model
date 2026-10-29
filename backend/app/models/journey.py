@@ -21,6 +21,7 @@ class JourneyLeg(BaseModel):
     trip_id: str
     route_id: str
     route_name: str
+    route_type: str = "bus"
     route_color: str
     board_stop_id: str
     board_stop_name: str
