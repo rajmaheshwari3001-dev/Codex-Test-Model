@@ -157,3 +157,4 @@ export default function TopBar({ onOpenMobile }: TopBarProps) {
     </header>
   )
 }
+

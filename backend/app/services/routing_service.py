@@ -715,7 +715,9 @@ class RoutingService:
         Raises:
             ValueError: if origin or destination stop ID is unknown.
         """
-        if delay_minutes is None:
+        if not isinstance(delay_minutes, dict):
+            if isinstance(delay_minutes, str) and delay_minutes in ("weekday", "weekend"):
+                service_day = delay_minutes
             delay_minutes = {}
 
         # Validate stop IDs.

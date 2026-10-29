@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { ModePreference, ServiceDay, Stop } from '../types'
-import { formatTime12, parseToTime24 } from '../utils/time'
+import { formatTime12, getTimePeriod, parseToTime24 } from '../utils/time'
 import { getStationMeta } from '../utils/transitData'
 
 const SERVICE_TIME_PATTERN = /^(?:[0-3]\d|4[0-7]):[0-5]\d$/
@@ -83,12 +83,15 @@ export default function RouteSearchForm({
     onSearch(origin, destination, parsedTime, preference, serviceDay, modePreference, maxBudget)
   }
 
-  const [hours, minutes] = time.split(':').map(Number)
-  const isPM = (isNaN(hours) ? 0 : hours) >= 12
+  const currentPeriod = getTimePeriod(time)
+  const isPM = currentPeriod === 'PM'
 
   function togglePeriod(targetPeriod: 'AM' | 'PM') {
-    let h = isNaN(hours) ? 8 : hours
-    const m = isNaN(minutes) ? 0 : minutes
+    const time24 = parseToTime24(time) || (time.includes(':') ? time : '08:00')
+    const parts = time24.split(':').map(Number)
+    let h = isNaN(parts[0]) ? 8 : parts[0]
+    const m = isNaN(parts[1]) ? 0 : parts[1]
+
     if (targetPeriod === 'PM' && h < 12) {
       h += 12
     } else if (targetPeriod === 'AM' && h >= 12) {

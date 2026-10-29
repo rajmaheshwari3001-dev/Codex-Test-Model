@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay, ModePreference } from '../types'
 import { getStops, getRoutes, searchJourneys, createSavedRoute } from '../services/api'
-import { formatTime12 } from '../utils/time'
+import { formatTime12, parseToTime24 } from '../utils/time'
 import RouteSearchForm from '../components/RouteSearchForm'
 import RouteResultCard from '../components/RouteResultCard'
 import TransportMap from '../components/TransportMap'
@@ -159,7 +159,8 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
       if (response.options.length > 0) {
         setSelected(response.options[0])
       } else {
-        const [hours, minutes] = departureTime.split(':').map(Number)
+        const canonical24 = parseToTime24(departureTime) || departureTime
+        const [hours, minutes] = canonical24.split(':').map(Number)
         const totalMinutes = (Number.isNaN(hours) ? 0 : hours) * 60 + (Number.isNaN(minutes) ? 0 : minutes)
         setNoResultContext({
           origin: originId,
