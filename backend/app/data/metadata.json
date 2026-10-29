@@ -1,0 +1,42 @@
+{
+  "application": "Aaroh-Saarthi Delhi Multimodal Transit Engine",
+  "last_pipeline_run": "2026-10-29T23:50:38.660956+00:00",
+  "version": "2.1.0",
+  "datasets": {
+    "delhi_buses": {
+      "source": "Delhi Transport Stack (Dataset 1: DTC / DoT GTFS)",
+      "transport_mode": "bus",
+      "fare_rules": "Official DTC Stage-Based (Non-AC \u20b95-15, AC \u20b910-25)"
+    },
+    "delhi_metro": {
+      "source": "Delhi Transport Stack (Dataset 2: DMRC GTFS) & DMRC Official Tariffs",
+      "transport_mode": "metro",
+      "fare_rules": "Official DMRC Distance Slabs (\u20b911 to \u20b964, with Sunday & Off-peak Discounts)"
+    }
+  },
+  "metrics": {
+    "total_stations_and_stops": 20,
+    "total_transit_routes": 4,
+    "total_scheduled_trips": 120,
+    "total_stop_times": 701,
+    "total_verified_tariffs": 36,
+    "total_multimodal_interchanges": 7
+  },
+  "sources": {
+    "delhi_transport_stack": {
+      "source": "Delhi Transport Stack (Local cache)",
+      "buses_available": true,
+      "metro_available": true
+    },
+    "dtc": {
+      "source": "Delhi Transport Corporation (https://dtc.delhi.gov.in/)",
+      "fare_rules": {}
+    },
+    "dmrc": {
+      "source": "Delhi Metro Rail Corporation (https://delhimetrorail.com/)"
+    },
+    "otd": {
+      "source": "Delhi Open Transit Data (https://otd.delhi.gov.in/)"
+    }
+  }
+}

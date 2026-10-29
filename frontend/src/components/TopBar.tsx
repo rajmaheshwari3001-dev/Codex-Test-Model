@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import type { Stop } from '../types'
 import { getHealth, getStops } from '../services/api'
 import { useNavigate } from 'react-router-dom'
+import DataProvenanceModal from './DataProvenanceModal'
 
 interface TopBarProps {
   onOpenMobile: () => void
@@ -12,6 +13,7 @@ export default function TopBar({ onOpenMobile }: TopBarProps) {
   const [stops, setStops] = useState<Stop[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
+  const [showProvenanceModal, setShowProvenanceModal] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
 
@@ -120,7 +122,18 @@ export default function TopBar({ onOpenMobile }: TopBarProps) {
       </div>
 
       {/* Right Telemetry & Status Badges */}
-      <div className="flex items-center gap-3 sm:gap-4">
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Data Provenance & GTFS Button */}
+        <button
+          type="button"
+          onClick={() => setShowProvenanceModal(true)}
+          className="flex items-center gap-1.5 rounded-lg border border-[#E8DFCE] bg-[#FAF7F2] px-2.5 py-1.5 text-xs font-semibold text-[#173B32] hover:bg-[#FFFFFF] hover:border-[#173B32] transition-colors"
+          title="View Delhi GTFS and Fare Data Sources"
+        >
+          <span>📦</span>
+          <span className="hidden sm:inline">Data Sources</span>
+        </button>
+
         {/* Service Hours Badge */}
         <div className="hidden md:flex items-center gap-2 rounded-lg border border-[#E8DFCE] bg-[#FAF7F2] px-3 py-1.5 text-xs text-[#53645F]">
           <span className="font-semibold text-[#25312D]">Service:</span>
@@ -154,6 +167,11 @@ export default function TopBar({ onOpenMobile }: TopBarProps) {
           <span className="capitalize">{backendStatus}</span>
         </div>
       </div>
+
+      <DataProvenanceModal
+        isOpen={showProvenanceModal}
+        onClose={() => setShowProvenanceModal(false)}
+      />
     </header>
   )
 }

@@ -96,9 +96,27 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
               {isFastest ? 'Fastest Route' : isCheapest ? 'Lowest Cost' : option.label}
             </span>
 
-            <span className="rounded-md border border-[#E8DFCE] bg-[#FAF7F2] px-2 py-0.5 text-xs font-medium text-[#53645F]">
-              Bus Transit
+            <span
+              className={`rounded-md border px-2 py-0.5 text-xs font-medium ${
+                option.primary_mode === 'metro'
+                  ? 'border-[#2196F3]/30 bg-[#E8F4FD] text-[#0D47A1]'
+                  : option.primary_mode === 'multimodal'
+                  ? 'border-[#9C27B0]/30 bg-[#F3E5F5] text-[#4A148C]'
+                  : 'border-[#E8DFCE] bg-[#FAF7F2] text-[#53645F]'
+              }`}
+            >
+              {option.primary_mode === 'metro'
+                ? '🚇 Metro Rail'
+                : option.primary_mode === 'multimodal'
+                ? '🔄 Bus + Metro Link'
+                : '🚍 Bus Transit'}
             </span>
+
+            {option.total_distance_km !== null && option.total_distance_km !== undefined && (
+              <span className="rounded-md border border-[#E8DFCE] bg-[#FAF7F2] px-2 py-0.5 text-xs font-mono text-[#53645F]">
+                📍 {option.total_distance_km} km
+              </span>
+            )}
 
             {option.transfers.length === 0 ? (
               <span className="rounded-md border border-[#236B56]/20 bg-[#EBF4F0] px-2 py-0.5 text-xs font-medium text-[#236B56]">
@@ -161,6 +179,10 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
             const isExpanded = expandedLegs[idx] || false
             const boardMeta = getStationMeta(leg.board_stop_id)
             const alightMeta = getStationMeta(leg.alight_stop_id)
+            const isMetroLeg =
+              leg.route_name.toLowerCase().includes('line') ||
+              leg.route_name.toLowerCase().includes('metro') ||
+              leg.route_id.startsWith('M')
 
             return (
               <div key={`${leg.trip_id}-${idx}`} className="space-y-2">
@@ -174,16 +196,26 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                       <span className="font-bold text-[#25312D]">
                         Leg {idx + 1}: {leg.route_name}
                       </span>
+                      <span className="rounded bg-[#FAF7F2] border border-[#E8DFCE] px-1.5 py-0.2 text-[10px] font-semibold text-[#53645F]">
+                        {isMetroLeg ? '🚇 Metro' : '🚍 Bus'}
+                      </span>
                       <span className="text-[#53645F] font-mono text-[11px]">
                         (Trip {leg.trip_id})
                       </span>
                     </div>
 
-                    {leg.fare !== null && leg.fare !== undefined && (
-                      <span className="font-mono font-bold text-[#25312D]">
-                        ₹{leg.fare}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {leg.distance_km !== null && leg.distance_km !== undefined && (
+                        <span className="text-[11px] text-[#53645F] font-mono bg-[#FAF7F2] px-1.5 py-0.5 rounded border border-[#E8DFCE]" title={leg.route_distance_km ? `Route distance: ${leg.route_distance_km} km` : undefined}>
+                          📍 {leg.distance_km} km
+                        </span>
+                      )}
+                      {leg.fare !== null && leg.fare !== undefined && (
+                        <span className="font-mono font-bold text-[#25312D]" title={leg.fare_provenance || 'Calculated tariff'}>
+                          ₹{leg.fare}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Stop Points */}
@@ -230,13 +262,19 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                   </div>
                 </div>
 
-                {/* Transfer node if applicable */}
+                {/* Multimodal or Standard Transfer Node */}
                 {transfer && (
                   <div className="flex items-center gap-2 rounded-md border border-[#B88A43]/30 bg-[#F4EBD9]/60 px-3 py-1.5 text-xs text-[#25312D]">
                     <span className="text-sm">🔄</span>
                     <span className="font-medium">
-                      Transfer at <strong>{transfer.at_stop_name}</strong> •{' '}
-                      <strong>{transfer.wait_minutes} min wait</strong> for connection
+                      {transfer.transfer_description ? (
+                        transfer.transfer_description
+                      ) : (
+                        <>
+                          Transfer at <strong>{transfer.at_stop_name}</strong> •{' '}
+                          <strong>{transfer.wait_minutes} min wait</strong> for connection
+                        </>
+                      )}
                     </span>
                   </div>
                 )}

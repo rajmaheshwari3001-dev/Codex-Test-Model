@@ -50,8 +50,22 @@ from app.services.data_loader import TransportData
 
 
 # ---------------------------------------------------------------------------
-# Helper: time parsing utilities
+# Helper: distance and time utilities
 # ---------------------------------------------------------------------------
+
+def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Calculate great-circle distance between two geographic coordinates in km."""
+    if lat1 == 0 and lon1 == 0 and lat2 == 0 and lon2 == 0:
+        return 0.0
+    r = 6371.0
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lon2 - lon1)
+    a = (math.sin(delta_phi / 2.0) ** 2 +
+         math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2.0) ** 2)
+    c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
+    return round(r * c, 2)
+
 
 def time_to_minutes(time_str: str) -> int:
     """
@@ -482,15 +496,34 @@ def _assemble_option(
             for stop_time in intermediate_stop_times
         ]
 
-        # Fare for this leg
         from_stop = td.stops_by_id.get(first_conn.from_stop_id)
         to_stop = td.stops_by_id.get(last_conn.to_stop_id)
+
+        # Distance calculation (road distance vs route traversal distance)
+        dist_km = None
+        route_dist_km = None
+        if from_stop and to_stop:
+            if not (from_stop.stop_lat == 0 and from_stop.stop_lon == 0 and to_stop.stop_lat == 0 and to_stop.stop_lon == 0):
+                dist_km = haversine_km(from_stop.stop_lat, from_stop.stop_lon, to_stop.stop_lat, to_stop.stop_lon)
+                accum_km = 0.0
+                cur_lat, cur_lon = from_stop.stop_lat, from_stop.stop_lon
+                for st in intermediate_stop_times:
+                    s_obj = td.stops_by_id.get(st.stop_id)
+                    if s_obj and not (s_obj.stop_lat == 0 and s_obj.stop_lon == 0):
+                        accum_km += haversine_km(cur_lat, cur_lon, s_obj.stop_lat, s_obj.stop_lon)
+                        cur_lat, cur_lon = s_obj.stop_lat, s_obj.stop_lon
+                accum_km += haversine_km(cur_lat, cur_lon, to_stop.stop_lat, to_stop.stop_lon)
+                route_dist_km = round(accum_km, 2)
+
+        # Fare for this leg
         leg_fare = None
+        fare_provenance = None
         if from_stop and to_stop:
             fare_key = (trip.route_id, from_stop.zone_id, to_stop.zone_id)
             fare_rule = td.fare_lookup.get(fare_key)
             if fare_rule:
                 leg_fare = fare_rule.fare_amount
+                fare_provenance = "Tariff Schedule"
 
         # Crowding check for the boarding stop.
         occ = td.occupancy_lookup.get((trip_id, first_conn.from_stop_id))
@@ -553,6 +586,9 @@ def _assemble_option(
                 stop_time.stop_id for stop_time in intermediate_stop_times
             ],
             fare=leg_fare,
+            distance_km=dist_km,
+            route_distance_km=route_dist_km,
+            fare_provenance=fare_provenance,
         )
 
     # --- Group connections into legs ---
@@ -575,10 +611,23 @@ def _assemble_option(
             )
             wait_min = wait_dep - wait_arr
 
+            from_leg = legs[-1]
+            to_trip = td.trips_by_id.get(conn.trip_id)
+            to_route = td.routes_by_id.get(to_trip.route_id) if to_trip else None
+            from_mode = from_leg.route_type
+            to_mode = to_route.route_type if to_route else "bus"
+            transfer_desc = (
+                f"{from_mode.capitalize()} ➔ {to_mode.capitalize()} transfer at {transfer_stop.stop_name}"
+                if transfer_stop else None
+            )
+
             transfers.append(TransferInfo(
                 at_stop_id=transfer_stop_id,
                 at_stop_name=transfer_stop.stop_name if transfer_stop else transfer_stop_id,
                 wait_minutes=max(wait_min, 0),
+                from_mode=from_mode,
+                to_mode=to_mode,
+                transfer_description=transfer_desc,
             ))
 
             # Check delays.
@@ -638,6 +687,9 @@ def _assemble_option(
     else:
         primary_mode = "multimodal"
 
+    valid_dists = [leg.distance_km for leg in legs if leg.distance_km is not None]
+    total_dist = round(sum(valid_dists), 2) if valid_dists else None
+
     return JourneyOption(
         option_id=option_id,
         label=label,
@@ -648,6 +700,7 @@ def _assemble_option(
         transfers=transfers,
         total_fare=total_fare,
         fare_available=is_fare_available,
+        total_distance_km=total_dist,
         crowding_warnings=crowding_warnings,
         delay_warnings=delay_warnings,
         data_status=data_status,

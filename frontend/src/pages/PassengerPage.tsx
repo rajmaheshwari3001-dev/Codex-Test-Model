@@ -8,6 +8,7 @@ import RouteResultCard from '../components/RouteResultCard'
 import TransportMap from '../components/TransportMap'
 import ChatAssistant from '../components/ChatAssistant'
 import SavedRoutesPanel from '../components/SavedRoutes'
+import DataProvenanceModal from '../components/DataProvenanceModal'
 
 interface NoResultContext {
   origin: string
@@ -89,6 +90,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [preference, setPreference] = useState('fastest')
   const [modePreference, setModePreference] = useState<ModePreference>('all')
   const [maxBudget, setMaxBudget] = useState<string>('')
+  const [showProvenanceModal, setShowProvenanceModal] = useState(false)
 
   function loadInitialData() {
     setMessage('')
@@ -259,12 +261,19 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
               <span className="rounded-md bg-[#B88A43]/20 border border-[#B88A43]/40 px-2.5 py-0.5 text-[11px] font-bold text-[#F4EBD9]">
                 20 Stations • 4 Corridors
               </span>
+              <button
+                type="button"
+                onClick={() => setShowProvenanceModal(true)}
+                className="rounded-md bg-[#FFFFFF]/15 border border-[#FFFFFF]/30 px-2.5 py-0.5 text-[11px] font-bold text-white hover:bg-[#FFFFFF]/25 transition-colors"
+              >
+                🏛️ Data Sources & Provenance ↗
+              </button>
             </div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-[#FFFFFF]">
               Passenger Route Assistant
             </h1>
             <p className="max-w-2xl text-xs sm:text-sm text-[#E8DFCE]">
-              Find optimal routes, inspect intermediate stops, view transfers, and compare calculated fares using Delhi GTFS schedule data.
+              Multimodal journey planning grounded in official Delhi Transport Stack GTFS feeds, DTC bus stages, and DMRC metro tariff slabs.
             </p>
           </div>
 
@@ -281,7 +290,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
                 06:00 AM — 11:35 PM
               </div>
               <p className="mt-0.5 text-[11px] text-[#E8DFCE]/80">
-                64 trips across weekday and weekend timetables. Fares are sample data.
+                120 trips across weekday and weekend timetables with verified Delhi GTFS data.
               </p>
             </div>
           </div>
@@ -532,6 +541,11 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           </div>
         </div>
       </div>
+
+      <DataProvenanceModal
+        isOpen={showProvenanceModal}
+        onClose={() => setShowProvenanceModal(false)}
+      />
     </div>
   )
 }

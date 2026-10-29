@@ -174,3 +174,57 @@ def clear_delays():
     """Clear all simulated delays."""
     _delay_service.clear_all()
     return {"message": "All delays cleared.", "simulated": True}
+
+
+@router.get("/data/provenance")
+def get_data_provenance():
+    """
+    Return metadata, data provenance, and scraping audit details
+    for Delhi Buses (DTC/DoT) and Delhi Metro (DMRC).
+    """
+    import json
+    from pathlib import Path
+    meta_path = Path(__file__).resolve().parent.parent / "data" / "metadata.json"
+    if meta_path.exists():
+        with open(meta_path, encoding="utf-8") as f:
+            return json.load(f)
+
+    return {
+        "application": "Aaroh-Saarthi Delhi Multimodal Transit Engine",
+        "version": "2.1.0",
+        "status": "ready",
+        "datasets": {
+            "delhi_buses": "Delhi Transport Stack & DTC Verified Stages",
+            "delhi_metro": "Delhi Transport Stack & DMRC Verified Slabs",
+        },
+        "stops_count": len(_td.stops_by_id) if _td else 0,
+        "routes_count": len(_td.routes_by_id) if _td else 0,
+    }
+
+
+@router.post("/data/refresh")
+def refresh_transit_data(remote: bool = False):
+    """
+    Trigger the transit data import / refresh pipeline.
+    If remote=True, connects to external APIs/scrapers;
+    If remote=False, re-normalizes from local verified GTFS and fare tables.
+    """
+    global _td, _routing_service
+    from app.pipeline.importer import DataImporter
+    from app.services.data_loader import load_all
+
+    importer = DataImporter()
+    result = importer.run_pipeline(download_remote=remote)
+
+    new_td = load_all()
+    _td = new_td
+    if _routing_service:
+        _routing_service.reload(new_td)
+
+    import app.services.data_loader as dl
+    dl.data = new_td
+
+    return {
+        "message": "Transit data pipeline completed and reloaded into routing engine.",
+        "pipeline_result": result,
+    }

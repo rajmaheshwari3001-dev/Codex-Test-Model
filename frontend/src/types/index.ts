@@ -39,12 +39,18 @@ export interface JourneyLeg {
   intermediate_stop_ids: string[]
   fare: number | null
   currency: string
+  distance_km?: number | null
+  route_distance_km?: number | null
+  fare_provenance?: string | null
 }
 
 export interface TransferInfo {
   at_stop_id: string
   at_stop_name: string
   wait_minutes: number
+  from_mode?: string | null
+  to_mode?: string | null
+  transfer_description?: string | null
 }
 
 export interface JourneyOption {
@@ -58,6 +64,7 @@ export interface JourneyOption {
   total_fare: number | null
   currency: string
   fare_available: boolean
+  total_distance_km?: number | null
   crowding_warnings: string[]
   delay_warnings: string[]
   data_status: string

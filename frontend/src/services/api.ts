@@ -112,3 +112,13 @@ export async function getDelays() {
 export async function clearDelays() {
   return request<{ message: string }>('/delays', { method: 'DELETE' })
 }
+
+export async function getDataProvenance() {
+  return request<any>('/data/provenance')
+}
+
+export async function refreshTransitData(remote = false) {
+  return request<{ message: string; pipeline_result: any }>(`/data/refresh?remote=${remote}`, {
+    method: 'POST',
+  })
+}

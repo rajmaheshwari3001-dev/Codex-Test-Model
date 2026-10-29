@@ -35,6 +35,9 @@ class JourneyLeg(BaseModel):
     intermediate_stop_ids: List[str] = []
     fare: Optional[float] = None
     currency: str = "INR"
+    distance_km: Optional[float] = None
+    route_distance_km: Optional[float] = None
+    fare_provenance: Optional[str] = None
 
 
 class TransferInfo(BaseModel):
@@ -43,6 +46,9 @@ class TransferInfo(BaseModel):
     at_stop_id: str
     at_stop_name: str
     wait_minutes: int
+    from_mode: Optional[str] = None
+    to_mode: Optional[str] = None
+    transfer_description: Optional[str] = None
 
 
 class JourneyOption(BaseModel):
@@ -63,6 +69,7 @@ class JourneyOption(BaseModel):
     total_fare: Optional[float] = None
     currency: str = "INR"
     fare_available: bool = False
+    total_distance_km: Optional[float] = None
     crowding_warnings: List[str] = []
     delay_warnings: List[str] = []
     data_status: str = "scheduled"   # scheduled | estimated | simulated
