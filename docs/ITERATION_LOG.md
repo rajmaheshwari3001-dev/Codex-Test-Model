@@ -157,7 +157,8 @@
 - **Completion percentage:** 89.5% before → 93% after. P7 remains PARTIAL
   because absent sample occupancy is not explicitly shown as unknown; F6
   remains PARTIAL because scenario metrics use fixed assumptions.
-- **Commit:** Pending final review.
-- **Push status:** Not yet pushed.
+- **Commit:** `5c4a99d9c3a52bd7663fc3346c2eb1ddf7dbc90a`.
+- **Push status:** Pushed to `origin/main`; `git ls-remote` confirmed the
+  remote ref matches the commit.
 - **Next task:** Validate fleet metric inputs/formulas and clearly separate
   fixed assumptions from measured scenario outcomes.

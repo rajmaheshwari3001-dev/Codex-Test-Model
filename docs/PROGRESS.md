@@ -31,9 +31,10 @@ completion score. The verified score is calculated in
 - Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`.
 - Latest completed iteration: **3 — apply fleet decisions to simulated state**.
 - Next iteration: **4 — validate fleet metric inputs, formulas, and labels**.
-- Latest successful delivery: `3f3ad08` (`main`).
+- Latest successful delivery: `5c4a99d` (`main`), iteration 3 fleet state
+  transitions.
 - Remote verification: `origin/main` points to
-  `3f3ad08639a64364ae1c2bf2eec05c57e9f8476e`.
+  `5c4a99d9c3a52bd7663fc3346c2eb1ddf7dbc90a`.
 - The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
   preserved and excluded.
 
@@ -170,5 +171,7 @@ clearly distinguish model assumptions from calculated outcomes.
   breakdown/delay scenarios, and approval/rejection state behavior.
 - Temporary simulated passenger delay was cleared; API confirmed no active
   delays remained.
-- Push: iteration 3 is not yet published. The unrelated untracked
-  `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains preserved and excluded.
+- Push: iteration 3 was pushed to `origin/main`; `git ls-remote` confirmed
+  the remote ref matches local commit `5c4a99d9c3a52bd7663fc3346c2eb1ddf7dbc90a`.
+  The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
+  preserved and excluded.
