@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay, ModePreference } from '../types'
 import { getStops, getRoutes, searchJourneys, createSavedRoute } from '../services/api'
 import { formatTime12 } from '../utils/time'
@@ -15,61 +16,62 @@ interface NoResultContext {
   isOutOfHours: boolean
 }
 
-// Primary Delhi Multi-Modal Corridor Presets for 1-Tap Search
+// 4 Primary Delhi Bus Corridors for 1-Tap Search
 const FEATURED_CORRIDORS = [
   {
     routeId: 'R01',
     lineName: 'Blue Line',
     color: '#2196F3',
-    badgeBg: 'bg-blue-500/10 text-blue-700 border-blue-300/40',
     originId: 'S13',
     originName: 'Dwarka Sec-21',
     destId: 'S18',
     destName: 'Anand Vihar ISBT',
     departure: '08:00',
-    type: '🚇 Delhi Metro • Trans-Delhi Artery',
+    type: 'Bus Line • East-West Link',
   },
   {
     routeId: 'R02',
     lineName: 'Green Line',
     color: '#16A34A',
-    badgeBg: 'bg-emerald-500/10 text-emerald-800 border-emerald-300/40',
     originId: 'S02',
     originName: 'Kashmere Gate',
     destId: 'S16',
     destName: 'Dilli Haat - INA',
     departure: '13:30',
-    type: '🚇 Delhi Metro • North-South Corridor',
+    type: 'Bus Line • North-South Link',
   },
   {
     routeId: 'R03',
     lineName: 'Red Ring',
     color: '#DC2626',
-    badgeBg: 'bg-rose-500/10 text-rose-800 border-rose-300/40',
     originId: 'S05',
     originName: 'Connaught Place',
     destId: 'S20',
     destName: 'Sarai Kale Khan ISBT',
     departure: '17:30',
-    type: '🚌 Ring Bus • Evening Hub Link',
+    type: 'Ring Bus • Evening Hub Link',
   },
   {
     routeId: 'R04',
     lineName: 'Yellow Express',
     color: '#D97706',
-    badgeBg: 'bg-amber-500/10 text-amber-900 border-amber-300/40',
     originId: 'S04',
     originName: 'New Delhi Stn',
     destId: 'S17',
     destName: 'Mandi House',
     departure: '20:30',
-    type: '🚌 Express Bus • Cultural Hub Link',
+    type: 'Express Bus • Cultural Link',
   },
 ]
 
 const ACTIVE_SERVICE_HOURS = ['08:00', '13:30', '17:30', '20:30', '22:00']
 
-export default function PassengerPage() {
+interface PassengerPageProps {
+  defaultTab?: 'planner' | 'map' | 'saved' | 'chat'
+}
+
+export default function PassengerPage({ defaultTab }: PassengerPageProps) {
+  const [searchParams] = useSearchParams()
   const [stops, setStops] = useState<Stop[]>([])
   const [routes, setRoutes] = useState<Route[]>([])
   const [options, setOptions] = useState<JourneyOption[]>([])
@@ -107,6 +109,14 @@ export default function PassengerPage() {
   useEffect(() => {
     loadInitialData()
   }, [])
+
+  // Hook top-bar quick stop search parameter into origin selection
+  useEffect(() => {
+    const originParam = searchParams.get('origin')
+    if (originParam && stops.some(s => s.stop_id === originParam)) {
+      setOrigin(originParam)
+    }
+  }, [searchParams, stops])
 
   async function handleSearch(
     originId: string = origin,
@@ -183,7 +193,7 @@ export default function PassengerPage() {
         service_day: serviceDay,
       })
       setSavedOptionIds(previous => new Set(previous).add(option.option_id))
-      setSaveToast(`Journey bookmarked • ${option.label} • ₹${option.total_fare ?? 'N/A'}`)
+      setSaveToast(`Journey saved • ${option.label} • ₹${option.total_fare ?? 'N/A'}`)
       setSavedRefresh(previous => previous + 1)
       window.setTimeout(() => setSaveToast(''), 4000)
     } catch {
@@ -236,105 +246,91 @@ export default function PassengerPage() {
   const destinationName = stops.find(stop => stop.stop_id === destination)?.stop_name || destination || 'Destination'
 
   return (
-    <div className="space-y-6">
-      {/* 1. Cinematic Delhi Transit Command Bar */}
-      <section className="relative overflow-hidden rounded-3xl border border-slate-200/90 bg-gradient-to-r from-[#0B1020] via-[#172554] to-[#1e3a8a] p-6 text-white shadow-xl shadow-slate-900/10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(37,99,235,0.25),_transparent_60%)]" />
-        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* 1. Header Hero Deck */}
+      <section className="rounded-xl border border-[#E8DFCE] bg-[#173B32] p-6 text-white shadow-xs">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-3 py-1 font-mono text-xs font-bold text-emerald-300 backdrop-blur-md">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-                DELHI MULTI-MODAL TRANSIT
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-md bg-[#FAF7F2]/10 border border-[#FAF7F2]/20 px-2.5 py-0.5 text-[11px] font-bold text-[#F5F0E6]">
+                Delhi Transit Assistant
               </span>
-              <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 font-mono text-xs font-medium text-slate-300 backdrop-blur-md">
-                Metro & Bus Timetables
-              </span>
-              <span className="rounded-full border border-blue-400/30 bg-blue-500/20 px-3 py-1 font-mono text-xs font-semibold text-blue-200">
-                20 Mapped Stations • 4 Corridors
+              <span className="rounded-md bg-[#B88A43]/20 border border-[#B88A43]/40 px-2.5 py-0.5 text-[11px] font-bold text-[#F4EBD9]">
+                20 Stations • 4 Corridors
               </span>
             </div>
-            <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
-              Passenger Transit Assistant
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-[#FFFFFF]">
+              Passenger Route Assistant
             </h1>
-            <p className="max-w-2xl text-xs sm:text-sm text-slate-300">
-              Discover optimal metro & bus routes, compare fares & transfers, inspect live GIS stop paths, and consult the Delhi Transit Copilot.
+            <p className="max-w-2xl text-xs sm:text-sm text-[#E8DFCE]">
+              Find optimal routes, inspect intermediate stops, view transfers, and compare calculated fares using Delhi GTFS schedule data.
             </p>
           </div>
 
-          {/* Timetable Operating Window Indicator */}
-          <div className="flex shrink-0 flex-col justify-between rounded-2xl border border-white/15 bg-white/10 p-4.5 backdrop-blur-md sm:min-w-[280px]">
-            <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Timetable Operating Window</span>
-              <span className="rounded-md bg-emerald-500/30 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-300">
+          {/* Operating Window Badge */}
+          <div className="flex shrink-0 flex-col rounded-lg border border-[#FAF7F2]/20 bg-[#FAF7F2]/10 p-4 text-xs sm:min-w-[260px]">
+            <div className="flex items-center justify-between border-b border-[#FAF7F2]/15 pb-2">
+              <span className="font-bold text-[#E8DFCE]">Timetable Hours</span>
+              <span className="rounded bg-[#236B56] px-2 py-0.5 text-[10px] font-bold text-white">
                 Active
               </span>
             </div>
-            <div className="py-2.5">
-              <div className="font-mono text-2xl font-extrabold tabular-nums tracking-tight text-white">
-                06:00 <span className="text-xs font-semibold text-emerald-400">AM</span> <span className="font-light text-slate-400">—</span> 11:35 <span className="text-xs font-semibold text-emerald-400">PM</span>
+            <div className="py-2">
+              <div className="font-mono text-xl font-extrabold text-[#FFFFFF]">
+                06:00 AM — 11:35 PM
               </div>
-              <p className="mt-1 text-xs text-slate-300">
-                64 synchronized timetable trips across 4 metro & bus corridors (Day & Night). Fares are synthetic demonstration data.
+              <p className="mt-0.5 text-[11px] text-[#E8DFCE]/80">
+                64 trips across weekday and weekend timetables. Fares are sample data.
               </p>
-            </div>
-            <div className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              <span>Synthetic zone fares (₹10–₹30) are sample data only.</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. One-Tap Delhi Bus Corridor Quick Launch Bar */}
-      <section className="space-y-2.5">
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-md bg-slate-900 text-xs font-bold text-white">
-              ⚡
-            </span>
-            <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-700">
-              1-Tap Primary Delhi Bus Corridors
-            </h2>
-          </div>
-          <span className="text-xs font-semibold text-slate-500">Click any corridor to run instant route search</span>
+      {/* 2. Corridor Presets (Clean White Cards) */}
+      <section className="space-y-2">
+        <div className="flex items-center justify-between text-xs text-[#53645F]">
+          <span className="font-bold uppercase tracking-wider text-[#25312D]">
+            Primary Delhi Bus Corridors
+          </span>
+          <span>Click any corridor to run search</span>
         </div>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURED_CORRIDORS.map(corridor => {
-            const isCurrentMatch = origin === corridor.originId && destination === corridor.destId
+            const isMatch = origin === corridor.originId && destination === corridor.destId
             return (
               <button
                 key={corridor.routeId}
                 type="button"
                 onClick={() => handleCorridorClick(corridor)}
-                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
-                  isCurrentMatch
-                    ? 'border-blue-600 bg-blue-50/70 shadow-sm ring-2 ring-blue-500/30'
-                    : 'border-slate-200/90 bg-white hover:border-slate-300'
+                className={`relative flex flex-col justify-between overflow-hidden rounded-lg border p-3.5 text-left transition-all ${
+                  isMatch
+                    ? 'border-[#173B32] bg-[#FFFFFF] ring-2 ring-[#173B32]/10 shadow-xs'
+                    : 'border-[#E8DFCE] bg-[#FFFFFF] hover:border-[#173B32]/50 hover:bg-[#FAF7F2]'
                 }`}
               >
-                {/* Left accent bar */}
                 <div
-                  className="absolute left-0 top-0 bottom-0 w-1.5 transition-all group-hover:w-2"
+                  className="absolute left-0 top-0 bottom-0 w-1.5"
                   style={{ backgroundColor: corridor.color }}
                 />
-
                 <div className="pl-2 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className={`rounded-md border px-2 py-0.5 text-[11px] font-black uppercase ${corridor.badgeBg}`}>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-bold text-[#25312D]">
                       {corridor.routeId} • {corridor.lineName}
                     </span>
-                    <span className="font-mono text-xs font-bold text-slate-500">@{formatTime12(corridor.departure)}</span>
+                    <span className="font-mono text-[#53645F] font-semibold">
+                      {formatTime12(corridor.departure)}
+                    </span>
                   </div>
-                  <div className="pt-1.5 text-sm font-extrabold text-slate-900">
-                    {corridor.originName} <span className="text-slate-400">➔</span> {corridor.destName}
+                  <div className="text-xs font-bold text-[#25312D]">
+                    {corridor.originName} <span className="text-[#B88A43]">➔</span> {corridor.destName}
                   </div>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between border-t border-slate-100 pl-2 pt-2 text-xs font-semibold text-slate-500">
+                <div className="mt-2.5 flex items-center justify-between border-t border-[#E8DFCE] pl-2 pt-1.5 text-[11px] text-[#53645F]">
                   <span>{corridor.type}</span>
-                  <span className="font-bold text-blue-600 transition-transform group-hover:translate-x-1">Launch ➔</span>
+                  <span className="font-bold text-[#173B32]">Search ➔</span>
                 </div>
               </button>
             )
@@ -342,7 +338,7 @@ export default function PassengerPage() {
         </div>
       </section>
 
-      {/* 3. Main Workspace: Asymmetric 5/7 Grid */}
+      {/* 3. Main Split Grid (Planner + Results vs Map + Copilot) */}
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
         {/* Left Column (5 cols): Journey Planner, Results & Saved Bookmarks */}
         <div className="space-y-6 lg:col-span-5">
@@ -367,76 +363,56 @@ export default function PassengerPage() {
           />
 
           {message && (
-            <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4.5 text-sm text-rose-950 shadow-sm">
-              <div className="flex items-center gap-2 font-bold text-rose-900">
-                <span className="text-base">⚠️</span>
-                <span>Transit service unavailable</span>
-              </div>
-              <p className="mt-1 text-xs sm:text-sm text-rose-800">{message}</p>
-              {stops.length === 0 && (
-                <button
-                  type="button"
-                  onClick={loadInitialData}
-                  className="mt-2.5 rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-xs font-bold text-rose-900 hover:bg-rose-100"
-                >
-                  Retry Loading Transit Network
-                </button>
-              )}
+            <div role="alert" className="rounded-lg border border-[#A44735]/30 bg-[#F8ECE9] p-4 text-xs font-semibold text-[#A44735]">
+              <div className="font-bold">⚠️ Transit service unavailable</div>
+              <p className="mt-1">{message}</p>
             </div>
           )}
 
           {saveToast && (
             <div
               role="status"
-              className="flex items-center gap-2.5 rounded-2xl border border-emerald-200 bg-emerald-50/90 p-4 text-xs sm:text-sm font-bold text-emerald-950 shadow-md animate-in fade-in slide-in-from-top-2"
+              className="flex items-center gap-2 rounded-lg border border-[#236B56]/30 bg-[#EBF4F0] p-3 text-xs font-bold text-[#236B56]"
             >
-              <span className="text-lg">✨</span>
+              <span>✓</span>
               <span>{saveToast}</span>
             </div>
           )}
 
-          {/* Intelligent Timetable Shift Recovery Console (Fixes user screenshot zero-schedule confusion) */}
+          {/* Timetable Schedule Notice */}
           {noResultContext && (
             <section
               role="status"
-              className="overflow-hidden rounded-3xl border border-amber-300 bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-amber-100/40 p-5 shadow-sm"
+              className="rounded-lg border border-[#B88A43]/40 bg-[#F4EBD9]/60 p-4 text-xs text-[#25312D] space-y-2"
             >
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-xl font-bold text-amber-900">
-                  ⏱️
-                </div>
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-black uppercase tracking-wider text-amber-950">
-                      Timetable Schedule Notice
-                    </span>
-                    <span className="rounded-full bg-amber-200/80 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-900">
-                      {formatTime12(noResultContext.time)}
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm leading-relaxed text-amber-900">
-                    {noResultContext.isOutOfHours ? (
-                      <>
-                        The Delhi timetable operates between <strong>06:00 AM and 11:35 PM</strong>. No trips run at{' '}
-                        <strong>{formatTime12(noResultContext.time)}</strong> for <strong>{originName}</strong> ➔ <strong>{destinationName}</strong>.
-                      </>
-                    ) : (
-                      <>
-                        No direct or connected trips found between <strong>{originName}</strong> and <strong>{destinationName}</strong> at{' '}
-                        <strong>{formatTime12(noResultContext.time)}</strong> on the {serviceDay} timetable.
-                      </>
-                    )}
-                  </p>
-                </div>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-[#B88A43] uppercase tracking-wider text-[11px]">
+                  Timetable Notice
+                </span>
+                <span className="font-mono font-bold text-[#25312D]">
+                  {formatTime12(noResultContext.time)}
+                </span>
               </div>
+              <p className="leading-relaxed text-[#53645F]">
+                {noResultContext.isOutOfHours ? (
+                  <>
+                    The Delhi timetable operates between <strong>06:00 AM and 11:35 PM</strong>. No trips run at{' '}
+                    <strong>{formatTime12(noResultContext.time)}</strong> for <strong>{originName}</strong> ➔ <strong>{destinationName}</strong>.
+                  </>
+                ) : (
+                  <>
+                    No direct or connected trips found between <strong>{originName}</strong> and <strong>{destinationName}</strong> at{' '}
+                    <strong>{formatTime12(noResultContext.time)}</strong> on the {serviceDay} timetable.
+                  </>
+                )}
+              </p>
 
-              {/* Instant 1-Click Morning Peak Recovery */}
-              <div className="mt-4 border-t border-amber-200/80 pt-3.5 space-y-2">
-                <p className="text-xs font-bold uppercase tracking-wider text-amber-950">
-                  ⚡ Jump to Active Scheduled Departures for this pair:
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {ACTIVE_SERVICE_HOURS.filter(retryTime => retryTime !== noResultContext.time).map(retryTime => (
+              <div className="pt-2 border-t border-[#B88A43]/20 space-y-1.5">
+                <div className="text-[11px] font-bold text-[#25312D]">
+                  Try active service hours:
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {ACTIVE_SERVICE_HOURS.filter(t => t !== noResultContext.time).map(retryTime => (
                     <button
                       key={retryTime}
                       type="button"
@@ -450,11 +426,9 @@ export default function PassengerPage() {
                           serviceDay
                         )
                       }
-                      className="group flex items-center gap-1.5 rounded-xl border border-amber-300 bg-white px-3 py-2 text-xs font-extrabold text-amber-950 shadow-xs transition-all hover:bg-amber-100 hover:border-amber-400 active:scale-95 disabled:opacity-50"
+                      className="rounded border border-[#B88A43]/40 bg-white px-2 py-1 text-[11px] font-bold text-[#25312D] hover:bg-[#FAF7F2]"
                     >
-                      <span>Check</span>
-                      <span className="font-mono">{formatTime12(retryTime)}</span>
-                      <span className="transition-transform group-hover:translate-x-0.5">➔</span>
+                      {formatTime12(retryTime)}
                     </button>
                   ))}
                 </div>
@@ -462,51 +436,45 @@ export default function PassengerPage() {
             </section>
           )}
 
-          {/* Comparative Advantage Analysis */}
+          {/* Route Comparison Insight */}
           {hasDistinctComparison && fastestOption && cheapestOption && (
-            <section className="rounded-2xl border border-blue-200/80 bg-blue-50/60 p-4 text-xs sm:text-sm text-blue-950 shadow-xs space-y-1">
-              <div className="flex items-center gap-2 font-bold text-blue-900">
-                <span className="text-base">📊</span>
-                <span>Journey Comparison Insight</span>
+            <section className="rounded-lg border border-[#E8DFCE] bg-[#FFFFFF] p-4 text-xs text-[#25312D] space-y-1.5 shadow-xs">
+              <div className="font-bold text-[#173B32]">
+                📊 Journey Comparison Insight
               </div>
-              <div className="space-y-1 pl-6 text-xs text-blue-900/90 font-medium">
+              <div className="space-y-1 text-[#53645F]">
                 {fastestOption.total_duration_minutes < cheapestOption.total_duration_minutes && (
                   <p>
-                    • <strong>Fastest Option</strong> arrives{' '}
-                    <strong className="text-blue-950 underline decoration-blue-400">
-                      {cheapestOption.total_duration_minutes - fastestOption.total_duration_minutes} minutes earlier
-                    </strong>
-                    .
+                    • <strong>Fastest Route</strong> saves{' '}
+                    <strong className="text-[#25312D]">
+                      {cheapestOption.total_duration_minutes - fastestOption.total_duration_minutes} minutes
+                    </strong>{' '}
+                    of travel time.
                   </p>
                 )}
                 {cheapestOption.total_fare !== null &&
                   fastestOption.total_fare !== null &&
                   cheapestOption.total_fare < fastestOption.total_fare && (
                     <p>
-                      • <strong>Lowest Fare Option</strong> saves{' '}
-                      <strong className="text-emerald-900 font-bold">
+                      • <strong>Lowest Cost</strong> saves{' '}
+                      <strong className="text-[#236B56] font-bold">
                         ₹{fastestOption.total_fare - cheapestOption.total_fare}
                       </strong>{' '}
-                      in transit tariffs.
+                      in calculated fare.
                     </p>
                   )}
               </div>
             </section>
           )}
 
-          {/* Search Result Cards (Digital Boarding Passes) */}
+          {/* Search Result Cards */}
           {options.length > 0 && (
-            <section className="space-y-3.5">
-              <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-600 text-[10px] font-bold text-white">
-                    ✓
-                  </span>
-                  <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-700">
-                    {options.length} {options.length === 1 ? 'Optimal Journey Found' : 'Optimal Journeys Found'}
-                  </h2>
-                </div>
-                <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-600">
+            <section className="space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold uppercase tracking-wider text-[#25312D]">
+                  {options.length} {options.length === 1 ? 'Route Found' : 'Routes Found'}
+                </span>
+                <span className="font-mono text-[#53645F] text-[11px]">
                   Ranked by {options[0]?.label}
                 </span>
               </div>
@@ -524,26 +492,19 @@ export default function PassengerPage() {
             </section>
           )}
 
-          {/* Saved Journeys Bookmarks Console */}
+          {/* Saved Journeys Console */}
           <SavedRoutesPanel onReuse={handleReuse} refreshTrigger={savedRefresh} />
         </div>
 
-        {/* Right Column (7 cols): Map & Transit Copilot AI */}
+        {/* Right Column (7 cols): Map & Transit Copilot */}
         <div className="space-y-6 lg:col-span-7">
-          {/* Interactive Bus Transit Map Container */}
+          {/* Interactive Bus Transit Map */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-blue-600 text-xs font-bold text-white">
-                  🗺️
-                </span>
-                <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-700">
-                  Delhi Multi-Modal Network & Interactive GIS Map
-                </h2>
-              </div>
-              <span className="text-xs font-semibold text-slate-500">
-                Click any stop to set origin / destination
+            <div className="flex items-center justify-between text-xs text-[#53645F]">
+              <span className="font-bold uppercase tracking-wider text-[#25312D]">
+                Interactive Transit Map
               </span>
+              <span>Click any stop to route</span>
             </div>
 
             <TransportMap
@@ -557,20 +518,13 @@ export default function PassengerPage() {
             />
           </div>
 
-          {/* Transit Copilot AI Assistant */}
+          {/* Transit Copilot Assistant */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-2">
-                <span className="flex h-5 w-5 items-center justify-center rounded-md bg-indigo-600 text-xs font-bold text-white">
-                  💬
-                </span>
-                <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-700">
-                  Delhi Transit Copilot
-                </h2>
-              </div>
-              <span className="text-xs font-semibold text-slate-500">
-                Natural-language Q&A grounded in GTFS data
+            <div className="flex items-center justify-between text-xs text-[#53645F]">
+              <span className="font-bold uppercase tracking-wider text-[#25312D]">
+                Transit Copilot
               </span>
+              <span>Grounded in GTFS schedules</span>
             </div>
 
             <ChatAssistant serviceDay={serviceDay} />

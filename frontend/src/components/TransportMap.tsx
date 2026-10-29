@@ -190,11 +190,11 @@ export default function TransportMap({
               }
             </div>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
-            <button id="btn-orig-${s.stop_id}" type="button" style="padding: 8px 12px; font-size: 12px; font-weight: 800; color: #ffffff; background-color: #059669; border: none; border-radius: 8px; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: all 0.2s;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #E8DFCE;">
+            <button id="btn-orig-${s.stop_id}" type="button" style="padding: 7px 10px; font-size: 11px; font-weight: 700; color: #ffffff; background-color: #173B32; border: none; border-radius: 6px; cursor: pointer; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.2s;">
               📍 Set Origin
             </button>
-            <button id="btn-dest-${s.stop_id}" type="button" style="padding: 8px 12px; font-size: 12px; font-weight: 800; color: #ffffff; background-color: #dc2626; border: none; border-radius: 8px; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: all 0.2s;">
+            <button id="btn-dest-${s.stop_id}" type="button" style="padding: 7px 10px; font-size: 11px; font-weight: 700; color: #ffffff; background-color: #B88A43; border: none; border-radius: 6px; cursor: pointer; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.2s;">
               🎯 Set Dest
             </button>
           </div>
@@ -350,19 +350,19 @@ export default function TransportMap({
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-sm relative">
+    <div className="overflow-hidden rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] shadow-xs relative">
       {/* Floating Mobility HUD Header */}
-      <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-wrap items-center justify-between gap-2.5 pointer-events-none">
+      <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         {/* Corridor Quick Selector */}
-        <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-white/20 bg-[#0B1020]/85 p-2 text-white shadow-xl backdrop-blur-xl pointer-events-auto">
-          <span className="text-xs font-black uppercase tracking-wider text-slate-400 px-1">Corridors:</span>
+        <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-[#E8DFCE] bg-[#FFFFFF]/95 p-1.5 text-[#25312D] shadow-sm backdrop-blur-md pointer-events-auto">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#53645F] px-1">Corridors:</span>
           <button
             type="button"
             onClick={() => setSelectedRouteFilter('ALL')}
-            className={`rounded-xl px-3 py-1 text-xs font-bold transition-all ${
+            className={`rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
               selectedRouteFilter === 'ALL'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-                : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                ? 'bg-[#173B32] text-white shadow-xs'
+                : 'text-[#53645F] hover:bg-[#FAF7F2] hover:text-[#25312D]'
             }`}
           >
             All
@@ -372,15 +372,15 @@ export default function TransportMap({
               key={r.route_id}
               type="button"
               onClick={() => setSelectedRouteFilter(r.route_id)}
-              className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
                 selectedRouteFilter === r.route_id
-                  ? 'bg-white text-slate-950 shadow-sm'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white'
+                  ? 'bg-[#173B32] text-white shadow-xs'
+                  : 'text-[#53645F] hover:bg-[#FAF7F2] hover:text-[#25312D]'
               }`}
             >
               <span
-                className="h-2.5 w-2.5 rounded-full inline-block shadow-2xs"
-                style={{ backgroundColor: r.route_color || '#2563eb' }}
+                className="h-2 w-2 rounded-full inline-block"
+                style={{ backgroundColor: r.route_color || '#173B32' }}
               />
               <span>{r.route_name.split(' ')[0]}</span>
             </button>
@@ -388,19 +388,19 @@ export default function TransportMap({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 rounded-2xl border border-white/20 bg-[#0B1020]/85 p-2 text-white shadow-xl backdrop-blur-xl pointer-events-auto">
+        <div className="flex items-center gap-2 rounded-lg border border-[#E8DFCE] bg-[#FFFFFF]/95 p-1.5 text-[#25312D] shadow-sm backdrop-blur-md pointer-events-auto">
           <button
             type="button"
             onClick={handleResetView}
-            className="rounded-xl px-3 py-1 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
+            className="rounded-md px-2.5 py-1 text-xs font-medium text-[#53645F] hover:bg-[#FAF7F2] hover:text-[#25312D] transition-colors"
             title="Reset network view"
           >
-            Reset Grid
+            Reset View
           </button>
           {hasJourney && (
-            <span className="flex items-center gap-1.5 rounded-xl bg-blue-600/90 px-2.5 py-1 text-xs font-extrabold text-white shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
-              Path Active
+            <span className="flex items-center gap-1.5 rounded-md bg-[#EBF4F0] border border-[#236B56]/30 px-2 py-0.5 text-xs font-bold text-[#236B56]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#236B56]" />
+              Active Route
             </span>
           )}
         </div>
@@ -409,29 +409,29 @@ export default function TransportMap({
       {/* Main Leaflet Map Container */}
       <div
         ref={containerRef}
-        className="w-full h-[480px] sm:h-[530px] lg:h-[580px] z-10"
+        className="w-full h-[450px] sm:h-[500px] lg:h-[550px] z-10"
         aria-label="Interactive Transit Map"
         role="region"
       />
 
       {/* Bottom Telemetry & Provenance Strip */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-900 px-5 py-3 text-xs text-slate-300">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#E8DFCE] bg-[#FAF7F2] px-4 py-2.5 text-xs text-[#53645F]">
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 font-bold text-emerald-400">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm" />
-            Origin Station
+          <span className="flex items-center gap-1.5 font-semibold text-[#173B32]">
+            <span className="h-2 w-2 rounded-full bg-[#173B32]" />
+            Origin Stop
           </span>
-          <span className="flex items-center gap-1.5 font-bold text-rose-400">
-            <span className="h-2.5 w-2.5 rounded-full bg-rose-500 shadow-sm" />
+          <span className="flex items-center gap-1.5 font-semibold text-[#B88A43]">
+            <span className="h-2 w-2 rounded-full bg-[#B88A43]" />
             Destination
           </span>
-          <span className="flex items-center gap-1.5 font-bold text-purple-400">
-            <span className="h-2.5 w-2.5 rounded-full bg-purple-500 shadow-sm" />
-            Interchange Hub
+          <span className="flex items-center gap-1.5 font-semibold text-[#53645F]">
+            <span className="h-2 w-2 rounded-full bg-[#53645F]" />
+            Network Stop
           </span>
         </div>
-        <span className="text-slate-400 font-medium">
-          Delhi GTFS Network Coordinates • Click any station node to route
+        <span className="text-[#53645F] text-[11px]">
+          Delhi GTFS bus coordinates • Click any stop marker to set origin or destination
         </span>
       </div>
     </div>

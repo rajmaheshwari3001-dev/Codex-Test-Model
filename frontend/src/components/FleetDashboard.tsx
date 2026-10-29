@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { BusState, DisruptionResult } from '../types'
 import { getFleetState, triggerDisruption, approveResponse } from '../services/api'
 import ScenarioComparison from './ScenarioComparison'
 
 export default function FleetDashboard() {
+  const [searchParams] = useSearchParams()
+  const activeTab = searchParams.get('tab') || 'roster'
+
   const [buses, setBuses] = useState<BusState[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
@@ -22,6 +26,17 @@ export default function FleetDashboard() {
   const [routeFilter, setRouteFilter] = useState('ALL')
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [searchQuery, setSearchQuery] = useState('')
+
+  const disruptionRef = useRef<HTMLDivElement>(null)
+  const scenarioRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (activeTab === 'disruptions' && disruptionRef.current) {
+      disruptionRef.current.scrollIntoView({ behavior: 'smooth' })
+    } else if (activeTab === 'scenarios' && scenarioRef.current) {
+      scenarioRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [activeTab])
 
   async function loadFleet() {
     setLoading(true)
@@ -103,7 +118,6 @@ export default function FleetDashboard() {
   const brokenBuses = buses.filter(b => b.status === 'broken_down')
   const delayedBuses = buses.filter(b => b.delay_minutes > 0)
 
-  // Filtered list
   const filteredBuses = buses.filter(b => {
     if (routeFilter !== 'ALL' && b.route_id !== routeFilter) return false
     if (statusFilter !== 'ALL' && b.status !== statusFilter) return false
@@ -114,18 +128,17 @@ export default function FleetDashboard() {
   const uniqueRoutes = Array.from(new Set(buses.map(b => b.route_id).filter(Boolean))).sort()
 
   const statusColor: Record<string, string> = {
-    active: 'bg-emerald-100 text-emerald-900 border-emerald-200',
-    spare: 'bg-amber-100 text-amber-900 border-amber-200',
-    broken_down: 'bg-rose-100 text-rose-900 border-rose-200',
-    reassigned: 'bg-blue-100 text-blue-900 border-blue-200',
+    active: 'bg-[#EBF4F0] text-[#236B56] border border-[#236B56]/30',
+    spare: 'bg-[#F4EBD9] text-[#B88A43] border border-[#B88A43]/40',
+    broken_down: 'bg-[#F8ECE9] text-[#A44735] border border-[#A44735]/40',
+    reassigned: 'bg-[#FAF7F2] text-[#25312D] border border-[#E8DFCE]',
   }
 
-  // Corridor route health breakdown
   const corridorHealth = [
-    { id: 'R01', name: 'Blue Line (Kashmere ↔ Rajiv)', color: '#2563eb' },
-    { id: 'R02', name: 'Green Line (Rajiv ↔ Saket)', color: '#16a34a' },
-    { id: 'R03', name: 'Red Line (CP ↔ Saket Loop)', color: '#dc2626' },
-    { id: 'R04', name: 'Yellow Line (Rohini ↔ Kashmere)', color: '#eab308' },
+    { id: 'R01', name: 'Blue Line (Dwarka ↔ Anand Vihar)', color: '#2196F3' },
+    { id: 'R02', name: 'Green Line (Kashmere ↔ Hauz Khas)', color: '#16A34A' },
+    { id: 'R03', name: 'Red Ring (CP ↔ Sarai Kale Khan)', color: '#DC2626' },
+    { id: 'R04', name: 'Yellow Express (New Delhi ↔ Saket)', color: '#D97706' },
   ].map(corridor => {
     const routeBuses = buses.filter(b => b.route_id === corridor.id)
     const delayedCount = routeBuses.filter(b => b.delay_minutes > 0).length
@@ -146,8 +159,8 @@ export default function FleetDashboard() {
 
   if (loading) {
     return (
-      <div className="py-16 text-center text-sm font-semibold text-slate-500 flex items-center justify-center gap-3">
-        <span className="w-5 h-5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+      <div className="py-16 text-center text-xs font-semibold text-[#53645F] flex items-center justify-center gap-3">
+        <span className="w-5 h-5 border-2 border-[#173B32] border-t-transparent rounded-full animate-spin" />
         <span>Loading simulated fleet telemetry…</span>
       </div>
     )
@@ -155,12 +168,14 @@ export default function FleetDashboard() {
 
   if (loadError) {
     return (
-      <section role="alert" className="app-panel space-y-3 border-l-4 border-l-rose-600 p-5">
-        <div>
-          <h2 className="text-base font-semibold text-[var(--color-text)]">Fleet telemetry unavailable</h2>
-          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{loadError}</p>
-        </div>
-        <button type="button" onClick={() => void loadFleet()} className="app-button-primary px-4 text-sm">
+      <section role="alert" className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-5 text-[#A44735]">
+        <h2 className="text-sm font-bold">Fleet telemetry unavailable</h2>
+        <p className="mt-1 text-xs">{loadError}</p>
+        <button
+          type="button"
+          onClick={() => void loadFleet()}
+          className="mt-3 rounded-lg bg-[#173B32] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#1f4d42]"
+        >
           Retry loading fleet
         </button>
       </section>
@@ -170,125 +185,117 @@ export default function FleetDashboard() {
   return (
     <div className="space-y-6">
       {/* Simulation Transparency Banner */}
-      <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-xs sm:flex-row sm:items-center">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-4 shadow-xs">
         <div className="flex items-center gap-3">
-          <span className="text-lg" aria-hidden="true">ℹ</span>
+          <span className="text-base text-[#173B32]">ℹ</span>
           <div>
-            <div className="text-sm font-semibold text-emerald-950">Simulated fleet data</div>
-            <div className="mt-0.5 text-xs text-emerald-900/80 sm:text-sm">
-              Vehicles, incidents, and operational responses are generated by the local simulator.
+            <div className="text-xs font-bold text-[#25312D]">Simulated Fleet Telemetry</div>
+            <div className="text-[11px] text-[#53645F]">
+              Vehicles, incidents, and operational responses are generated deterministically by the backend simulator.
             </div>
           </div>
         </div>
-        <span className="shrink-0 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-semibold text-emerald-800">
-          {simulated === true ? 'Simulated data' : simulated === false ? 'Live telemetry' : 'Status unavailable'}
+        <span className="rounded-md border border-[#E8DFCE] bg-[#FAF7F2] px-2.5 py-1 text-xs font-semibold text-[#173B32]">
+          {simulated === true ? 'Simulated Model' : 'Local Telemetry'}
         </span>
       </div>
 
-      {/* Active Operational Alerts Banner */}
+      {/* Disruption Alert Banner if any failures exist */}
       {(brokenBuses.length > 0 || delayedBuses.length > 0) && (
-        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-center gap-3 text-xs sm:text-sm text-rose-950 shadow-xs">
-          <span className="text-2xl" aria-hidden="true">🚨</span>
+        <div className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-4 flex items-center gap-3 text-xs text-[#A44735] shadow-xs">
+          <span className="text-xl">⚠️</span>
           <div>
             <span className="font-bold">Active Fleet Disruption Alerts: </span>
             <span>
-              {brokenBuses.length > 0 && `${brokenBuses.length} vehicle(s) currently broken down. `}
-              {delayedBuses.length > 0 && `${delayedBuses.length} trip(s) experiencing route delays.`}
+              {brokenBuses.length > 0 && `${brokenBuses.length} vehicle(s) broken down. `}
+              {delayedBuses.length > 0 && `${delayedBuses.length} trip(s) delayed.`}
             </span>
           </div>
         </div>
       )}
 
-      {/* Corridor Route Health Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      {/* Corridor Health Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {corridorHealth.map(c => (
-          <div key={c.id} className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-2.5">
+          <div key={c.id} className="rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-4 shadow-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold flex items-center gap-2" style={{ color: c.color }}>
-                <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: c.color }} />
+              <span className="text-xs font-bold flex items-center gap-2 text-[#25312D]">
+                <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: c.color }} />
                 {c.id} Corridor
               </span>
               <span
-                className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                  c.busesCount === 0
-                    ? 'border border-slate-200 bg-slate-50 text-slate-600'
-                    : c.brokenCount > 0
-                    ? 'bg-rose-100 text-rose-900 border border-rose-200'
+                className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                  c.brokenCount > 0
+                    ? 'bg-[#F8ECE9] text-[#A44735] border border-[#A44735]/40'
                     : c.delayedCount > 0
-                    ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                    : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+                    ? 'bg-[#F4EBD9] text-[#B88A43] border border-[#B88A43]/40'
+                    : 'bg-[#EBF4F0] text-[#236B56] border border-[#236B56]/30'
                 }`}
               >
-                {c.onTimePercent === null ? 'No telemetry' : `${c.onTimePercent}% on time`}
+                {c.onTimePercent === null ? 'No data' : `${c.onTimePercent}% on time`}
               </span>
             </div>
-            <div className="text-xs font-medium text-slate-600 truncate">{c.name}</div>
-            <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100 font-medium">
-              <span>{c.busesCount} assigned buses</span>
-              {c.delayedCount > 0 && <span className="text-amber-800 font-bold">+{c.delayedCount} delayed</span>}
-              {c.brokenCount > 0 && <span className="text-rose-800 font-bold">+{c.brokenCount} failed</span>}
+            <div className="text-[11px] text-[#53645F] truncate">{c.name}</div>
+            <div className="flex items-center justify-between text-[11px] text-[#53645F] pt-2 border-t border-[#E8DFCE]">
+              <span>{c.busesCount} assigned</span>
+              {c.delayedCount > 0 && <span className="text-[#B88A43] font-bold">+{c.delayedCount} delayed</span>}
+              {c.brokenCount > 0 && <span className="text-[#A44735] font-bold">+{c.brokenCount} failed</span>}
               {c.busesCount > 0 && c.delayedCount === 0 && c.brokenCount === 0 && (
-                <span className="text-emerald-800 font-bold">Nominal</span>
+                <span className="text-[#236B56] font-bold">Nominal</span>
               )}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Fleet Overview & Telemetry Cards */}
-      <div className="bg-white rounded-2xl shadow-xs border border-slate-200 p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 mb-5 border-b border-slate-100 gap-2">
+      {/* Fleet Overview & Table */}
+      <div className="rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E8DFCE] gap-2">
           <div>
-            <h2 className="text-lg font-bold text-slate-950">Fleet Operations Telemetry</h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Live monitoring of simulated transit rolling stock</p>
+            <h2 className="text-base font-bold text-[#25312D]">Fleet Telemetry Roster</h2>
+            <p className="text-xs text-[#53645F]">Status and passenger load across simulated bus vehicles</p>
           </div>
-          <div className="text-xs sm:text-sm font-semibold text-slate-400">
-            {buses.length} vehicles registered across {uniqueRoutes.length} corridors
-          </div>
-        </div>
-
-        {buses.length === 0 && (
-          <div role="status" className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Fleet state loaded successfully, but the simulator returned no vehicles. Zero counts below reflect the returned data.
-          </div>
-        )}
-
-        {/* Metric summary counters */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-6">
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
-            <div className="text-3xl sm:text-4xl font-black text-slate-950">{buses.length}</div>
-            <div className="text-xs sm:text-sm font-semibold text-slate-500 mt-1">Total Fleet</div>
-          </div>
-          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-center">
-            <div className="text-3xl sm:text-4xl font-black text-emerald-800">{activeBuses.length}</div>
-            <div className="text-xs sm:text-sm font-semibold text-emerald-900 mt-1">Active Service</div>
-          </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center">
-            <div className="text-3xl sm:text-4xl font-black text-amber-800">{spareBuses.length}</div>
-            <div className="text-xs sm:text-sm font-semibold text-amber-900 mt-1">Depot Spares</div>
-          </div>
-          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-center">
-            <div className="text-3xl sm:text-4xl font-black text-rose-800">{brokenBuses.length}</div>
-            <div className="text-xs sm:text-sm font-semibold text-rose-900 mt-1">Disrupted</div>
+          <div className="text-xs text-[#53645F] font-mono">
+            {buses.length} vehicles registered
           </div>
         </div>
 
-        {/* Filter Bar */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
+        {/* Metric Summary Counters */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="rounded-lg border border-[#E8DFCE] bg-[#FAF7F2] p-3 text-center">
+            <div className="text-2xl font-black text-[#25312D]">{buses.length}</div>
+            <div className="text-xs font-semibold text-[#53645F]">Total Fleet</div>
+          </div>
+          <div className="rounded-lg border border-[#236B56]/30 bg-[#EBF4F0] p-3 text-center">
+            <div className="text-2xl font-black text-[#236B56]">{activeBuses.length}</div>
+            <div className="text-xs font-semibold text-[#236B56]">Active Service</div>
+          </div>
+          <div className="rounded-lg border border-[#B88A43]/40 bg-[#F4EBD9] p-3 text-center">
+            <div className="text-2xl font-black text-[#B88A43]">{spareBuses.length}</div>
+            <div className="text-xs font-semibold text-[#B88A43]">Depot Spares</div>
+          </div>
+          <div className="rounded-lg border border-[#A44735]/40 bg-[#F8ECE9] p-3 text-center">
+            <div className="text-2xl font-black text-[#A44735]">{brokenBuses.length}</div>
+            <div className="text-xs font-semibold text-[#A44735]">Disrupted</div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 bg-[#FAF7F2] p-3 rounded-lg border border-[#E8DFCE]">
           <div className="flex-1 w-full sm:w-auto">
             <input
               type="text"
               placeholder="Search by Bus ID (e.g. B-T01)…"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full min-h-[42px] text-sm border border-slate-300 rounded-xl px-3.5 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none focus:border-[#173B32]"
             />
           </div>
-          <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <select
               value={routeFilter}
               onChange={e => setRouteFilter(e.target.value)}
-              className="min-h-[42px] text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none"
             >
               <option value="ALL">All Routes</option>
               {uniqueRoutes.map(r => (
@@ -300,7 +307,7 @@ export default function FleetDashboard() {
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className="min-h-[42px] text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none"
             >
               <option value="ALL">All Statuses</option>
               <option value="active">Active Only</option>
@@ -310,65 +317,59 @@ export default function FleetDashboard() {
           </div>
         </div>
 
-        {/* Bus Roster Table */}
-        <div className="overflow-x-auto rounded-xl border border-slate-200">
-          <table className="w-full text-xs sm:text-sm text-left">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-xs">
+        {/* Bus Table */}
+        <div className="overflow-x-auto rounded-lg border border-[#E8DFCE]">
+          <table className="w-full text-xs text-left">
+            <thead className="bg-[#FAF7F2] border-b border-[#E8DFCE] text-[#53645F] font-bold">
               <tr>
-                <th scope="col" className="py-3 px-4">Vehicle ID</th>
-                <th scope="col" className="py-3 px-4">Route</th>
-                <th scope="col" className="py-3 px-4">Active Trip</th>
-                <th scope="col" className="py-3 px-4">Operational Status</th>
-                <th scope="col" className="py-3 px-4">Passenger Load</th>
-                <th scope="col" className="py-3 px-4">Schedule Adherence</th>
+                <th className="py-2.5 px-3">Vehicle ID</th>
+                <th className="py-2.5 px-3">Route</th>
+                <th className="py-2.5 px-3">Active Trip</th>
+                <th className="py-2.5 px-3">Operational Status</th>
+                <th className="py-2.5 px-3">Occupancy</th>
+                <th className="py-2.5 px-3">Schedule Adherence</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-150">
+            <tbody className="divide-y divide-[#E8DFCE]">
               {filteredBuses.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
-                    {buses.length === 0
-                      ? 'The current fleet state contains no vehicles.'
-                      : 'No vehicles match the selected filters.'}
+                  <td colSpan={6} className="py-6 text-center text-[#53645F]">
+                    No vehicles match the selected criteria.
                   </td>
                 </tr>
               ) : (
                 filteredBuses.map(b => (
-                  <tr key={b.bus_id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-slate-900">{b.bus_id}</td>
-                    <td className="py-3 px-4 font-bold text-slate-700">{b.route_id || '—'}</td>
-                    <td className="py-3 px-4 font-mono text-slate-500">{b.trip_id || '—'}</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
-                          statusColor[b.status] || 'bg-slate-100 text-slate-700'
-                        }`}
-                      >
+                  <tr key={b.bus_id} className="hover:bg-[#FAF7F2]/50">
+                    <td className="py-2.5 px-3 font-mono font-bold text-[#25312D]">{b.bus_id}</td>
+                    <td className="py-2.5 px-3 font-bold text-[#25312D]">{b.route_id || '—'}</td>
+                    <td className="py-2.5 px-3 font-mono text-[#53645F]">{b.trip_id || '—'}</td>
+                    <td className="py-2.5 px-3">
+                      <span className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md ${statusColor[b.status] || ''}`}>
                         {b.status.replace('_', ' ')}
                       </span>
                     </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-20 bg-slate-200 rounded-full h-2 overflow-hidden">
+                    <td className="py-2.5 px-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-16 bg-[#E8DFCE] rounded-full h-1.5 overflow-hidden">
                           <div
-                            className={`h-2 rounded-full ${
+                            className={`h-1.5 rounded-full ${
                               b.occupancy_percent > 80
-                                ? 'bg-rose-500'
+                                ? 'bg-[#A44735]'
                                 : b.occupancy_percent > 50
-                                ? 'bg-amber-500'
-                                : 'bg-emerald-500'
+                                ? 'bg-[#B88A43]'
+                                : 'bg-[#236B56]'
                             }`}
                             style={{ width: `${Math.min(b.occupancy_percent, 100)}%` }}
                           />
                         </div>
-                        <span className="font-mono font-semibold text-slate-700">{b.occupancy_percent}%</span>
+                        <span className="font-mono text-[11px] text-[#53645F]">{b.occupancy_percent}%</span>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-2.5 px-3 font-mono">
                       {b.delay_minutes > 0 ? (
-                        <span className="text-rose-700 font-bold font-mono">+{b.delay_minutes} min late</span>
+                        <span className="text-[#A44735] font-bold">+{b.delay_minutes} min delay</span>
                       ) : (
-                        <span className="text-emerald-800 font-semibold">On Schedule</span>
+                        <span className="text-[#236B56] font-semibold">On Schedule</span>
                       )}
                     </td>
                   </tr>
@@ -379,22 +380,22 @@ export default function FleetDashboard() {
         </div>
       </div>
 
-      {/* Disruption Simulator Trigger Panel */}
-      <div className="bg-white rounded-2xl shadow-xs border border-slate-200 p-6">
-        <div className="pb-3.5 mb-5 border-b border-slate-100">
-          <h2 className="text-lg font-bold text-slate-950">Simulate Operational Disruption</h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Inject synthetic operational incidents to compute candidate countermeasure evaluations
+      {/* Disruption Simulation Trigger Panel */}
+      <div ref={disruptionRef} className="rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="pb-3 border-b border-[#E8DFCE]">
+          <h2 className="text-base font-bold text-[#25312D]">Simulate Operational Disruption</h2>
+          <p className="text-xs text-[#53645F]">
+            Inject operational incidents to evaluate algorithm recommendations and alternative responses
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-sm font-semibold text-slate-800 mb-1.5">Incident Type</label>
+            <label className="block text-xs font-semibold text-[#53645F] mb-1">Incident Type</label>
             <select
               value={disruptionType}
               onChange={e => setDisruptionType(e.target.value)}
-              className="w-full min-h-[44px] border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none focus:border-[#173B32]"
             >
               <option value="breakdown">Mechanical Breakdown (Bus Failure)</option>
               <option value="delay">Corridor Delay (Congestion)</option>
@@ -402,12 +403,12 @@ export default function FleetDashboard() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-800 mb-1.5">Target Active Vehicle</label>
+            <label className="block text-xs font-semibold text-[#53645F] mb-1">Target Active Vehicle</label>
             <select
               value={selectedBus}
               onChange={e => setSelectedBus(e.target.value)}
               disabled={activeBuses.length === 0}
-              className="w-full min-h-[44px] border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none focus:border-[#173B32]"
             >
               {activeBuses.length === 0 && <option value="">No active vehicle available</option>}
               {activeBuses.map(b => (
@@ -420,14 +421,14 @@ export default function FleetDashboard() {
 
           {disruptionType === 'delay' && (
             <div>
-              <label className="block text-sm font-semibold text-slate-800 mb-1.5">Delay Magnitude (minutes)</label>
+              <label className="block text-xs font-semibold text-[#53645F] mb-1">Delay Duration (minutes)</label>
               <input
                 type="number"
                 value={delayMinutes}
                 onChange={e => setDelayMinutes(Math.max(1, Math.min(120, Number(e.target.value))))}
                 min={1}
                 max={120}
-                className="w-full min-h-[44px] border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 font-mono bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 font-mono bg-[#FFFFFF] focus:outline-none focus:border-[#173B32]"
               />
             </div>
           )}
@@ -437,49 +438,40 @@ export default function FleetDashboard() {
           type="button"
           onClick={handleDisrupt}
           disabled={simulating || !selectedBus}
-          className="bg-rose-700 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-rose-800 disabled:opacity-50 transition-colors shadow-xs flex items-center gap-2"
+          className="rounded-lg bg-[#A44735] px-4 py-2 text-xs font-bold text-white hover:bg-[#883626] disabled:opacity-50 transition-colors shadow-xs"
         >
-          {simulating ? (
-            <>
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Evaluating Countermeasures…</span>
-            </>
-          ) : (
-            <span>{activeBuses.length > 0 ? 'Simulate disruption & compare responses' : 'No active vehicles available'}</span>
-          )}
+          {simulating ? 'Evaluating Responses…' : 'Simulate Disruption & Compare Responses'}
         </button>
       </div>
 
       {/* Scenario Comparison Section */}
-      {result && !result.error && (
-        <ScenarioComparison
-          result={result}
-          onApprove={handleApprove}
-          decisionMade={decisionMade}
-          decisionPending={decisionPending}
-        />
-      )}
+      <div ref={scenarioRef}>
+        {result && !result.error && (
+          <ScenarioComparison
+            result={result}
+            onApprove={handleApprove}
+            decisionMade={decisionMade}
+            decisionPending={decisionPending}
+          />
+        )}
+      </div>
 
       {result?.error && (
-        <div role="alert" className="bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs sm:text-sm text-rose-950 font-semibold">
-          <div className="font-bold text-base mb-1">Simulation Error</div>
+        <div role="alert" className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-4 text-xs font-semibold text-[#A44735]">
+          <div className="font-bold">Simulation Notice</div>
           <div>{result.error}</div>
         </div>
       )}
 
       {actionError && (
-        <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-900">
+        <div role="alert" className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-4 text-xs font-semibold text-[#A44735]">
           {actionError}
         </div>
       )}
 
       {actionMsg && (
-        <div
-          role="status"
-          className="flex items-center gap-2.5 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-xs font-semibold text-blue-950 shadow-xs sm:text-sm"
-        >
-          <span aria-hidden="true" className="text-base text-blue-700">ℹ</span>
-          <span>{actionMsg}</span>
+        <div role="status" className="rounded-xl border border-[#236B56]/30 bg-[#EBF4F0] p-4 text-xs font-semibold text-[#236B56]">
+          {actionMsg}
         </div>
       )}
     </div>
