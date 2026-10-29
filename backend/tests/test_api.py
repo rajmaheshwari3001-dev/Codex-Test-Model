@@ -59,9 +59,10 @@ def test_journey_search_valid(client):
     assert "options" in data
     assert len(data["options"]) >= 1
     for opt in data["options"]:
+        assert opt["primary_mode"] == "metro"
         for leg in opt["legs"]:
             assert "route_type" in leg
-            assert leg["route_type"] == "bus"
+            assert leg["route_type"] == "metro"
 
 
 def test_journey_search_s02_to_s08_transfer_fares_and_route_type(client):
@@ -85,8 +86,9 @@ def test_journey_search_s02_to_s08_transfer_fares_and_route_type(client):
     assert fastest["fare_available"] is True
     assert fastest["total_fare"] == 40.0
     assert len(fastest["legs"]) == 2
-    assert fastest["legs"][0]["route_type"] == "bus"
+    assert fastest["legs"][0]["route_type"] == "metro"
     assert fastest["legs"][1]["route_type"] == "bus"
+    assert fastest["primary_mode"] == "multimodal"
     assert fastest["legs"][0]["fare"] == 25.0
     assert fastest["legs"][1]["fare"] == 15.0
 
@@ -95,8 +97,9 @@ def test_journey_search_s02_to_s08_transfer_fares_and_route_type(client):
     assert cheapest["fare_available"] is True
     assert cheapest["total_fare"] == 30.0
     assert len(cheapest["legs"]) == 2
-    assert cheapest["legs"][0]["route_type"] == "bus"
+    assert cheapest["legs"][0]["route_type"] == "metro"
     assert cheapest["legs"][1]["route_type"] == "bus"
+    assert cheapest["primary_mode"] == "multimodal"
     assert cheapest["legs"][0]["fare"] == 10.0
     assert cheapest["legs"][1]["fare"] == 20.0
 
@@ -661,3 +664,21 @@ def test_fleet_cannot_approve_infeasible_response(client, monkeypatch):
 
     assert response.status_code == 400
     assert "infeasible" in response.json()["detail"]
+
+
+def test_journey_search_metro_preference_and_budget(client):
+    resp = client.post("/api/journeys/search", json={
+        "origin_stop_id": "S04",
+        "destination_stop_id": "S10",
+        "departure_time": "08:00",
+        "mode_preference": "metro",
+        "max_budget": 30.0,
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert len(data["options"]) >= 1
+    opt = data["options"][0]
+    assert opt["primary_mode"] == "metro"
+    assert opt["total_fare"] == 25.0
+    assert "Within budget" in opt["budget_status"]
+    assert "Metro vs Bus" in opt["fare_comparison_note"]

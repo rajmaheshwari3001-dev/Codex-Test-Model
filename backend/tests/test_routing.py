@@ -454,21 +454,25 @@ def test_s02_to_s08_fastest_and_cheapest_fares_calculated_independently():
     fastest = options[0]
     cheapest = options[1]
 
-    # Fastest journey: Green Line (S02->S10, ₹25) + Yellow Express (S10->S08, ₹15) = ₹40
+    # Fastest journey: Green Line Metro (S02->S10, ₹25) + Yellow Express Bus (S10->S08, ₹15) = ₹40
     assert fastest.option_id == "fastest"
     assert fastest.fare_available is True
     assert fastest.total_fare == 40.0
     assert len(fastest.legs) == 2
-    assert all(leg.route_type == "bus" for leg in fastest.legs)
+    assert fastest.legs[0].route_type == "metro"
+    assert fastest.legs[1].route_type == "bus"
+    assert fastest.primary_mode == "multimodal"
     assert fastest.legs[0].fare == 25.0
     assert fastest.legs[1].fare == 15.0
 
-    # Cheapest journey: Green Line (S02->S05, ₹10) + Red Ring (S05->S08, ₹20) = ₹30
+    # Cheapest journey: Green Line Metro (S02->S05, ₹10) + Red Ring Bus (S05->S08, ₹20) = ₹30
     assert cheapest.option_id == "cheapest"
     assert cheapest.fare_available is True
     assert cheapest.total_fare == 30.0
     assert len(cheapest.legs) == 2
-    assert all(leg.route_type == "bus" for leg in cheapest.legs)
+    assert cheapest.legs[0].route_type == "metro"
+    assert cheapest.legs[1].route_type == "bus"
+    assert cheapest.primary_mode == "multimodal"
     assert cheapest.legs[0].fare == 10.0
     assert cheapest.legs[1].fare == 20.0
 
@@ -531,3 +535,53 @@ def test_explicit_fare_override_honored():
     assert opt.total_fare == 99.0
     assert opt.fare_available is True
 
+
+
+def test_metro_only_mode_preference():
+    svc, _ = _make_service()
+    # S13 to S01 is served by Blue Line Metro
+    options = svc.search("S13", "S01", "07:00", mode_preference="metro")
+    assert len(options) >= 1
+    for opt in options:
+        assert opt.primary_mode == "metro"
+        for leg in opt.legs:
+            assert leg.route_type == "metro"
+
+
+def test_bus_only_mode_preference():
+    svc, _ = _make_service()
+    # S05 to S08 is served by Red Ring Bus
+    options = svc.search("S05", "S08", "08:00", mode_preference="bus")
+    assert len(options) >= 1
+    for opt in options:
+        assert opt.primary_mode == "bus"
+        for leg in opt.legs:
+            assert leg.route_type == "bus"
+
+
+def test_metro_vs_bus_fare_comparison_note():
+    svc, _ = _make_service()
+    # S04 to S10 is connected by both Metro R02 (₹25, 21 min) and Bus R04 (₹20, 30 min)
+    options = svc.search("S04", "S10", "08:00")
+    assert len(options) >= 1
+    fastest = options[0]
+    assert fastest.fare_comparison_note is not None
+    assert "Metro vs Bus" in fastest.fare_comparison_note
+    assert "₹25" in fastest.fare_comparison_note
+    assert "₹20" in fastest.fare_comparison_note
+
+
+def test_max_budget_evaluation():
+    svc, _ = _make_service()
+    # S04 to S10 Metro fare is ₹25
+    options_under = svc.search("S04", "S10", "08:00", mode_preference="metro", max_budget=30.0)
+    assert len(options_under) >= 1
+    assert options_under[0].budget_status is not None
+    assert "Within budget" in options_under[0].budget_status
+    assert "₹25" in options_under[0].budget_status
+
+    options_over = svc.search("S04", "S10", "08:00", mode_preference="metro", max_budget=20.0)
+    assert len(options_over) >= 1
+    assert options_over[0].budget_status is not None
+    assert "Exceeds budget" in options_over[0].budget_status
+    assert "₹5" in options_over[0].budget_status

@@ -67,6 +67,9 @@ class JourneyOption(BaseModel):
     delay_warnings: List[str] = []
     data_status: str = "scheduled"   # scheduled | estimated | simulated
     warnings: List[str] = []
+    primary_mode: str = "multimodal"  # "metro" | "bus" | "multimodal"
+    fare_comparison_note: Optional[str] = None
+    budget_status: Optional[str] = None
 
 
 class SavedRoute(BaseModel):

@@ -1,6 +1,7 @@
 /* Shared TypeScript types matching the backend API models. */
 
 export type ServiceDay = 'weekday' | 'weekend'
+export type ModePreference = 'all' | 'metro' | 'bus'
 
 export interface Stop {
   stop_id: string
@@ -61,6 +62,9 @@ export interface JourneyOption {
   delay_warnings: string[]
   data_status: string
   warnings: string[]
+  primary_mode?: 'metro' | 'bus' | 'multimodal'
+  fare_comparison_note?: string | null
+  budget_status?: string | null
 }
 
 export interface SavedRoute {

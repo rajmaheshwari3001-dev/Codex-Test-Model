@@ -37,6 +37,8 @@ export async function searchJourneys(body: {
   departure_time: string
   preference: string
   service_day: ServiceDay
+  mode_preference?: 'all' | 'metro' | 'bus'
+  max_budget?: number | null
 }) {
   return request<{ options: JourneyOption[]; message?: string }>(
     '/journeys/search',

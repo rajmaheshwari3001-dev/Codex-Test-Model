@@ -52,6 +52,14 @@ class JourneySearchRequest(BaseModel):
         default="weekday",
         description="Sample schedule category to search",
     )
+    mode_preference: Literal["all", "metro", "bus"] = Field(
+        default="all",
+        description="Filter by transport mode: 'all', 'metro', or 'bus'",
+    )
+    max_budget: Optional[float] = Field(
+        default=None,
+        description="Maximum budget in INR to check against fare",
+    )
 
 
 class DelayRequest(BaseModel):
@@ -121,6 +129,8 @@ def search_journeys(req: JourneySearchRequest):
             preference=req.preference,
             delay_minutes=_delay_service.get_all_delays(),
             service_day=req.service_day,
+            mode_preference=req.mode_preference,
+            max_budget=req.max_budget,
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

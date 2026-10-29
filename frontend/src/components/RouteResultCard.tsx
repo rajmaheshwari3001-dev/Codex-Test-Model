@@ -82,7 +82,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
       <div className="pl-6 pr-5 py-5 sm:pl-7 sm:pr-6 space-y-4">
         {/* Pass Header */}
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span
               className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-wider ${
                 isFastest
@@ -95,6 +95,23 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
               {option.label}
             </span>
 
+            {/* Mode Indicator Badge */}
+            <span
+              className={`rounded-md border px-2 py-0.5 text-xs font-extrabold uppercase ${
+                option.primary_mode === 'metro'
+                  ? 'border-blue-300 bg-blue-50 text-blue-900'
+                  : option.primary_mode === 'bus'
+                  ? 'border-amber-300 bg-amber-50 text-amber-900'
+                  : 'border-purple-300 bg-purple-50 text-purple-900'
+              }`}
+            >
+              {option.primary_mode === 'metro'
+                ? '🚇 Metro Service'
+                : option.primary_mode === 'bus'
+                ? '🚌 Bus Service'
+                : '🌐 Multimodal'}
+            </span>
+
             {option.transfers.length === 0 ? (
               <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-800">
                 Direct Line
@@ -102,6 +119,20 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
             ) : (
               <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-900">
                 {option.transfers.length} {option.transfers.length === 1 ? 'Interchange' : 'Interchanges'}
+              </span>
+            )}
+
+            {/* Target Budget Status Pill */}
+            {option.budget_status && (
+              <span
+                className={`rounded-md border px-2 py-0.5 text-xs font-bold ${
+                  option.budget_status.includes('Within')
+                    ? 'border-emerald-300 bg-emerald-50 text-emerald-900'
+                    : 'border-amber-300 bg-amber-50 text-amber-900'
+                }`}
+                title={option.budget_status}
+              >
+                {option.budget_status.includes('Within') ? '✅ Within Budget' : '⚠️ Over Budget'}
               </span>
             )}
           </div>
@@ -147,6 +178,27 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
             </div>
           </div>
         </div>
+
+        {/* Metro vs Bus Fare Comparison & Budget Analysis Banner */}
+        {option.fare_comparison_note && (
+          <div className="rounded-2xl border border-indigo-200/90 bg-indigo-50/70 p-3.5 text-xs text-indigo-950 shadow-2xs space-y-1.5">
+            <div className="flex items-center gap-1.5 font-extrabold text-indigo-900">
+              <span>💡</span>
+              <span>Metro vs Bus Comparative Trade-Off</span>
+            </div>
+            <p className="text-xs text-indigo-950/90 font-medium leading-relaxed">
+              {option.fare_comparison_note}
+            </p>
+            {option.budget_status && (
+              <div className="pt-1 border-t border-indigo-200/60 flex items-center gap-1.5 text-[11px] font-semibold text-slate-700">
+                <span>Budget Check:</span>
+                <span className={option.budget_status.includes('Within') ? 'text-emerald-800 font-extrabold' : 'text-amber-800 font-extrabold'}>
+                  {option.budget_status}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Step-by-Step Transit Legs */}
         <div className="space-y-2.5 pt-1">

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { ServiceDay, Stop } from '../types'
+import type { ModePreference, ServiceDay, Stop } from '../types'
 
 const SERVICE_TIME_PATTERN = /^(?:[0-3]\d|4[0-7]):[0-5]\d$/
 
@@ -15,7 +15,19 @@ interface Props {
   setPreference: (preference: string) => void
   serviceDay: ServiceDay
   onServiceDayChange: (day: ServiceDay) => void
-  onSearch: (origin?: string, destination?: string, time?: string, preference?: string, serviceDay?: ServiceDay) => void
+  modePreference: ModePreference
+  setModePreference: (mode: ModePreference) => void
+  maxBudget: string
+  setMaxBudget: (budget: string) => void
+  onSearch: (
+    origin?: string,
+    destination?: string,
+    time?: string,
+    preference?: string,
+    serviceDay?: ServiceDay,
+    modePreference?: ModePreference,
+    maxBudget?: string
+  ) => void
   loading: boolean
 }
 
@@ -31,6 +43,10 @@ export default function RouteSearchForm({
   setPreference,
   serviceDay,
   onServiceDayChange,
+  modePreference,
+  setModePreference,
+  maxBudget,
+  setMaxBudget,
   onSearch,
   loading,
 }: Props) {
@@ -47,7 +63,7 @@ export default function RouteSearchForm({
     setDestination(destId)
     setTime(presetTime)
     setError('')
-    onSearch(origId, destId, presetTime, preference, serviceDay)
+    onSearch(origId, destId, presetTime, preference, serviceDay, modePreference, maxBudget)
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -59,7 +75,7 @@ export default function RouteSearchForm({
     if (!SERVICE_TIME_PATTERN.test(time)) {
       return setError('Enter a valid time from 00:00 to 47:59 in HH:MM format.')
     }
-    onSearch(origin, destination, time, preference, serviceDay)
+    onSearch(origin, destination, time, preference, serviceDay, modePreference, maxBudget)
   }
 
   // Calculate if the entered departure time is outside active timetable operating hours (06:30 to 12:30)
@@ -392,6 +408,54 @@ export default function RouteSearchForm({
           </div>
         </div>
 
+        {/* Transport Mode Selection */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              Transport Mode Selection
+            </label>
+            <span className="text-[11px] font-semibold text-slate-500">Metro vs Bus</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5 rounded-2xl border border-slate-200 bg-slate-100/80 p-1.5">
+            <button
+              type="button"
+              onClick={() => setModePreference('all')}
+              className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs sm:text-sm font-bold transition-all ${
+                modePreference === 'all'
+                  ? 'bg-white text-indigo-700 shadow-sm ring-1 ring-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🌐</span>
+              <span>All Modes</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setModePreference('metro')}
+              className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs sm:text-sm font-bold transition-all ${
+                modePreference === 'metro'
+                  ? 'bg-white text-blue-700 shadow-sm ring-1 ring-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🚇</span>
+              <span>Metro Only</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setModePreference('bus')}
+              className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs sm:text-sm font-bold transition-all ${
+                modePreference === 'bus'
+                  ? 'bg-white text-amber-800 shadow-sm ring-1 ring-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <span>🚌</span>
+              <span>Bus Only</span>
+            </button>
+          </div>
+        </div>
+
         {/* Tactical Segmented Preference Switcher */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold uppercase tracking-wider text-slate-700">
@@ -423,6 +487,50 @@ export default function RouteSearchForm({
               <span>Lowest Fare</span>
             </button>
           </div>
+        </div>
+
+        {/* Passenger Target Budget (Optional ₹ Price) */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label htmlFor="max-budget" className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              Passenger Budget Limit (₹ Max Fare)
+            </label>
+            <span className="text-[11px] font-semibold text-slate-400">Optional</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <span className="absolute left-3.5 top-2.5 font-bold text-slate-400">₹</span>
+              <input
+                id="max-budget"
+                type="number"
+                min="0"
+                step="5"
+                placeholder="e.g. 25"
+                value={maxBudget}
+                onChange={e => setMaxBudget(e.target.value)}
+                className="w-full min-h-[42px] rounded-xl border border-slate-300 bg-white pl-8 pr-3.5 py-2 text-sm font-semibold text-slate-900 shadow-2xs transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+            <div className="flex gap-1.5">
+              {['20', '25', '30', '40'].map(b => (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => setMaxBudget(maxBudget === b ? '' : b)}
+                  className={`rounded-lg border px-2.5 py-2 text-xs font-bold transition-all ${
+                    maxBudget === b
+                      ? 'border-emerald-600 bg-emerald-600 text-white shadow-2xs'
+                      : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  ₹{b}
+                </button>
+              ))}
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-500">
+            Compare Metro vs Bus fare trade-offs and evaluate options against your target budget.
+          </p>
         </div>
 
         {error && (

@@ -11,27 +11,27 @@ export default function FleetPage() {
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="flex items-center gap-2 rounded-full border border-blue-400/40 bg-blue-500/20 px-3 py-1 font-mono text-xs font-bold text-blue-300 backdrop-blur-md">
                 <span className="h-2 w-2 animate-ping rounded-full bg-blue-400" />
-                OPERATIONS CONTROL CENTER (OCC)
+                REAL-TIME FLEET TELEMETRY
               </span>
               <span className="rounded-full border border-emerald-400/30 bg-emerald-500/20 px-3 py-1 font-mono text-xs font-semibold text-emerald-300">
-                Simulated Telemetry Active
+                Live Data Stream Active
               </span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
-              Fleet Coordination & Intelligence
+              Fleet Telemetry & Intelligent Coordination
             </h1>
             <p className="max-w-2xl text-xs sm:text-sm text-slate-300">
-              Live monitoring of simulated rolling stock, corridor health diagnostics, operational disruption injection, and automated countermeasure evaluation.
+              Real-time tracking of simulated fleet telemetry, corridor health diagnostics, disruption injection, and automated countermeasure evaluation — zero physical control center required.
             </p>
           </div>
 
           <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md">
             <div className="text-right">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Response Authority</div>
-              <div className="text-sm font-extrabold text-white">Operator Approval Required</div>
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Decision Support</div>
+              <div className="text-sm font-extrabold text-white">Rule-Engine Evaluated</div>
             </div>
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg">
-              🛡️
+              📡
             </div>
           </div>
         </div>

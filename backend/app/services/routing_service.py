@@ -437,6 +437,8 @@ def _assemble_option(
     delay_minutes: Dict[str, int],
     total_fare_override: Optional[float] = None,
     fare_available: Optional[bool] = None,
+    fare_comparison_note: Optional[str] = None,
+    budget_status: Optional[str] = None,
 ) -> JourneyOption:
     """
     Convert a Journey (list of raw connections) into a rich JourneyOption.
@@ -628,6 +630,14 @@ def _assemble_option(
         total_fare = None
         is_fare_available = False
 
+    leg_modes = {leg.route_type.lower() for leg in legs}
+    if leg_modes <= {"metro", "subway"}:
+        primary_mode = "metro"
+    elif leg_modes == {"bus"}:
+        primary_mode = "bus"
+    else:
+        primary_mode = "multimodal"
+
     return JourneyOption(
         option_id=option_id,
         label=label,
@@ -642,6 +652,9 @@ def _assemble_option(
         delay_warnings=delay_warnings,
         data_status=data_status,
         warnings=warnings,
+        primary_mode=primary_mode,
+        fare_comparison_note=fare_comparison_note,
+        budget_status=budget_status,
     )
 
 
@@ -679,18 +692,22 @@ class RoutingService:
         preference: str = "fastest",
         delay_minutes: Optional[Dict[str, int]] = None,
         service_day: str = "weekday",
+        mode_preference: str = "all",
+        max_budget: Optional[float] = None,
     ) -> List[JourneyOption]:
         """
         Search for journey options from origin to destination.
 
         Args:
-            origin_id:      Stop ID of the origin.
-            destination_id: Stop ID of the destination.
-            departure_time: "HH:MM" – the passenger's ready time.
-            preference:     "fastest" or "cheapest".
-            delay_minutes:  Optional dict of trip_id -> delay_minutes
-                            to apply simulated disruptions.
-            service_day:    "weekday" or "weekend" schedule category.
+            origin_id:       Stop ID of the origin.
+            destination_id:  Stop ID of the destination.
+            departure_time:  "HH:MM" – the passenger's ready time.
+            preference:      "fastest" or "cheapest".
+            delay_minutes:   Optional dict of trip_id -> delay_minutes
+                             to apply simulated disruptions.
+            service_day:     "weekday" or "weekend" schedule category.
+            mode_preference: "all", "metro", or "bus".
+            max_budget:      Optional passenger budget in INR.
 
         Returns:
             List of JourneyOption (may be empty if no route exists).
@@ -710,6 +727,10 @@ class RoutingService:
             raise ValueError("Origin and destination must be different stops.")
         if service_day not in ("weekday", "weekend"):
             raise ValueError("service_day must be 'weekday' or 'weekend'.")
+        if mode_preference not in ("all", "metro", "bus"):
+            raise ValueError("mode_preference must be 'all', 'metro', or 'bus'.")
+        if max_budget is not None and max_budget < 0:
+            raise ValueError("max_budget cannot be negative.")
 
         dep_minutes = time_to_minutes(departure_time)
         options: List[JourneyOption] = []
@@ -722,9 +743,75 @@ class RoutingService:
             if segment.trip_id in trip_ids_for_day
         ]
 
-        # Always compute the fastest option.
+        def _is_metro_segment(segment: Connection) -> bool:
+            route = self.td.routes_by_id.get(segment.route_id)
+            return bool(route and route.route_type.lower() in ("metro", "subway"))
+
+        def _is_bus_segment(segment: Connection) -> bool:
+            route = self.td.routes_by_id.get(segment.route_id)
+            return bool(route and route.route_type.lower() == "bus")
+
+        if mode_preference == "metro":
+            active_segments = [s for s in ride_segments if _is_metro_segment(s)]
+        elif mode_preference == "bus":
+            active_segments = [s for s in ride_segments if _is_bus_segment(s)]
+        else:
+            active_segments = ride_segments
+
+        # Compute Metro vs Bus mode comparison note across available routes
+        metro_segs = [s for s in ride_segments if _is_metro_segment(s)]
+        bus_segs = [s for s in ride_segments if _is_bus_segment(s)]
+
+        m_fastest = (
+            _find_fastest_journey(origin_id, destination_id, dep_minutes, metro_segs, delay_minutes)
+            if metro_segs else None
+        )
+        b_fastest = (
+            _find_fastest_journey(origin_id, destination_id, dep_minutes, bus_segs, delay_minutes)
+            if bus_segs else None
+        )
+
+        fare_comparison_note = None
+        if m_fastest and b_fastest:
+            m_opt = _assemble_option(m_fastest, "tmp_m", "Metro", self.td, delay_minutes)
+            b_opt = _assemble_option(b_fastest, "tmp_b", "Bus", self.td, delay_minutes)
+            m_fare = m_opt.total_fare
+            b_fare = b_opt.total_fare
+            m_dur = m_opt.total_duration_minutes
+            b_dur = b_opt.total_duration_minutes
+
+            if m_fare is not None and b_fare is not None:
+                diff_fare = m_fare - b_fare
+                time_saved = b_dur - m_dur
+                if diff_fare > 0 and time_saved > 0:
+                    fare_comparison_note = (
+                        f"Metro vs Bus: Metro costs ₹{m_fare:.0f} ({m_dur} min) vs Bus ₹{b_fare:.0f} ({b_dur} min). "
+                        f"Taking Metro costs ₹{diff_fare:.0f} extra (+{(diff_fare/b_fare)*100:.0f}%) but saves {time_saved} min."
+                    )
+                elif diff_fare > 0:
+                    fare_comparison_note = (
+                        f"Metro vs Bus: Metro costs ₹{m_fare:.0f} ({m_dur} min) vs Bus ₹{b_fare:.0f} ({b_dur} min). "
+                        f"Taking Metro costs ₹{diff_fare:.0f} extra."
+                    )
+                elif diff_fare < 0:
+                    saved_fare = abs(diff_fare)
+                    fare_comparison_note = (
+                        f"Metro vs Bus: Metro is ₹{m_fare:.0f} ({m_dur} min) vs Bus ₹{b_fare:.0f} ({b_dur} min). "
+                        f"Taking Metro saves ₹{saved_fare:.0f} and is {time_saved} min faster."
+                    )
+                else:
+                    fare_comparison_note = (
+                        f"Metro vs Bus: Both modes cost ₹{m_fare:.0f}. "
+                        f"Taking Metro saves {time_saved} min ({m_dur} min vs {b_dur} min)."
+                    )
+            elif m_fare is not None:
+                fare_comparison_note = f"Metro: ₹{m_fare:.0f} ({m_dur} min). Bus route available ({b_dur} min, fare unlisted)."
+            elif b_fare is not None:
+                fare_comparison_note = f"Bus: ₹{b_fare:.0f} ({b_dur} min). Metro route available ({m_dur} min, fare unlisted)."
+
+        # Always compute the fastest option on active segments.
         fastest = _find_fastest_journey(
-            origin_id, destination_id, dep_minutes, ride_segments, delay_minutes
+            origin_id, destination_id, dep_minutes, active_segments, delay_minutes
         )
         if fastest:
             opt = _assemble_option(
@@ -732,9 +819,9 @@ class RoutingService:
             )
             options.append(opt)
 
-        # For "cheapest" preference, also compute the cheapest path.
+        # For "cheapest" preference, also compute the cheapest path on active segments.
         cheapest = _find_cheapest_journey(
-            origin_id, destination_id, dep_minutes, ride_segments, self.td,
+            origin_id, destination_id, dep_minutes, active_segments, self.td,
             delay_minutes,
         )
         if cheapest:
@@ -761,5 +848,18 @@ class RoutingService:
                 # Same path but now we have fare data – enrich the fastest option.
                 options[0].total_fare = cheapest_opt.total_fare
                 options[0].fare_available = True
+
+        # Attach mode comparison notes and budget status to each option.
+        for opt in options:
+            opt.fare_comparison_note = fare_comparison_note
+            if max_budget is not None:
+                if opt.total_fare is not None:
+                    if opt.total_fare <= max_budget:
+                        opt.budget_status = f"Within budget (₹{opt.total_fare:.0f} ≤ ₹{max_budget:.0f})"
+                    else:
+                        exceeds = opt.total_fare - max_budget
+                        opt.budget_status = f"Exceeds budget by ₹{exceeds:.0f} (₹{opt.total_fare:.0f} > ₹{max_budget:.0f})"
+                else:
+                    opt.budget_status = "Fare not specified"
 
         return options

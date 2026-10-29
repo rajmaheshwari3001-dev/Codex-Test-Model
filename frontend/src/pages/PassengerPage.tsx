@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay } from '../types'
+import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay, ModePreference } from '../types'
 import { getStops, getRoutes, searchJourneys, createSavedRoute } from '../services/api'
 import RouteSearchForm from '../components/RouteSearchForm'
 import RouteResultCard from '../components/RouteResultCard'
@@ -14,7 +14,7 @@ interface NoResultContext {
   isOutOfHours: boolean
 }
 
-// Primary Delhi Bus Corridor Presets for 1-Tap Search
+// Primary Delhi Multi-Modal Corridor Presets for 1-Tap Search
 const FEATURED_CORRIDORS = [
   {
     routeId: 'R01',
@@ -26,7 +26,7 @@ const FEATURED_CORRIDORS = [
     destId: 'S01',
     destName: 'Rajiv Chowk',
     departure: '08:00',
-    type: 'Direct • 4 Stops',
+    type: '🚇 Delhi Metro • 4 Stops',
   },
   {
     routeId: 'R02',
@@ -38,7 +38,7 @@ const FEATURED_CORRIDORS = [
     destId: 'S09',
     destName: 'Hauz Khas',
     departure: '08:00',
-    type: 'Direct • 5 Stops',
+    type: '🚇 Delhi Metro • 5 Stops',
   },
   {
     routeId: 'R03',
@@ -50,7 +50,7 @@ const FEATURED_CORRIDORS = [
     destId: 'S08',
     destName: 'Saket',
     departure: '08:00',
-    type: 'Direct • 5 Stops',
+    type: '🚌 Ring Bus • 5 Stops',
   },
   {
     routeId: 'R04',
@@ -62,7 +62,7 @@ const FEATURED_CORRIDORS = [
     destId: 'S08',
     destName: 'Saket Express',
     departure: '08:30',
-    type: 'Express • 4 Stops',
+    type: '🚌 Express Bus • 4 Stops',
   },
 ]
 
@@ -84,6 +84,8 @@ export default function PassengerPage() {
   const [destination, setDestination] = useState('S01') // Default Rajiv Chowk
   const [time, setTime] = useState('08:00')
   const [preference, setPreference] = useState('fastest')
+  const [modePreference, setModePreference] = useState<ModePreference>('all')
+  const [maxBudget, setMaxBudget] = useState<string>('')
 
   function loadInitialData() {
     setMessage('')
@@ -110,7 +112,9 @@ export default function PassengerPage() {
     destinationId: string = destination,
     departureTime: string = time,
     selectedPreference: string = preference,
-    selectedServiceDay: ServiceDay = serviceDay
+    selectedServiceDay: ServiceDay = serviceDay,
+    selectedModePreference: ModePreference = modePreference,
+    selectedMaxBudget: string = maxBudget
   ) {
     if (!originId || !destinationId) return
 
@@ -119,12 +123,16 @@ export default function PassengerPage() {
     setTime(departureTime)
     setPreference(selectedPreference)
     setServiceDay(selectedServiceDay)
+    setModePreference(selectedModePreference)
+    setMaxBudget(selectedMaxBudget)
     setLoading(true)
     setMessage('')
     setNoResultContext(null)
     setSaveToast('')
     setOptions([])
     setSelected(null)
+
+    const parsedBudget = selectedMaxBudget.trim() ? parseFloat(selectedMaxBudget.trim()) : null
 
     try {
       const response = await searchJourneys({
@@ -133,6 +141,8 @@ export default function PassengerPage() {
         departure_time: departureTime,
         preference: selectedPreference,
         service_day: selectedServiceDay,
+        mode_preference: selectedModePreference,
+        max_budget: parsedBudget && !isNaN(parsedBudget) ? parsedBudget : undefined,
       })
       setOptions(response.options)
       if (response.options.length > 0) {
@@ -234,13 +244,13 @@ export default function PassengerPage() {
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-500/20 px-3 py-1 font-mono text-xs font-bold text-emerald-300 backdrop-blur-md">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-                DELHI BUS TRANSIT NETWORK
+                DELHI MULTI-MODAL TRANSIT
               </span>
               <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 font-mono text-xs font-medium text-slate-300 backdrop-blur-md">
-                Sample Schedule
+                Metro & Bus Timetables
               </span>
               <span className="rounded-full border border-blue-400/30 bg-blue-500/20 px-3 py-1 font-mono text-xs font-semibold text-blue-200">
-                15 Mapped Stops • 4 Bus Corridors
+                15 Mapped Stops • 4 Corridors
               </span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
@@ -347,6 +357,10 @@ export default function PassengerPage() {
             setPreference={setPreference}
             serviceDay={serviceDay}
             onServiceDayChange={setServiceDay}
+            modePreference={modePreference}
+            setModePreference={setModePreference}
+            maxBudget={maxBudget}
+            setMaxBudget={setMaxBudget}
             onSearch={handleSearch}
             loading={loading}
           />
