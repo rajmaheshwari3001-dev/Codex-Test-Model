@@ -28,9 +28,11 @@ completion score. The verified score is calculated in
 - Repository: `https://github.com/rajmaheshwari3001-dev/Codex-Test-Model`
 - Branch: `main`
 - Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`.
-- Current development iteration: **2 — browser acceptance and map-path correctness**.
-- Latest successful delivery: `08de2c9` (`main`) before iteration 2 is committed.
-- Iteration 2 changes are local and await final review, commit, and push.
+- Latest completed iteration: **2 — browser acceptance and map-path correctness**.
+- Next iteration: **3 — apply approved fleet response state and verify rejection**.
+- Latest successful delivery: `3f3ad08` (`main`).
+- Remote verification: `origin/main` points to
+  `3f3ad08639a64364ae1c2bf2eec05c57e9f8476e`.
 - The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
   preserved and excluded.
 
@@ -163,5 +165,5 @@ approved fleet response state and prove that rejection leaves state unchanged.
   approval state mutation failed its acceptance check and remains open.
 - Temporary simulated passenger delay was cleared; API confirmed no active
   delays remained.
-- Push: iteration 2 changes are not yet published. The unrelated untracked
+- Push: `3f3ad08` verified on `origin/main`; the unrelated untracked
   `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` is preserved and excluded.

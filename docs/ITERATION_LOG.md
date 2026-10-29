@@ -101,7 +101,8 @@
   summary table had an arithmetic typo (49 passenger points instead of the
   51 implied by its row statuses); this iteration corrected the subtotal and
   recalculated the overall score from the stable requirement weights.
-- **Commit:** Pending final review.
-- **Push status:** Not yet pushed.
+- **Commit:** `3f3ad08`.
+- **Push status:** Pushed to `origin/main`; `ls-remote` confirmed
+  `3f3ad08639a64364ae1c2bf2eec05c57e9f8476e`.
 - **Next task:** Apply approved fleet response state, keep rejected scenarios
   unchanged, and refresh the browser dashboard after a decision.
