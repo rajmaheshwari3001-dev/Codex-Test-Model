@@ -60,15 +60,19 @@ Update it only when new evidence changes the actual state.
 
 ## Quality and operations
 
-- Backend tests pass (79 passed, 1 Starlette/httpx deprecation warning);
+- Backend tests pass (82 passed, 1 Starlette/httpx deprecation warning);
   frontend type checking and production build pass. Manual browser behavior has
   been exercised, but there is no automated E2E suite or test-coverage
   percentage.
-- Local setup and API operation were verified; production deployment,
-  authentication, authorization, managed persistence, backups, monitoring,
-  rate limits, and high availability are outside current scope.
+- A two-project Vercel demo configuration is provided, but a live Vercel
+  deployment has not been performed. Vercel's `/tmp` storage is temporary and
+  scoped to function instances; saved routes are not durable or shared across
+  instances. Delay, fleet, and approval state is also in memory and may diverge
+  across instances or cold starts.
 - User/session isolation is not implemented. Saved route data is a shared
-  local SQLite store.
+  SQLite store within each running backend instance. Production use requires
+  managed persistent storage, authentication, authorization, backups,
+  monitoring, rate limits, and high availability.
 - The supplied task names DEV-P05 but does not include the organizer's
   canonical problem-statement URL/source document; exact official wording
   remains to be cross-checked.

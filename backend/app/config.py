@@ -8,6 +8,7 @@ WHY THIS FILE EXISTS:
   between dev/prod configurations.
 """
 
+import os
 from pathlib import Path
 from pydantic_settings import BaseSettings
 
@@ -24,7 +25,9 @@ class Settings(BaseSettings):
 
     # -- Database --
     database_url: str = str(
-        Path(__file__).resolve().parent.parent / "aaroh_saarthi.db"
+        Path("/tmp/aaroh_saarthi.db")
+        if os.getenv("VERCEL")
+        else Path(__file__).resolve().parent.parent / "aaroh_saarthi.db"
     )
 
     # -- Data directory --
