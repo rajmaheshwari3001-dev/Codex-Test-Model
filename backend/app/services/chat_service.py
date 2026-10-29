@@ -106,6 +106,7 @@ def _handle_with_rules(
     td: TransportData,
     routing_service: RoutingService,
     delay_service: DelayService,
+    service_day: str = "weekday",
 ) -> Dict[str, Any]:
     """
     Process a user's chat message and return a response.
@@ -136,6 +137,7 @@ def _handle_with_rules(
                 origin_id, dest_id, "08:00",
                 preference="fastest",
                 delay_minutes=delay_service.get_all_delays(),
+                service_day=service_day,
             )
         except ValueError as e:
             return {"intent": intent, "reply": str(e), "data": None}
@@ -176,7 +178,9 @@ def _handle_with_rules(
                 "reply": "Please specify a stop name, e.g. 'Next bus from Rajiv Chowk'.",
                 "data": None,
             }
-        deps = sched.next_departures(td, stop_id, "08:00", limit=5)
+        deps = sched.next_departures(
+            td, stop_id, "08:00", limit=5, service_day=service_day
+        )
         if not deps:
             return {
                 "intent": intent,
@@ -353,9 +357,12 @@ def handle_message(
     td: TransportData,
     routing_service: RoutingService,
     delay_service: DelayService,
+    service_day: str = "weekday",
 ) -> Dict[str, Any]:
     """Return transit-grounded chat, optionally phrased by Grok."""
-    result = _handle_with_rules(message, td, routing_service, delay_service)
+    result = _handle_with_rules(
+        message, td, routing_service, delay_service, service_day
+    )
     if settings.xai_api_key:
         result["reply"] = _compose_with_grok(message, result)
     return result

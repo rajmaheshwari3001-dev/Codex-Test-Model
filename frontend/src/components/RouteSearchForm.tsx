@@ -1,18 +1,27 @@
-import { useState, useEffect } from 'react'
-import type { Stop } from '../types'
+import { useState } from 'react'
+import type { ServiceDay, Stop } from '../types'
+
+const SERVICE_TIME_PATTERN = /^(?:[0-3]\d|4[0-7]):[0-5]\d$/
 
 interface Props {
   stops: Stop[]
-  onSearch: (origin: string, destination: string, time: string, preference: string) => void
+  serviceDay: ServiceDay
+  onServiceDayChange: (day: ServiceDay) => void
+  onSearch: (origin: string, destination: string, time: string, preference: string, serviceDay: ServiceDay) => void
   loading: boolean
 }
 
-export default function RouteSearchForm({ stops, onSearch, loading }: Props) {
+export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange, onSearch, loading }: Props) {
   const [origin, setOrigin] = useState('')
   const [destination, setDestination] = useState('')
   const [time, setTime] = useState('08:00')
   const [preference, setPreference] = useState('fastest')
   const [error, setError] = useState('')
+
+  function handleSwap() {
+    setOrigin(destination)
+    setDestination(origin)
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -20,73 +29,224 @@ export default function RouteSearchForm({ stops, onSearch, loading }: Props) {
     if (!origin) return setError('Please select an origin stop.')
     if (!destination) return setError('Please select a destination stop.')
     if (origin === destination) return setError('Origin and destination must be different.')
-    onSearch(origin, destination, time, preference)
+    if (!SERVICE_TIME_PATTERN.test(time)) {
+      return setError('Enter a valid time from 00:00 to 47:59 in HH:MM format.')
+    }
+    onSearch(origin, destination, time, preference, serviceDay)
   }
 
+  const quickTimes = [
+    { label: '08:00 (Peak AM)', value: '08:00' },
+    { label: '09:30', value: '09:30' },
+    { label: '13:00', value: '13:00' },
+    { label: '17:30 (Peak PM)', value: '17:30' },
+    { label: '21:00', value: '21:00' },
+  ]
+
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-5 space-y-4">
-      <h2 className="text-lg font-semibold text-gray-800">Find Your Route</h2>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xs border border-gray-200 p-5 space-y-4">
+      <div className="flex items-center justify-between pb-1 border-b border-gray-100">
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">From</label>
+          <h2 className="text-base font-semibold text-gray-900">Plan Transit Journey</h2>
+          <p className="text-xs text-gray-500">Schedule-aware routing across Delhi network stops</p>
+        </div>
+        <span className="text-[11px] font-medium uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded">
+          {serviceDay}
+        </span>
+      </div>
+
+      {/* Origin, Destination & Swap */}
+      <div className="space-y-3">
+        <div className="relative">
+          <label htmlFor="origin-stop" className="block text-xs font-medium text-gray-700 mb-1">
+            Origin Stop (From)
+          </label>
           <select
+            id="origin-stop"
             value={origin}
-            onChange={e => setOrigin(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            onChange={e => {
+              setOrigin(e.target.value)
+              if (error) setError('')
+            }}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
           >
-            <option value="">Select origin...</option>
+            <option value="">Select origin stop...</option>
             {stops.map(s => (
-              <option key={s.stop_id} value={s.stop_id}>{s.stop_name}</option>
+              <option key={s.stop_id} value={s.stop_id}>
+                {s.stop_name} (Zone {s.zone_id})
+              </option>
             ))}
           </select>
         </div>
+
+        <div className="flex justify-center -my-1">
+          <button
+            type="button"
+            onClick={handleSwap}
+            disabled={!origin && !destination}
+            aria-label="Swap origin and destination"
+            title="Swap stops"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-full border border-indigo-200 disabled:opacity-40 transition-colors"
+          >
+            <span aria-hidden="true">⇅</span> Swap Stops
+          </button>
+        </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">To</label>
+          <label htmlFor="dest-stop" className="block text-xs font-medium text-gray-700 mb-1">
+            Destination Stop (To)
+          </label>
           <select
+            id="dest-stop"
             value={destination}
-            onChange={e => setDestination(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            onChange={e => {
+              setDestination(e.target.value)
+              if (error) setError('')
+            }}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
           >
-            <option value="">Select destination...</option>
+            <option value="">Select destination stop...</option>
             {stops.map(s => (
-              <option key={s.stop_id} value={s.stop_id}>{s.stop_name}</option>
+              <option key={s.stop_id} value={s.stop_id}>
+                {s.stop_name} (Zone {s.zone_id})
+              </option>
             ))}
           </select>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Departure Time & Service Day */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">Departure Time</label>
+          <label htmlFor="departure-time" className="block text-xs font-medium text-gray-700 mb-1">
+            Departure Time (HH:MM)
+          </label>
           <input
-            type="time"
+            id="departure-time"
+            type="text"
+            placeholder="08:00"
+            maxLength={5}
             value={time}
-            onChange={e => setTime(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            aria-describedby="departure-time-hint"
+            aria-invalid={Boolean(error && !SERVICE_TIME_PATTERN.test(time))}
+            onChange={e => {
+              setTime(e.target.value)
+              if (error) setError('')
+            }}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 font-mono bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
           />
+          <p id="departure-time-hint" className="mt-1 text-[11px] text-gray-500">
+            Supports 00:00-47:59 for overnight trips.
+          </p>
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">Preference</label>
+          <label htmlFor="service-day" className="block text-xs font-medium text-gray-700 mb-1">
+            Schedule Calendar
+          </label>
           <select
-            value={preference}
-            onChange={e => setPreference(e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+            id="service-day"
+            value={serviceDay}
+            onChange={e => onServiceDayChange(e.target.value as ServiceDay)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
           >
-            <option value="fastest">Fastest</option>
-            <option value="cheapest">Cheapest</option>
+            <option value="weekday">Weekday Timetable</option>
+            <option value="weekend">Weekend Timetable</option>
           </select>
+          <p className="mt-1 text-[11px] text-gray-500">
+            Applies timetable filters.
+          </p>
         </div>
       </div>
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {/* Quick Time Preset Chips */}
+      <div>
+        <span className="block text-[11px] font-medium text-gray-500 mb-1.5">Quick Time Presets:</span>
+        <div className="flex flex-wrap gap-1.5">
+          {quickTimes.map(qt => (
+            <button
+              key={qt.value}
+              type="button"
+              onClick={() => setTime(qt.value)}
+              className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
+                time === qt.value
+                  ? 'bg-indigo-600 text-white border-indigo-600 font-medium'
+                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+              }`}
+            >
+              {qt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Routing Preference */}
+      <div>
+        <label className="block text-xs font-medium text-gray-700 mb-1">Routing Preference</label>
+        <div className="grid grid-cols-2 gap-2">
+          <label
+            className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
+              preference === 'fastest'
+                ? 'border-indigo-500 bg-indigo-50/50 ring-1 ring-indigo-500 text-indigo-900'
+                : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+            }`}
+          >
+            <input
+              type="radio"
+              name="preference"
+              value="fastest"
+              checked={preference === 'fastest'}
+              onChange={() => setPreference('fastest')}
+              className="text-indigo-600 focus:ring-indigo-500"
+            />
+            <div>
+              <div className="text-xs font-semibold">Fastest Arrival</div>
+              <div className="text-[10px] text-gray-500">Minimizes transit duration</div>
+            </div>
+          </label>
+
+          <label
+            className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${
+              preference === 'cheapest'
+                ? 'border-emerald-500 bg-emerald-50/50 ring-1 ring-emerald-500 text-emerald-900'
+                : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+            }`}
+          >
+            <input
+              type="radio"
+              name="preference"
+              value="cheapest"
+              checked={preference === 'cheapest'}
+              onChange={() => setPreference('cheapest')}
+              className="text-emerald-600 focus:ring-emerald-500"
+            />
+            <div>
+              <div className="text-xs font-semibold">Cheapest Fare</div>
+              <div className="text-[10px] text-gray-500">Prioritizes lower tariffs</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      {error && (
+        <div role="alert" className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 font-medium">
+          {error}
+        </div>
+      )}
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-indigo-600 text-white font-medium py-2.5 rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+        className="w-full bg-indigo-600 text-white font-medium py-2.5 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 disabled:opacity-50 transition-all flex items-center justify-center gap-2 text-sm shadow-xs"
       >
-        {loading ? 'Searching...' : 'Search Routes'}
+        {loading ? (
+          <>
+            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+            <span>Scanning Timetable...</span>
+          </>
+        ) : (
+          <span>Search Available Routes</span>
+        )}
       </button>
     </form>
   )

@@ -248,3 +248,52 @@
   remote ref matches the commit.
 - **Next task:** Iteration 6 — verify service-day and midnight routing
   semantics.
+
+## Iteration 6 — Overnight schedule routing verification
+
+- **Date/time:** 29 Oct 2026, started 14:05 IST.
+- **Objective:** Verify extended-hour schedules across midnight, including
+  journey duration, displayed times, and transfer feasibility; make the
+  passenger input capable of expressing supported extended hours; document
+  the calendar/service-date boundary honestly.
+- **Why selected:** The routing utilities accept extended GTFS-style hours up
+  to 47:59, but the tests do not establish that a transfer from 23:xx to
+  24:xx remains feasible or that output duration stays correct.
+- **Candidates and prioritization:** Using
+  `(requirement impact × user benefit × confidence) / (effort × risk factor)`
+  with 1–5 ratings: verify overnight journeys and transfer boundaries
+  (4×4×5)/(3×2) = 13.3; retrieve canonical DEV-P05 source
+  (2×3×3)/(2×1) = 9; validate fixed fleet assumptions against operator data
+  (4×5×2)/(5×4) = 1. P3 routing correctness was selected ahead of an
+  external-data-dependent metric calibration.
+- **Acceptance criteria:** Tests cover a direct journey and a transfer crossing
+  midnight, preserve elapsed duration and extended-hour labels, enforce the
+  two-minute transfer buffer across 23:xx/24:xx, and reject invalid 48:00.
+  The passenger form accepts valid `00:00`-`47:59` inputs and rejects invalid
+  time strings. Journey and chat APIs pass the selected weekday/weekend service
+  category into their routing and departure lookups; saved routes retain it.
+- **Acceptance result:** The API test confirms the weekday query uses T01 and
+  the weekend query uses T16 for the same journey; saved-route CRUD preserves a
+  weekend selection. Chat forwards the selected service category. Calendar
+  dates and holidays remain outside the supported model.
+- **Files changed:** `backend/app/api/routes.py`,
+  `backend/app/api/chat.py`, `backend/app/api/saved_routes.py`,
+  `backend/app/database/init_db.py`, `backend/app/models/journey.py`,
+  `backend/app/services/routing_service.py`,
+  `backend/app/services/schedule_service.py`,
+  `backend/app/services/saved_route_service.py`,
+  `backend/app/services/chat_service.py`, related backend tests,
+  frontend passenger/chat/fleet components and API types,
+  `docs/API_REFERENCE.md`, `docs/DATA_DICTIONARY.md`,
+  `docs/TESTING_GUIDE.md`, `docs/PROGRESS.md`,
+  `docs/REQUIREMENTS_AUDIT.md`, and `docs/KNOWN_LIMITATIONS.md`.
+- **Verification:** Full backend suite: 86 passed, one existing Starlette/httpx
+  deprecation warning. Frontend TypeScript check and Vite production build
+  passed. Browser behavior was not retested for this iteration.
+- **Files originally expected to change:** `backend/tests/test_routing.py`,
+  `backend/tests/test_api.py`,
+  `frontend/src/components/RouteSearchForm.tsx`,
+  `docs/API_REFERENCE.md`, `docs/DATA_DICTIONARY.md`,
+  `docs/PROGRESS.md`, `docs/REQUIREMENTS_AUDIT.md`,
+  `docs/KNOWN_LIMITATIONS.md`, and this log.
+- **Next task:** Deploy the single-project Vercel setup and verify its live URL.

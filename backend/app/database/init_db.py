@@ -26,4 +26,12 @@ def init_database() -> None:
             created_at  TEXT DEFAULT (datetime('now'))
         )
     """)
+    columns = {
+        row["name"] for row in conn.execute("PRAGMA table_info(saved_routes)")
+    }
+    if "service_day" not in columns:
+        conn.execute(
+            "ALTER TABLE saved_routes "
+            "ADD COLUMN service_day TEXT NOT NULL DEFAULT 'weekday'"
+        )
     conn.commit()

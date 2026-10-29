@@ -23,7 +23,7 @@ def is_service_day(service_days: str, query_date: datetime) -> bool:
         return day in ("Saturday", "Sunday")
     elif service_days == "daily":
         return True
-    return True  # default: assume available
+    return False
 
 
 def next_departures(
@@ -32,6 +32,7 @@ def next_departures(
     after_time: str,
     limit: int = 5,
     service_date: Optional[datetime] = None,
+    service_day: Optional[str] = None,
 ) -> List[dict]:
     """
     Find the next `limit` departures from a stop after a given time.
@@ -45,6 +46,8 @@ def next_departures(
     for trip_id, stop_times in td.stop_times_by_trip.items():
         trip = td.trips_by_id.get(trip_id)
         if not trip:
+            continue
+        if service_day is not None and trip.service_days not in (service_day, "daily"):
             continue
         if service_date and not is_service_day(trip.service_days, service_date):
             continue

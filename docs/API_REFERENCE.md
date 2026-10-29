@@ -101,7 +101,8 @@ Find journey options between two stops.
   "origin_stop_id": "S13",
   "destination_stop_id": "S01",
   "departure_time": "07:00",
-  "preference": "fastest"
+  "preference": "fastest",
+  "service_day": "weekday"
 }
 ```
 
@@ -109,8 +110,9 @@ Find journey options between two stops.
 |---------------------|--------|----------|-------------------------------------|
 | origin_stop_id      | string | ✓        | Valid stop ID                        |
 | destination_stop_id | string | ✓        | Valid stop ID (different from origin)|
-| departure_time      | string | ✓        | Format: HH:MM                        |
+| departure_time      | string | ✓        | `HH:MM`; hours `00`-`47`, minutes `00`-`59` |
 | preference          | string | No       | "fastest" or "cheapest"; defaults to "fastest" |
+| service_day         | string | No       | "weekday" or "weekend"; defaults to "weekday"; trips marked "daily" run on both |
 
 Each journey leg returns intermediate stop names and IDs in trip order. The
 board and alight stops are excluded from both intermediate-stop lists. It also
@@ -194,13 +196,14 @@ Save a frequently used route.
   "destination_stop_id": "S01",
   "destination_stop_name": "Rajiv Chowk",
   "preferred_departure_time": "08:00",
-  "preference": "fastest"
+  "preference": "fastest",
+  "service_day": "weekend"
 }
 ```
 
 **Response 200:**
 ```json
-{ "saved_route_id": 1, "label": "Home to Office", ... }
+{ "saved_route_id": 1, "label": "Home to Office", "service_day": "weekend", ... }
 ```
 
 ### GET /api/saved-routes
@@ -227,10 +230,17 @@ Return all saved routes, newest first.
 
 Send a natural-language transport question.
 
-**Request body:**
+**Request body** (`service_day` is optional and defaults to `weekday`):
 ```json
-{ "message": "How do I get from Rajiv Chowk to Saket?" }
+{
+  "message": "How do I get from Rajiv Chowk to Saket?",
+  "service_day": "weekend"
+}
 ```
+
+When `XAI_API_KEY` is configured, Grok phrases the reply using the verified
+transit response as context. If the provider is unavailable, the endpoint
+returns HTTP 502. Without the key, the built-in intent-based reply is used.
 
 **Response 200:**
 ```json

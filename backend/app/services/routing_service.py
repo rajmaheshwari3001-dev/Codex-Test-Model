@@ -658,6 +658,7 @@ class RoutingService:
         departure_time: str,
         preference: str = "fastest",
         delay_minutes: Optional[Dict[str, int]] = None,
+        service_day: str = "weekday",
     ) -> List[JourneyOption]:
         """
         Search for journey options from origin to destination.
@@ -669,6 +670,7 @@ class RoutingService:
             preference:     "fastest" or "cheapest".
             delay_minutes:  Optional dict of trip_id -> delay_minutes
                             to apply simulated disruptions.
+            service_day:    "weekday" or "weekend" schedule category.
 
         Returns:
             List of JourneyOption (may be empty if no route exists).
@@ -686,13 +688,23 @@ class RoutingService:
             raise ValueError(f"Unknown destination stop ID: {destination_id!r}")
         if origin_id == destination_id:
             raise ValueError("Origin and destination must be different stops.")
+        if service_day not in ("weekday", "weekend"):
+            raise ValueError("service_day must be 'weekday' or 'weekend'.")
 
         dep_minutes = time_to_minutes(departure_time)
         options: List[JourneyOption] = []
+        trip_ids_for_day = {
+            trip.trip_id for trip in self.td.trips
+            if trip.service_days in (service_day, "daily")
+        }
+        ride_segments = [
+            segment for segment in self.ride_segments
+            if segment.trip_id in trip_ids_for_day
+        ]
 
         # Always compute the fastest option.
         fastest = _find_fastest_journey(
-            origin_id, destination_id, dep_minutes, self.ride_segments, delay_minutes
+            origin_id, destination_id, dep_minutes, ride_segments, delay_minutes
         )
         if fastest:
             opt = _assemble_option(
@@ -702,7 +714,7 @@ class RoutingService:
 
         # For "cheapest" preference, also compute the cheapest path.
         cheapest = _find_cheapest_journey(
-            origin_id, destination_id, dep_minutes, self.ride_segments, self.td,
+            origin_id, destination_id, dep_minutes, ride_segments, self.td,
             delay_minutes,
         )
         if cheapest:

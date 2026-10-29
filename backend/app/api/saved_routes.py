@@ -10,6 +10,8 @@ Endpoints:
 
 from __future__ import annotations
 
+from typing import Literal
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -27,6 +29,7 @@ class SaveRouteRequest(BaseModel):
     destination_stop_name: str
     preferred_departure_time: str = ""
     preference: str = "fastest"
+    service_day: Literal["weekday", "weekend"] = "weekday"
 
 
 @router.post("")

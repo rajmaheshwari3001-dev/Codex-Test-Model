@@ -16,6 +16,7 @@ build/
 # Environment variables – never commit real secrets
 .env
 *.env.local
+frontend/.env.production
 
 # Database files – contain user data; not for version control
 *.db

@@ -7,6 +7,8 @@ Endpoint:
 
 from __future__ import annotations
 
+from typing import Literal
+
 from fastapi import APIRouter
 from fastapi import HTTPException
 from pydantic import BaseModel
@@ -29,6 +31,7 @@ def init(td, routing_service, delay_service):
 
 class ChatRequest(BaseModel):
     message: str
+    service_day: Literal["weekday", "weekend"] = "weekday"
 
 
 @router.post("/chat")
@@ -49,6 +52,7 @@ def chat(req: ChatRequest):
             td=_td,
             routing_service=_routing_service,
             delay_service=_delay_service,
+            service_day=req.service_day,
         )
     except chat_service.GrokChatError as error:
         raise HTTPException(status_code=502, detail=str(error)) from error

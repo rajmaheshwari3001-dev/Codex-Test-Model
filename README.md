@@ -109,7 +109,7 @@ Press `Ctrl+C` in each terminal window.
 | Backend  | Python, FastAPI, Uvicorn                        |
 | Routing  | NetworkX, custom schedule-aware algorithm        |
 | Database | SQLite (saved routes)                           |
-| Testing  | Pytest (81 tests)                               |
+| Testing  | Pytest (86 tests)                               |
 | Data     | Synthetic CSV dataset (15 stops, 4 routes)      |
 
 ## Project Structure

@@ -31,7 +31,7 @@ All fields used in the Aaroh-Saarthi transport dataset.
 | trip_id      | string | `T01`       | Unique trip identifier                   |
 | route_id     | string | `R01`       | Parent route                             |
 | direction    | string | `outbound`  | "outbound" or "inbound"                  |
-| service_days | string | `weekday`   | "weekday", "weekend", or "daily"         |
+| service_days | string | `weekday`   | Trip category: "weekday", "weekend", or "daily"; daily trips are included in both search categories |
 
 ## StopTime
 
@@ -40,8 +40,8 @@ All fields used in the Aaroh-Saarthi transport dataset.
 | trip_id        | string | `T01`   | Which trip                                 |
 | stop_id        | string | `S13`   | Which stop                                 |
 | stop_sequence  | int    | `1`     | Order in trip (1 = first stop)             |
-| arrival_time   | string | `07:00` | Scheduled arrival (HH:MM)                 |
-| departure_time | string | `07:00` | Scheduled departure (HH:MM)               |
+| arrival_time   | string | `07:00` | Scheduled arrival (`HH:MM`; extended hours through `47:59` are supported) |
+| departure_time | string | `07:00` | Scheduled departure (`HH:MM`; extended hours through `47:59` are supported) |
 
 ## Fare
 
@@ -69,8 +69,8 @@ All fields used in the Aaroh-Saarthi transport dataset.
 | option_id              | string   | "fastest" or "cheapest"                   |
 | label                  | string   | Human-readable label                      |
 | total_duration_minutes | int      | Total journey time in minutes             |
-| departure_time         | string   | When the passenger departs (HH:MM)       |
-| arrival_time           | string   | Estimated arrival (HH:MM)                |
+| departure_time         | string   | Passenger departure (`HH:MM`, up to `47:59`) |
+| arrival_time           | string   | Estimated arrival (`HH:MM`, up to `47:59`) |
 | legs                   | array    | List of JourneyLeg objects                |
 | transfers              | array    | List of TransferInfo objects              |
 | total_fare             | float?   | Total fare (null if unavailable)          |
@@ -78,6 +78,10 @@ All fields used in the Aaroh-Saarthi transport dataset.
 | crowding_warnings      | string[] | Crowding alerts                           |
 | delay_warnings         | string[] | Delay alerts (simulated)                  |
 | data_status            | string   | "scheduled" / "estimated" / "simulated"   |
+
+Journey search accepts a `service_day` category (`weekday` or `weekend`, default
+`weekday`) and only considers trips matching that category plus `daily` trips.
+The app does not accept a calendar date or model holidays.
 
 ## BusState (Fleet API)
 

@@ -9,14 +9,15 @@ comparisons, and decisions have also been exercised. Approval now applies the
 selected response to the in-memory simulated fleet, and rejection leaves it
 unchanged. Passenger results distinguish known sample crowding from
 unavailable data; the fleet comparison distinguishes state-derived metrics
-from synthetic estimates. Remaining work includes service-day/midnight routing
-verification and validation of fixed fleet impact assumptions.
+from synthetic estimates. Weekday/weekend routing and overnight boundaries are
+covered by automated tests; live Vercel deployment, calendar-date behavior,
+and validation of fixed fleet impact assumptions remain outstanding.
 
 | Measure | Current value | Meaning |
 |---|---:|---|
 | Verified requirement completion | **95%** | Weighted P/F/I register; only PASS earns full points and PARTIAL earns half |
 | Implementation estimate | **About 83%** | Coarse engineering estimate; not acceptance evidence or the weighted score |
-| Backend test execution | **79 passed, 0 failed** | Full suite including passenger crowd-status cases |
+| Backend test execution | **86 passed, 0 failed** | Full suite including service-day, overnight, and passenger crowd-status cases |
 | Frontend type-check/build | **Passed** | `npm run build` ran `tsc -b` and Vite production build |
 | API smoke checks | **5 baseline checks passed** | Health, stops, routes, sample journey search, and fleet state |
 | Browser workflow | **Manual acceptance checks passed** | Passenger/fleet workflows exercised; unknown/high crowd status and fleet state/metric notes verified |
@@ -30,15 +31,15 @@ completion score. The verified score is calculated in
 
 - Repository: `https://github.com/rajmaheshwari3001-dev/Codex-Test-Model`
 - Branch: `main`
-- Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`.
-- Latest completed iteration: **5 — expose passenger crowd-data availability**.
-- Next iteration: **6 — verify service-day and midnight routing semantics**.
-- Latest successful delivery: `c517189` (`main`), iteration 5 crowd-data
-  availability reporting.
-- Remote verification: `origin/main` points to
-  `c51718957a8a75c26ec60aadbde7d47a8cb6028f`.
-- The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
-  preserved and excluded.
+- The Vercel/Grok deployment configuration is present on `main`; this update
+  integrates the pending passenger, fleet, schedule-day, and documentation
+  changes on top of it.
+- Latest completed acceptance iteration: **6 — overnight schedule routing
+  verification**, including service-day category filtering.
+- Next: deploy the configured single-project app on Vercel and verify the
+  deployment URL; no live deployment has been completed yet.
+- `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` is included as a historical report;
+  its timestamped snapshot should not be mistaken for current test results.
 
 ## Baseline verification
 
@@ -130,8 +131,9 @@ Manual Playwright checks were run against the local frontend and backend:
 1. Fleet metrics include fixed assumptions and are not calibrated against real
    operating data. Multi-bus coordination remains a simplified assignment
    model, not dispatch planning.
-2. Passenger search does not take a service date; weekday/weekend availability
-   and midnight crossing remain unverified.
+2. Passenger search filters by weekday/weekend category and has tested
+   overnight-hour support, but does not take an actual calendar date or model
+   holidays.
 3. Crowd samples are sparse and synthetic; no live occupancy feed is connected.
 4. The provided task identifies DEV-P05 but does not include an independently
    verifiable official statement URL or source document. The requirements
@@ -160,8 +162,8 @@ See [ITERATION_LOG.md](./ITERATION_LOG.md) for iteration evidence. Iteration 3
 made approvals mutate simulated fleet state; iteration 4 tested fleet metric
 formulas and surfaced their assumptions; iteration 5 now exposes known and
 unknown crowd data per boarding stop. F6 remains PARTIAL because some impacts
-are assumption-based. The next iteration will verify service-day and midnight
-routing boundaries.
+are assumption-based. Live Vercel deployment and any later calendar-date or
+holiday support remain future work.
 
 ## Current blockers
 
@@ -173,7 +175,7 @@ routing boundaries.
 
 ## Latest test evidence
 
-- Backend: `79 passed, 1 warning`; command
+- Backend: `86 passed, 1 warning`; command
   `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`.
 - Frontend: `npm run build`; TypeScript check and Vite production build passed
   from `frontend`.

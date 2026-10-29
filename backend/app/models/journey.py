@@ -79,3 +79,4 @@ class SavedRoute(BaseModel):
     destination_stop_name: str
     preferred_departure_time: str = ""
     preference: str = "fastest"      # fastest | cheapest
+    service_day: Literal["weekday", "weekend"] = "weekday"

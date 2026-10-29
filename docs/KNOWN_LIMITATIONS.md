@@ -14,17 +14,17 @@ Update it only when new evidence changes the actual state.
 - The network is small (15 stops, 4 routes, 19 trips). Static sample occupancy
   does not update during a session and may be absent for a trip/stop; the
   passenger results explicitly show when a boarding-stop sample is unavailable.
-- Public journey search accepts a departure time but not a service date, so
-  weekday/weekend service-day constraints are not proven to affect route
-  results.
+- Journey search filters trips by the selected `weekday`/`weekend` service-day
+  category and includes trips marked `daily`; it does not accept a calendar
+  date or model holidays.
 - Map rendering relies on external OpenStreetMap tile availability.
 
 ## Routing and passenger experience
 
-- Routing tests now cover the two-minute transfer threshold, delayed
-  connection ordering, competing fare/arrival labels, and per-ride-leg fare
-  charging on synthetic timetables. Midnight crossing and service-day behavior
-  remain unverified.
+- Routing tests cover the two-minute transfer threshold, delayed connection
+  ordering, competing fare/arrival labels, per-ride-leg fare charging,
+  overnight transfer timing, and weekday/weekend trip filtering on synthetic
+  timetables. Calendar-date and holiday behavior are not modeled.
 - Cheapest-route behavior is verified against constructed cases, not an
   independent reference implementation or real transit timetable.
 - Input tests cover invalid stop IDs and no-route times, but do not yet cover
@@ -60,7 +60,7 @@ Update it only when new evidence changes the actual state.
 
 ## Quality and operations
 
-- Backend tests pass (81 passed, 1 Starlette/httpx deprecation warning);
+- Backend tests pass (86 passed, 1 Starlette/httpx deprecation warning);
   frontend type checking and production build pass. Manual browser behavior has
   been exercised, but there is no automated E2E suite or test-coverage
   percentage.

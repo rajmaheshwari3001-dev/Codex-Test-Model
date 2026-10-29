@@ -21,8 +21,8 @@ def create_saved_route(route: SavedRoute) -> SavedRoute:
         INSERT INTO saved_routes
             (label, origin_stop_id, origin_stop_name,
              destination_stop_id, destination_stop_name,
-             preferred_departure_time, preference)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+             preferred_departure_time, preference, service_day)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             route.label,
@@ -32,6 +32,7 @@ def create_saved_route(route: SavedRoute) -> SavedRoute:
             route.destination_stop_name,
             route.preferred_departure_time,
             route.preference,
+            route.service_day,
         ),
     )
     conn.commit()
@@ -55,6 +56,7 @@ def list_saved_routes() -> List[SavedRoute]:
             destination_stop_name=row["destination_stop_name"],
             preferred_departure_time=row["preferred_departure_time"],
             preference=row["preference"],
+            service_day=row["service_day"],
         )
         for row in rows
     ]
@@ -77,6 +79,7 @@ def get_saved_route(saved_route_id: int) -> Optional[SavedRoute]:
         destination_stop_name=row["destination_stop_name"],
         preferred_departure_time=row["preferred_departure_time"],
         preference=row["preference"],
+        service_day=row["service_day"],
     )
 
 

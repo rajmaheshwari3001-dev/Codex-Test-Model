@@ -42,7 +42,7 @@ measures verified requirement coverage, not implementation quantity.
 |---|---|---|---|---|---|
 | P1 / 6 | Plan public-transport journeys within the supplied city network. | Synthetic stop/trip CSVs; `GET /api/stops`, `GET /api/routes`, `POST /api/journeys/search`; passenger page. | API smoke: 15 stops, 4 routes, and a sample `S01`→`S05` query returned an option. | PASS | Network is fictional and limited; keep provenance visible. |
 | P2 / 7 | Provide separate fastest and cheapest options when supported by data. | `RoutingService.search`, fastest and fare/arrival-label search; result cards. | Synthetic timetable tests verify distinct fastest/cheapest itineraries, minimum fare, and one fare per ride leg. Full real-network validation remains unavailable. | PASS | Validate against organizer-provided data when available. |
-| P3 / 8 | Calculate journeys from scheduled departure/arrival times. | Connection scan in `routing_service.py`; trip stop-times CSV. | Direct and transfer tests pass; live sample journey returned. | PASS | Search has no service-date input, so weekday/weekend filtering is not proven. |
+| P3 / 8 | Calculate journeys from scheduled departure/arrival times. | Connection scan in `routing_service.py`; trip stop-times CSV. | Direct/transfer and midnight tests pass; API test confirms weekday search uses T01 and weekend search uses T16. | PASS | Search accepts a service-day category, not an actual date; holiday/calendar exceptions are not modeled. |
 | P4 / 8 | Permit feasible transfers and include required wait. | Two-minute transfer buffer and transfer assembly in `routing_service.py`. | Synthetic tests verify a 1-minute connection is missed, a 2-minute buffer is feasible and reported, and a delayed incoming trip selects a later service. | PASS | Validate station-specific transfer times if such data is added. |
 | P5 / 5 | Chat answers use transport data rather than fabricate network facts. | `chat.py`, `chat_service.py`; intent handlers use shared transport/routing data. | Browser query “Tell me about route R01” returned the Blue Line and its matching stop sequence; API intent test also passes. | PASS | Keyword/intent-based; requests outside supported patterns may not be understood. |
 | P6 / 5 | Journey search reflects and labels simulated delays. | Delay API/service and routing delay parameter. | Browser applied a temporary 15-minute T02 delay; a Rajouri Garden → Rajiv Chowk search changed to 09:21–09:45 and showed the simulated warning. Delay was cleared and empty state confirmed. | PASS | Simulation only; no live delay feed. |
@@ -78,7 +78,7 @@ measures verified requirement coverage, not implementation quantity.
 | I3 / 2 | Keep route info consistent across API, frontend, map, and chat. | Shared API types/data and route result/map components. | Browser route card, chat response, stop names, and five-stop map path agreed for the R01 journey; map now draws trip-ordered stop IDs. | PASS | Cross-surface evidence currently covers the synthetic R01 journey. |
 | I4 / 2 | Keep fleet state and scenario calculations internally consistent. | Shared `FleetSimulator`, state endpoint, and dashboard. | API tests compare resulting active/available counts to response metrics for spare deployment and short-turn; browser confirms decisions update the dashboard and the next scenario returns both to baseline. | PASS | Other metric assumptions remain fixed; see F6. |
 | I5 / 2 | Start reliably with documented setup instructions. | README commands; FastAPI lifespan; Vite development configuration. | Backend launched, health returned OK; frontend dev server loaded and browser workflows ran; production build passed. | PASS | Production deployment is outside this local-startup requirement. |
-| I6 / 3 | Provide regression, integration, and frontend verification. | Pytest backend/API tests; TypeScript/Vite build; manual browser acceptance. | 70 backend tests pass, production build passes, and browser workflows exercised passenger and fleet features. Coverage percentage is not measured. | PASS | Manual browser runs are not a repeatable automated E2E suite; no coverage percentage. |
+| I6 / 3 | Provide regression, integration, and frontend verification. | Pytest backend/API tests; TypeScript/Vite build; manual browser acceptance. | 86 backend tests pass, production build passes, and browser workflows exercised passenger and fleet features. Coverage percentage is not measured. | PASS | Manual browser runs are not a repeatable automated E2E suite; no coverage percentage. |
 | I7 / 2 | Label sample/simulated data and provenance accurately. | README, data README, API `simulated` flags and UI text. | Documentation/code inspection; labels exist and synthetic source documented. | PARTIAL | Verify every user-facing surface, especially crowd and route provenance; medium. |
 
 **Integration/quality earned points: 12 / 15.**
@@ -102,7 +102,7 @@ claims outside this register earn points.
 ## Latest verification commands and outcomes
 
 - Backend: `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`
-  — 79 passed, 0 failed, one deprecation warning.
+  — 86 passed, 0 failed, one deprecation warning.
 - Frontend from `frontend`: `npm run build` — TypeScript and Vite build passed.
 - Local API smoke: health, stops, routes, one journey query, and fleet state —
   passed.
@@ -120,7 +120,7 @@ claims outside this register earn points.
 
 ## Next audit actions
 
-1. Verify service-day and midnight routing semantics.
+1. Deploy the single-project Vercel setup and verify its live URL.
 2. Retrieve/record the canonical DEV-P05 statement source if available.
 3. Validate fixed fleet impact assumptions with a domain expert or scenario
    data before promoting F6 from PARTIAL.

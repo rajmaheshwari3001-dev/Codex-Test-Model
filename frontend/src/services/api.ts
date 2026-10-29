@@ -2,7 +2,7 @@
 
 import type {
   Stop, Route, JourneyOption, SavedRoute, ChatResponse,
-  BusState, DisruptionResult,
+  BusState, DisruptionResult, ServiceDay,
 } from '../types'
 
 const BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
@@ -36,6 +36,7 @@ export async function searchJourneys(body: {
   destination_stop_id: string
   departure_time: string
   preference: string
+  service_day: ServiceDay
 }) {
   return request<{ options: JourneyOption[]; message?: string }>(
     '/journeys/search',
@@ -58,10 +59,10 @@ export async function deleteSavedRoute(id: number) {
   return request<{ message: string }>(`/saved-routes/${id}`, { method: 'DELETE' })
 }
 
-export async function sendChatMessage(message: string) {
+export async function sendChatMessage(message: string, serviceDay: ServiceDay) {
   return request<ChatResponse>('/chat', {
     method: 'POST',
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, service_day: serviceDay }),
   })
 }
 

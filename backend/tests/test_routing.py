@@ -145,6 +145,58 @@ def test_no_service_at_midnight():
     assert len(options) == 0
 
 
+def test_direct_journey_preserves_extended_time_after_midnight():
+    svc = _make_custom_service(
+        stop_specs=[("O", "1"), ("D", "2")],
+        trip_specs=[
+            ("T-OVERNIGHT", "R-NIGHT", [
+                ("O", "23:55", "23:55"),
+                ("D", "24:15", "24:15"),
+            ]),
+        ],
+        fare_specs=[],
+    )
+
+    options = svc.search("O", "D", "23:50", preference="fastest")
+
+    assert len(options) == 1
+    assert options[0].departure_time == "23:55"
+    assert options[0].arrival_time == "24:15"
+    assert options[0].total_duration_minutes == 20
+
+
+@pytest.mark.parametrize(
+    ("next_departure", "expected_arrival"),
+    [("23:59", None), ("24:00", "24:10")],
+)
+def test_transfer_buffer_applies_across_midnight(
+    next_departure, expected_arrival
+):
+    svc = _make_custom_service(
+        stop_specs=[("O", "1"), ("X", "2"), ("D", "3")],
+        trip_specs=[
+            ("T-FIRST-NIGHT", "R-FIRST", [
+                ("O", "23:40", "23:40"),
+                ("X", "23:58", "23:58"),
+            ]),
+            ("T-SECOND-NIGHT", "R-SECOND", [
+                ("X", next_departure, next_departure),
+                ("D", "24:10", "24:10"),
+            ]),
+        ],
+        fare_specs=[],
+    )
+
+    options = svc.search("O", "D", "23:40", preference="fastest")
+
+    if expected_arrival is None:
+        assert options == []
+    else:
+        assert options[0].arrival_time == expected_arrival
+        assert options[0].total_duration_minutes == 30
+        assert options[0].transfers[0].wait_minutes == 2
+
+
 # 8. Missing fare data
 def test_missing_fare_data():
     svc, td = _make_service()
@@ -390,3 +442,4 @@ def test_time_to_minutes_rejects_invalid_values(invalid_time):
 def test_minutes_to_time():
     assert minutes_to_time(510) == "08:30"
     assert minutes_to_time(0) == "00:00"
+    assert minutes_to_time(1455) == "24:15"

@@ -14,6 +14,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.api import fleet as fleet_api
+from app.api import chat as chat_api
 from app.api import routes as passenger_api
 from app.models.transport import Occupancy
 
@@ -59,6 +60,29 @@ def test_journey_search_valid(client):
     assert len(data["options"]) >= 1
 
 
+def test_journey_search_filters_service_day(client):
+    request = {
+        "origin_stop_id": "S13",
+        "destination_stop_id": "S01",
+        "departure_time": "07:00",
+        "preference": "fastest",
+    }
+
+    weekday = client.post(
+        "/api/journeys/search",
+        json={**request, "service_day": "weekday"},
+    )
+    weekend = client.post(
+        "/api/journeys/search",
+        json={**request, "service_day": "weekend"},
+    )
+
+    assert weekday.status_code == 200
+    assert weekend.status_code == 200
+    assert weekday.json()["options"][0]["legs"][0]["trip_id"] == "T01"
+    assert weekend.json()["options"][0]["legs"][0]["trip_id"] == "T16"
+
+
 def test_journey_search_invalid_stop(client):
     resp = client.post("/api/journeys/search", json={
         "origin_stop_id": "INVALID",
@@ -70,14 +94,15 @@ def test_journey_search_invalid_stop(client):
 
 
 def test_journey_search_rejects_out_of_range_time(client):
-    resp = client.post("/api/journeys/search", json={
-        "origin_stop_id": "S13",
-        "destination_stop_id": "S01",
-        "departure_time": "08:75",
-        "preference": "fastest",
-    })
-    assert resp.status_code == 400
-    assert "Invalid time" in resp.json()["detail"]
+    for departure_time in ("08:75", "48:00"):
+        resp = client.post("/api/journeys/search", json={
+            "origin_stop_id": "S13",
+            "destination_stop_id": "S01",
+            "departure_time": departure_time,
+            "preference": "fastest",
+        })
+        assert resp.status_code == 400
+        assert "Invalid time" in resp.json()["detail"]
 
 
 def test_journey_search_rejects_malformed_time(client):
@@ -121,9 +146,11 @@ def test_saved_routes_crud(client):
         "origin_stop_name": "Rajiv Chowk",
         "destination_stop_id": "S08",
         "destination_stop_name": "Saket",
+        "service_day": "weekend",
     })
     assert resp.status_code == 200
     saved_id = resp.json()["saved_route_id"]
+    assert resp.json()["service_day"] == "weekend"
 
     # List
     resp = client.get("/api/saved-routes")
@@ -133,6 +160,7 @@ def test_saved_routes_crud(client):
     # Get
     resp = client.get(f"/api/saved-routes/{saved_id}")
     assert resp.status_code == 200
+    assert resp.json()["service_day"] == "weekend"
 
     # Delete
     resp = client.delete(f"/api/saved-routes/{saved_id}")
@@ -150,6 +178,25 @@ def test_chat_endpoint(client):
     assert data["intent"] == "explain_route"
     assert data["data"]["route_id"] == "R01"
     assert "Blue Line" in data["reply"]
+
+
+def test_chat_passes_service_day_to_chat_service(client, monkeypatch):
+    received = {}
+
+    def fake_handle_message(message, **kwargs):
+        received["message"] = message
+        received.update(kwargs)
+        return {"intent": "help", "reply": "ok", "data": None}
+
+    monkeypatch.setattr(chat_api.chat_service, "handle_message", fake_handle_message)
+
+    resp = client.post(
+        "/api/chat",
+        json={"message": "Next bus from Rajiv Chowk", "service_day": "weekend"},
+    )
+
+    assert resp.status_code == 200
+    assert received["service_day"] == "weekend"
 
 
 def test_fleet_state(client):

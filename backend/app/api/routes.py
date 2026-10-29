@@ -13,7 +13,7 @@ Endpoints:
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Literal, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -47,6 +47,10 @@ class JourneySearchRequest(BaseModel):
     preference: str = Field(
         default="fastest",
         description="Search preference: 'fastest' or 'cheapest'"
+    )
+    service_day: Literal["weekday", "weekend"] = Field(
+        default="weekday",
+        description="Sample schedule category to search",
     )
 
 
@@ -116,6 +120,7 @@ def search_journeys(req: JourneySearchRequest):
             departure_time=req.departure_time,
             preference=req.preference,
             delay_minutes=_delay_service.get_all_delays(),
+            service_day=req.service_day,
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -125,7 +130,8 @@ def search_journeys(req: JourneySearchRequest):
             "options": [],
             "message": (
                 f"No route found from {req.origin_stop_id} to "
-                f"{req.destination_stop_id} departing at {req.departure_time}."
+                f"{req.destination_stop_id} departing at {req.departure_time} "
+                f"on the {req.service_day} schedule."
             ),
         }
 

@@ -13,7 +13,10 @@ cd aaroh-saarthi\backend
 python -m pytest tests/ -v
 ```
 
-## Test Summary (49 tests)
+## Test Summary (86 tests)
+
+Counts include parametrized test cases. The tables below highlight core
+coverage; run pytest to see the full current test list.
 
 ### test_data_loader.py (6 tests)
 | Test | What it verifies |
@@ -25,7 +28,7 @@ python -m pytest tests/ -v
 | `test_fares_loaded` | Fare lookup works for zone 3→1 |
 | `test_occupancy_loaded` | Occupancy data accessible |
 
-### test_routing.py (13 tests)
+### test_routing.py (28 tests)
 | Test | What it verifies |
 |------|-----------------|
 | `test_direct_journey` | S13→S01 returns a result with correct origin/dest |
@@ -67,7 +70,7 @@ python -m pytest tests/ -v
 | `test_delay_warnings_present` | Delay warnings list exists |
 | `test_no_delay_no_warnings` | No warnings without delays |
 
-### test_fleet_simulator.py (6 tests)
+### test_fleet_simulator.py (10 tests)
 | Test | What it verifies |
 |------|-----------------|
 | `test_fleet_initialised` | Buses created, 2 spares exist |
@@ -77,17 +80,25 @@ python -m pytest tests/ -v
 | `test_infeasible_response_not_recommended` | No-spare = infeasible |
 | `test_nonexistent_bus` | Error returned for ghost bus |
 
-### test_api.py (11 tests)
+### test_grok_chat.py (2 tests)
+| Test | What it verifies |
+|------|-----------------|
+| `test_chat_uses_deterministic_reply_without_xai_key` | Built-in reply remains available without an API key |
+| `test_chat_uses_xai_to_phrase_grounded_reply` | Grok phrases only the verified transit context |
+
+### test_api.py (27 tests)
 | Test | What it verifies |
 |------|-----------------|
 | `test_health` | GET /api/health returns ok |
 | `test_get_stops` | ≥15 stops returned |
 | `test_get_routes` | ≥4 routes returned |
 | `test_journey_search_valid` | POST search returns options |
+| `test_journey_search_filters_service_day` | Weekday/weekend searches use the matching scheduled trips |
 | `test_journey_search_invalid_stop` | 400 for bad stop ID |
 | `test_journey_search_no_route` | Empty options at 23:00 |
 | `test_saved_routes_crud` | Create/list/get/delete lifecycle |
 | `test_chat_endpoint` | Chat returns reply + intent |
+| `test_chat_passes_service_day_to_chat_service` | Chat API forwards selected service-day category |
 | `test_fleet_state` | Fleet state returned with simulated=true |
 | `test_fleet_disruption` | Disruption evaluation works |
 | `test_delays_crud` | Set/list/clear delays |
@@ -95,7 +106,7 @@ python -m pytest tests/ -v
 ## Expected Output
 
 ```
-49 passed in ~1.2s
+86 passed
 ```
 
 ## Writing New Tests

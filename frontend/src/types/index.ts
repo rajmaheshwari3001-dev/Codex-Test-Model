@@ -1,5 +1,7 @@
 /* Shared TypeScript types matching the backend API models. */
 
+export type ServiceDay = 'weekday' | 'weekend'
+
 export interface Stop {
   stop_id: string
   stop_name: string
@@ -69,6 +71,7 @@ export interface SavedRoute {
   destination_stop_name: string
   preferred_departure_time: string
   preference: string
+  service_day: ServiceDay
 }
 
 export interface ChatResponse {
