@@ -43,6 +43,11 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
     onSearch(origin, destination, time, preference, serviceDay)
   }
 
+  // Calculate if the entered departure time is outside active timetable operating hours (06:30 to 12:30)
+  const [hours, minutes] = time.split(':').map(Number)
+  const currentMinutesVal = (isNaN(hours) ? 0 : hours) * 60 + (isNaN(minutes) ? 0 : minutes)
+  const isOutOfServiceHours = currentMinutesVal < 6 * 60 + 30 || currentMinutesVal > 12 * 60 + 30
+
   // Active timetable hours in the sample dataset are between 06:30 and 12:30
   const quickTimes = [
     { label: '07:00 (Early)', value: '07:00' },
@@ -124,6 +129,84 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
         </div>
       </div>
 
+      {/* Timetable Operating Windows Block */}
+      <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-3 space-y-2">
+        <div className="flex items-center justify-between text-xs font-bold text-gray-800">
+          <span className="flex items-center gap-1.5">
+            <span>🕒</span>
+            <span>Timetable Operating Windows</span>
+          </span>
+          <span className="text-[10px] text-gray-500 font-normal">06:30 – 12:30 Active</span>
+        </div>
+        <div className="grid grid-cols-3 gap-1.5 text-center text-[11px]">
+          <button
+            type="button"
+            onClick={() => setTime('08:00')}
+            className={`p-2 rounded-lg border text-left transition-all ${
+              currentMinutesVal >= 390 && currentMinutesVal <= 570
+                ? 'bg-emerald-50 border-emerald-400 ring-1 ring-emerald-300 text-emerald-950 font-bold shadow-2xs'
+                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <div className="font-semibold text-emerald-700 text-xs">06:30 – 09:30</div>
+            <div className="text-[10px] text-gray-500 leading-tight">Morning Peak (All routes)</div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setTime('10:30')}
+            className={`p-2 rounded-lg border text-left transition-all ${
+              currentMinutesVal > 570 && currentMinutesVal <= 750
+                ? 'bg-blue-50 border-blue-400 ring-1 ring-blue-300 text-blue-950 font-bold shadow-2xs'
+                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <div className="font-semibold text-blue-700 text-xs">09:30 – 12:30</div>
+            <div className="text-[10px] text-gray-500 leading-tight">Midday Service</div>
+          </button>
+          <div className="p-2 rounded-lg border border-dashed border-gray-300 bg-gray-100/70 text-gray-400 text-left cursor-not-allowed">
+            <div className="font-semibold text-gray-500 text-xs">12:31 – 23:59</div>
+            <div className="text-[10px] text-gray-400 leading-tight">Off Service (No trips)</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Out of Service Hours Warning Block (Appears when user types e.g. 17:30 or 21:00) */}
+      {isOutOfServiceHours && (
+        <div role="status" className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-950 space-y-1.5 shadow-xs">
+          <div className="flex items-center gap-1.5 font-bold text-amber-900">
+            <span>⚠️</span>
+            <span>Selected Departure ({time}) is Outside Service Hours</span>
+          </div>
+          <p className="text-[11px] text-amber-800 leading-relaxed">
+            In this sample dataset, all daily transit timetables operate between <strong>06:30 and 12:30</strong>. Searches at {time} will return zero scheduled buses.
+          </p>
+          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            <span className="text-[11px] font-semibold text-amber-900">Switch to active time:</span>
+            <button
+              type="button"
+              onClick={() => setTime('08:00')}
+              className="px-2 py-0.5 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium text-[11px] transition-colors"
+            >
+              08:00 (Peak AM)
+            </button>
+            <button
+              type="button"
+              onClick={() => setTime('09:30')}
+              className="px-2 py-0.5 bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 rounded font-medium text-[11px] transition-colors"
+            >
+              09:30
+            </button>
+            <button
+              type="button"
+              onClick={() => setTime('11:00')}
+              className="px-2 py-0.5 bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 rounded font-medium text-[11px] transition-colors"
+            >
+              11:00
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Departure Time & Service Day */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
         <div>
@@ -144,8 +227,8 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
             }}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 font-mono bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
           />
-          <p id="departure-time-hint" className="mt-1 text-[11px] text-indigo-700 font-medium">
-            ⏱️ Sample timetable hours: 06:30 – 12:30
+          <p id="departure-time-hint" className="mt-1 text-[11px] text-gray-500">
+            Enter between 06:30 and 12:30 for active trips.
           </p>
         </div>
 
@@ -171,7 +254,7 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
       {/* Quick Time Preset Chips (Matched to actual dataset trips) */}
       <div>
         <span className="block text-[11px] font-medium text-gray-500 mb-1.5">
-          Active Timetable Presets (06:30 - 12:30):
+          Active Timetable Departure Presets:
         </span>
         <div className="flex flex-wrap gap-1.5">
           {quickTimes.map(qt => (
@@ -194,28 +277,28 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
         </div>
       </div>
 
-      {/* Quick Try Presets */}
+      {/* Popular Active Routes to Try */}
       <div className="p-2.5 rounded-lg bg-indigo-50/60 border border-indigo-100 text-[11px]">
         <span className="font-semibold text-indigo-900 block mb-1">✨ Popular Active Routes to Try:</span>
         <div className="flex flex-wrap gap-1">
           <button
             type="button"
             onClick={() => handlePreset('S02', 'S08', '08:00')}
-            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium"
+            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium transition-colors"
           >
             Kashmere Gate → Saket (08:00)
           </button>
           <button
             type="button"
             onClick={() => handlePreset('S13', 'S01', '07:00')}
-            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium"
+            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium transition-colors"
           >
             Dwarka → Rajiv Chowk (07:00)
           </button>
           <button
             type="button"
             onClick={() => handlePreset('S05', 'S08', '09:00')}
-            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium"
+            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium transition-colors"
           >
             Connaught Place → Saket (09:00)
           </button>
