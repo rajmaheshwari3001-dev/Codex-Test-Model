@@ -2,19 +2,21 @@
 
 ## Current status
 
-**Baseline established; iterative acceptance work is in progress.** The current
-prototype starts locally, returns representative passenger and fleet API
-responses, passes its existing backend suite, and builds the frontend. These
-results do not yet establish complete passenger, fleet, or browser acceptance.
+**Iterative acceptance work is in progress.** Passenger search, chat, saved
+routes, crowding, simulated delay, and Leaflet/OpenStreetMap map behavior have
+been exercised in a browser. Fleet breakdown and delay scenarios, baseline
+comparisons, and decision acknowledgements have also been exercised. Fleet
+approval currently acknowledges a response without applying it to the
+simulated fleet state; this is the next high-priority defect.
 
 | Measure | Current value | Meaning |
 |---|---:|---|
-| Verified requirement completion | **78%** | Weighted P/F/I register; only PASS earns full points and PARTIAL earns half |
-| Implementation estimate | **About 75%** | Engineering estimate that the listed feature areas exist in code; not acceptance evidence |
-| Backend test execution | **69 passed, 0 failed** | Full suite rerun after routing and fleet acceptance tests |
-| Frontend type-check/build | **Passed** | `tsc -b && vite build`; production output built after routing changes |
-| API smoke checks | **5 checks passed** | Health, stops, routes, sample journey search, and fleet state |
-| Browser workflow | **Not tested** | A frontend build does not verify browser interactions |
+| Verified requirement completion | **89.5%** | Weighted P/F/I register; only PASS earns full points and PARTIAL earns half |
+| Implementation estimate | **About 80%** | Coarse engineering estimate; not acceptance evidence or the weighted score |
+| Backend test execution | **70 passed, 0 failed** | Full suite after direction-aware intermediate-stop IDs |
+| Frontend type-check/build | **Passed** | `npm run build` ran `tsc -b` and Vite production build |
+| API smoke checks | **5 baseline checks passed** | Health, stops, routes, sample journey search, and fleet state |
+| Browser workflow | **Manual acceptance checks passed, with one state defect** | Passenger and fleet workflows exercised; fleet approval does not yet update state |
 | Coverage percentage | **Not measured** | No coverage-instrumented test run was performed |
 
 The implementation estimate is a coarse scope estimate, not the weighted
@@ -25,11 +27,12 @@ completion score. The verified score is calculated in
 
 - Repository: `https://github.com/rajmaheshwari3001-dev/Codex-Test-Model`
 - Branch: `main`
-- Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`
-- Baseline working tree: clean before this documentation iteration.
-- Current development iteration: **1 — routing correctness and acceptance tests**.
-- Latest successful delivery: `29f5a9c` (`main`).
-- Last remote verification: `origin/main` points to `29f5a9c7835ee7162da5d9ea45e9e8d8a5637c37`.
+- Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`.
+- Current development iteration: **2 — browser acceptance and map-path correctness**.
+- Latest successful delivery: `08de2c9` (`main`) before iteration 2 is committed.
+- Iteration 2 changes are local and await final review, commit, and push.
+- The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
+  preserved and excluded.
 
 ## Baseline verification
 
@@ -76,47 +79,69 @@ These are representative smoke checks, not complete workflow acceptance tests.
 - Leaflet map using OpenStreetMap tiles.
 - Backend unit/API tests and local setup documentation.
 
+## Browser acceptance evidence
+
+Manual Playwright checks were run against the local frontend and backend:
+
+- Passenger route search displayed the 60-minute Dwarka Sec-21 → Rajiv Chowk
+  journey and ₹30 sample fare.
+- The selected route appeared on the map with OpenStreetMap tiles and a
+  highlighted line through all five trip stops. The map previously drew only
+  the two endpoints; the response now includes intermediate stop IDs in trip
+  order, and the map uses them.
+- Searching Rajouri Garden → Rajiv Chowk at 08:50 showed T02's sample
+  crowding warning (high load, approximately 70%).
+- Applying a temporary 15-minute delay to T02 through the API and searching
+  again changed the displayed time to 09:21 → 09:45 and showed the simulated
+  delay warning. The temporary delay was cleared and the empty delay state
+  verified afterward.
+- The R01 chat answer returned its matching route name and stop sequence.
+- Saved-route lifecycle passed in the UI: create, list, Search/reopen, delete;
+  the page returned to “No saved routes yet.”
+- Fleet dashboard showed 21 simulated buses (19 active, 2 spare). Breakdown
+  and delay scenarios displayed baselines, alternatives, explanations, and
+  metrics. Approve/reject actions returned visible acknowledgements.
+- A follow-up API state check after approving “Deploy Spare Bus” found B-T01
+  still active and B-SPARE-1 still spare. This is a reproduced state-transition
+  defect, not a successful fleet dispatch.
+
 ## Known gaps and highest-priority concerns
 
-1. Routing now has regression evidence for delay-adjusted ordering, fare labels,
-   one fare per ride leg, and transfer-buffer boundaries. Midnight crossing
-   and service-date availability remain unverified.
-2. Passenger route search does not take a service date; weekday/weekend
-   availability is therefore not verified in the search flow.
-3. API tests do not establish that visible frontend controls and the complete
-   workflows work in a browser.
-4. Fleet metric formulas and response state have targeted tests, but fixed
-   passenger-impact assumptions are not validated against real operating data.
-5. The provided task identifies DEV-P05 but does not include an independently
+1. **High:** Fleet response approval currently returns a simulated
+   acknowledgement but does not apply the approved response to fleet state or
+   refresh the dashboard; rejection/state invariants also need acceptance tests.
+2. Fleet metrics include fixed assumptions and are not calibrated against real
+   operating data. Multi-bus coordination remains a simplified assignment
+   model, not dispatch planning.
+3. Passenger search does not take a service date; weekday/weekend availability
+   and midnight crossing remain unverified.
+4. The provided task identifies DEV-P05 but does not include an independently
    verifiable official statement URL or source document. The requirements
    register uses the supplied P/F/I criteria; source-to-register traceability
    remains unverified.
 
-There are no known baseline startup failures. The concerns above are gaps in
-verification or model scope and must not be presented as confirmed defects
-until tests reproduce them.
+No application startup failure is currently known. Fleet approval's missing
+state change is an observed defect; the other items are scope limitations or
+verification gaps.
 
 ## Requirements summary
 
-- Passenger: P1–P4, P6, P10, and P11 PASS for the tested synthetic-data
-  scope; P5, P7–P9 remain PARTIAL.
-- Fleet: F3, F4, F7, and F8 PASS for tested simulator/API scope; F1, F2, F5,
-  and F6 remain PARTIAL.
-- Integration/quality: I5 PASS for local setup documentation plus verified
-  backend startup/health and frontend build; I1–I4 and I6–I7 PARTIAL.
-- Weighted verified requirement score: **78 / 100 = 78%**.
+- Passenger: P1–P6 and P8–P11 PASS; P7 remains PARTIAL because missing
+  occupancy is not explicitly identified as unknown.
+- Fleet: F1–F4 and F7 PASS; F5, F6, and F8 PARTIAL.
+- Integration/quality: I3, I5, and I6 PASS; I1, I2, I4, and I7 PARTIAL.
+- Weighted verified requirement score: **89.5 / 100 = 89.5%**. This does not
+  override the open fleet state defect or synthetic-data limitations.
 
 See the requirement-by-requirement evidence and stable weights in
 [REQUIREMENTS_AUDIT.md](./REQUIREMENTS_AUDIT.md).
 
 ## Iteration log and next work
 
-See [ITERATION_LOG.md](./ITERATION_LOG.md) for completed and ongoing
-iterations. Iteration 1 fixed verified routing transfer/fare-label behavior,
-modeled the short-turn assignment in its scenario metrics, added API
-delay/crowding/approval/input validation tests, and documented quick local
-startup/API checks. Next, verify complete browser workflows; assess fleet
-metrics with clear limits on fixed assumptions.
+See [ITERATION_LOG.md](./ITERATION_LOG.md) for iteration evidence. Iteration 2
+fixed map journey geometry, added the API stop-ID sequence needed by the map,
+and completed broad manual browser checks. The next iteration must apply
+approved fleet response state and prove that rejection leaves state unchanged.
 
 ## Current blockers
 
@@ -128,15 +153,15 @@ metrics with clear limits on fixed assumptions.
 
 ## Latest test evidence
 
-- Backend: `69 passed, 1 warning`; command
+- Backend: `70 passed, 1 warning`; command
   `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`.
-  `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`
-  from the project parent.
 - Frontend: `npm run build`; TypeScript check and Vite production build passed
   from `frontend`.
-- API: five baseline checks and new TestClient regressions for invalid time,
-  delay/crowding effects, and fleet approval/rejection passed.
-- Browser: not tested.
-- Push: `29f5a9c` verified on `origin/main`; the unrelated untracked
-  `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` was preserved and excluded from the
-  commit.
+- Browser: manual checks passed for passenger search, map tile/path display,
+  crowd and delay warnings, chat, saved-route CRUD/reopen, fleet state display,
+  breakdown/delay scenarios, and approve/reject acknowledgements. Fleet
+  approval state mutation failed its acceptance check and remains open.
+- Temporary simulated passenger delay was cleared; API confirmed no active
+  delays remained.
+- Push: iteration 2 changes are not yet published. The unrelated untracked
+  `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` is preserved and excluded.

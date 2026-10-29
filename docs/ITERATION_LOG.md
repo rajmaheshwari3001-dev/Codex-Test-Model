@@ -56,3 +56,52 @@
   points to this commit.
 - **Next task:** Audit fleet state transition semantics and improve or narrowly
   document action/metric assumptions.
+
+## Iteration 2 — Browser acceptance and map-path correctness
+
+- **Date/time:** 29 Oct 2026, 13:13 IST.
+- **Objective:** Exercise the passenger/fleet workflows in a browser and fix
+  any evidenced mismatch between the selected journey and its map rendering.
+- **Why selected:** The baseline had no browser evidence, and visual map
+  correctness is part of the passenger requirement and route consistency.
+- **Candidates and prioritization:** Scores use the specified
+  `(requirement impact × user benefit × confidence) / (effort × risk factor)`
+  formula, with each input rated 1–5. Browser acceptance (5×5×5)/(3×1) =
+  41.7; map geometry correction (5×5×5)/(2×2) = 31.3; fleet approval state
+  (5×5×4)/(4×3) = 8.3; explicit unknown-occupancy UI (3×4×4)/(2×2) = 12.
+  Browser verification and the map defect were grouped because the former
+  directly exposed the latter; fleet state remains the next high-priority
+  implementation task.
+- **Files changed:** `backend/app/models/journey.py`,
+  `backend/app/services/routing_service.py`,
+  `backend/tests/test_routing.py`, `frontend/src/types/index.ts`,
+  `frontend/src/components/TransportMap.tsx`, `docs/API_REFERENCE.md`,
+  `docs/PROGRESS.md`, `docs/REQUIREMENTS_AUDIT.md`,
+  `docs/KNOWN_LIMITATIONS.md`, and this log.
+- **Implementation:** Journey legs now expose intermediate stop IDs in actual
+  trip order; the map draws each selected leg through those stops rather than
+  connecting only its boarding/alighting endpoints.
+- **Tests executed:** Full backend pytest suite; frontend TypeScript check and
+  Vite production build; manual browser checks against local backend/frontend;
+  live health/journey/delay/fleet API checks.
+- **Tests passed:** Backend 70; frontend build passed. Browser checks passed
+  for passenger route search, map tile/path, crowd warning, delayed journey
+  display, chat answer, saved-route create/reopen/delete, fleet list, breakdown
+  and delay comparisons, and approve/reject acknowledgements.
+- **Tests failed:** The first post-change browser reload used a backend process
+  that had not been restarted to emit the new stop-ID field; after restarting
+  the backend, the API returned `S14,S15,S05` and browser route rendering
+  passed. The separate fleet-state acceptance check reproduced a defect:
+  after approving `deploy_spare`, B-T01 remained active and B-SPARE-1 remained
+  spare.
+- **Acceptance result:** Passenger P5–P9 and fleet F1–F2 gained browser
+  evidence; map path follows all trip stops. F8 is PARTIAL until an approved
+  action updates simulated state and rejection is proven not to mutate it.
+- **Completion percentage:** 78% before → 89.5% after. The previous audit's
+  summary table had an arithmetic typo (49 passenger points instead of the
+  51 implied by its row statuses); this iteration corrected the subtotal and
+  recalculated the overall score from the stable requirement weights.
+- **Commit:** Pending final review.
+- **Push status:** Not yet pushed.
+- **Next task:** Apply approved fleet response state, keep rejected scenarios
+  unchanged, and refresh the browser dashboard after a decision.

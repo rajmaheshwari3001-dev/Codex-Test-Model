@@ -256,6 +256,27 @@ def test_cheapest_search_charges_fare_once_per_ride_leg():
     assert options[0].total_fare == 5
     assert len(options[0].legs) == 1
     assert options[0].legs[0].intermediate_stops == ["M"]
+    assert options[0].legs[0].intermediate_stop_ids == ["M"]
+
+
+def test_intermediate_stop_ids_follow_trip_direction():
+    svc = _make_custom_service(
+        stop_specs=[("O", "1"), ("M", "1"), ("D", "2")],
+        trip_specs=[
+            ("T-REVERSE", "R-REVERSE", [
+                ("D", "08:00", "08:00"),
+                ("M", "08:05", "08:05"),
+                ("O", "08:10", "08:10"),
+            ]),
+        ],
+        fare_specs=[],
+    )
+
+    options = svc.search("D", "O", "08:00", preference="fastest")
+
+    assert len(options) == 1
+    assert options[0].legs[0].intermediate_stops == ["M"]
+    assert options[0].legs[0].intermediate_stop_ids == ["M"]
 
 
 def test_search_returns_distinct_fastest_and_cheapest_itineraries():

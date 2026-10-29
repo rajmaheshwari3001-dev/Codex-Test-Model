@@ -30,9 +30,9 @@ Update it only when new evidence changes the actual state.
   all malformed and out-of-range clock strings.
 - Chat is keyword/intent based, not a general language model. It may not
   understand requests outside the listed patterns.
-- Browser rendering and complete passenger workflows (search, route selection,
-  map, saved-route reopen/delete, delay and crowding display) have not yet been
-  exercised in this baseline.
+- Manual browser checks now cover passenger route search, selected map path,
+  sample crowding and delay warnings, chat, and saved-route create/reopen/delete.
+  These checks are not yet automated as a repeatable E2E suite.
 
 ## Fleet simulation
 
@@ -43,15 +43,18 @@ Update it only when new evidence changes the actual state.
 - The simulator's multi-bus coordination capability is limited to simplified
   spare deployment and a same-route short-turn scenario; it does not model
   vehicle locations, travel-time reachability, or real dispatch constraints.
-- Approval/rejection endpoint responses have API coverage, but they are
-  simulated acknowledgements and do not dispatch vehicles or mutate the
-  displayed fleet state. Dashboard effects remain unverified in a browser.
+- Approve/reject buttons return visible simulated acknowledgements. An API
+  check confirmed that approving a spare deployment does not mutate the
+  simulated fleet state (the affected bus remains active and the spare remains
+  spare); the dashboard also does not refresh to reflect an action. Applying
+  approved scenario state and preserving state on rejection remain open.
 
 ## Quality and operations
 
-- Baseline backend tests pass (64 passed, 1 Starlette/httpx deprecation
-  warning); frontend type checking and production build pass. This does not
-  establish browser usability or a test-coverage percentage.
+- Backend tests pass (70 passed, 1 Starlette/httpx deprecation warning);
+  frontend type checking and production build pass. Manual browser behavior has
+  been exercised, but there is no automated E2E suite or test-coverage
+  percentage.
 - Local setup and API operation were verified; production deployment,
   authentication, authorization, managed persistence, backups, monitoring,
   rate limits, and high availability are outside current scope.

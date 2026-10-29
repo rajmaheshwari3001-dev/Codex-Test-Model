@@ -29,6 +29,7 @@ class JourneyLeg(BaseModel):
     departure_time: str   # HH:MM - scheduled
     arrival_time: str     # HH:MM - scheduled
     intermediate_stops: List[str] = []  # stop names between board and alight
+    intermediate_stop_ids: List[str] = []
     fare: Optional[float] = None
     currency: str = "INR"
 

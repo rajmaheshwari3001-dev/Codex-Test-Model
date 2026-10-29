@@ -468,12 +468,16 @@ def _assemble_option(
         arr_min = last_conn.arrival_minutes + delay_minutes.get(trip_id, 0)
 
         # Intermediate stop names
-        intermediate = [
-            td.stops_by_id[stop_time.stop_id].stop_name
+        intermediate_stop_times = [
+            stop_time
             for stop_time in td.stop_times_by_trip[trip_id]
             if first_conn.stop_sequence_from < stop_time.stop_sequence
             < last_conn.stop_sequence_to
             and stop_time.stop_id in td.stops_by_id
+        ]
+        intermediate = [
+            td.stops_by_id[stop_time.stop_id].stop_name
+            for stop_time in intermediate_stop_times
         ]
 
         # Fare for this leg
@@ -520,6 +524,9 @@ def _assemble_option(
             departure_time=minutes_to_time(dep_min),
             arrival_time=minutes_to_time(arr_min),
             intermediate_stops=intermediate,
+            intermediate_stop_ids=[
+                stop_time.stop_id for stop_time in intermediate_stop_times
+            ],
             fare=leg_fare,
         )
 

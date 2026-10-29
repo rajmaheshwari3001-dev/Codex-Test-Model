@@ -112,6 +112,9 @@ Find journey options between two stops.
 | departure_time      | string | ✓        | Format: HH:MM                        |
 | preference          | string | No       | "fastest" or "cheapest"; defaults to "fastest" |
 
+Each journey leg returns intermediate stop names and IDs in trip order. The
+board and alight stops are excluded from both intermediate-stop lists.
+
 **Response 200 (routes found):**
 ```json
 {
@@ -136,6 +139,7 @@ Find journey options between two stops.
           "departure_time": "07:00",
           "arrival_time": "08:00",
           "intermediate_stops": ["Janakpuri West", "Rajouri Garden", "Connaught Place"],
+          "intermediate_stop_ids": ["S14", "S15", "S05"],
           "fare": 30.0,
           "currency": "INR"
         }

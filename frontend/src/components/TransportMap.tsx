@@ -53,21 +53,27 @@ export default function TransportMap({ stops, routes, selectedJourney }: Props) 
     if (selectedJourney) {
       const journeyStopIds = new Set<string>()
       const journeyCoords: [number, number][] = []
+      const stopsById = new Map(stops.map(stop => [stop.stop_id, stop]))
 
       selectedJourney.legs.forEach(leg => {
-        journeyStopIds.add(leg.board_stop_id)
-        journeyStopIds.add(leg.alight_stop_id)
+        const legStopIds = [
+          leg.board_stop_id,
+          ...leg.intermediate_stop_ids,
+          leg.alight_stop_id,
+        ]
+        legStopIds.forEach(stopId => journeyStopIds.add(stopId))
 
-        const boardStop = stops.find(s => s.stop_id === leg.board_stop_id)
-        const alightStop = stops.find(s => s.stop_id === leg.alight_stop_id)
-        if (boardStop) journeyCoords.push([boardStop.stop_lat, boardStop.stop_lon])
-        if (alightStop) journeyCoords.push([alightStop.stop_lat, alightStop.stop_lon])
+        const legCoords = legStopIds.map(stopId => stopsById.get(stopId))
+        if (legCoords.every((stop): stop is Stop => stop !== undefined)) {
+          const coordinates = legCoords.map(
+            stop => [stop.stop_lat, stop.stop_lon] as [number, number],
+          )
+          if (coordinates.length >= 2) {
+            L.polyline(coordinates, { color: '#4f46e5', weight: 5, opacity: 0.8 }).addTo(lg)
+            journeyCoords.push(...coordinates)
+          }
+        }
       })
-
-      // Draw journey path.
-      if (journeyCoords.length >= 2) {
-        L.polyline(journeyCoords, { color: '#4f46e5', weight: 5, opacity: 0.8 }).addTo(lg)
-      }
 
       // Highlight journey stops.
       stops.filter(s => journeyStopIds.has(s.stop_id)).forEach(s => {

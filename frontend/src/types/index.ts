@@ -30,6 +30,7 @@ export interface JourneyLeg {
   departure_time: string
   arrival_time: string
   intermediate_stops: string[]
+  intermediate_stop_ids: string[]
   fare: number | null
   currency: string
 }
