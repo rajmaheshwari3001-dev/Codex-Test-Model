@@ -57,7 +57,22 @@ export default function PassengerPage() {
       if (res.options.length > 0) {
         setSelected(res.options[0])
       } else {
-        setMessage(res.message || 'No connecting transit route was found for this departure time. Try searching an earlier or later time.')
+        const [hours, minutes] = time.split(':').map(Number)
+        const totalMinutes = (hours || 0) * 60 + (minutes || 0)
+        if (totalMinutes > 12 * 60 + 30) {
+          setMessage(
+            `No buses operate at or after ${time}. In this sample dataset, all daily bus timetables operate between 06:30 and 12:30. Please try selecting a time between 07:00 and 11:30 (e.g. 08:00).`
+          )
+        } else if (origin === 'S06' && ['S01', 'S02', 'S03', 'S04', 'S05'].includes(destination)) {
+          setMessage(
+            'In this sample dataset, Route R03 from India Gate only travels south toward Lajpat Nagar (S07) and Saket (S08). To travel north toward Kashmere Gate (S02), board from Connaught Place (S05) or Rajiv Chowk (S01).'
+          )
+        } else {
+          setMessage(
+            res.message ||
+              'No connecting transit route was found for this stop pair and departure time. Try selecting an active morning timetable like 08:00 or 09:30.'
+          )
+        }
       }
     } catch (e: unknown) {
       setMessage(e instanceof Error ? e.message : 'Search failed. Please try again.')

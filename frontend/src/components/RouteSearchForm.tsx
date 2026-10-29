@@ -23,6 +23,14 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
     setDestination(origin)
   }
 
+  function handlePreset(origId: string, destId: string, presetTime: string) {
+    setOrigin(origId)
+    setDestination(destId)
+    setTime(presetTime)
+    setError('')
+    onSearch(origId, destId, presetTime, preference, serviceDay)
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -35,12 +43,13 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
     onSearch(origin, destination, time, preference, serviceDay)
   }
 
+  // Active timetable hours in the sample dataset are between 06:30 and 12:30
   const quickTimes = [
+    { label: '07:00 (Early)', value: '07:00' },
     { label: '08:00 (Peak AM)', value: '08:00' },
     { label: '09:30', value: '09:30' },
-    { label: '13:00', value: '13:00' },
-    { label: '17:30 (Peak PM)', value: '17:30' },
-    { label: '21:00', value: '21:00' },
+    { label: '10:30', value: '10:30' },
+    { label: '11:30', value: '11:30' },
   ]
 
   return (
@@ -135,8 +144,8 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
             }}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 font-mono bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
           />
-          <p id="departure-time-hint" className="mt-1 text-[11px] text-gray-500">
-            Supports 00:00-47:59 for overnight trips.
+          <p id="departure-time-hint" className="mt-1 text-[11px] text-indigo-700 font-medium">
+            ⏱️ Sample timetable hours: 06:30 – 12:30
           </p>
         </div>
 
@@ -154,20 +163,25 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
             <option value="weekend">Weekend Timetable</option>
           </select>
           <p className="mt-1 text-[11px] text-gray-500">
-            Applies timetable filters.
+            Filters weekday vs weekend trips.
           </p>
         </div>
       </div>
 
-      {/* Quick Time Preset Chips */}
+      {/* Quick Time Preset Chips (Matched to actual dataset trips) */}
       <div>
-        <span className="block text-[11px] font-medium text-gray-500 mb-1.5">Quick Time Presets:</span>
+        <span className="block text-[11px] font-medium text-gray-500 mb-1.5">
+          Active Timetable Presets (06:30 - 12:30):
+        </span>
         <div className="flex flex-wrap gap-1.5">
           {quickTimes.map(qt => (
             <button
               key={qt.value}
               type="button"
-              onClick={() => setTime(qt.value)}
+              onClick={() => {
+                setTime(qt.value)
+                if (error) setError('')
+              }}
               className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
                 time === qt.value
                   ? 'bg-indigo-600 text-white border-indigo-600 font-medium'
@@ -177,6 +191,34 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
               {qt.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Quick Try Presets */}
+      <div className="p-2.5 rounded-lg bg-indigo-50/60 border border-indigo-100 text-[11px]">
+        <span className="font-semibold text-indigo-900 block mb-1">✨ Popular Active Routes to Try:</span>
+        <div className="flex flex-wrap gap-1">
+          <button
+            type="button"
+            onClick={() => handlePreset('S02', 'S08', '08:00')}
+            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium"
+          >
+            Kashmere Gate → Saket (08:00)
+          </button>
+          <button
+            type="button"
+            onClick={() => handlePreset('S13', 'S01', '07:00')}
+            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium"
+          >
+            Dwarka → Rajiv Chowk (07:00)
+          </button>
+          <button
+            type="button"
+            onClick={() => handlePreset('S05', 'S08', '09:00')}
+            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium"
+          >
+            Connaught Place → Saket (09:00)
+          </button>
         </div>
       </div>
 
