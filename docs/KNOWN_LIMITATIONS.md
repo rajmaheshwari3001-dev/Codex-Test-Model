@@ -60,7 +60,7 @@ Update it only when new evidence changes the actual state.
 
 ## Quality and operations
 
-- Backend tests pass (86 passed, 1 Starlette/httpx deprecation warning);
+- Backend tests pass (99 passed, 1 Starlette/httpx deprecation warning);
   frontend type checking and production build pass. Manual browser behavior has
   been exercised, but there is no automated E2E suite or test-coverage
   percentage.
@@ -69,9 +69,10 @@ Update it only when new evidence changes the actual state.
   temporary and scoped to function instances; saved routes are not durable or
   shared across instances. Delay, fleet, and approval state is also in memory
   and may diverge across instances or cold starts.
-- When `XAI_API_KEY` is configured, chat messages and the corresponding
-  synthetic transit context are sent to xAI's API for response phrasing.
-  Without the key, the built-in deterministic intent-based chat is used.
+- The chatbot supports a fixed set of transit intents and is not a general
+  assistant for arbitrary topics. When `XAI_API_KEY` is configured, help
+  responses may be phrased by xAI; schedule-derived route, departure, and
+  comparison answers remain deterministic and are not sent for rewriting.
 - User/session isolation is not implemented. Saved route data is a shared
   SQLite store within each running backend instance. Production use requires
   managed persistent storage, authentication, authorization, backups,

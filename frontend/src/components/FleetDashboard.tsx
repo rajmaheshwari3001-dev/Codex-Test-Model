@@ -6,11 +6,14 @@ import ScenarioComparison from './ScenarioComparison'
 export default function FleetDashboard() {
   const [buses, setBuses] = useState<BusState[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [simulated, setSimulated] = useState<boolean | null>(null)
   const [disruptionType, setDisruptionType] = useState('breakdown')
   const [selectedBus, setSelectedBus] = useState('')
   const [delayMinutes, setDelayMinutes] = useState(15)
   const [result, setResult] = useState<DisruptionResult | null>(null)
   const [actionMsg, setActionMsg] = useState('')
+  const [actionError, setActionError] = useState('')
   const [decisionMade, setDecisionMade] = useState(false)
   const [decisionPending, setDecisionPending] = useState(false)
   const [simulating, setSimulating] = useState(false)
@@ -20,17 +23,26 @@ export default function FleetDashboard() {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [searchQuery, setSearchQuery] = useState('')
 
+  async function loadFleet() {
+    setLoading(true)
+    setLoadError('')
+    try {
+      const data = await getFleetState()
+      setSimulated(data.simulated)
+      updateFleetState(data.buses)
+    } catch (error) {
+      setLoadError(
+        error instanceof Error
+          ? `Unable to load fleet telemetry: ${error.message}`
+          : 'Unable to load fleet telemetry.'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    getFleetState()
-      .then(data => updateFleetState(data.buses))
-      .catch(error => {
-        setActionMsg(
-          error instanceof Error
-            ? `Failed to load fleet state: ${error.message}`
-            : 'Failed to load fleet state.'
-        )
-      })
-      .finally(() => setLoading(false))
+    void loadFleet()
   }, [])
 
   function updateFleetState(nextBuses: BusState[]) {
@@ -48,6 +60,7 @@ export default function FleetDashboard() {
     setSimulating(true)
     setResult(null)
     setActionMsg('')
+    setActionError('')
     setDecisionMade(false)
     try {
       const res = await triggerDisruption({
@@ -59,7 +72,7 @@ export default function FleetDashboard() {
       updateFleetState(res.fleet_state.buses)
       setResult(res)
     } catch (error) {
-      setActionMsg(error instanceof Error ? error.message : 'Disruption evaluation failed.')
+      setActionError(error instanceof Error ? error.message : 'Disruption evaluation failed.')
     } finally {
       setSimulating(false)
     }
@@ -68,6 +81,7 @@ export default function FleetDashboard() {
   async function handleApprove(responseId: string, approved: boolean) {
     if (!result || decisionMade || decisionPending) return
     setDecisionPending(true)
+    setActionError('')
     try {
       const res = await approveResponse({
         disruption_id: result.disruption.disruption_id,
@@ -78,7 +92,7 @@ export default function FleetDashboard() {
       setDecisionMade(true)
       setActionMsg(res.message)
     } catch (error) {
-      setActionMsg(error instanceof Error ? error.message : 'Response decision failed.')
+      setActionError(error instanceof Error ? error.message : 'Response decision failed.')
     } finally {
       setDecisionPending(false)
     }
@@ -119,7 +133,7 @@ export default function FleetDashboard() {
     const onTimePercent =
       routeBuses.length > 0
         ? Math.round(((routeBuses.length - delayedCount - brokenCount) / routeBuses.length) * 100)
-        : 100
+        : null
 
     return {
       ...corridor,
@@ -139,21 +153,35 @@ export default function FleetDashboard() {
     )
   }
 
+  if (loadError) {
+    return (
+      <section role="alert" className="app-panel space-y-3 border-l-4 border-l-rose-600 p-5">
+        <div>
+          <h2 className="text-base font-semibold text-[var(--color-text)]">Fleet telemetry unavailable</h2>
+          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{loadError}</p>
+        </div>
+        <button type="button" onClick={() => void loadFleet()} className="app-button-primary px-4 text-sm">
+          Retry loading fleet
+        </button>
+      </section>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Simulation Transparency Banner */}
-      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+      <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-xs sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
-          <span className="text-xl" aria-hidden="true">🔬</span>
+          <span className="text-lg" aria-hidden="true">ℹ</span>
           <div>
-            <div className="text-sm font-bold text-emerald-950">Deterministic Operations Simulator</div>
-            <div className="text-xs sm:text-sm text-emerald-900/80 mt-0.5">
-              Fleet rolling stock telemetry, synthetic disruptions, and candidate interventions are evaluated using reproducible simulation models.
+            <div className="text-sm font-semibold text-emerald-950">Simulated fleet data</div>
+            <div className="mt-0.5 text-xs text-emerald-900/80 sm:text-sm">
+              Vehicles, incidents, and operational responses are generated by the local simulator.
             </div>
           </div>
         </div>
-        <span className="text-xs font-mono font-bold uppercase text-emerald-900 bg-white px-3 py-1 rounded-lg border border-emerald-200 shrink-0">
-          Sandboxed Mode
+        <span className="shrink-0 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-semibold text-emerald-800">
+          {simulated === true ? 'Simulated data' : simulated === false ? 'Live telemetry' : 'Status unavailable'}
         </span>
       </div>
 
@@ -182,14 +210,16 @@ export default function FleetDashboard() {
               </span>
               <span
                 className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                  c.brokenCount > 0
+                  c.busesCount === 0
+                    ? 'border border-slate-200 bg-slate-50 text-slate-600'
+                    : c.brokenCount > 0
                     ? 'bg-rose-100 text-rose-900 border border-rose-200'
                     : c.delayedCount > 0
                     ? 'bg-amber-100 text-amber-900 border border-amber-200'
                     : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
                 }`}
               >
-                {c.onTimePercent}% On-Time
+                {c.onTimePercent === null ? 'No telemetry' : `${c.onTimePercent}% on time`}
               </span>
             </div>
             <div className="text-xs font-medium text-slate-600 truncate">{c.name}</div>
@@ -197,7 +227,7 @@ export default function FleetDashboard() {
               <span>{c.busesCount} assigned buses</span>
               {c.delayedCount > 0 && <span className="text-amber-800 font-bold">+{c.delayedCount} delayed</span>}
               {c.brokenCount > 0 && <span className="text-rose-800 font-bold">+{c.brokenCount} failed</span>}
-              {c.delayedCount === 0 && c.brokenCount === 0 && (
+              {c.busesCount > 0 && c.delayedCount === 0 && c.brokenCount === 0 && (
                 <span className="text-emerald-800 font-bold">Nominal</span>
               )}
             </div>
@@ -216,6 +246,12 @@ export default function FleetDashboard() {
             {buses.length} vehicles registered across {uniqueRoutes.length} corridors
           </div>
         </div>
+
+        {buses.length === 0 && (
+          <div role="status" className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Fleet state loaded successfully, but the simulator returned no vehicles. Zero counts below reflect the returned data.
+          </div>
+        )}
 
         {/* Metric summary counters */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mb-6">
@@ -291,7 +327,9 @@ export default function FleetDashboard() {
               {filteredBuses.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
-                    No vehicles match the selected filter criteria.
+                    {buses.length === 0
+                      ? 'The current fleet state contains no vehicles.'
+                      : 'No vehicles match the selected filters.'}
                   </td>
                 </tr>
               ) : (
@@ -368,8 +406,10 @@ export default function FleetDashboard() {
             <select
               value={selectedBus}
               onChange={e => setSelectedBus(e.target.value)}
+              disabled={activeBuses.length === 0}
               className="w-full min-h-[44px] border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             >
+              {activeBuses.length === 0 && <option value="">No active vehicle available</option>}
               {activeBuses.map(b => (
                 <option key={b.bus_id} value={b.bus_id}>
                   {b.bus_id} ({b.route_id} • Trip {b.trip_id})
@@ -405,7 +445,7 @@ export default function FleetDashboard() {
               <span>Evaluating Countermeasures…</span>
             </>
           ) : (
-            <span>Simulate Disruption & Compare Responses</span>
+            <span>{activeBuses.length > 0 ? 'Simulate disruption & compare responses' : 'No active vehicles available'}</span>
           )}
         </button>
       </div>
@@ -427,12 +467,18 @@ export default function FleetDashboard() {
         </div>
       )}
 
+      {actionError && (
+        <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-900">
+          {actionError}
+        </div>
+      )}
+
       {actionMsg && (
         <div
           role="status"
-          className="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 text-xs sm:text-sm text-emerald-950 font-semibold flex items-center gap-2.5 shadow-xs"
+          className="flex items-center gap-2.5 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-xs font-semibold text-blue-950 shadow-xs sm:text-sm"
         >
-          <span aria-hidden="true" className="text-base text-emerald-700">ℹ️</span>
+          <span aria-hidden="true" className="text-base text-blue-700">ℹ</span>
           <span>{actionMsg}</span>
         </div>
       )}

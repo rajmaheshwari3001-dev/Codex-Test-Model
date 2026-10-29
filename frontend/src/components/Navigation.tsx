@@ -9,7 +9,7 @@ export default function Navigation() {
     let mounted = true
     getHealth()
       .then(res => {
-        if (mounted && res.status === 'ok') setBackendStatus('connected')
+        if (mounted) setBackendStatus(res.status === 'ok' ? 'connected' : 'disconnected')
       })
       .catch(() => {
         if (mounted) setBackendStatus('disconnected')
@@ -20,65 +20,88 @@ export default function Navigation() {
   }, [])
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `rounded-xl px-3 py-2 text-xs font-bold transition-colors focus:outline-none focus:ring-4 focus:ring-[#d9ed55]/25 sm:px-4 sm:text-sm ${
+    `relative flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold tracking-tight transition-all duration-200 ${
       isActive
-        ? 'bg-[#d9ed55] text-[#172421]'
-        : 'text-[#d1d8ce] hover:bg-[#293a35] hover:text-white'
+        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20'
+        : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100/80'
     }`
 
-  const statusLabel =
-    backendStatus === 'connected'
-      ? 'API online'
-      : backendStatus === 'disconnected'
-        ? 'API offline'
-        : 'Connecting'
-
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#172421] text-[#f6f2e7] shadow-[0_8px_28px_-20px_rgba(12,21,18,0.8)]">
-      <div className="mx-auto flex min-h-[72px] max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[13px] bg-[#d9ed55] text-[#172421]">
-            <span className="font-mono text-xs font-black tracking-tighter" aria-hidden="true">AS/</span>
+    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/85 backdrop-blur-xl shadow-xs">
+      <div className="mx-auto flex min-h-[72px] max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        {/* Brand & Identity */}
+        <div className="flex min-w-0 items-center gap-3.5">
+          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0B1020] to-[#172554] text-white shadow-md shadow-slate-900/10 ring-1 ring-white/20">
+            <span className="font-mono text-sm font-black tracking-tighter" aria-hidden="true">
+              AS
+            </span>
+            <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-emerald-500" />
+            </span>
           </div>
           <div className="min-w-0">
-            <div className="truncate text-base font-black tracking-tight text-white sm:text-lg">
-              Aaroh<span className="text-[#d9ed55]">—</span>Saarthi
+            <div className="flex items-center gap-2">
+              <h1 className="truncate text-lg sm:text-xl font-black tracking-tight text-slate-950">
+                Aaroh<span className="text-blue-600">—</span>Saarthi
+              </h1>
+              <span className="hidden sm:inline-block rounded-md bg-slate-900 px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-white">
+                2.0
+              </span>
             </div>
-            <div className="hidden text-[9px] font-semibold uppercase tracking-[0.2em] text-[#aeb9af] sm:block">
-              Delhi transit field guide
-            </div>
+            <p className="hidden text-xs font-semibold text-slate-500 sm:block">
+              Intelligent Public Transit Assistant & Fleet Coordination
+            </p>
           </div>
+
+          {/* Backend Status Pill */}
           <span
-            className={`hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold sm:inline-flex ${
+            className={`hidden md:inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold transition-colors ${
               backendStatus === 'connected'
-                ? 'border-[#6f8851]/50 bg-[#293a35] text-[#d9ed55]'
+                ? 'border-emerald-200 bg-emerald-50/80 text-emerald-900 shadow-2xs'
                 : backendStatus === 'disconnected'
-                  ? 'border-[#a66e54]/50 bg-[#3b2e2a] text-[#ffd4b8]'
-                  : 'border-white/15 bg-white/5 text-[#c8d0c8]'
+                ? 'border-rose-200 bg-rose-50 text-rose-900 shadow-2xs'
+                : 'border-slate-200 bg-slate-50 text-slate-600'
             }`}
-            title={backendStatus === 'connected' ? 'FastAPI backend connected' : 'Backend connection status'}
+            title={
+              backendStatus === 'connected'
+                ? 'FastAPI Engine connected at http://localhost:8000'
+                : 'Backend API offline'
+            }
             aria-live="polite"
           >
             <span
-              className={`h-1.5 w-1.5 rounded-full ${
+              className={`h-2 w-2 rounded-full ${
                 backendStatus === 'connected'
-                  ? 'bg-[#d9ed55]'
+                  ? 'bg-emerald-500 animate-pulse'
                   : backendStatus === 'disconnected'
-                    ? 'bg-[#f0a77e]'
-                    : 'bg-[#aeb9af]'
+                  ? 'bg-rose-500'
+                  : 'bg-slate-400'
               }`}
               aria-hidden="true"
             />
-            {statusLabel}
+            <span>
+              {backendStatus === 'connected'
+                ? 'API Online'
+                : backendStatus === 'disconnected'
+                ? 'API Offline'
+                : 'Connecting…'}
+            </span>
           </span>
         </div>
 
-        <nav aria-label="Main navigation" className="flex shrink-0 items-center gap-1 rounded-2xl bg-[#25342f] p-1">
+        {/* Mode Navigation Switcher */}
+        <nav
+          aria-label="Experience switcher"
+          className="flex shrink-0 items-center gap-1.5 rounded-2xl border border-slate-200/90 bg-slate-100/90 p-1.5 shadow-inner"
+        >
           <NavLink to="/" className={linkClass} end>
-            Passenger
+            <span className="text-base" aria-hidden="true">🗺️</span>
+            <span>Passenger Navigator</span>
           </NavLink>
           <NavLink to="/fleet" className={linkClass}>
-            <span className="hidden sm:inline">Fleet desk</span>
+            <span className="text-base" aria-hidden="true">⚡</span>
+            <span className="hidden sm:inline">Fleet Intelligence</span>
             <span className="sm:hidden">Fleet</span>
           </NavLink>
         </nav>

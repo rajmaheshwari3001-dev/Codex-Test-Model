@@ -57,10 +57,10 @@ FastAPI backend and routes `/api/*` to FastAPI; other paths go to the frontend.
 Do not import either subdirectory as a separate project.
 
 Add `XAI_API_KEY` as a Vercel environment variable using a newly issued xAI
-key. Never put API keys in this file or source control. The built-in
-deterministic chat works without the key; setting it enables Grok to phrase
-answers based on verified transit data. Optionally set `XAI_MODEL` to an
-xAI-supported chat model (default: `grok-3-mini`). Leave
+key. Never put API keys in this file or source control. Transit schedule
+answers remain deterministic; setting the key lets Grok phrase help responses.
+Optionally set `XAI_MODEL` to an xAI-supported chat model (default:
+`grok-3-mini`). Leave
 `VITE_API_BASE_URL` unset on Vercel so frontend calls use same-origin `/api`.
 After importing, deploy `main` and verify `/api/health` on the generated
 domain.
@@ -90,7 +90,8 @@ Press `Ctrl+C` in each terminal window.
 - Delay-aware routing with simulated disruptions
 - Crowding indicators when occupancy data is available
 - Save, reopen, and delete frequently used routes
-- Chat assistant for transport questions (intent-based)
+- Transit-focused chat for routes, departures, schedules, and delays; include
+  a departure time for journey or next-bus questions
 - Clear data provenance labels (scheduled/simulated)
 
 ### Module B: Fleet Intelligence
@@ -109,7 +110,7 @@ Press `Ctrl+C` in each terminal window.
 | Backend  | Python, FastAPI, Uvicorn                        |
 | Routing  | NetworkX, custom schedule-aware algorithm        |
 | Database | SQLite (saved routes)                           |
-| Testing  | Pytest (86 tests)                               |
+| Testing  | Pytest (99 tests)                               |
 | Data     | Synthetic CSV dataset (15 stops, 4 routes)      |
 
 ## Project Structure
@@ -155,7 +156,8 @@ The demo uses a **synthetic** transit network with:
 
 - Dataset is small and synthetic – not a real transit system
 - No real-time GPS tracking or live feed integration
-- Chat uses keyword-based intent detection (no LLM in V1)
+- Chat is transit-focused with a fixed set of supported intents; it is not a
+  general-purpose assistant for arbitrary topics
 - Fleet simulation uses simplified deterministic models
 - Delays and occupancy are static simulated values
 - No user authentication (hackathon prototype)

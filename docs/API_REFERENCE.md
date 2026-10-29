@@ -233,20 +233,27 @@ Send a natural-language transport question.
 **Request body** (`service_day` is optional and defaults to `weekday`):
 ```json
 {
-  "message": "How do I get from Rajiv Chowk to Saket?",
-  "service_day": "weekend"
+  "message": "How do I get from Rajouri Garden to Rajiv Chowk at 07:00?",
+  "service_day": "weekday"
 }
 ```
 
-When `XAI_API_KEY` is configured, Grok phrases the reply using the verified
-transit response as context. If the provider is unavailable, the endpoint
-returns HTTP 502. Without the key, the built-in intent-based reply is used.
+Route, comparison, and departure questions must include a time in `HH:MM` or
+am/pm form. If the time is missing, the assistant asks for it instead of
+assuming a default. Journey searches use the requested time as the earliest
+departure time; a returned trip may leave later, and the reply includes its
+actual departure and arrival. `service_day` filters weekday/weekend service.
+When no service is available at or after the requested time, the reply says so.
+
+Schedule-derived answers remain deterministic even when `XAI_API_KEY` is set;
+Grok is only used to phrase the help response and cannot add or alter
+departures, routes, fares, or availability.
 
 **Response 200:**
 ```json
 {
   "intent": "find_route",
-  "reply": "The fastest route takes 65 minutes. Path: Rajiv Chowk (08:00) → Connaught Place → AIIMS → Saket (09:05). Fare: ₹20.",
+  "reply": "For a weekday departure search at or after 07:00, the fastest journey departs at 07:36 and arrives at 08:00. It takes 24 minutes from departure. Path: Rajouri Garden (07:36) → Rajiv Chowk (08:00). Fare: ₹30.",
   "data": [...]
 }
 ```

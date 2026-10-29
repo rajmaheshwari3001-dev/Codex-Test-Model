@@ -7,7 +7,7 @@ the routing engine and schedule service.
 
 SUPPORTED INTENTS:
   • find_route     – "How do I get from X to Y?"
-  • next_departure – "When is the next bus from X?"
+  • next_departure – "When is the next bus from X after 10 am?"
   • explain_route  – "Tell me about route R01"
   • delay_info     – "Are there any delays?"
   • compare        – "Is there a cheaper route?"
@@ -39,6 +39,8 @@ def detect_intent(message: str) -> str:
     """Map a user message to an intent keyword."""
     lower = message.lower().strip()
 
+    if re.search(r"\b(cheap|cheapest|cheaper|compare|alternative|vs|versus)\b", lower):
+        return "compare"
     if re.search(r"\b(from|to|get|go|route|travel|journey|reach)\b", lower) and \
        re.search(r"\bto\b", lower):
         return "find_route"
@@ -48,11 +50,38 @@ def detect_intent(message: str) -> str:
         return "explain_route"
     if re.search(r"\b(delay|late|disruption|on time)\b", lower):
         return "delay_info"
-    if re.search(r"\b(cheap|cheapest|cheaper|compare|alternative|vs|versus)\b", lower):
-        return "compare"
     if re.search(r"\b(save|saved|bookmark|favourite|favorite)\b", lower):
         return "saved_routes"
     return "help"
+
+
+def _extract_requested_time(message: str) -> Optional[str]:
+    """Extract a 24-hour or am/pm time from a natural-language request."""
+    twelve_hour = re.search(
+        r"(?<!\d)(?P<hour>0?[1-9]|1[0-2])"
+        r"(?::(?P<minute>[0-5]\d))?\s*"
+        r"(?P<period>[ap])\.?m\.?(?=$|[\s,!?])",
+        message,
+        re.IGNORECASE,
+    )
+    if twelve_hour:
+        hour = int(twelve_hour.group("hour")) % 12
+        if twelve_hour.group("period").lower() == "p":
+            hour += 12
+        minute = int(twelve_hour.group("minute") or "0")
+        return f"{hour:02d}:{minute:02d}"
+
+    twenty_four_hour = re.search(
+        r"(?<!\d)(?P<hour>(?:[0-9]|[0-3][0-9]|4[0-7])):"
+        r"(?P<minute>[0-5]\d)(?!\d)",
+        message,
+    )
+    if twenty_four_hour:
+        return (
+            f"{int(twenty_four_hour.group('hour')):02d}:"
+            f"{twenty_four_hour.group('minute')}"
+        )
+    return None
 
 
 def _extract_stop_names(
@@ -127,14 +156,25 @@ def _handle_with_rules(
                 "intent": intent,
                 "reply": (
                     "I couldn't identify both stops. Please mention the origin "
-                    "and destination by name, e.g. 'How do I get from Rajiv Chowk "
-                    "to Hauz Khas?'"
+                    "and destination by name, along with a departure time, e.g. "
+                    "'How do I get from Rajiv Chowk to Hauz Khas at 10:00 am?'"
+                ),
+                "data": None,
+            }
+        departure_time = _extract_requested_time(message)
+        if departure_time is None:
+            return {
+                "intent": intent,
+                "reply": (
+                    "What time will you leave? Include a time such as "
+                    "'10:00 am' or '14:30'. I won't assume a departure time, "
+                    "because route availability changes with the timetable."
                 ),
                 "data": None,
             }
         try:
             options = routing_service.search(
-                origin_id, dest_id, "08:00",
+                origin_id, dest_id, departure_time,
                 preference="fastest",
                 delay_minutes=delay_service.get_all_delays(),
                 service_day=service_day,
@@ -145,8 +185,12 @@ def _handle_with_rules(
         if not options:
             return {
                 "intent": intent,
-                "reply": f"No route found from {td.stops_by_id[origin_id].stop_name} "
-                         f"to {td.stops_by_id[dest_id].stop_name} at 08:00.",
+                "reply": (
+                    f"No scheduled journey is available from "
+                    f"{td.stops_by_id[origin_id].stop_name} to "
+                    f"{td.stops_by_id[dest_id].stop_name} at or after "
+                    f"{departure_time} on the {service_day} schedule."
+                ),
                 "data": None,
             }
         opt = options[0]
@@ -155,8 +199,10 @@ def _handle_with_rules(
         )
         legs_text += f" → {opt.legs[-1].alight_stop_name} ({opt.legs[-1].arrival_time})"
         reply = (
-            f"The {opt.label.lower()} route takes {opt.total_duration_minutes} minutes. "
-            f"Path: {legs_text}."
+            f"For a {service_day} departure search at or after {departure_time}, "
+            f"the {opt.label.lower()} journey departs at {opt.departure_time} "
+            f"and arrives at {opt.arrival_time}. It takes "
+            f"{opt.total_duration_minutes} minutes from departure. Path: {legs_text}."
         )
         if opt.total_fare is not None:
             reply += f" Fare: ₹{opt.total_fare}."
@@ -175,20 +221,40 @@ def _handle_with_rules(
         if not stop_id:
             return {
                 "intent": intent,
-                "reply": "Please specify a stop name, e.g. 'Next bus from Rajiv Chowk'.",
+                "reply": (
+                    "Please specify a stop name and time, e.g. "
+                    "'Next bus from Rajiv Chowk after 10:00 am'."
+                ),
+                "data": None,
+            }
+        after_time = _extract_requested_time(message)
+        if after_time is None:
+            return {
+                "intent": intent,
+                "reply": (
+                    "What time should I check from that stop? For example, "
+                    "'Next bus from Rajiv Chowk after 10:00 am'."
+                ),
                 "data": None,
             }
         deps = sched.next_departures(
-            td, stop_id, "08:00", limit=5, service_day=service_day
+            td, stop_id, after_time, limit=5, service_day=service_day
         )
         if not deps:
             return {
                 "intent": intent,
-                "reply": f"No upcoming departures from {td.stops_by_id[stop_id].stop_name} after 08:00.",
+                "reply": (
+                    f"No upcoming departures from "
+                    f"{td.stops_by_id[stop_id].stop_name} after {after_time} "
+                    f"on the {service_day} schedule."
+                ),
                 "data": None,
             }
         lines = [f"  {d['route_name']} at {d['departure_time']}" for d in deps]
-        reply = f"Next departures from {td.stops_by_id[stop_id].stop_name}:\n" + "\n".join(lines)
+        reply = (
+            f"Departures from {td.stops_by_id[stop_id].stop_name} after "
+            f"{after_time}:\n" + "\n".join(lines)
+        )
         return {"intent": intent, "reply": reply, "data": deps}
 
     if intent == "explain_route":
@@ -237,24 +303,57 @@ def _handle_with_rules(
                 "reply": "Please specify two stops to compare routes between them.",
                 "data": None,
             }
-        options = routing_service.search(
-            origin_id, dest_id, "08:00",
-            preference="cheapest",
-            delay_minutes=delay_service.get_all_delays(),
-        )
-        if len(options) < 2:
+        departure_time = _extract_requested_time(message)
+        if departure_time is None:
             return {
                 "intent": intent,
-                "reply": "Only one route option is available for this pair.",
+                "reply": (
+                    "What time should I compare departures for? Include a time "
+                    "such as '10:00 am' or '14:30'."
+                ),
+                "data": None,
+            }
+        try:
+            options = routing_service.search(
+                origin_id, dest_id, departure_time,
+                preference="cheapest",
+                delay_minutes=delay_service.get_all_delays(),
+                service_day=service_day,
+            )
+        except ValueError as e:
+            return {"intent": intent, "reply": str(e), "data": None}
+        if not options:
+            return {
+                "intent": intent,
+                "reply": (
+                    f"No scheduled journey is available from "
+                    f"{td.stops_by_id[origin_id].stop_name} to "
+                    f"{td.stops_by_id[dest_id].stop_name} at or after "
+                    f"{departure_time} on the {service_day} schedule."
+                ),
+                "data": None,
+            }
+        if len(options) == 1:
+            return {
+                "intent": intent,
+                "reply": (
+                    f"Only one scheduled route option is available at or after "
+                    f"{departure_time} on the {service_day} schedule."
+                ),
                 "data": [o.model_dump() for o in options] if options else None,
             }
         reply_parts = []
         for opt in options:
             fare_str = f"₹{opt.total_fare}" if opt.total_fare is not None else "N/A"
             reply_parts.append(
-                f"  {opt.label}: {opt.total_duration_minutes} min, fare {fare_str}"
+                f"  {opt.label}: departs {opt.departure_time}, arrives "
+                f"{opt.arrival_time}, {opt.total_duration_minutes} min, "
+                f"fare {fare_str}"
             )
-        reply = "Route comparison:\n" + "\n".join(reply_parts)
+        reply = (
+            f"Route comparison for departures at or after {departure_time} "
+            f"on the {service_day} schedule:\n" + "\n".join(reply_parts)
+        )
         return {"intent": intent, "reply": reply, "data": [o.model_dump() for o in options]}
 
     if intent == "saved_routes":
@@ -280,11 +379,11 @@ def _handle_with_rules(
         "intent": "help",
         "reply": (
             "I can help with:\n"
-            "  • 'How do I get from Rajiv Chowk to Saket?' – find a route\n"
-            "  • 'Next bus from Kashmere Gate' – upcoming departures\n"
+            "  • 'How do I get from Rajiv Chowk to Saket at 10:00 am?' – find a route\n"
+            "  • 'Next bus from Kashmere Gate after 10:00 am' – upcoming departures\n"
             "  • 'Tell me about route R01' – route details\n"
             "  • 'Are there any delays?' – current disruptions\n"
-            "  • 'Compare routes from New Delhi Station to Hauz Khas' – alternatives\n"
+            "  • 'Compare routes from New Delhi Station to Hauz Khas at 14:30' – alternatives\n"
             "  • 'Show saved routes' – your bookmarks"
         ),
         "data": None,
@@ -296,7 +395,7 @@ class GrokChatError(RuntimeError):
 
 
 def _compose_with_grok(message: str, grounded_response: Dict[str, Any]) -> str:
-    """Rephrase a deterministic, data-grounded response without adding facts."""
+    """Rephrase the help response using the transit-only system prompt."""
     context = json.dumps(
         {
             "verified_reply": grounded_response["reply"],
@@ -363,6 +462,8 @@ def handle_message(
     result = _handle_with_rules(
         message, td, routing_service, delay_service, service_day
     )
-    if settings.xai_api_key:
+    # Keep schedule-derived answers deterministic; a language model must not
+    # add or alter departures, routes, fares, or availability.
+    if settings.xai_api_key and result["intent"] == "help":
         result["reply"] = _compose_with_grok(message, result)
     return result

@@ -135,3 +135,4 @@ The purpose of this test plan is to establish a rigorous, repeatable verificatio
 | :--- | :--- | :--- |
 | `TC-SEC-01` | Secrets in repository | No API keys, credentials, or private credentials committed. |
 | `TC-PERF-01` | Frontend production bundle | Bundle builds in $<4\text{s}$ with $<150\text{KB}$ gzipped JavaScript. |
+

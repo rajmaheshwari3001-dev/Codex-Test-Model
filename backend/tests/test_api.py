@@ -180,6 +180,92 @@ def test_chat_endpoint(client):
     assert "Blue Line" in data["reply"]
 
 
+def test_chat_route_search_respects_requested_time(client):
+    resp = client.post(
+        "/api/chat",
+        json={
+            "message": "How do I get from ITO to Hauz Khas at 10 am?",
+            "service_day": "weekday",
+        },
+    )
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["intent"] == "find_route"
+    assert data["data"] is None
+    assert "at or after 10:00 on the weekday schedule" in data["reply"]
+
+
+def test_chat_route_search_requires_departure_time(client):
+    resp = client.post(
+        "/api/chat",
+        json={"message": "How do I get from ITO to Hauz Khas?"},
+    )
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["intent"] == "find_route"
+    assert data["data"] is None
+    assert "What time will you leave?" in data["reply"]
+
+
+def test_chat_compare_uses_requested_time_and_service_day(client, monkeypatch):
+    routing_service = chat_api._routing_service
+    assert routing_service is not None
+    received = {}
+
+    def fake_search(
+        origin_id,
+        destination_id,
+        departure_time,
+        preference,
+        delay_minutes,
+        service_day,
+    ):
+        received.update(
+            origin_id=origin_id,
+            destination_id=destination_id,
+            departure_time=departure_time,
+            preference=preference,
+            service_day=service_day,
+        )
+        return []
+
+    monkeypatch.setattr(routing_service, "search", fake_search)
+    resp = client.post(
+        "/api/chat",
+        json={
+            "message": "Is there a cheaper route from ITO to Hauz Khas at 10 am?",
+            "service_day": "weekend",
+        },
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["intent"] == "compare"
+    assert resp.json()["data"] is None
+    assert "at or after 10:00 on the weekend schedule" in resp.json()["reply"]
+    assert received == {
+        "origin_id": "S11",
+        "destination_id": "S09",
+        "departure_time": "10:00",
+        "preference": "cheapest",
+        "service_day": "weekend",
+    }
+
+
+def test_chat_next_departure_uses_requested_time(client):
+    resp = client.post(
+        "/api/chat",
+        json={"message": "When is the next bus from ITO after 10 am?"},
+    )
+
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["intent"] == "next_departure"
+    assert data["data"]
+    assert all(departure["departure_time"] >= "10:00" for departure in data["data"])
+
+
 def test_chat_passes_service_day_to_chat_service(client, monkeypatch):
     received = {}
 

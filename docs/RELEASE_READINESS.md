@@ -82,3 +82,4 @@ npm run build
 1. **Synthetic Timetable Operating Hours:** The sample GTFS timetable (`stop_times.csv`) catalogs 19 trips operating between **06:30 and 12:30**. Afternoon and evening hours (after 12:30) have no catalogued trips in this demo dataset. The frontend displays this operating scope and provides 1-click active departure presets.
 2. **One-Way Route R03 (Red Line):** Route R03 operates southbound from Connaught Place (`S05`) to Saket (`S08`). Reverse northbound trips from India Gate toward Kashmere Gate are topologically not in the dataset; users are guided to board from Connaught Place.
 3. **SmartRoute GPS Tracking:** Live vehicle GPS tracking, driver mobile trace logging, and automatic timetable discovery from GPS coordinates are not implemented. All fleet telemetry is generated deterministically by the local simulator.
+

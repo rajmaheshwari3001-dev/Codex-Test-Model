@@ -74,3 +74,4 @@
 * **Root Cause:** No mechanism existed for passengers to copy or export journey itineraries.
 * **Fix Implemented:** Added `[📋 Copy Plan]` button that formats legs, times, transfers, and fare into a clean text itinerary and writes to the system clipboard with toast feedback.
 * **Verification:** Verified clipboard contents and toast confirmation.
+

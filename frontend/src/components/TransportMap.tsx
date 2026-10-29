@@ -44,11 +44,12 @@ export default function TransportMap({
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
-    const mapContainer = containerRef.current
-    const map = L.map(mapContainer, {
-      zoomControl: true,
+    const map = L.map(containerRef.current, {
+      zoomControl: false, // Custom zoom button placement
       scrollWheelZoom: true,
     }).setView([28.6139, 77.209], 12)
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map)
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution:
@@ -59,12 +60,8 @@ export default function TransportMap({
 
     mapRef.current = map
     layerGroupRef.current = L.layerGroup().addTo(map)
-    const resizeObserver = new ResizeObserver(() => map.invalidateSize())
-    resizeObserver.observe(mapContainer)
-    window.requestAnimationFrame(() => map.invalidateSize())
 
     return () => {
-      resizeObserver.disconnect()
       map.remove()
       mapRef.current = null
     }
@@ -101,9 +98,9 @@ export default function TransportMap({
 
       if (validRoutePoints.length >= 2) {
         const poly = L.polyline(validRoutePoints, {
-          color: route.route_color || '#94a3b8',
+          color: route.route_color || '#2563eb',
           weight: isFilteredIn && selectedRouteFilter !== 'ALL' ? 6 : 3.5,
-          opacity: isFilteredIn ? (selectedRouteFilter !== 'ALL' ? 0.95 : 0.45) : 0.12,
+          opacity: isFilteredIn ? (selectedRouteFilter !== 'ALL' ? 1.0 : 0.45) : 0.12,
           dashArray: isFilteredIn && selectedRouteFilter !== 'ALL' ? undefined : '5, 5',
         })
 
@@ -122,25 +119,24 @@ export default function TransportMap({
       const isSelectedDest = s.stop_id === destinationStopId
       const servingRoutes = routesByStopId.get(s.stop_id) || []
 
-      // Determine marker styling
-      let radius = 5.5
-      let color = '#475569'
-      let fillColor = '#cbd5e1'
-      let fillOpacity = 0.85
+      let radius = 6
+      let color = '#334155'
+      let fillColor = '#e2e8f0'
+      let fillOpacity = 0.9
       let weight = 2
 
       if (isSelectedOrigin) {
-        radius = 9
+        radius = 10
         color = '#064e3b'
         fillColor = '#10b981'
         fillOpacity = 1
-        weight = 3
+        weight = 3.5
       } else if (isSelectedDest) {
-        radius = 9
+        radius = 10
         color = '#881337'
         fillColor = '#ef4444'
         fillOpacity = 1
-        weight = 3
+        weight = 3.5
       }
 
       const marker = L.circleMarker([s.stop_lat, s.stop_lon], {
@@ -151,28 +147,27 @@ export default function TransportMap({
         weight,
       })
 
-      // Tooltip for quick hover
       marker.bindTooltip(
         `<div style="font-family: inherit;"><b>${s.stop_name}</b><br/><span style="font-size:11px;color:#64748b">Zone ${s.zone_id} • Stop ${s.stop_id}</span></div>`,
         { direction: 'top', offset: [0, -7] }
       )
 
-      // Rich interactive Leaflet Popup on click
+      // Rich interactive Metro Station Card in Popup
       const popupDiv = document.createElement('div')
-      popupDiv.className = 'text-xs font-sans p-1 min-w-[200px]'
+      popupDiv.className = 'text-xs font-sans p-1 min-w-[210px]'
       popupDiv.innerHTML = `
         <div style="font-family: inherit;">
-          <div style="font-weight: 800; font-size: 14px; color: #0f172a; margin-bottom: 2px;">${s.stop_name}</div>
-          <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Zone ${s.zone_id} • Stop ID: ${s.stop_id}</div>
+          <div style="font-weight: 900; font-size: 15px; color: #0f172a; margin-bottom: 2px;">${s.stop_name}</div>
+          <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Zone ${s.zone_id} • Node ${s.stop_id}</div>
           <div style="font-size: 11px; margin-bottom: 10px;">
-            <span style="font-weight: 700; color: #334155;">Serving Lines:</span>
+            <span style="font-weight: 700; color: #334155;">Connected Lines:</span>
             <div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">
               ${
                 servingRoutes.length > 0
                   ? servingRoutes
                       .map(
                         r =>
-                          `<span style="display:inline-block; padding: 2px 7px; border-radius: 5px; font-weight: 700; font-size: 11px; background-color: ${r.route_color || '#059669'}18; color: ${r.route_color || '#059669'}; border: 1px solid ${r.route_color || '#059669'}40;">${r.route_name}</span>`
+                          `<span style="display:inline-block; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 11px; background-color: ${r.route_color || '#2563eb'}20; color: ${r.route_color || '#2563eb'}; border: 1px solid ${r.route_color || '#2563eb'}50;">${r.route_name}</span>`
                       )
                       .join('')
                   : '<span style="color:#94a3b8">Delhi Transit Stop</span>'
@@ -180,10 +175,10 @@ export default function TransportMap({
             </div>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0;">
-            <button id="btn-orig-${s.stop_id}" type="button" style="padding: 6px 8px; font-size: 12px; font-weight: 700; color: #ffffff; background-color: #065f46; border: none; border-radius: 6px; cursor: pointer; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+            <button id="btn-orig-${s.stop_id}" type="button" style="padding: 7px 10px; font-size: 12px; font-weight: 800; color: #ffffff; background-color: #059669; border: none; border-radius: 8px; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
               📍 Set Origin
             </button>
-            <button id="btn-dest-${s.stop_id}" type="button" style="padding: 6px 8px; font-size: 12px; font-weight: 700; color: #ffffff; background-color: #b91c1c; border: none; border-radius: 6px; cursor: pointer; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+            <button id="btn-dest-${s.stop_id}" type="button" style="padding: 7px 10px; font-size: 12px; font-weight: 800; color: #ffffff; background-color: #dc2626; border: none; border-radius: 8px; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
               🎯 Set Dest
             </button>
           </div>
@@ -239,16 +234,16 @@ export default function TransportMap({
         if (legCoords.length >= 2) {
           // Glow shadow under active line
           L.polyline(legCoords, {
-            color: leg.route_color || '#059669',
-            weight: 9,
+            color: leg.route_color || '#2563eb',
+            weight: 10,
             opacity: 0.35,
           }).addTo(lg)
 
           // Main journey polyline
           L.polyline(legCoords, {
-            color: leg.route_color || '#059669',
-            weight: 5,
-            opacity: 0.95,
+            color: leg.route_color || '#2563eb',
+            weight: 5.5,
+            opacity: 0.98,
           })
             .bindTooltip(`${leg.route_name} (${leg.departure_time} - ${leg.arrival_time})`, {
               sticky: true,
@@ -263,44 +258,44 @@ export default function TransportMap({
       validStops.forEach(s => {
         if (s.stop_id === boardStopId) {
           L.circleMarker([s.stop_lat, s.stop_lon], {
-            radius: 9,
+            radius: 10,
             color: '#064e3b',
             fillColor: '#10b981',
             fillOpacity: 1,
-            weight: 3.5,
+            weight: 4,
           })
             .bindTooltip(`🟢 <b>Origin: ${s.stop_name}</b>`, {
               permanent: true,
               direction: 'top',
-              offset: [0, -11],
+              offset: [0, -12],
             })
             .addTo(lg)
         } else if (s.stop_id === finalAlightStopId) {
           L.circleMarker([s.stop_lat, s.stop_lon], {
-            radius: 9,
+            radius: 10,
             color: '#881337',
             fillColor: '#ef4444',
             fillOpacity: 1,
-            weight: 3.5,
+            weight: 4,
           })
             .bindTooltip(`🔴 <b>Destination: ${s.stop_name}</b>`, {
               permanent: true,
               direction: 'top',
-              offset: [0, -11],
+              offset: [0, -12],
             })
             .addTo(lg)
         } else if (transferStopIds.has(s.stop_id)) {
           L.circleMarker([s.stop_lat, s.stop_lon], {
-            radius: 8,
+            radius: 9,
             color: '#4c1d95',
             fillColor: '#8b5cf6',
             fillOpacity: 1,
-            weight: 3,
+            weight: 3.5,
           })
-            .bindTooltip(`🔄 <b>Transfer: ${s.stop_name}</b>`, {
+            .bindTooltip(`🔄 <b>Interchange: ${s.stop_name}</b>`, {
               permanent: true,
               direction: 'top',
-              offset: [0, -10],
+              offset: [0, -11],
             })
             .addTo(lg)
         }
@@ -309,17 +304,16 @@ export default function TransportMap({
       // Auto-fit bounds
       if (journeyCoords.length >= 2 && selectedRouteFilter === 'ALL') {
         mapRef.current.fitBounds(L.latLngBounds(journeyCoords.map(c => L.latLng(c[0], c[1]))), {
-          padding: [50, 50],
+          padding: [55, 55],
           maxZoom: 14,
         })
       }
     } else {
       setHasJourney(false)
-      // Fit all stops when no journey is selected and no single corridor is filtered
       if (validStops.length > 0 && selectedRouteFilter === 'ALL') {
         const allCoords = validStops.map(s => L.latLng(s.stop_lat, s.stop_lon))
         mapRef.current.fitBounds(L.latLngBounds(allCoords), {
-          padding: [35, 35],
+          padding: [40, 40],
         })
       }
     }
@@ -332,7 +326,7 @@ export default function TransportMap({
     if (validStops.length > 0) {
       const allCoords = validStops.map(s => L.latLng(s.stop_lat, s.stop_lon))
       mapRef.current.fitBounds(L.latLngBounds(allCoords), {
-        padding: [35, 35],
+        padding: [40, 40],
       })
     } else {
       mapRef.current.setView([28.6139, 77.209], 12)
@@ -340,29 +334,19 @@ export default function TransportMap({
   }
 
   return (
-    <div className="overflow-hidden rounded-[1.75rem] border border-[#d8d3c7] bg-[#fffdf7] shadow-[0_18px_50px_-36px_rgba(27,39,35,0.5)]">
-      <header className="flex items-center justify-between gap-3 border-b border-[#e7e3d9] bg-[#fffdf7] px-5 py-4">
-        <div>
-          <p className="text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#7b867b]">02 / Network map</p>
-          <h2 className="mt-1 text-lg font-black tracking-tight text-[#172421] sm:text-xl">Delhi, by line</h2>
-        </div>
-        <span className="rounded-full border border-[#d8d3c7] bg-[#f3f1e9] px-3 py-1.5 font-mono text-[10px] font-bold text-[#4c5c52]">
-          {stops.length} STOPS
-        </span>
-      </header>
-      <div className="relative">
-      {/* Top Floating Controls: Corridor Filter & Network Reset */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        {/* Corridor Filter Badges */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-white/95 backdrop-blur-md p-2 rounded-xl shadow-sm border border-slate-200 text-xs pointer-events-auto">
-          <span className="text-xs font-bold text-slate-500 uppercase px-1">Corridors:</span>
+    <div className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-sm relative">
+      {/* Floating Mobility HUD Header */}
+      <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-wrap items-center justify-between gap-2.5 pointer-events-none">
+        {/* Corridor Quick Selector */}
+        <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-white/20 bg-[#0B1020]/85 p-2 text-white shadow-xl backdrop-blur-xl pointer-events-auto">
+          <span className="text-xs font-black uppercase tracking-wider text-slate-400 px-1">Corridors:</span>
           <button
             type="button"
             onClick={() => setSelectedRouteFilter('ALL')}
-            className={`px-2.5 py-1 rounded-lg font-bold transition-colors ${
+            className={`rounded-xl px-3 py-1 text-xs font-bold transition-all ${
               selectedRouteFilter === 'ALL'
-                ? 'bg-slate-900 text-white shadow-2xs'
-                : 'text-slate-700 hover:bg-slate-100'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+                : 'text-slate-300 hover:bg-white/10 hover:text-white'
             }`}
           >
             All
@@ -372,15 +356,15 @@ export default function TransportMap({
               key={r.route_id}
               type="button"
               onClick={() => setSelectedRouteFilter(r.route_id)}
-              className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
+              className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold transition-all ${
                 selectedRouteFilter === r.route_id
-                  ? 'bg-emerald-800 text-white shadow-2xs'
-                  : 'text-slate-700 hover:bg-slate-100'
+                  ? 'bg-white text-slate-950 shadow-sm'
+                  : 'text-slate-300 hover:bg-white/10 hover:text-white'
               }`}
             >
               <span
-                className="w-2.5 h-2.5 rounded-full inline-block"
-                style={{ backgroundColor: r.route_color || '#059669' }}
+                className="h-2.5 w-2.5 rounded-full inline-block shadow-2xs"
+                style={{ backgroundColor: r.route_color || '#2563eb' }}
               />
               <span>{r.route_name.split(' ')[0]}</span>
             </button>
@@ -388,18 +372,19 @@ export default function TransportMap({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 bg-white/95 backdrop-blur-md p-2 rounded-xl shadow-sm border border-slate-200 text-xs pointer-events-auto">
+        <div className="flex items-center gap-2 rounded-2xl border border-white/20 bg-[#0B1020]/85 p-2 text-white shadow-xl backdrop-blur-xl pointer-events-auto">
           <button
             type="button"
             onClick={handleResetView}
-            className="px-3 py-1 text-slate-700 hover:text-emerald-800 hover:bg-slate-100 rounded-lg font-bold transition-colors"
+            className="rounded-xl px-3 py-1 text-xs font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-colors"
             title="Reset network view"
           >
-            Reset View
+            Reset Grid
           </button>
           {hasJourney && (
-            <span className="text-xs text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg font-bold border border-emerald-200">
-              Active Path
+            <span className="flex items-center gap-1.5 rounded-xl bg-blue-600/90 px-2.5 py-1 text-xs font-extrabold text-white shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+              Path Active
             </span>
           )}
         </div>
@@ -408,31 +393,29 @@ export default function TransportMap({
       {/* Main Leaflet Map Container */}
       <div
         ref={containerRef}
-        className="z-10 h-[390px] w-full sm:h-[460px] lg:h-[500px]"
+        className="w-full h-[480px] sm:h-[530px] lg:h-[580px] z-10"
         aria-label="Interactive Transit Map"
         role="region"
       />
-      </div>
 
-      {/* Map Footer Provenance Note & Interactive Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#e7e3d9] bg-[#f8f6f0] px-4 py-2.5 text-xs text-slate-600">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 font-semibold text-emerald-900">
-            <span className="inline-block w-3 h-3 rounded-full bg-emerald-500 shadow-2xs" />
-            Origin
+      {/* Bottom Telemetry & Provenance Strip */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-slate-900 px-5 py-3 text-xs text-slate-300">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5 font-bold text-emerald-400">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-sm" />
+            Origin Station
           </span>
-          <span className="flex items-center gap-1.5 font-semibold text-rose-900">
-            <span className="inline-block w-3 h-3 rounded-full bg-rose-500 shadow-2xs" />
+          <span className="flex items-center gap-1.5 font-bold text-rose-400">
+            <span className="h-2.5 w-2.5 rounded-full bg-rose-500 shadow-sm" />
             Destination
           </span>
-          <span className="flex items-center gap-1.5 font-semibold text-purple-900">
-            <span className="inline-block w-3 h-3 rounded-full bg-purple-500 shadow-2xs" />
-            Transfer
+          <span className="flex items-center gap-1.5 font-bold text-purple-400">
+            <span className="h-2.5 w-2.5 rounded-full bg-purple-500 shadow-sm" />
+            Interchange Hub
           </span>
-          <span className="text-slate-400 font-medium">| Click any stop marker to set origin/destination</span>
         </div>
         <span className="text-slate-400 font-medium">
-          OpenStreetMap tiles • Sample network • Scheduled timetable
+          Delhi GTFS Network Coordinates • Click any station node to route
         </span>
       </div>
     </div>

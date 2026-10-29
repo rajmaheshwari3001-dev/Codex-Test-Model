@@ -103,3 +103,4 @@
 | **1280 × 720** | Small laptop / HD | **PASS** | 5/7 column split balances journey search cards and map cleanly. |
 | **1440 × 900** | Standard desktop / MacBook | **PASS** | Optimal layout density; max-width (1440px) prevents awkward stretching. |
 | **1920 × 1080** | Large desktop (FHD) | **PASS** | Typography and interactive controls maintain comfortable scale without micro-text. |
+

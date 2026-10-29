@@ -21,10 +21,10 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
   function handleCopyItinerary(e: React.MouseEvent) {
     e.stopPropagation()
     const summaryLines = [
-      `🚍 Aaroh-Saarthi Journey Plan`,
-      `Route: ${option.label} (${option.total_duration_minutes} min, ₹${option.total_fare ?? 'N/A'})`,
-      `Departure: ${option.departure_time} | Arrival: ${option.arrival_time}`,
-      `Transfers: ${option.transfers.length === 0 ? 'Direct journey' : `${option.transfers.length} transfer(s)`}`,
+      `🚍 Aaroh-Saarthi Transit Itinerary`,
+      `• Preference: ${option.label} (${option.total_duration_minutes} min, ₹${option.total_fare ?? 'N/A'})`,
+      `• Departure: ${option.departure_time} | Arrival: ${option.arrival_time}`,
+      `• Transfers: ${option.transfers.length === 0 ? 'Direct journey' : `${option.transfers.length} transfer(s)`}`,
       ``,
       ...option.legs.map((leg, i) => {
         const transfer = option.transfers[i]
@@ -53,6 +53,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
 
   const isFastest = option.label.toLowerCase() === 'fastest'
   const isCheapest = option.label.toLowerCase() === 'cheapest'
+  const primaryRouteColor = option.legs[0]?.route_color || '#2563eb'
 
   return (
     <div
@@ -66,215 +67,226 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
           onSelect()
         }
       }}
-      className={`relative cursor-pointer rounded-[1.5rem] border-2 bg-[#fffdf7] p-5 text-left shadow-xs transition-all focus:outline-none focus:ring-4 focus:ring-[#d9ed55]/40 ${
+      className={`group relative overflow-hidden rounded-3xl border-2 bg-white text-left shadow-xs transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${
         selected
-          ? 'border-[#6c7d36] bg-[#f7f8ec] ring-4 ring-[#d9ed55]/20 shadow-sm'
-          : 'border-[#e2ded3] hover:border-[#aab487] hover:shadow-sm'
+          ? 'border-blue-600 ring-4 ring-blue-500/10 shadow-md'
+          : 'border-slate-200/90 hover:border-slate-300 hover:shadow-sm'
       }`}
     >
-      {/* Header bar */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2.5">
-          <span
-            className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
-              isFastest
-                ? 'bg-blue-100 text-blue-900 border border-blue-200'
-                : isCheapest
-                ? 'border border-[#d6dfad] bg-[#f1f4df] text-[#45552f]'
-                : 'bg-indigo-100 text-indigo-900 border border-indigo-200'
-            }`}
-          >
-            {option.label}
-          </span>
-          {option.transfers.length === 0 ? (
-            <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md">
-              Direct Route
-            </span>
-          ) : (
-            <span className="text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-md">
-              {option.transfers.length} {option.transfers.length === 1 ? 'Transfer' : 'Transfers'}
-            </span>
-          )}
-        </div>
-        <span className="text-xs text-slate-500 font-mono font-medium">
-          {option.data_status === 'scheduled' ? 'Scheduled Timetable' : option.data_status}
-        </span>
-      </div>
+      {/* Primary Corridor Color Indicator Stripe */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-2 transition-all group-hover:w-2.5"
+        style={{ backgroundColor: primaryRouteColor }}
+      />
 
-      {/* Main metrics (Duration, Times, Fare) */}
-      <div className="flex items-baseline justify-between mb-4 border-b border-slate-100 pb-3.5">
-        <div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
-              {option.total_duration_minutes}
+      <div className="pl-6 pr-5 py-5 sm:pl-7 sm:pr-6 space-y-4">
+        {/* Pass Header */}
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2">
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-wider ${
+                isFastest
+                  ? 'bg-blue-100 text-blue-900 border border-blue-200'
+                  : isCheapest
+                  ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+                  : 'bg-indigo-100 text-indigo-900 border border-indigo-200'
+              }`}
+            >
+              {option.label}
             </span>
-            <span className="text-sm sm:text-base font-semibold text-slate-500">min travel</span>
-          </div>
-          <div className="text-xs sm:text-sm font-semibold text-slate-700 mt-1">
-            Dep: <span className="font-mono text-slate-950 font-bold">{option.departure_time}</span> → Arr:{' '}
-            <span className="font-mono text-slate-950 font-bold">{option.arrival_time}</span>
-          </div>
-        </div>
 
-        <div className="text-right">
+            {option.transfers.length === 0 ? (
+              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-800">
+                Direct Line
+              </span>
+            ) : (
+              <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-900">
+                {option.transfers.length} {option.transfers.length === 1 ? 'Interchange' : 'Interchanges'}
+              </span>
+            )}
+          </div>
+
+          {/* Fare Badge */}
           {option.fare_available && option.total_fare !== null ? (
-            <div>
-              <span className="text-2xl sm:text-3xl font-black text-emerald-800">₹{option.total_fare}</span>
-              <div className="text-xs text-slate-400 font-medium">Total Fare</div>
+            <div className="flex items-baseline gap-1 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-1 text-emerald-900">
+              <span className="text-base font-black">₹{option.total_fare}</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Fare</span>
             </div>
           ) : (
             <span className="text-xs text-slate-400 italic">Fare not specified</span>
           )}
         </div>
-      </div>
 
-      {/* Step-by-Step Leg Details */}
-      <div className="space-y-3.5 mb-4">
-        {option.legs.map((leg, legIdx) => {
-          const isExpanded = Boolean(expandedLegs[legIdx])
-          const intermediateCount = leg.intermediate_stops?.length || 0
+        {/* Departure -> Arrival Times & Total Duration */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <span className="font-mono text-2xl sm:text-3xl font-black text-slate-950">
+                {option.departure_time}
+              </span>
+              <span className="text-slate-400 text-base font-bold">➔</span>
+              <span className="font-mono text-2xl sm:text-3xl font-black text-slate-950">
+                {option.arrival_time}
+              </span>
+            </div>
+            <div className="text-xs font-semibold text-slate-500">
+              Scheduled departure from {option.legs[0]?.board_stop_name}
+            </div>
+          </div>
 
-          return (
-            <div key={leg.leg_index} className="rounded-xl bg-slate-50/80 p-3.5 border border-slate-200/80 space-y-2">
-              {/* Leg Header with Route Badge */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span
-                    className="w-3 h-3 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: leg.route_color || '#059669' }}
-                    aria-hidden="true"
-                  />
-                  <span className="text-sm font-bold text-slate-900">{leg.route_name}</span>
-                  <span className="text-xs font-mono text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200 font-medium">
-                    Trip {leg.trip_id}
-                  </span>
-                </div>
+          {/* Duration Pill */}
+          <div className="text-right">
+            <div className="inline-flex items-baseline gap-1 rounded-2xl bg-slate-100 px-3.5 py-1.5 text-slate-900">
+              <span className="text-xl font-black">{option.total_duration_minutes}</span>
+              <span className="text-xs font-bold uppercase text-slate-500">min</span>
+            </div>
+          </div>
+        </div>
 
-                {/* Crowding badge */}
-                {leg.boarding_crowding_level && (
-                  <span
-                    className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                      leg.boarding_crowding_level === 'high'
-                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                        : leg.boarding_crowding_level === 'medium'
-                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                        : leg.boarding_crowding_level === 'low'
-                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                        : 'bg-slate-100 text-slate-600'
-                    }`}
-                  >
-                    {leg.boarding_crowding_level === 'unknown'
-                      ? 'Crowd: N/A'
-                      : `Crowd: ${leg.boarding_crowding_level.toUpperCase()}${
-                          leg.boarding_crowding_percent ? ` (${leg.boarding_crowding_percent}%)` : ''
-                        }`}
-                  </span>
-                )}
-              </div>
+        {/* Step-by-Step Transit Legs */}
+        <div className="space-y-2.5 pt-1">
+          {option.legs.map((leg, legIdx) => {
+            const isExpanded = Boolean(expandedLegs[legIdx])
+            const intermediateCount = leg.intermediate_stops?.length || 0
 
-              {/* Boarding and Alighting points */}
-              <div className="space-y-1.5 text-xs sm:text-sm">
-                <div className="flex items-baseline justify-between text-slate-800">
-                  <span className="font-medium">
-                    🟢 Board at <span className="font-bold text-slate-950">{leg.board_stop_name}</span>
-                  </span>
-                  <span className="font-mono text-xs sm:text-sm text-slate-700 font-bold">{leg.departure_time}</span>
-                </div>
+            return (
+              <div
+                key={leg.leg_index}
+                className="relative rounded-2xl border border-slate-200/90 bg-slate-50/60 p-3.5 space-y-2 transition-colors hover:bg-slate-50"
+              >
+                {/* Leg Badge */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-3 w-3 rounded-full shrink-0 shadow-2xs"
+                      style={{ backgroundColor: leg.route_color || '#2563eb' }}
+                    />
+                    <span className="text-xs sm:text-sm font-bold text-slate-900">{leg.route_name}</span>
+                    <span className="rounded border border-slate-200 bg-white px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-600">
+                      Trip {leg.trip_id}
+                    </span>
+                  </div>
 
-                {/* Intermediate stops toggle */}
-                {intermediateCount > 0 && (
-                  <div className="py-0.5">
-                    <button
-                      type="button"
-                      onClick={e => toggleLeg(legIdx, e)}
-                      className="text-xs text-emerald-800 hover:text-emerald-950 font-bold flex items-center gap-1 focus:outline-none"
+                  {/* Crowding badge */}
+                  {leg.boarding_crowding_level && (
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                        leg.boarding_crowding_level === 'high'
+                          ? 'border border-rose-200 bg-rose-100 text-rose-900'
+                          : leg.boarding_crowding_level === 'medium'
+                          ? 'border border-amber-200 bg-amber-100 text-amber-900'
+                          : 'border border-emerald-200 bg-emerald-100 text-emerald-900'
+                      }`}
                     >
-                      <span>
-                        {isExpanded ? '▼ Hide' : '▶ Show'} {intermediateCount} intermediate{' '}
-                        {intermediateCount === 1 ? 'stop' : 'stops'}
-                      </span>
-                    </button>
-                    {isExpanded && (
-                      <ul className="my-2 ml-4 pl-2.5 border-l-2 border-emerald-300 space-y-1 text-xs text-slate-600">
-                        {leg.intermediate_stops.map((stopName, idx) => (
-                          <li key={idx} className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                            {stopName}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                      {leg.boarding_crowding_level === 'unknown'
+                        ? 'Crowd: N/A'
+                        : `Crowd: ${leg.boarding_crowding_level.toUpperCase()}`}
+                    </span>
+                  )}
+                </div>
+
+                {/* Stations */}
+                <div className="space-y-1.5 text-xs sm:text-sm">
+                  <div className="flex items-baseline justify-between text-slate-800">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      <span className="font-medium text-slate-600">Board:</span>
+                      <strong className="text-slate-950 font-bold">{leg.board_stop_name}</strong>
+                    </div>
+                    <span className="font-mono font-bold text-slate-700">{leg.departure_time}</span>
+                  </div>
+
+                  {/* Intermediate Stops Toggle */}
+                  {intermediateCount > 0 && (
+                    <div className="py-0.5 pl-4">
+                      <button
+                        type="button"
+                        onClick={e => toggleLeg(legIdx, e)}
+                        className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 focus:outline-none"
+                      >
+                        <span>{isExpanded ? '▼ Hide' : '▶ Show'} {intermediateCount} stops in between</span>
+                      </button>
+                      {isExpanded && (
+                        <ul className="my-2 ml-2 pl-3 border-l-2 border-blue-300 space-y-1 text-xs text-slate-600">
+                          {leg.intermediate_stops.map((stopName, idx) => (
+                            <li key={idx} className="flex items-center gap-2">
+                              <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                              {stopName}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex items-baseline justify-between text-slate-800">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-rose-500" />
+                      <span className="font-medium text-slate-600">Alight:</span>
+                      <strong className="text-slate-950 font-bold">{leg.alight_stop_name}</strong>
+                    </div>
+                    <span className="font-mono font-bold text-slate-700">{leg.arrival_time}</span>
+                  </div>
+                </div>
+
+                {/* Transfer interchange wait */}
+                {legIdx < option.legs.length - 1 && option.transfers[legIdx] && (
+                  <div className="mt-2.5 flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50/90 p-2.5 text-xs font-bold text-amber-950">
+                    <span className="text-base" aria-hidden="true">🔄</span>
+                    <div>
+                      <span>Wait {option.transfers[legIdx].wait_minutes} min at </span>
+                      <span className="underline">{option.transfers[legIdx].at_stop_name}</span>
+                      <span> for connecting bus</span>
+                    </div>
                   </div>
                 )}
-
-                <div className="flex items-baseline justify-between text-slate-800">
-                  <span className="font-medium">
-                    🔴 Alight at <span className="font-bold text-slate-950">{leg.alight_stop_name}</span>
-                  </span>
-                  <span className="font-mono text-xs sm:text-sm text-slate-700 font-bold">{leg.arrival_time}</span>
-                </div>
               </div>
-
-              {/* Transfer junction information if followed by another leg */}
-              {legIdx < option.legs.length - 1 && option.transfers[legIdx] && (
-                <div className="mt-2.5 pt-2.5 border-t border-dashed border-slate-200 flex items-center gap-2.5 text-xs sm:text-sm text-amber-950 bg-amber-50/90 p-2.5 rounded-lg border border-amber-200">
-                  <span aria-hidden="true" className="text-base">🔄</span>
-                  <div>
-                    <span className="font-bold">{option.transfers[legIdx].wait_minutes} min wait</span> at{' '}
-                    <span className="font-semibold">{option.transfers[legIdx].at_stop_name}</span> for connecting bus
-                  </div>
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Warnings & Alerts */}
-      {option.delay_warnings.length > 0 && (
-        <div className="mb-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm text-amber-950 space-y-1">
-          {option.delay_warnings.map((w, i) => (
-            <div key={i} className="flex items-start gap-1.5">
-              <span aria-hidden="true">⚠️</span>
-              <span>{w}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Card action footer: Map view indicator, Copy itinerary, Bookmark */}
-      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-        <div className="text-xs font-medium text-slate-500">
-          {selected ? '✓ Currently viewed on map' : 'Click card to view on map'}
+            )
+          })}
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Copy Itinerary button */}
-          <button
-            type="button"
-            onClick={handleCopyItinerary}
-            className="text-xs font-bold px-3 py-1.5 text-slate-700 hover:text-emerald-900 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"
-            title="Copy formatted journey plan"
-          >
-            {copied ? '✓ Copied' : '📋 Copy Plan'}
-          </button>
+        {/* Delay Warnings */}
+        {option.delay_warnings.length > 0 && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950 space-y-1">
+            {option.delay_warnings.map((w, i) => (
+              <div key={i} className="flex items-start gap-1.5 font-medium">
+                <span aria-hidden="true">⚠️</span>
+                <span>{w}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
-          {/* Save Route bookmark button */}
-          <button
-            type="button"
-            onClick={e => {
-              e.stopPropagation()
-              onSave()
-            }}
-            disabled={isSaved}
-            className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-              isSaved
-                ? 'bg-slate-100 text-slate-500 cursor-default border border-slate-200'
-                : 'text-emerald-800 hover:text-emerald-950 hover:bg-emerald-50 border border-emerald-300'
-            }`}
-          >
-            {isSaved ? '★ Saved' : '★ Save'}
-          </button>
+        {/* Card Action Controls */}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <div className="text-xs font-bold text-slate-400">
+            {selected ? '✓ Focused on interactive map' : 'Click to preview path on map'}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCopyItinerary}
+              className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-950 transition-colors shadow-2xs"
+            >
+              {copied ? '✓ Copied' : '📋 Copy Plan'}
+            </button>
+            <button
+              type="button"
+              onClick={e => {
+                e.stopPropagation()
+                onSave()
+              }}
+              disabled={isSaved}
+              className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-colors shadow-2xs ${
+                isSaved
+                  ? 'border border-slate-200 bg-slate-100 text-slate-400 cursor-default'
+                  : 'border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+              }`}
+            >
+              {isSaved ? '★ Saved' : '★ Save'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

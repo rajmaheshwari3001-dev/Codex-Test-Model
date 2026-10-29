@@ -57,3 +57,30 @@ def test_chat_uses_xai_to_phrase_grounded_reply(monkeypatch):
     assert request["headers"]["Authorization"] == "Bearer test-key"
     assert request["payload"]["model"] == "grok-test"
     assert "Grounded reply" in request["payload"]["messages"][1]["content"]
+
+
+def test_chat_does_not_let_grok_change_schedule_answers(monkeypatch):
+    expected = {
+        "intent": "find_route",
+        "reply": "No scheduled journey is available.",
+        "data": None,
+    }
+
+    def reject_grok(*args):
+        raise AssertionError("Grok must not rewrite routes")
+
+    monkeypatch.setattr(chat_service.settings, "xai_api_key", "test-key")
+    monkeypatch.setattr(
+        chat_service,
+        "_handle_with_rules",
+        lambda *args: expected.copy(),
+    )
+    monkeypatch.setattr(
+        chat_service,
+        "_compose_with_grok",
+        reject_grok,
+    )
+
+    response = chat_service.handle_message("route query", None, None, None)
+
+    assert response == expected
