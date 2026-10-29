@@ -2,6 +2,48 @@
 @import "leaflet/dist/leaflet.css";
 
 :root {
+  /* Design Tokens as specified in Aaroh-Saarthi 2.0 Visual Redesign */
+  --color-midnight-navy: #172554;
+  --color-deep-navy-shell: #0b1020;
+  --color-electric-cobalt: #2563eb;
+  --color-crimson-red: #dc2626;
+  --color-burnt-amber: #d97706;
+  --color-burnt-brown: #78350f;
+  --color-charcoal-black: #292524;
+  --color-warm-ivory: #f5ede0;
+  --color-page: #f5f7f6;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f0f4f2;
+  --color-text: #17231f;
+  --color-text-secondary: #596861;
+  --color-border: #dce5e0;
+  --color-operational-green: #15803d;
+
+  /* Semantic Aliases */
+  --color-primary: var(--color-midnight-navy);
+  --color-primary-hover: #1e3a8a;
+  --color-accent: var(--color-electric-cobalt);
+  --color-success: var(--color-operational-green);
+  --color-warning: var(--color-burnt-amber);
+  --color-danger: var(--color-crimson-red);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgb(23 35 31 / 5%), 0 4px 14px rgb(23 35 31 / 4%);
+
   color-scheme: light;
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   font-synthesis: none;
@@ -10,7 +52,8 @@
 
 body {
   min-width: 320px;
-  background: #f2f0e8;
+  background-color: var(--color-page);
+  color: var(--color-text);
 }
 
 button,
@@ -21,12 +64,46 @@ textarea {
 }
 
 ::selection {
-  color: #172421;
-  background: #d9ed55;
+  color: #ffffff;
+  background-color: var(--color-electric-cobalt);
 }
 
 :focus-visible {
-  outline-color: #8ca34e;
+  outline: 3px solid var(--color-electric-cobalt);
+  outline-offset: 2px;
+}
+
+.app-panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.app-control {
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
+.app-button-primary {
+  min-height: 44px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-midnight-navy);
+  color: #ffffff;
+  font-weight: 700;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.app-button-primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.app-button-primary:focus-visible {
+  outline: 3px solid var(--color-electric-cobalt);
+  outline-offset: 2px;
 }
 
 .no-scrollbar {
@@ -39,18 +116,29 @@ textarea {
 
 .leaflet-container {
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #e9e6dd;
+  background-color: #eef2ef;
 }
 
 .leaflet-tile {
-  filter: saturate(0.72) sepia(0.1) contrast(1.02);
+  filter: saturate(0.85) contrast(1.02);
 }
 
 .leaflet-control-zoom a {
-  color: #172421 !important;
+  color: var(--color-text) !important;
 }
 
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
-  box-shadow: 0 8px 26px -14px rgb(23 36 33 / 40%);
+  box-shadow: 0 8px 26px -14px rgb(23 35 31 / 35%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
