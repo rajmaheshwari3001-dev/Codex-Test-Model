@@ -113,7 +113,11 @@ Find journey options between two stops.
 | preference          | string | No       | "fastest" or "cheapest"; defaults to "fastest" |
 
 Each journey leg returns intermediate stop names and IDs in trip order. The
-board and alight stops are excluded from both intermediate-stop lists.
+board and alight stops are excluded from both intermediate-stop lists. It also
+returns `boarding_crowding_level` (`low`, `medium`, `high`, or `unknown`) and
+`boarding_crowding_percent` (integer or `null`) for the boarding stop. Missing
+or unrecognized occupancy levels are `unknown`; missing or out-of-range load
+percentages are `null`.
 
 **Response 200 (routes found):**
 ```json
@@ -134,6 +138,8 @@ board and alight stops are excluded from both intermediate-stop lists.
           "route_color": "#2196F3",
           "board_stop_id": "S13",
           "board_stop_name": "Dwarka Sec-21",
+          "boarding_crowding_level": "low",
+          "boarding_crowding_percent": 20,
           "alight_stop_id": "S01",
           "alight_stop_name": "Rajiv Chowk",
           "departure_time": "07:00",

@@ -207,3 +207,43 @@
   remote ref matches the commit.
 - **Next task:** Iteration 5 — make missing sample occupancy explicit in the
   passenger route UI.
+
+## Iteration 5 — Explicit passenger crowd-data availability
+
+- **Date/time:** 29 Oct 2026, started 13:39 IST; completed 14:03 IST.
+- **Objective:** Report the occupancy-data status for each journey leg's
+  boarding stop, including an explicit unknown/unavailable state when no
+  sample record exists.
+- **Why selected:** P7 is the only passenger requirement still PARTIAL because
+  routes with no occupancy sample currently show no crowding message, which
+  can be mistaken for a low-crowding result.
+- **Candidates and prioritization:** Using
+  `(requirement impact × user benefit × confidence) / (effort × risk factor)`
+  with 1–5 ratings: expose known/unknown crowd status per leg
+  (3×4×5)/(2×1) = 30; retrieve the canonical DEV-P05 source
+  (2×3×3)/(2×1) = 9; verify midnight routing semantics
+  (4×4×3)/(4×3) = 4. P7 was selected as the highest-scoring user-visible
+  requirement gap.
+- **Acceptance result:** Each journey leg reports boarding crowd level and
+  optional percent. Missing/unrecognized levels are `unknown`; missing or
+  out-of-range percentages are `null`. API tests cover high-load, missing, and
+  invalid records. Browser checks showed T04 as unavailable at Rajiv Chowk and
+  T01 as high (~80%) at Connaught Place without inventing a value. P7 now PASS.
+- **Files changed:** `backend/app/models/journey.py`,
+  `backend/app/services/routing_service.py`, `backend/tests/test_api.py`,
+  `frontend/src/types/index.ts`,
+  `frontend/src/components/RouteResultCard.tsx`, `docs/API_REFERENCE.md`,
+  `docs/PROGRESS.md`, `docs/REQUIREMENTS_AUDIT.md`,
+  `docs/KNOWN_LIMITATIONS.md`, and this log.
+- **Tests executed:** Full backend test suite, frontend type check/production
+  build, direct API verification for T01/T04, and browser searches for known
+  high-load and missing crowd status.
+- **Tests passed:** Backend 79, frontend build, API responses, and both browser
+  crowd-status checks passed; one existing Starlette/httpx warning remains.
+- **Tests failed:** 0.
+- **Completion percentage:** 93% before → 95% after; P7 moved from PARTIAL to
+  PASS based on API and browser evidence.
+- **Commit:** Pending final review.
+- **Push status:** Not yet pushed.
+- **Next task:** Iteration 6 — verify service-day and midnight routing
+  semantics.

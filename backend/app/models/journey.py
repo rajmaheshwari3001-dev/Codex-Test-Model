@@ -6,7 +6,7 @@ perspective.  The frontend consumes exactly this shape.
 """
 
 from __future__ import annotations
-from typing import Optional, List
+from typing import Literal, Optional, List
 from pydantic import BaseModel
 
 
@@ -28,6 +28,8 @@ class JourneyLeg(BaseModel):
     alight_stop_name: str
     departure_time: str   # HH:MM - scheduled
     arrival_time: str     # HH:MM - scheduled
+    boarding_crowding_level: Literal["low", "medium", "high", "unknown"] = "unknown"
+    boarding_crowding_percent: Optional[int] = None
     intermediate_stops: List[str] = []  # stop names between board and alight
     intermediate_stop_ids: List[str] = []
     fare: Optional[float] = None

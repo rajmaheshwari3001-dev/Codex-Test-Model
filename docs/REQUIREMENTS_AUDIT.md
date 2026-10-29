@@ -46,13 +46,13 @@ measures verified requirement coverage, not implementation quantity.
 | P4 / 8 | Permit feasible transfers and include required wait. | Two-minute transfer buffer and transfer assembly in `routing_service.py`. | Synthetic tests verify a 1-minute connection is missed, a 2-minute buffer is feasible and reported, and a delayed incoming trip selects a later service. | PASS | Validate station-specific transfer times if such data is added. |
 | P5 / 5 | Chat answers use transport data rather than fabricate network facts. | `chat.py`, `chat_service.py`; intent handlers use shared transport/routing data. | Browser query “Tell me about route R01” returned the Blue Line and its matching stop sequence; API intent test also passes. | PASS | Keyword/intent-based; requests outside supported patterns may not be understood. |
 | P6 / 5 | Journey search reflects and labels simulated delays. | Delay API/service and routing delay parameter. | Browser applied a temporary 15-minute T02 delay; a Rajouri Garden → Rajiv Chowk search changed to 09:21–09:45 and showed the simulated warning. Delay was cleared and empty state confirmed. | PASS | Simulation only; no live delay feed. |
-| P7 / 4 | Use available sample occupancy and communicate crowding or missing data honestly. | Occupancy CSV and `_assemble_option` warning logic. | Browser search at a sample high-load boarding stop displayed T02 high load (~70%); API regression covers crowd warning. Missing-data UI behavior has not passed acceptance. | PARTIAL | Surface unknown occupancy when sample data is absent; medium. |
+| P7 / 4 | Use available sample occupancy and communicate crowding or missing data honestly. | Occupancy CSV; `JourneyLeg.boarding_crowding_level` / `boarding_crowding_percent`; `RouteResultCard`. | API tests verify known high load (80%), missing data (`unknown`/`null`), and invalid occupancy levels; browser shows “data unavailable” for T04 and high load (~80%) for T01. | PASS | Sample occupancy is sparse and synthetic; no live crowd feed exists. |
 | P8 / 5 | Create, retrieve/reopen, and delete saved journeys. | SQLite service and `/api/saved-routes` CRUD; `SavedRoutes` UI. | Browser created a route, listed it, clicked Search to reopen it, then deleted it and returned to the empty state; API CRUD test also passes. | PASS | Persistence across a full application restart was not tested. |
 | P9 / 4 | Show the journey/network on Leaflet/OpenStreetMap map. | `TransportMap.tsx`, Leaflet tile layer, trip-ordered journey stop IDs and selected journey layers. | Browser showed OSM tiles and the selected five-stop T02 path. The path now includes intermediate stops in actual trip order rather than connecting only the endpoints. | PASS | Tile availability depends on the external OSM tile service. |
 | P10 / 4 | Use GTFS where available or document sample data if not. | Simplified CSV data and `backend/app/data/README.md`. | Dataset docs explicitly state synthetic data and that no GTFS feed is consumed. | PASS | GTFS ingestion remains out of scope until suitable source data is provided. |
 | P11 / 4 | Validate inputs and handle missing/unavailable journeys clearly. | Pydantic request validation and route API error/no-route response. | Tests cover malformed/out-of-range time, unknown stop/preference, same-stop request, no available journey, and fare-unavailable fallback without fabricated fare. | PASS | Add user-facing browser assertions for these states. |
 
-**Passenger earned points: 58 / 60.**
+**Passenger earned points: 60 / 60.**
 
 ## Fleet intelligence — 25 points
 
@@ -87,29 +87,29 @@ measures verified requirement coverage, not implementation quantity.
 
 | Category | Earned | Available |
 |---|---:|---:|
-| Passenger | 58 | 60 |
+| Passenger | 60 | 60 |
 | Fleet | 23 | 25 |
 | Integration and quality | 12 | 15 |
-| **Total** | **93** | **100** |
+| **Total** | **95** | **100** |
 
-**Verified requirement completion: 93%.** The previous summary table
+**Verified requirement completion: 95%.** The previous summary table
 incorrectly listed 49 passenger points; the row weights sum to 51 at the
-previous 78% score. This iteration adds browser evidence and direction-aware
-map path support and verified fleet decision state changes. P7 remains PARTIAL
-because the UI does not explicitly identify missing occupancy; F6 remains
-PARTIAL because some scenario metrics use fixed assumptions. No
-implementation-only claims outside this register earn points.
+previous 78% score. Iteration 5 closes P7 with explicit known/unknown
+boarding-crowding status and API/UI evidence. F6 remains PARTIAL because some
+scenario impacts use fixed synthetic assumptions. No implementation-only
+claims outside this register earn points.
 
 ## Latest verification commands and outcomes
 
 - Backend: `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`
-  — 77 passed, 0 failed, one deprecation warning.
+  — 79 passed, 0 failed, one deprecation warning.
 - Frontend from `frontend`: `npm run build` — TypeScript and Vite build passed.
 - Local API smoke: health, stops, routes, one journey query, and fleet state —
   passed.
 - Browser workflows: passenger route, map path and tiles, crowding, delay,
   chat, saved route create/reopen/delete, fleet dashboard, breakdown/delay
-  alternatives, and decision acknowledgements — passed manually.
+  alternatives, decision acknowledgements, explicit missing-crowd status, and
+  known high-load display — passed manually.
 - Fleet state transition: approved spare deployment/short-turn/delay changed
   the modeled state; rejection did not; the browser dashboard reflected the
   state — passed.
@@ -120,8 +120,7 @@ implementation-only claims outside this register earn points.
 
 ## Next audit actions
 
-1. Show an explicit unknown-occupancy status when sample occupancy is absent.
-2. Verify service-day and midnight routing semantics.
-3. Retrieve/record the canonical DEV-P05 statement source if available.
-4. Validate fixed fleet impact assumptions with a domain expert or scenario
+1. Verify service-day and midnight routing semantics.
+2. Retrieve/record the canonical DEV-P05 statement source if available.
+3. Validate fixed fleet impact assumptions with a domain expert or scenario
    data before promoting F6 from PARTIAL.

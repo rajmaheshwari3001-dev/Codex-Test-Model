@@ -12,7 +12,8 @@ Update it only when new evidence changes the actual state.
 - The project consumes simplified CSV files, not a GTFS feed. No real-time
   transit API, GPS, live arrival, or service-alert integration is configured.
 - The network is small (15 stops, 4 routes, 19 trips). Static sample occupancy
-  does not update during a session and may be absent for a trip/stop.
+  does not update during a session and may be absent for a trip/stop; the
+  passenger results explicitly show when a boarding-stop sample is unavailable.
 - Public journey search accepts a departure time but not a service date, so
   weekday/weekend service-day constraints are not proven to affect route
   results.
@@ -31,8 +32,9 @@ Update it only when new evidence changes the actual state.
 - Chat is keyword/intent based, not a general language model. It may not
   understand requests outside the listed patterns.
 - Manual browser checks now cover passenger route search, selected map path,
-  sample crowding and delay warnings, chat, and saved-route create/reopen/delete.
-  These checks are not yet automated as a repeatable E2E suite.
+  known and unavailable crowd-status labels, delay warnings, chat, and
+  saved-route create/reopen/delete. These checks are not yet automated as a
+  repeatable E2E suite.
 
 ## Fleet simulation
 
@@ -58,7 +60,7 @@ Update it only when new evidence changes the actual state.
 
 ## Quality and operations
 
-- Backend tests pass (77 passed, 1 Starlette/httpx deprecation warning);
+- Backend tests pass (79 passed, 1 Starlette/httpx deprecation warning);
   frontend type checking and production build pass. Manual browser behavior has
   been exercised, but there is no automated E2E suite or test-coverage
   percentage.

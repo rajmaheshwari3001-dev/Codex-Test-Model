@@ -35,18 +35,37 @@ export default function RouteResultCard({ option, selected, onSelect, onSave }: 
 
       {/* Legs */}
       <div className="space-y-1 mb-2">
-        {option.legs.map(leg => (
-          <div key={leg.leg_index} className="flex items-center gap-2 text-xs">
-            <span
-              className="w-3 h-3 rounded-full flex-shrink-0"
-              style={{ backgroundColor: leg.route_color }}
-            />
-            <span className="font-medium">{leg.route_name}</span>
-            <span className="text-gray-400">
-              {leg.board_stop_name} → {leg.alight_stop_name}
-            </span>
-          </div>
-        ))}
+        {option.legs.map(leg => {
+          const crowdingLabel = leg.boarding_crowding_level === 'unknown'
+            ? `Crowding at ${leg.board_stop_name}: data unavailable`
+            : `Crowding at ${leg.board_stop_name}: ${leg.boarding_crowding_level}${
+              leg.boarding_crowding_percent === null
+                ? ''
+                : ` (~${leg.boarding_crowding_percent}%)`
+            }`
+
+          return (
+            <div key={leg.leg_index} className="text-xs">
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: leg.route_color }}
+                />
+                <span className="font-medium">{leg.route_name}</span>
+                <span className="text-gray-400">
+                  {leg.board_stop_name} → {leg.alight_stop_name}
+                </span>
+              </div>
+              <div className={`ml-5 mt-0.5 ${
+                leg.boarding_crowding_level === 'high'
+                  ? 'text-orange-700'
+                  : 'text-gray-500'
+              }`}>
+                {crowdingLabel}
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       {/* Transfers */}
@@ -72,12 +91,6 @@ export default function RouteResultCard({ option, selected, onSelect, onSave }: 
           {option.delay_warnings.map((w, i) => <div key={i}>⚠ {w}</div>)}
         </div>
       )}
-      {option.crowding_warnings.length > 0 && (
-        <div className="text-xs text-orange-600 mt-1">
-          {option.crowding_warnings.map((w, i) => <div key={i}>👥 {w}</div>)}
-        </div>
-      )}
-
       <button
         onClick={e => { e.stopPropagation(); onSave() }}
         className="mt-2 text-xs text-indigo-600 hover:text-indigo-800 font-medium"

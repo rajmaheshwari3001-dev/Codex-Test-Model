@@ -7,18 +7,19 @@ routes, crowding, simulated delay, and Leaflet/OpenStreetMap map behavior have
 been exercised in a browser. Fleet breakdown and delay scenarios, baseline
 comparisons, and decisions have also been exercised. Approval now applies the
 selected response to the in-memory simulated fleet, and rejection leaves it
-unchanged. Remaining work includes explicit unknown occupancy communication
-and a stronger model for fixed fleet impact assumptions. The fleet comparison
-now distinguishes state-derived metrics from synthetic estimates.
+unchanged. Passenger results distinguish known sample crowding from
+unavailable data; the fleet comparison distinguishes state-derived metrics
+from synthetic estimates. Remaining work includes service-day/midnight routing
+verification and validation of fixed fleet impact assumptions.
 
 | Measure | Current value | Meaning |
 |---|---:|---|
-| Verified requirement completion | **93%** | Weighted P/F/I register; only PASS earns full points and PARTIAL earns half |
-| Implementation estimate | **About 82%** | Coarse engineering estimate; not acceptance evidence or the weighted score |
-| Backend test execution | **77 passed, 0 failed** | Full suite including fleet metric formula and provenance checks |
+| Verified requirement completion | **95%** | Weighted P/F/I register; only PASS earns full points and PARTIAL earns half |
+| Implementation estimate | **About 83%** | Coarse engineering estimate; not acceptance evidence or the weighted score |
+| Backend test execution | **79 passed, 0 failed** | Full suite including passenger crowd-status cases |
 | Frontend type-check/build | **Passed** | `npm run build` ran `tsc -b` and Vite production build |
 | API smoke checks | **5 baseline checks passed** | Health, stops, routes, sample journey search, and fleet state |
-| Browser workflow | **Manual acceptance checks passed** | Passenger/fleet workflows exercised; approval/rejection state and metric-assumption note verified |
+| Browser workflow | **Manual acceptance checks passed** | Passenger/fleet workflows exercised; unknown/high crowd status and fleet state/metric notes verified |
 | Coverage percentage | **Not measured** | No coverage-instrumented test run was performed |
 
 The implementation estimate is a coarse scope estimate, not the weighted
@@ -30,8 +31,8 @@ completion score. The verified score is calculated in
 - Repository: `https://github.com/rajmaheshwari3001-dev/Codex-Test-Model`
 - Branch: `main`
 - Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`.
-- Latest completed iteration: **4 — verify and explain fleet metric formulas**.
-- Next iteration: **5 — explicitly label missing passenger occupancy as unknown**.
+- Latest completed iteration: **5 — expose passenger crowd-data availability**.
+- Next iteration: **6 — verify service-day and midnight routing semantics**.
 - Latest successful delivery: `37b832f` (`main`), iteration 4 fleet metric
   verification and provenance disclosure.
 - Remote verification: `origin/main` points to
@@ -119,6 +120,10 @@ Manual Playwright checks were run against the local frontend and backend:
   occupancy/capacity estimates and state-derived fleet counts from fixed
   response-impact assumptions; this was verified after restarting the local
   backend to load the updated response contract.
+- Route results display `Crowding at Rajiv Chowk: data unavailable` for
+  unrecorded trip T04 occupancy and high load (~80%) for T01 at Connaught
+  Place. API tests also cover an unrecognized level and out-of-range load,
+  which are not presented as a numeric crowd estimate.
 
 ## Known gaps and highest-priority concerns
 
@@ -127,7 +132,7 @@ Manual Playwright checks were run against the local frontend and backend:
    model, not dispatch planning.
 2. Passenger search does not take a service date; weekday/weekend availability
    and midnight crossing remain unverified.
-3. Missing crowd data is not explicitly labeled “unknown” in the route card.
+3. Crowd samples are sparse and synthetic; no live occupancy feed is connected.
 4. The provided task identifies DEV-P05 but does not include an independently
    verifiable official statement URL or source document. The requirements
    register uses the supplied P/F/I criteria; source-to-register traceability
@@ -138,12 +143,12 @@ known. Remaining items are scope limitations or verification gaps.
 
 ## Requirements summary
 
-- Passenger: P1–P6 and P8–P11 PASS; P7 remains PARTIAL because missing
-  occupancy is not explicitly identified as unknown.
+- Passenger: P1–P11 PASS; P7 now explicitly identifies known sample load and
+  unknown/missing occupancy.
 - Fleet: F1–F5 and F7–F8 PASS; F6 PARTIAL because metric assumptions remain
   fixed and need stronger validation.
 - Integration/quality: I3–I6 PASS; I1, I2, and I7 PARTIAL.
-- Weighted verified requirement score: **93 / 100 = 93%**. This does not
+- Weighted verified requirement score: **95 / 100 = 95%**. This does not
   override the remaining synthetic-data limitations.
 
 See the requirement-by-requirement evidence and stable weights in
@@ -152,12 +157,11 @@ See the requirement-by-requirement evidence and stable weights in
 ## Iteration log and next work
 
 See [ITERATION_LOG.md](./ITERATION_LOG.md) for iteration evidence. Iteration 3
-made approvals mutate simulated fleet state, kept rejection non-mutating,
-prevented conflicting decisions, and refreshed the dashboard with the returned
-state. Iteration 4 tested state/occupancy formulas and surfaced metric
-provenance while keeping F6 PARTIAL because several impacts remain
-assumption-based. The next iteration should make missing occupancy explicit
-in the passenger UI.
+made approvals mutate simulated fleet state; iteration 4 tested fleet metric
+formulas and surfaced their assumptions; iteration 5 now exposes known and
+unknown crowd data per boarding stop. F6 remains PARTIAL because some impacts
+are assumption-based. The next iteration will verify service-day and midnight
+routing boundaries.
 
 ## Current blockers
 
@@ -169,14 +173,14 @@ in the passenger UI.
 
 ## Latest test evidence
 
-- Backend: `77 passed, 1 warning`; command
+- Backend: `79 passed, 1 warning`; command
   `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`.
 - Frontend: `npm run build`; TypeScript check and Vite production build passed
   from `frontend`.
 - Browser: manual checks passed for passenger search, map tile/path display,
   crowd and delay warnings, chat, saved-route CRUD/reopen, fleet state display,
-  breakdown/delay scenarios, approval/rejection state behavior, and the fleet
-  metric-provenance note.
+  known high-load and missing crowd status, breakdown/delay scenarios,
+  approval/rejection state behavior, and the fleet metric-provenance note.
 - Temporary simulated passenger delay was cleared; API confirmed no active
   delays remained.
 - Push: iteration 4 was pushed to `origin/main`; `git ls-remote` confirmed

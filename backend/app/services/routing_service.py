@@ -492,11 +492,31 @@ def _assemble_option(
 
         # Crowding check for the boarding stop.
         occ = td.occupancy_lookup.get((trip_id, first_conn.from_stop_id))
-        if occ and occ.occupancy_level in ("high",):
+        occupancy_levels = ("low", "medium", "high")
+        boarding_crowding_level = (
+            occ.occupancy_level
+            if occ and occ.occupancy_level in occupancy_levels
+            else "unknown"
+        )
+        boarding_crowding_percent = (
+            occ.typical_load_percent
+            if (
+                occ
+                and boarding_crowding_level != "unknown"
+                and 0 <= occ.typical_load_percent <= 100
+            )
+            else None
+        )
+        if boarding_crowding_level == "high":
+            load_detail = (
+                f", ~{boarding_crowding_percent}%"
+                if boarding_crowding_percent is not None
+                else ""
+            )
             crowding_warnings.append(
                 f"Trip {trip_id} is crowded at "
                 f"{td.stops_by_id[first_conn.from_stop_id].stop_name} "
-                f"({occ.occupancy_level} load, ~{occ.typical_load_percent}%)"
+                f"(high load{load_detail})"
             )
 
         return JourneyLeg(
@@ -523,6 +543,8 @@ def _assemble_option(
             ).stop_name,
             departure_time=minutes_to_time(dep_min),
             arrival_time=minutes_to_time(arr_min),
+            boarding_crowding_level=boarding_crowding_level,
+            boarding_crowding_percent=boarding_crowding_percent,
             intermediate_stops=intermediate,
             intermediate_stop_ids=[
                 stop_time.stop_id for stop_time in intermediate_stop_times

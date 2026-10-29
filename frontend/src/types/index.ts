@@ -25,6 +25,8 @@ export interface JourneyLeg {
   route_color: string
   board_stop_id: string
   board_stop_name: string
+  boarding_crowding_level: 'low' | 'medium' | 'high' | 'unknown'
+  boarding_crowding_percent: number | null
   alight_stop_id: string
   alight_stop_name: string
   departure_time: string

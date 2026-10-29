@@ -14,6 +14,8 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.api import fleet as fleet_api
+from app.api import routes as passenger_api
+from app.models.transport import Occupancy
 
 
 @pytest.fixture(scope="module")
@@ -207,6 +209,9 @@ def test_delay_changes_journey_times_and_crowding_is_reported(client):
     baseline_option = baseline.json()["options"][0]
     assert baseline_option["arrival_time"] == "08:00"
     assert any("crowded" in warning for warning in baseline_option["crowding_warnings"])
+    baseline_leg = baseline_option["legs"][0]
+    assert baseline_leg["boarding_crowding_level"] == "high"
+    assert baseline_leg["boarding_crowding_percent"] == 80
 
     delay = client.post(
         "/api/delays", json={"trip_id": "T01", "delay_minutes": 15}
@@ -221,6 +226,52 @@ def test_delay_changes_journey_times_and_crowding_is_reported(client):
     assert delayed_option["data_status"] == "simulated"
 
     client.delete("/api/delays")
+
+
+def test_journey_reports_unknown_crowding_when_sample_data_is_missing(client):
+    response = client.post("/api/journeys/search", json={
+        "origin_stop_id": "S01",
+        "destination_stop_id": "S05",
+        "departure_time": "11:50",
+        "preference": "fastest",
+    })
+
+    assert response.status_code == 200
+    option = next(
+        option for option in response.json()["options"]
+        if any(leg["trip_id"] == "T04" for leg in option["legs"])
+    )
+    leg = next(leg for leg in option["legs"] if leg["trip_id"] == "T04")
+    assert leg["boarding_crowding_level"] == "unknown"
+    assert leg["boarding_crowding_percent"] is None
+
+
+def test_journey_does_not_expose_invalid_crowding_data(client, monkeypatch):
+    for level, load_percent, expected_level in (
+        ("high", 140, "high"),
+        ("unrecognized", 70, "unknown"),
+    ):
+        monkeypatch.setitem(
+            passenger_api._td.occupancy_lookup,
+            ("T04", "S01"),
+            Occupancy(
+                trip_id="T04",
+                stop_id="S01",
+                occupancy_level=level,
+                typical_load_percent=load_percent,
+            ),
+        )
+        response = client.post("/api/journeys/search", json={
+            "origin_stop_id": "S01",
+            "destination_stop_id": "S05",
+            "departure_time": "11:50",
+            "preference": "fastest",
+        })
+
+        assert response.status_code == 200
+        leg = response.json()["options"][0]["legs"][0]
+        assert leg["boarding_crowding_level"] == expected_level
+        assert leg["boarding_crowding_percent"] is None
 
 
 def test_fleet_approval_applies_spare_assignment_and_prevents_second_decision(client):
