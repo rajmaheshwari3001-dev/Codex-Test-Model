@@ -66,6 +66,11 @@ export default function ScenarioComparison({
         </div>
       </div>
 
+      <div role="note" className="rounded border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+        <span className="font-semibold">How to read these estimates: </span>
+        {result.metric_notes.join(' ')}
+      </div>
+
       {/* Baseline */}
       <div className="bg-white rounded-lg shadow p-4">
         <h3 className="font-semibold text-gray-800 text-sm mb-2">

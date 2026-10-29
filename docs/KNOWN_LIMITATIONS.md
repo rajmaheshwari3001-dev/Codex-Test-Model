@@ -40,6 +40,11 @@ Update it only when new evidence changes the actual state.
   deterministic demonstration simulator and do not dispatch vehicles.
 - Some metrics use fixed scenario assumptions. Their calibration against a
   transport operator or real passenger data has not been established.
+- The fleet comparison now explains that baseline passenger counts are
+  estimated from occupancy and capacity, while response passenger counts apply
+  fixed fractions; bus counts/utilization come from simulated state. Wait,
+  delayed-trip, and crowding impact values also include fixed synthetic
+  assumptions and must not be interpreted as measured outcomes.
 - The simulator's multi-bus coordination capability is limited to simplified
   spare deployment and same-route short-turn assignments; it does not model
   vehicle locations, travel-time reachability, or real dispatch constraints.
@@ -53,7 +58,7 @@ Update it only when new evidence changes the actual state.
 
 ## Quality and operations
 
-- Backend tests pass (74 passed, 1 Starlette/httpx deprecation warning);
+- Backend tests pass (77 passed, 1 Starlette/httpx deprecation warning);
   frontend type checking and production build pass. Manual browser behavior has
   been exercised, but there is no automated E2E suite or test-coverage
   percentage.

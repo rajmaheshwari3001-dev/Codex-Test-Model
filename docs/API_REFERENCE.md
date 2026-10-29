@@ -309,9 +309,9 @@ alternatives are comparable. The returned disruption ID is unique.
     "affected_passengers": 25,
     "average_wait_increase_minutes": 30.0,
     "delayed_trips": 1,
-    "fleet_utilization_percent": 90.0,
-    "total_buses_active": 19,
-    "total_buses_available": 21,
+    "fleet_utilization_percent": 85.7,
+    "total_buses_active": 18,
+    "total_buses_available": 20,
     "crowding_increase_percent": 15.0
   },
   "responses": [
@@ -326,13 +326,27 @@ alternatives are comparable. The returned disruption ID is unique.
       "trade_offs": ["Spare fleet reduced by one bus.", "Initial 10-minute wait."]
     }
   ],
-  "recommended_response_id": "deploy_spare"
+  "recommended_response_id": "deploy_spare",
+  "metric_notes": [
+    "Baseline passenger estimate: occupancy_percent * capacity; response counts apply fixed fractions.",
+    "Active/available counts and utilization are calculated from scenario bus state.",
+    "Response impacts (passengers, wait, delayed trips, crowding) use synthetic assumptions, not measurements."
+  ]
 }
 ```
 
 The response also includes `fleet_state`, shaped exactly like
-`GET /api/fleet/state`, so the dashboard can display the scenario's baseline
-state after each evaluation.
+`GET /api/fleet/state`. This is the common initial state before the disruption
+is applied, so the dashboard can offer response choices from a consistent
+starting point. The no-action outcome is represented separately by `baseline`
+metrics (for example, the affected bus is unavailable there).
+
+`metric_notes` explains metric provenance. The baseline affected-passenger
+estimate uses occupancy and capacity; response passenger-impact counts apply
+fixed scenario fractions to that estimate. Active/available bus counts and
+utilization are derived from scenario state. Response passenger, wait,
+delayed-trip, and crowding impacts use synthetic assumptions and are not
+calibrated or measured predictions.
 
 **Response 400:** `{ "detail": "disruption_type must be 'breakdown' or 'delay'." }`
 

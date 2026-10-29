@@ -117,6 +117,7 @@ export interface DisruptionResult {
   baseline: ScenarioMetrics
   responses: ResponseOption[]
   recommended_response_id: string | null
+  metric_notes: string[]
   fleet_state: { buses: BusState[]; simulated: boolean }
   error?: string
 }

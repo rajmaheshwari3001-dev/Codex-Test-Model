@@ -8,16 +8,17 @@ been exercised in a browser. Fleet breakdown and delay scenarios, baseline
 comparisons, and decisions have also been exercised. Approval now applies the
 selected response to the in-memory simulated fleet, and rejection leaves it
 unchanged. Remaining work includes explicit unknown occupancy communication
-and validation of fixed fleet metric assumptions.
+and a stronger model for fixed fleet impact assumptions. The fleet comparison
+now distinguishes state-derived metrics from synthetic estimates.
 
 | Measure | Current value | Meaning |
 |---|---:|---|
 | Verified requirement completion | **93%** | Weighted P/F/I register; only PASS earns full points and PARTIAL earns half |
 | Implementation estimate | **About 82%** | Coarse engineering estimate; not acceptance evidence or the weighted score |
-| Backend test execution | **74 passed, 0 failed** | Full suite after fleet decision state transitions and scenario reset checks |
+| Backend test execution | **77 passed, 0 failed** | Full suite including fleet metric formula and provenance checks |
 | Frontend type-check/build | **Passed** | `npm run build` ran `tsc -b` and Vite production build |
 | API smoke checks | **5 baseline checks passed** | Health, stops, routes, sample journey search, and fleet state |
-| Browser workflow | **Manual acceptance checks passed** | Passenger and fleet workflows exercised; approval updates simulated state and rejection leaves it unchanged |
+| Browser workflow | **Manual acceptance checks passed** | Passenger/fleet workflows exercised; approval/rejection state and metric-assumption note verified |
 | Coverage percentage | **Not measured** | No coverage-instrumented test run was performed |
 
 The implementation estimate is a coarse scope estimate, not the weighted
@@ -29,8 +30,8 @@ completion score. The verified score is calculated in
 - Repository: `https://github.com/rajmaheshwari3001-dev/Codex-Test-Model`
 - Branch: `main`
 - Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`.
-- Latest completed iteration: **3 — apply fleet decisions to simulated state**.
-- Next iteration: **4 — validate fleet metric inputs, formulas, and labels**.
+- Latest completed iteration: **4 — verify and explain fleet metric formulas**.
+- Next iteration: **5 — explicitly label missing passenger occupancy as unknown**.
 - Latest successful delivery: `5c4a99d` (`main`), iteration 3 fleet state
   transitions.
 - Remote verification: `origin/main` points to
@@ -114,6 +115,10 @@ Manual Playwright checks were run against the local frontend and backend:
 - API tests verify the short-turn response reassigns B-T02 to T01 and that
   delay responses apply the modeled remaining delay. A second decision for
   the same disruption is rejected with HTTP 409.
+- Fleet scenario comparison displays provenance notes separating baseline
+  occupancy/capacity estimates and state-derived fleet counts from fixed
+  response-impact assumptions; this was verified after restarting the local
+  backend to load the updated response contract.
 
 ## Known gaps and highest-priority concerns
 
@@ -149,8 +154,10 @@ See the requirement-by-requirement evidence and stable weights in
 See [ITERATION_LOG.md](./ITERATION_LOG.md) for iteration evidence. Iteration 3
 made approvals mutate simulated fleet state, kept rejection non-mutating,
 prevented conflicting decisions, and refreshed the dashboard with the returned
-state. The next iteration should validate fleet metric calculations and
-clearly distinguish model assumptions from calculated outcomes.
+state. Iteration 4 tested state/occupancy formulas and surfaced metric
+provenance while keeping F6 PARTIAL because several impacts remain
+assumption-based. The next iteration should make missing occupancy explicit
+in the passenger UI.
 
 ## Current blockers
 
@@ -162,13 +169,14 @@ clearly distinguish model assumptions from calculated outcomes.
 
 ## Latest test evidence
 
-- Backend: `74 passed, 1 warning`; command
+- Backend: `77 passed, 1 warning`; command
   `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`.
 - Frontend: `npm run build`; TypeScript check and Vite production build passed
   from `frontend`.
 - Browser: manual checks passed for passenger search, map tile/path display,
   crowd and delay warnings, chat, saved-route CRUD/reopen, fleet state display,
-  breakdown/delay scenarios, and approval/rejection state behavior.
+  breakdown/delay scenarios, approval/rejection state behavior, and the fleet
+  metric-provenance note.
 - Temporary simulated passenger delay was cleared; API confirmed no active
   delays remained.
 - Push: iteration 3 was pushed to `origin/main`; `git ls-remote` confirmed

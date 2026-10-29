@@ -30,6 +30,13 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
 
+FLEET_METRIC_NOTES = (
+    "Baseline passenger estimate: occupancy_percent * capacity; response counts apply fixed fractions.",
+    "Active/available counts and utilization are calculated from scenario bus state.",
+    "Response impacts (passengers, wait, delayed trips, crowding) use synthetic assumptions, not measurements.",
+)
+
+
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
@@ -241,6 +248,11 @@ class FleetSimulator:
             crowding_increase_percent=round(crowding_increase, 1),
         )
 
+    @staticmethod
+    def _estimate_affected_passengers(bus: Bus) -> int:
+        """Estimate onboard passengers from the simulated occupancy and capacity."""
+        return bus.occupancy_percent * bus.capacity // 100
+
     def evaluate_disruption(self, disruption: Disruption) -> Dict:
         """
         Evaluate a disruption and return baseline + response options.
@@ -279,7 +291,7 @@ class FleetSimulator:
                 elif disruption.disruption_type == "delay":
                     bus.delay_minutes += disruption.delay_minutes
 
-        estimated_passengers = affected_bus.occupancy_percent * affected_bus.capacity // 100
+        estimated_passengers = self._estimate_affected_passengers(affected_bus)
         if disruption.disruption_type == "breakdown":
             baseline_wait = 30.0  # average extra wait when a bus is removed
             baseline_delayed = 1
@@ -516,4 +528,5 @@ class FleetSimulator:
                 } for r in responses
             ],
             "recommended_response_id": recommended_id,
+            "metric_notes": list(FLEET_METRIC_NOTES),
         }

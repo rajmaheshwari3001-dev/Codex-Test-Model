@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.services.data_loader import load_all
-from app.services.fleet_simulator import FleetSimulator, Disruption
+from app.services.fleet_simulator import Bus, FleetSimulator, Disruption
 
 
 def _make_simulator():
@@ -112,6 +112,57 @@ def test_breakdown_metrics_reflect_bus_counts_and_are_deterministic():
     assert short_turn_response["metrics"]["total_buses_active"] == 17
     assert short_turn_response["metrics"]["total_buses_available"] == 20
     assert short_turn_response["metrics"]["delayed_trips"] == 2
+
+
+def test_affected_passenger_estimate_uses_occupancy_and_capacity():
+    bus = Bus(
+        bus_id="B-TEST",
+        route_id="R-TEST",
+        trip_id="T-TEST",
+        occupancy_percent=70,
+        capacity=40,
+    )
+
+    assert FleetSimulator._estimate_affected_passengers(bus) == 28
+
+
+def test_state_metrics_recalculate_counts_and_utilization():
+    sim = _make_simulator()
+    state = sim.get_state()
+    active_buses = [bus for bus in state.buses if bus.status == "active"]
+    active_buses[0].status = "broken_down"
+    active_buses[1].status = "reassigned"
+
+    metrics = sim._calculate_metrics(state, "State metric test")
+
+    assert metrics.total_buses_active == 17
+    assert metrics.total_buses_available == 20
+    assert metrics.fleet_utilization_percent == 81.0
+
+
+def test_delay_wait_estimates_scale_with_disruption_input():
+    sim = _make_simulator()
+
+    for delay_minutes in (8, 20):
+        result = sim.evaluate_disruption(Disruption(
+            disruption_id=f"D-DELAY-{delay_minutes}",
+            disruption_type="delay",
+            affected_bus_id="B-T05",
+            description="Delay metric scaling test",
+            delay_minutes=delay_minutes,
+        ))
+        responses = {
+            response["response_id"]: response["metrics"]
+            for response in result["responses"]
+        }
+
+        assert result["baseline"]["average_wait_increase_minutes"] == delay_minutes
+        assert responses["absorb_delay"]["average_wait_increase_minutes"] == (
+            delay_minutes * 0.5
+        )
+        assert responses["express_skip"]["average_wait_increase_minutes"] == (
+            max(0, delay_minutes - 10)
+        )
 
 
 def test_infeasible_response_not_recommended():

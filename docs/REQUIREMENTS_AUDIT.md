@@ -63,7 +63,7 @@ measures verified requirement coverage, not implementation quantity.
 | F3 / 4 | Compare a no-action baseline with evaluated alternatives. | `evaluate_disruption` baseline and response generation. | Tests verify repeatable metrics, baseline bus counts, and lower-wait spare response; short-turn metrics reflect the diverted bus assignment. | PASS | Validate metric assumptions with a domain expert before operational use. |
 | F4 / 3 | Reject interventions that are not feasible. | Response feasibility and approve endpoint guard. | No-spare scenario marks spare deployment infeasible; API rejects approval for an infeasible response. | PASS | Add further intervention types if the simulator grows. |
 | F5 / 3 | Coordinate multiple buses when the scenario supports it. | Spare deployment and same-route short-turn assignment in `FleetSimulator.apply_response`. | API acceptance tests approve both responses and verify affected-bus/spare or diverted-bus trip assignments; resulting active/available bus counts match scenario metrics. | PASS | Coordination is simplified; no positions, reachability, or real dispatch constraints. |
-| F6 / 4 | Calculate before/after metrics from scenario outcomes. | `ScenarioMetrics` and `_calculate_metrics`. | Metrics appear in API output, but formulas and effects are not independently tested. | PARTIAL | Test formulas, state changes, and metric invariants; high. |
+| F6 / 4 | Calculate before/after metrics from scenario outcomes. | `ScenarioMetrics`, `_calculate_metrics`, and `metric_notes`. | Tests prove active/available counts and utilization follow scenario state, baseline affected-passenger estimates use occupancy × capacity, and delay wait estimates scale with input delay; API/UI identify fixed response-impact assumptions. | PARTIAL | Response passenger counts, wait, delayed-trip, and crowding impacts still use fixed synthetic assumptions; replace with a validated model before treating them as predictions. |
 | F7 / 3 | Explain recommendations and trade-offs. | Recommendation selection and response explanations/tradeoffs. | Test verifies the recommended feasible response improves modeled wait, and has explanation/trade-offs. | PASS | Document fixed assumptions and validate them with a domain expert. |
 | F8 / 2 | Approve or reject a proposed response consistently and reflect the decision in simulated state. | `POST /api/fleet/approve`, `FleetSimulator.apply_response`, `FleetDashboard`. | API tests verify deployment, short-turn, and delay state changes; rejection preserves state; repeated decisions return 409. Browser verified rejection keeps 19 active/2 spare and approval changes to 18 active/1 spare with the affected bus and spare visibly updated; a new scenario resets the UI to baseline. | PASS | State is in-memory simulation only and resets to the initial baseline when a new scenario is evaluated. |
 
@@ -100,10 +100,10 @@ because the UI does not explicitly identify missing occupancy; F6 remains
 PARTIAL because some scenario metrics use fixed assumptions. No
 implementation-only claims outside this register earn points.
 
-## Baseline verification commands and outcome
+## Latest verification commands and outcomes
 
 - Backend: `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`
-  — 74 passed, 0 failed, one deprecation warning.
+  — 77 passed, 0 failed, one deprecation warning.
 - Frontend from `frontend`: `npm run build` — TypeScript and Vite build passed.
 - Local API smoke: health, stops, routes, one journey query, and fleet state —
   passed.
@@ -113,11 +113,15 @@ implementation-only claims outside this register earn points.
 - Fleet state transition: approved spare deployment/short-turn/delay changed
   the modeled state; rejection did not; the browser dashboard reflected the
   state — passed.
+- Fleet metric provenance: tests verified state-derived fleet counts and
+  utilization, baseline occupancy/capacity passenger estimation, and delay
+  scaling; browser verified the assumptions note — passed. Fixed impact
+  assumptions keep F6 PARTIAL.
 
 ## Next audit actions
 
-1. Validate fleet metric inputs and formulas with invariants; distinguish
-   fixed assumptions from calculated outcomes.
-2. Show an explicit unknown-occupancy status when sample occupancy is absent.
-3. Verify service-day and midnight routing semantics.
-4. Retrieve/record the canonical DEV-P05 statement source if available.
+1. Show an explicit unknown-occupancy status when sample occupancy is absent.
+2. Verify service-day and midnight routing semantics.
+3. Retrieve/record the canonical DEV-P05 statement source if available.
+4. Validate fixed fleet impact assumptions with a domain expert or scenario
+   data before promoting F6 from PARTIAL.

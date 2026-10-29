@@ -162,3 +162,47 @@
   remote ref matches the commit.
 - **Next task:** Validate fleet metric inputs/formulas and clearly separate
   fixed assumptions from measured scenario outcomes.
+
+## Iteration 4 — Fleet metric transparency and formula verification
+
+- **Date/time:** 29 Oct 2026, started 13:29 IST; completed 13:37 IST.
+- **Objective:** Test the simulator's state-derived metric formulas, make the
+  passenger estimate formula explicit, and expose the fixed synthetic metric
+  assumptions in the fleet comparison UI and API contract.
+- **Why selected:** F6 remains PARTIAL because several displayed impacts are
+  fixed scenario assumptions and their provenance is easy to mistake for
+  measured outcomes. The goal is to verify the genuinely computed fields and
+  clearly label the limitations without claiming real-world calibration.
+- **Candidates and prioritization:** Using
+  `(requirement impact × user benefit × confidence) / (effort × risk factor)`
+  with 1–5 ratings: verify metric formulas and expose assumptions
+  (4×4×5)/(2×2) = 20; label missing occupancy as unknown
+  (3×4×4)/(2×2) = 12; verify midnight routing semantics
+  (4×4×3)/(4×3) = 4. F6 validation was selected as the outstanding fleet
+  metric correctness concern.
+- **Acceptance result:** Tests prove bus counts/utilization follow scenario
+  state, baseline affected-passenger estimates follow occupancy × capacity,
+  and delay wait estimates scale with disruption input. API/UI expose
+  provenance, including fixed fractions for response passenger counts.
+  F6 remains PARTIAL because response passenger, wait, delayed-trip, and
+  crowding impacts still use fixed assumptions; the verified score did not
+  increase.
+- **Files changed:** `backend/app/services/fleet_simulator.py`,
+  `backend/tests/test_fleet_simulator.py`, `backend/tests/test_api.py`,
+  `frontend/src/types/index.ts`,
+  `frontend/src/components/ScenarioComparison.tsx`,
+  `docs/API_REFERENCE.md`, `docs/PROGRESS.md`,
+  `docs/REQUIREMENTS_AUDIT.md`, `docs/KNOWN_LIMITATIONS.md`, and this log.
+- **Tests executed:** Full backend test suite, frontend type check/production
+  build, and browser disruption scenario with the metric-provenance note.
+- **Tests passed:** Backend 77, frontend build, and browser note checks passed;
+  one existing Starlette/httpx deprecation warning remains.
+- **Tests failed:** The first browser attempt used a stale backend process
+  without `metric_notes`; after restarting the exact local API listener, the
+  scenario rendered the new notes and passed. No code failure remains.
+- **Completion percentage:** 93% before → 93% after. This iteration improved
+  evidence and disclosure but did not change requirement status.
+- **Commit:** Pending final review.
+- **Push status:** Not yet pushed.
+- **Next task:** Iteration 5 — make missing sample occupancy explicit in the
+  passenger route UI.

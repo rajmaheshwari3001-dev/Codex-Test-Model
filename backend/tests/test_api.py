@@ -169,6 +169,8 @@ def test_fleet_disruption(client):
     assert data["baseline"] is not None
     assert len(data["responses"]) >= 1
     assert data["fleet_state"]["simulated"] is True
+    assert any("occupancy_percent * capacity" in note for note in data["metric_notes"])
+    assert any("synthetic assumptions" in note for note in data["metric_notes"])
     affected_bus = next(
         bus for bus in data["fleet_state"]["buses"]
         if bus["bus_id"] == "B-T01"
