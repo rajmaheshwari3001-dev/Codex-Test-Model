@@ -11,10 +11,44 @@ interface Props {
 
 export default function RouteResultCard({ option, selected, onSelect, onSave, isSaved }: Props) {
   const [expandedLegs, setExpandedLegs] = useState<Record<number, boolean>>({})
+  const [copied, setCopied] = useState(false)
 
   function toggleLeg(idx: number, e: React.MouseEvent) {
     e.stopPropagation()
     setExpandedLegs(prev => ({ ...prev, [idx]: !prev[idx] }))
+  }
+
+  function handleCopyItinerary(e: React.MouseEvent) {
+    e.stopPropagation()
+    const summaryLines = [
+      `🚍 Aaroh-Saarthi Journey Plan`,
+      `Route: ${option.label} (${option.total_duration_minutes} min, ₹${option.total_fare ?? 'N/A'})`,
+      `Departure: ${option.departure_time} | Arrival: ${option.arrival_time}`,
+      `Transfers: ${option.transfers.length === 0 ? 'Direct journey' : `${option.transfers.length} transfer(s)`}`,
+      ``,
+      ...option.legs.map((leg, i) => {
+        const transfer = option.transfers[i]
+        const legText = [
+          `Leg ${i + 1}: ${leg.route_name} (Trip ${leg.trip_id})`,
+          `  • Board: ${leg.board_stop_name} @ ${leg.departure_time}`,
+          `  • Alight: ${leg.alight_stop_name} @ ${leg.arrival_time}`,
+        ]
+        if (transfer) {
+          legText.push(`  ↳ Transfer: Wait ${transfer.wait_minutes} min at ${transfer.at_stop_name}`)
+        }
+        return legText.join('\n')
+      }),
+    ]
+
+    navigator.clipboard
+      .writeText(summaryLines.join('\n'))
+      .then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2500)
+      })
+      .catch(() => {
+        setCopied(false)
+      })
   }
 
   const isFastest = option.label.toLowerCase() === 'fastest'
@@ -32,7 +66,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
           onSelect()
         }
       }}
-      className={`bg-white rounded-xl shadow-xs p-4.5 cursor-pointer transition-all border-2 text-left relative focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+      className={`bg-white rounded-xl shadow-xs p-4 cursor-pointer transition-all border-2 text-left relative focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
         selected
           ? 'border-indigo-600 ring-2 ring-indigo-100 bg-indigo-50/20'
           : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
@@ -77,7 +111,8 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
             <span className="text-sm font-medium text-gray-500">min travel</span>
           </div>
           <div className="text-xs font-medium text-gray-700 mt-0.5">
-            Dep: <span className="font-mono text-gray-900">{option.departure_time}</span> → Arr: <span className="font-mono text-gray-900">{option.arrival_time}</span>
+            Dep: <span className="font-mono text-gray-900 font-semibold">{option.departure_time}</span> → Arr:{' '}
+            <span className="font-mono text-gray-900 font-semibold">{option.arrival_time}</span>
           </div>
         </div>
 
@@ -129,7 +164,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                     }`}
                   >
                     {leg.boarding_crowding_level === 'unknown'
-                      ? 'Crowding: N/A'
+                      ? 'Crowd: N/A'
                       : `Crowd: ${leg.boarding_crowding_level.toUpperCase()}${
                           leg.boarding_crowding_percent ? ` (${leg.boarding_crowding_percent}%)` : ''
                         }`}
@@ -154,7 +189,10 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                       onClick={e => toggleLeg(legIdx, e)}
                       className="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1 focus:outline-none"
                     >
-                      <span>{isExpanded ? '▼ Hide' : '▶ Show'} {intermediateCount} intermediate {intermediateCount === 1 ? 'stop' : 'stops'}</span>
+                      <span>
+                        {isExpanded ? '▼ Hide' : '▶ Show'} {intermediateCount} intermediate{' '}
+                        {intermediateCount === 1 ? 'stop' : 'stops'}
+                      </span>
                     </button>
                     {isExpanded && (
                       <ul className="my-1.5 ml-4 pl-2 border-l-2 border-indigo-200 space-y-1 text-[11px] text-gray-600">
@@ -204,26 +242,40 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
         </div>
       )}
 
-      {/* Card action footer */}
-      <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+      {/* Card action footer: Map view indicator, Copy itinerary, Bookmark */}
+      <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
         <div className="text-[11px] text-gray-500">
-          {selected ? '✓ Currently viewed on map' : 'Click card to view on map'}
+          {selected ? '✓ Displayed on Map' : 'Click to display on map'}
         </div>
-        <button
-          type="button"
-          onClick={e => {
-            e.stopPropagation()
-            onSave()
-          }}
-          disabled={isSaved}
-          className={`text-xs font-semibold px-3 py-1 rounded transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 ${
-            isSaved
-              ? 'bg-gray-100 text-gray-500 cursor-default'
-              : 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border border-indigo-200'
-          }`}
-        >
-          {isSaved ? '✓ Saved' : '★ Save Route'}
-        </button>
+
+        <div className="flex items-center gap-2">
+          {/* Copy Itinerary button */}
+          <button
+            type="button"
+            onClick={handleCopyItinerary}
+            className="text-xs font-medium px-2.5 py-1 text-gray-600 hover:text-indigo-600 hover:bg-gray-100 rounded border border-gray-200 transition-colors"
+            title="Copy formatted journey plan"
+          >
+            {copied ? '✓ Copied' : '📋 Copy Plan'}
+          </button>
+
+          {/* Save Route bookmark button */}
+          <button
+            type="button"
+            onClick={e => {
+              e.stopPropagation()
+              onSave()
+            }}
+            disabled={isSaved}
+            className={`text-xs font-semibold px-2.5 py-1 rounded transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 ${
+              isSaved
+                ? 'bg-gray-100 text-gray-500 cursor-default'
+                : 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border border-indigo-200'
+            }`}
+          >
+            {isSaved ? '★ Saved' : '★ Save'}
+          </button>
+        </div>
       </div>
     </div>
   )

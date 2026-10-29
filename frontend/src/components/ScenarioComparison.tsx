@@ -96,6 +96,50 @@ function MetricsGrid({
   )
 }
 
+function VisualImpactBar({
+  label,
+  baselineVal,
+  counterVal,
+  unit,
+}: {
+  label: string
+  baselineVal: number
+  counterVal: number
+  unit: string
+}) {
+  const maxVal = Math.max(baselineVal, counterVal, 1)
+  const basePct = Math.round((baselineVal / maxVal) * 100)
+  const counterPct = Math.round((counterVal / maxVal) * 100)
+  const diff = counterVal - baselineVal
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-semibold text-gray-700">{label}</span>
+        <span className="font-mono text-[11px] font-bold text-emerald-700">
+          {diff < 0 ? `${diff}${unit} (Improved)` : diff === 0 ? 'No Change' : `+${diff}${unit}`}
+        </span>
+      </div>
+      <div className="space-y-1">
+        <div className="flex items-center gap-2 text-[10px] text-gray-500">
+          <span className="w-16">Baseline:</span>
+          <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+            <div className="bg-rose-400 h-2 rounded-full" style={{ width: `${basePct}%` }} />
+          </div>
+          <span className="w-12 text-right font-mono font-semibold text-gray-700">{baselineVal}{unit}</span>
+        </div>
+        <div className="flex items-center gap-2 text-[10px] text-gray-500">
+          <span className="w-16 font-semibold text-emerald-700">Mitigated:</span>
+          <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+            <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${counterPct}%` }} />
+          </div>
+          <span className="w-12 text-right font-mono font-semibold text-emerald-800">{counterVal}{unit}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ScenarioComparison({
   result,
   onApprove,
@@ -199,6 +243,25 @@ export default function ScenarioComparison({
 
               {resp.feasible && resp.metrics ? (
                 <>
+                  {/* Visual Impact Comparison Bars */}
+                  <div className="bg-gray-50 rounded-xl p-3 border border-gray-150 mb-3 space-y-2.5">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                      Visual Comparative Impact:
+                    </div>
+                    <VisualImpactBar
+                      label="Affected Passengers"
+                      baselineVal={result.baseline.affected_passengers}
+                      counterVal={resp.metrics.affected_passengers}
+                      unit=""
+                    />
+                    <VisualImpactBar
+                      label="Average Wait Increase"
+                      baselineVal={result.baseline.average_wait_increase_minutes}
+                      counterVal={resp.metrics.average_wait_increase_minutes}
+                      unit="m"
+                    />
+                  </div>
+
                   <div className="mb-3">
                     <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                       Predicted Metric Comparison vs. Baseline
@@ -254,7 +317,8 @@ export default function ScenarioComparison({
               ) : (
                 <div className="mt-2 p-2.5 rounded-lg bg-gray-50 border border-gray-200 text-xs text-gray-500 italic">
                   <strong>Infeasibility Constraint: </strong>
-                  {resp.reason_if_infeasible || 'Action cannot be executed under current vehicle availability constraints.'}
+                  {resp.reason_if_infeasible ||
+                    'Action cannot be executed under current vehicle availability constraints.'}
                 </div>
               )}
             </div>

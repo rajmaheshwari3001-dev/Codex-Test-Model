@@ -10,11 +10,12 @@ interface Message {
 }
 
 const SUGGESTIONS = [
-  'How do I get from Rajiv Chowk to Saket?',
-  'When is the next bus from Kashmiri Gate?',
+  'What are the active timetable hours?',
+  'How do I get from Kashmere Gate to Saket at 08:00?',
+  'Why do evening searches return no buses?',
   'Are there any delays on the network?',
   'Tell me about route R01',
-  'Is there a cheaper route?',
+  'What routes connect at Rajiv Chowk?',
 ]
 
 export default function ChatAssistant({ serviceDay }: { serviceDay: ServiceDay }) {
@@ -22,13 +23,13 @@ export default function ChatAssistant({ serviceDay }: { serviceDay: ServiceDay }
     {
       id: 'welcome',
       role: 'assistant',
-      text: 'Namaste! I am your Aaroh-Saarthi transit assistant. I answer questions using timetable schedules, route topology, and active delay data.\n\nTry clicking one of the sample questions below or type your inquiry.',
+      text: 'Namaste! I am your Aaroh-Saarthi transit assistant. I answer public-transit questions from the selected sample timetable (active 06:30 – 12:30) and simulated delay data. For journey or departure queries, include your target departure time.\n\nTry a sample question below or ask about routes, schedules, stops, or live fleet status.',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [errorMsg, setErrorMsg] = useState('')
+  const [, setErrorMsg] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function ChatAssistant({ serviceDay }: { serviceDay: ServiceDay }
       {
         id: 'welcome-reset',
         role: 'assistant',
-        text: 'Chat history cleared. How can I help with your transit plans?',
+        text: 'Chat history cleared. Ask about transit routes, stops, schedules (06:30 - 12:30), or delays. Include departure times for journey lookups.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ])
@@ -107,7 +108,7 @@ export default function ChatAssistant({ serviceDay }: { serviceDay: ServiceDay }
 
       {/* Grounding Transparency Note */}
       <div className="bg-indigo-50/50 border-b border-indigo-100/60 px-3 py-1 text-[11px] text-indigo-900/80 flex items-center justify-between">
-        <span>Queries verify in-memory timetable data directly without generative AI hallucination.</span>
+        <span>Route and departure answers are checked against the selected timetable.</span>
         <span className="font-mono text-[10px] text-indigo-600 uppercase font-semibold">{serviceDay}</span>
       </div>
 
@@ -170,7 +171,7 @@ export default function ChatAssistant({ serviceDay }: { serviceDay: ServiceDay }
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="Ask e.g. 'When is next bus from Rajiv Chowk?'..."
+          placeholder="Ask e.g. 'Route from Kashmere Gate to Saket at 08:00'..."
           disabled={loading}
           className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors"
           aria-label="Transit inquiry input"

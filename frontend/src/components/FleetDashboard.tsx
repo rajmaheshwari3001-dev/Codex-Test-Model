@@ -27,7 +27,7 @@ export default function FleetDashboard() {
         setActionMsg(
           error instanceof Error
             ? `Failed to load fleet state: ${error.message}`
-            : 'Failed to load fleet state.',
+            : 'Failed to load fleet state.'
         )
       })
       .finally(() => setLoading(false))
@@ -106,6 +106,30 @@ export default function FleetDashboard() {
     reassigned: 'bg-blue-100 text-blue-800 border-blue-200',
   }
 
+  // Corridor route health breakdown
+  const corridorHealth = [
+    { id: 'R01', name: 'Blue Line (Kashmere ↔ Rajiv)', color: '#2563eb' },
+    { id: 'R02', name: 'Green Line (Rajiv ↔ Saket)', color: '#16a34a' },
+    { id: 'R03', name: 'Red Line (CP ↔ Saket Loop)', color: '#dc2626' },
+    { id: 'R04', name: 'Yellow Line (Rohini ↔ Kashmere)', color: '#eab308' },
+  ].map(corridor => {
+    const routeBuses = buses.filter(b => b.route_id === corridor.id)
+    const delayedCount = routeBuses.filter(b => b.delay_minutes > 0).length
+    const brokenCount = routeBuses.filter(b => b.status === 'broken_down').length
+    const onTimePercent =
+      routeBuses.length > 0
+        ? Math.round(((routeBuses.length - delayedCount - brokenCount) / routeBuses.length) * 100)
+        : 100
+
+    return {
+      ...corridor,
+      busesCount: routeBuses.length,
+      delayedCount,
+      brokenCount,
+      onTimePercent,
+    }
+  })
+
   if (loading) {
     return (
       <div className="py-12 text-center text-sm text-gray-500 flex items-center justify-center gap-2">
@@ -146,6 +170,40 @@ export default function FleetDashboard() {
           </div>
         </div>
       )}
+
+      {/* Corridor Route Health Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {corridorHealth.map(c => (
+          <div key={c.id} className="bg-white rounded-xl border border-gray-200 p-3.5 shadow-xs space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold flex items-center gap-1.5" style={{ color: c.color }}>
+                <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: c.color }} />
+                {c.id} Corridor
+              </span>
+              <span
+                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  c.brokenCount > 0
+                    ? 'bg-red-100 text-red-800'
+                    : c.delayedCount > 0
+                    ? 'bg-amber-100 text-amber-800'
+                    : 'bg-emerald-100 text-emerald-800'
+                }`}
+              >
+                {c.onTimePercent}% On-Time
+              </span>
+            </div>
+            <div className="text-[11px] text-gray-600 truncate">{c.name}</div>
+            <div className="flex items-center justify-between text-xs text-gray-500 pt-1 border-t border-gray-100">
+              <span>{c.busesCount} assigned buses</span>
+              {c.delayedCount > 0 && <span className="text-amber-700 font-semibold">{c.delayedCount} delayed</span>}
+              {c.brokenCount > 0 && <span className="text-red-700 font-semibold">{c.brokenCount} failed</span>}
+              {c.delayedCount === 0 && c.brokenCount === 0 && (
+                <span className="text-emerald-700 font-medium">Nominal</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Fleet Overview & Telemetry Cards */}
       <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-5">
@@ -198,7 +256,9 @@ export default function FleetDashboard() {
             >
               <option value="ALL">All Routes</option>
               {uniqueRoutes.map(r => (
-                <option key={r} value={r}>Route {r}</option>
+                <option key={r} value={r}>
+                  Route {r}
+                </option>
               ))}
             </select>
             <select
@@ -241,7 +301,11 @@ export default function FleetDashboard() {
                     <td className="py-2 px-3 font-semibold text-gray-700">{b.route_id || '—'}</td>
                     <td className="py-2 px-3 font-mono text-gray-500">{b.trip_id || '—'}</td>
                     <td className="py-2 px-3">
-                      <span className={`inline-block text-[11px] font-medium px-2 py-0.5 rounded-full border ${statusColor[b.status] || 'bg-gray-100 text-gray-700'}`}>
+                      <span
+                        className={`inline-block text-[11px] font-medium px-2 py-0.5 rounded-full border ${
+                          statusColor[b.status] || 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
                         {b.status.replace('_', ' ')}
                       </span>
                     </td>

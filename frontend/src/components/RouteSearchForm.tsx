@@ -5,22 +5,41 @@ const SERVICE_TIME_PATTERN = /^(?:[0-3]\d|4[0-7]):[0-5]\d$/
 
 interface Props {
   stops: Stop[]
+  origin: string
+  setOrigin: (origin: string) => void
+  destination: string
+  setDestination: (destination: string) => void
+  time: string
+  setTime: (time: string) => void
+  preference: string
+  setPreference: (preference: string) => void
   serviceDay: ServiceDay
   onServiceDayChange: (day: ServiceDay) => void
-  onSearch: (origin: string, destination: string, time: string, preference: string, serviceDay: ServiceDay) => void
+  onSearch: (origin?: string, destination?: string, time?: string, preference?: string, serviceDay?: ServiceDay) => void
   loading: boolean
 }
 
-export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange, onSearch, loading }: Props) {
-  const [origin, setOrigin] = useState('')
-  const [destination, setDestination] = useState('')
-  const [time, setTime] = useState('08:00')
-  const [preference, setPreference] = useState('fastest')
+export default function RouteSearchForm({
+  stops,
+  origin,
+  setOrigin,
+  destination,
+  setDestination,
+  time,
+  setTime,
+  preference,
+  setPreference,
+  serviceDay,
+  onServiceDayChange,
+  onSearch,
+  loading,
+}: Props) {
   const [error, setError] = useState('')
 
   function handleSwap() {
+    const prevOrigin = origin
     setOrigin(destination)
-    setDestination(origin)
+    setDestination(prevOrigin)
   }
 
   function handlePreset(origId: string, destId: string, presetTime: string) {
@@ -49,16 +68,17 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
   const isOutOfServiceHours = currentMinutesVal < 6 * 60 + 30 || currentMinutesVal > 12 * 60 + 30
 
   // Active timetable hours in the sample dataset are between 06:30 and 12:30
-  const quickTimes = [
-    { label: '07:00 (Early)', value: '07:00' },
+  const activeQuickTimes = [
+    { label: '07:00 (Early AM)', value: '07:00' },
     { label: '08:00 (Peak AM)', value: '08:00' },
-    { label: '09:30', value: '09:30' },
-    { label: '10:30', value: '10:30' },
-    { label: '11:30', value: '11:30' },
+    { label: '09:30 (Midday)', value: '09:30' },
+    { label: '10:30 (Regular)', value: '10:30' },
+    { label: '11:30 (Late AM)', value: '11:30' },
   ]
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xs border border-gray-200 p-5 space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between pb-1 border-b border-gray-100">
         <div>
           <h2 className="text-base font-semibold text-gray-900">Plan Transit Journey</h2>
@@ -84,7 +104,7 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
             }}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
           >
-            <option value="">Select origin stop...</option>
+            <option value="">Select origin stop or click on map...</option>
             {stops.map(s => (
               <option key={s.stop_id} value={s.stop_id}>
                 {s.stop_name} (Zone {s.zone_id})
@@ -100,7 +120,7 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
             disabled={!origin && !destination}
             aria-label="Swap origin and destination"
             title="Swap stops"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-full border border-indigo-200 disabled:opacity-40 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-full border border-indigo-200 disabled:opacity-40 transition-colors"
           >
             <span aria-hidden="true">⇅</span> Swap Stops
           </button>
@@ -119,7 +139,7 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
             }}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
           >
-            <option value="">Select destination stop...</option>
+            <option value="">Select destination stop or click on map...</option>
             {stops.map(s => (
               <option key={s.stop_id} value={s.stop_id}>
                 {s.stop_name} (Zone {s.zone_id})
@@ -129,77 +149,115 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
         </div>
       </div>
 
-      {/* Timetable Operating Windows Block */}
-      <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-3 space-y-2">
+      {/* Dedicated Timetable Operating Windows Matrix Block */}
+      <div className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-3 space-y-2.5">
         <div className="flex items-center justify-between text-xs font-bold text-gray-800">
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-1.5 text-indigo-950">
             <span>🕒</span>
             <span>Timetable Operating Windows</span>
           </span>
-          <span className="text-[10px] text-gray-500 font-normal">06:30 – 12:30 Active</span>
+          <span className="text-[10px] text-indigo-700 bg-white px-2 py-0.5 rounded border border-indigo-200 font-semibold">
+            06:30 – 12:30 Active
+          </span>
         </div>
-        <div className="grid grid-cols-3 gap-1.5 text-center text-[11px]">
+
+        <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
+          {/* Morning Peak Slot */}
           <button
             type="button"
-            onClick={() => setTime('08:00')}
+            onClick={() => {
+              setTime('08:00')
+              if (error) setError('')
+            }}
             className={`p-2 rounded-lg border text-left transition-all ${
               currentMinutesVal >= 390 && currentMinutesVal <= 570
-                ? 'bg-emerald-50 border-emerald-400 ring-1 ring-emerald-300 text-emerald-950 font-bold shadow-2xs'
-                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100'
+                ? 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-300 text-emerald-950 font-bold shadow-xs'
+                : 'bg-white border-gray-200 text-gray-700 hover:bg-emerald-50/50'
             }`}
           >
-            <div className="font-semibold text-emerald-700 text-xs">06:30 – 09:30</div>
-            <div className="text-[10px] text-gray-500 leading-tight">Morning Peak (All routes)</div>
+            <div className="font-semibold text-emerald-800 text-xs flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+              06:30 – 09:30
+            </div>
+            <div className="text-[10px] text-gray-500 leading-tight mt-0.5">Morning Peak (All routes)</div>
           </button>
+
+          {/* Midday Slot */}
           <button
             type="button"
-            onClick={() => setTime('10:30')}
+            onClick={() => {
+              setTime('10:30')
+              if (error) setError('')
+            }}
             className={`p-2 rounded-lg border text-left transition-all ${
               currentMinutesVal > 570 && currentMinutesVal <= 750
-                ? 'bg-blue-50 border-blue-400 ring-1 ring-blue-300 text-blue-950 font-bold shadow-2xs'
-                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100'
+                ? 'bg-blue-50 border-blue-400 ring-2 ring-blue-300 text-blue-950 font-bold shadow-xs'
+                : 'bg-white border-gray-200 text-gray-700 hover:bg-blue-50/50'
             }`}
           >
-            <div className="font-semibold text-blue-700 text-xs">09:30 – 12:30</div>
-            <div className="text-[10px] text-gray-500 leading-tight">Midday Service</div>
+            <div className="font-semibold text-blue-800 text-xs flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+              09:30 – 12:30
+            </div>
+            <div className="text-[10px] text-gray-500 leading-tight mt-0.5">Midday Corridor</div>
           </button>
-          <div className="p-2 rounded-lg border border-dashed border-gray-300 bg-gray-100/70 text-gray-400 text-left cursor-not-allowed">
-            <div className="font-semibold text-gray-500 text-xs">12:31 – 23:59</div>
-            <div className="text-[10px] text-gray-400 leading-tight">Off Service (No trips)</div>
+
+          {/* Off-Service Evening Slot */}
+          <div
+            className={`p-2 rounded-lg border text-left transition-all ${
+              isOutOfServiceHours
+                ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-300 text-amber-950'
+                : 'bg-gray-100/70 border-dashed border-gray-300 text-gray-500'
+            }`}
+          >
+            <div className="font-semibold text-amber-900 text-xs flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+              12:31 – 23:59
+            </div>
+            <div className="text-[10px] text-amber-800/80 leading-tight mt-0.5">Off-Service (No trips)</div>
           </div>
         </div>
       </div>
 
-      {/* Out of Service Hours Warning Block (Appears when user types e.g. 17:30 or 21:00) */}
+      {/* Out of Service Hours Warning Block (Shows when user types e.g. 17:30 or 21:00) */}
       {isOutOfServiceHours && (
-        <div role="status" className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-950 space-y-1.5 shadow-xs">
-          <div className="flex items-center gap-1.5 font-bold text-amber-900">
+        <div role="status" className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-950 space-y-2 shadow-xs">
+          <div className="flex items-center gap-1.5 font-bold text-amber-900 text-sm">
             <span>⚠️</span>
-            <span>Selected Departure ({time}) is Outside Service Hours</span>
+            <span>Selected Time ({time}) is Outside Operating Hours</span>
           </div>
           <p className="text-[11px] text-amber-800 leading-relaxed">
-            In this sample dataset, all daily transit timetables operate between <strong>06:30 and 12:30</strong>. Searches at {time} will return zero scheduled buses.
+            In this Delhi demo GTFS timetable, all catalogued trips run between <strong>06:30 and 12:30</strong>. Searches at {time} will return zero scheduled buses.
           </p>
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[11px] font-semibold text-amber-900">Switch to active time:</span>
+          <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-amber-200/60">
+            <span className="text-[11px] font-semibold text-amber-900">Switch to active departure:</span>
             <button
               type="button"
-              onClick={() => setTime('08:00')}
-              className="px-2 py-0.5 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium text-[11px] transition-colors"
+              onClick={() => {
+                setTime('08:00')
+                if (error) setError('')
+              }}
+              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium text-xs transition-colors shadow-2xs"
             >
               08:00 (Peak AM)
             </button>
             <button
               type="button"
-              onClick={() => setTime('09:30')}
-              className="px-2 py-0.5 bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 rounded font-medium text-[11px] transition-colors"
+              onClick={() => {
+                setTime('09:30')
+                if (error) setError('')
+              }}
+              className="px-2.5 py-1 bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 rounded font-medium text-xs transition-colors"
             >
               09:30
             </button>
             <button
               type="button"
-              onClick={() => setTime('11:00')}
-              className="px-2 py-0.5 bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 rounded font-medium text-[11px] transition-colors"
+              onClick={() => {
+                setTime('11:00')
+                if (error) setError('')
+              }}
+              className="px-2.5 py-1 bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 rounded font-medium text-xs transition-colors"
             >
               11:00
             </button>
@@ -213,22 +271,31 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
           <label htmlFor="departure-time" className="block text-xs font-medium text-gray-700 mb-1">
             Departure Time (HH:MM)
           </label>
-          <input
-            id="departure-time"
-            type="text"
-            placeholder="08:00"
-            maxLength={5}
-            value={time}
-            aria-describedby="departure-time-hint"
-            aria-invalid={Boolean(error && !SERVICE_TIME_PATTERN.test(time))}
-            onChange={e => {
-              setTime(e.target.value)
-              if (error) setError('')
-            }}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 font-mono bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-colors"
-          />
+          <div className="relative">
+            <input
+              id="departure-time"
+              type="text"
+              placeholder="08:00"
+              maxLength={5}
+              value={time}
+              aria-describedby="departure-time-hint"
+              aria-invalid={Boolean(error && !SERVICE_TIME_PATTERN.test(time))}
+              onChange={e => {
+                setTime(e.target.value)
+                if (error) setError('')
+              }}
+              className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-900 font-mono bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors ${
+                isOutOfServiceHours ? 'border-amber-400 bg-amber-50/20' : 'border-gray-300'
+              }`}
+            />
+            {isOutOfServiceHours && (
+              <span className="absolute right-2 top-2 text-[10px] text-amber-700 font-semibold bg-amber-100 px-1.5 py-0.5 rounded pointer-events-none">
+                Off-Service
+              </span>
+            )}
+          </div>
           <p id="departure-time-hint" className="mt-1 text-[11px] text-gray-500">
-            Enter between 06:30 and 12:30 for active trips.
+            Active service: 06:30 to 12:30.
           </p>
         </div>
 
@@ -251,13 +318,13 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
         </div>
       </div>
 
-      {/* Quick Time Preset Chips (Matched to actual dataset trips) */}
+      {/* Quick Time Preset Chips (Strictly active dataset trips) */}
       <div>
-        <span className="block text-[11px] font-medium text-gray-500 mb-1.5">
+        <span className="block text-[11px] font-medium text-gray-600 mb-1.5">
           Active Timetable Departure Presets:
         </span>
         <div className="flex flex-wrap gap-1.5">
-          {quickTimes.map(qt => (
+          {activeQuickTimes.map(qt => (
             <button
               key={qt.value}
               type="button"
@@ -267,7 +334,7 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
               }}
               className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
                 time === qt.value
-                  ? 'bg-indigo-600 text-white border-indigo-600 font-medium'
+                  ? 'bg-indigo-600 text-white border-indigo-600 font-medium shadow-2xs'
                   : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
               }`}
             >
@@ -277,10 +344,10 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
         </div>
       </div>
 
-      {/* Popular Active Routes to Try */}
+      {/* Guaranteed Active Corridors */}
       <div className="p-2.5 rounded-lg bg-indigo-50/60 border border-indigo-100 text-[11px]">
-        <span className="font-semibold text-indigo-900 block mb-1">✨ Popular Active Routes to Try:</span>
-        <div className="flex flex-wrap gap-1">
+        <span className="font-semibold text-indigo-900 block mb-1">✨ Guaranteed Active Sample Corridors:</span>
+        <div className="flex flex-wrap gap-1.5">
           <button
             type="button"
             onClick={() => handlePreset('S02', 'S08', '08:00')}
@@ -301,6 +368,13 @@ export default function RouteSearchForm({ stops, serviceDay, onServiceDayChange,
             className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium transition-colors"
           >
             Connaught Place → Saket (09:00)
+          </button>
+          <button
+            type="button"
+            onClick={() => handlePreset('S10', 'S02', '07:00')}
+            className="text-[11px] bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-100 px-2 py-0.5 rounded font-medium transition-colors"
+          >
+            Rohini West → Kashmere Gate (07:00)
           </button>
         </div>
       </div>
