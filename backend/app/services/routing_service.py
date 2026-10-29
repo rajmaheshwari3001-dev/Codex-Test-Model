@@ -14,11 +14,10 @@ WHAT PROBLEM DOES THIS SOLVE?
 HOW IT WORKS (algorithm overview):
   We implement a simplified Connection Scan Algorithm (CSA) variant:
 
-  1.  Build a list of "connections" – each connection is one pair of
-      consecutive stops on a trip (board at stop A at time T1, alight
-      at stop B at time T2).
+  1.  Build single-trip ride segments from every boarding stop to each
+      later alighting stop, preserving the scheduled departure and arrival.
 
-  2.  Sort connections by departure time so we can scan forward in time.
+  2.  Sort ride segments by departure time so we can scan forward in time.
 
   3.  From the origin stop at the requested departure time, greedily
       find the earliest arrival at the destination.  We track the
@@ -39,9 +38,9 @@ HOW TO TEST IT:
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import networkx as nx
 
@@ -64,8 +63,13 @@ def time_to_minutes(time_str: str) -> int:
     We use integer minutes throughout the routing engine so comparisons
     are simple arithmetic rather than datetime subtraction.
     """
-    parts = time_str.strip().split(":")
-    return int(parts[0]) * 60 + int(parts[1])
+    if not re.fullmatch(r"\d{2}:\d{2}", time_str):
+        raise ValueError(f"Invalid time {time_str!r}; expected HH:MM.")
+
+    hours, minutes = (int(part) for part in time_str.split(":"))
+    if hours > 47 or minutes > 59:
+        raise ValueError(f"Invalid time {time_str!r}; expected a valid HH:MM value.")
+    return hours * 60 + minutes
 
 
 def minutes_to_time(minutes: int) -> str:
@@ -86,9 +90,9 @@ def minutes_to_time(minutes: int) -> str:
 @dataclass
 class Connection:
     """
-    A single hop: board a trip at one stop and alight at the next.
+    A ride segment: board a trip at one stop and alight at a later stop.
 
-    A trip with N stops produces N-1 connections.
+    A trip with N stops produces N*(N-1)/2 ride segments.
     """
     trip_id: str
     route_id: str
@@ -97,6 +101,7 @@ class Connection:
     departure_minutes: int        # departure from from_stop
     arrival_minutes: int          # arrival at to_stop
     stop_sequence_from: int       # position of from_stop in the trip
+    stop_sequence_to: int         # position of to_stop in the trip
 
 
 @dataclass
@@ -109,6 +114,17 @@ class Journey:
     connections: List[Connection] = field(default_factory=list)
     total_fare: Optional[float] = None
     fare_available: bool = False
+
+
+@dataclass(eq=False)
+class FareLabel:
+    """A nondominated fare/arrival label used by cheapest-route search."""
+
+    arrival_minutes: int
+    total_fare: float
+    trip_id: Optional[str] = None
+    previous: Optional["FareLabel"] = None
+    connection: Optional[Connection] = None
 
 
 # ---------------------------------------------------------------------------
@@ -146,12 +162,38 @@ def build_connections(td: TransportData) -> List[Connection]:
                 departure_minutes=time_to_minutes(from_st.departure_time),
                 arrival_minutes=time_to_minutes(to_st.arrival_time),
                 stop_sequence_from=from_st.stop_sequence,
+                stop_sequence_to=to_st.stop_sequence,
             )
             connections.append(conn)
 
     # Sort by departure time so we can scan forward chronologically.
     connections.sort(key=lambda c: c.departure_minutes)
     return connections
+
+
+def build_ride_segments(td: TransportData) -> List[Connection]:
+    """Build every feasible single-trip ride from each stop to a later stop."""
+    segments: List[Connection] = []
+    for trip_id, stop_times in td.stop_times_by_trip.items():
+        trip = td.trips_by_id.get(trip_id)
+        if not trip:
+            continue
+
+        for start_index, from_st in enumerate(stop_times[:-1]):
+            for to_st in stop_times[start_index + 1:]:
+                segments.append(Connection(
+                    trip_id=trip_id,
+                    route_id=trip.route_id,
+                    from_stop_id=from_st.stop_id,
+                    to_stop_id=to_st.stop_id,
+                    departure_minutes=time_to_minutes(from_st.departure_time),
+                    arrival_minutes=time_to_minutes(to_st.arrival_time),
+                    stop_sequence_from=from_st.stop_sequence,
+                    stop_sequence_to=to_st.stop_sequence,
+                ))
+
+    segments.sort(key=lambda segment: segment.departure_minutes)
+    return segments
 
 
 # ---------------------------------------------------------------------------
@@ -206,16 +248,17 @@ def _find_fastest_journey(
 
     Algorithm:
       - earliest_arrival[stop] = minimum arrival time reached so far
-      - We scan each connection in order of departure time.
-      - If we can board the connection (we have arrived at from_stop
+      - We scan ride segments in effective departure-time order.
+      - If we can board the segment (we have arrived at from_stop
         before it departs), we update earliest_arrival at to_stop.
-      - We also track which connection we came from to reconstruct path.
+      - Ride segments avoid treating a vehicle's one-minute stop dwell as a
+        passenger transfer.
 
     Args:
         origin_id:          Starting stop ID.
         destination_id:     Target stop ID.
         departure_minutes:  When the passenger is ready to depart.
-        connections:        All connections sorted by departure time.
+        connections:        Ride segments sorted by departure time.
         delay_minutes:      Simulated delays to add per trip.
 
     Returns:
@@ -228,12 +271,15 @@ def _find_fastest_journey(
     earliest_arrival.update({c.to_stop_id: INF for c in connections})
     earliest_arrival[origin_id] = float(departure_minutes)
 
-    # predecessor[connection] = the connection that brought us to from_stop
-    predecessor: Dict[int, Optional[Connection]] = {}  # index -> prev Connection
     # For each stop, which connection last improved it
     arriving_connection: Dict[str, Optional[Connection]] = {}
 
-    for i, conn in enumerate(connections):
+    ordered_connections = sorted(
+        connections,
+        key=lambda conn: conn.departure_minutes + delay_minutes.get(conn.trip_id, 0),
+    )
+
+    for conn in ordered_connections:
         # Apply any simulated delay for this trip.
         effective_departure = conn.departure_minutes + delay_minutes.get(conn.trip_id, 0)
         effective_arrival = conn.arrival_minutes + delay_minutes.get(conn.trip_id, 0)
@@ -274,17 +320,17 @@ def _find_cheapest_journey(
     origin_id: str,
     destination_id: str,
     departure_minutes: int,
-    connections: List[Connection],
+    ride_segments: List[Connection],
     td: TransportData,
     delay_minutes: Dict[str, int],
 ) -> Optional[Journey]:
     """
     Find the journey with the lowest total fare that is still feasible.
 
-    We run the same scan as the fastest journey but track fare instead
-    of arrival time.  A connection is only considered if:
-      1. We can physically board it (departure is after our arrival).
-      2. Its cumulative fare is less than what we've achieved before.
+    Ride segments represent one complete boarding-to-alighting leg, so fares
+    are charged once per vehicle leg rather than once per adjacent stop pair.
+    Multiple nondominated labels are retained at each stop because a cheaper
+    but later arrival may miss a connection that a costlier arrival can catch.
 
     IMPORTANT:
       This is a separate objective.  A journey might be slower but
@@ -297,34 +343,22 @@ def _find_cheapest_journey(
     Returns:
         A Journey object, or None if cheapest route cannot be determined.
     """
-    INF = math.inf
+    initial_label = FareLabel(
+        arrival_minutes=departure_minutes,
+        total_fare=0.0,
+    )
+    labels_by_stop: Dict[str, List[FareLabel]] = {origin_id: [initial_label]}
+    ordered_segments = sorted(
+        ride_segments,
+        key=lambda segment: (
+            segment.departure_minutes + delay_minutes.get(segment.trip_id, 0)
+        ),
+    )
 
-    # earliest_arrival and cheapest_fare are both needed because
-    # we still need to reach stops before connections depart.
-    earliest_arrival: Dict[str, float] = {}
-    earliest_arrival[origin_id] = float(departure_minutes)
-
-    cheapest_fare: Dict[str, float] = {}
-    cheapest_fare[origin_id] = 0.0
-
-    arriving_connection_cheap: Dict[str, Optional[Connection]] = {}
-
-    for conn in connections:
+    for conn in ordered_segments:
         effective_departure = conn.departure_minutes + delay_minutes.get(conn.trip_id, 0)
         effective_arrival = conn.arrival_minutes + delay_minutes.get(conn.trip_id, 0)
 
-        from_arr = earliest_arrival.get(conn.from_stop_id, INF)
-        from_fare = cheapest_fare.get(conn.from_stop_id, INF)
-
-        # Same boarding logic: no buffer needed at origin, 2-min buffer at transfers.
-        if conn.from_stop_id == origin_id:
-            if from_arr > effective_departure:
-                continue
-        else:
-            if from_arr > effective_departure - 2:
-                continue
-
-        # Look up fare for this connection.
         from_stop = td.stops_by_id.get(conn.from_stop_id)
         to_stop = td.stops_by_id.get(conn.to_stop_id)
         if not from_stop or not to_stop:
@@ -333,37 +367,62 @@ def _find_cheapest_journey(
         fare_key = (conn.route_id, from_stop.zone_id, to_stop.zone_id)
         fare_rule = td.fare_lookup.get(fare_key)
         if fare_rule is None:
-            continue  # no fare data; skip this connection for cheapest search
+            continue
 
-        leg_fare = fare_rule.fare_amount
-        new_fare = from_fare + leg_fare
+        for previous_label in list(labels_by_stop.get(conn.from_stop_id, [])):
+            if previous_label.trip_id == conn.trip_id:
+                continue
 
-        # Update if this is cheaper OR if same fare but arrives earlier.
-        to_fare = cheapest_fare.get(conn.to_stop_id, INF)
-        to_arr = earliest_arrival.get(conn.to_stop_id, INF)
+            transfer_buffer = 0 if conn.from_stop_id == origin_id else 2
+            if previous_label.arrival_minutes > effective_departure - transfer_buffer:
+                continue
 
-        if new_fare < to_fare or (new_fare == to_fare and effective_arrival < to_arr):
-            cheapest_fare[conn.to_stop_id] = new_fare
-            earliest_arrival[conn.to_stop_id] = effective_arrival
-            arriving_connection_cheap[conn.to_stop_id] = conn
+            new_label = FareLabel(
+                arrival_minutes=effective_arrival,
+                total_fare=previous_label.total_fare + fare_rule.fare_amount,
+                trip_id=conn.trip_id,
+                previous=previous_label,
+                connection=conn,
+            )
+            labels = labels_by_stop.setdefault(conn.to_stop_id, [])
+            if any(
+                label.total_fare <= new_label.total_fare
+                and label.arrival_minutes <= new_label.arrival_minutes
+                for label in labels
+            ):
+                continue
 
-    if cheapest_fare.get(destination_id, INF) == INF:
+            labels[:] = [
+                label for label in labels
+                if not (
+                    new_label.total_fare <= label.total_fare
+                    and new_label.arrival_minutes <= label.arrival_minutes
+                )
+            ]
+            labels.append(new_label)
+
+    destination_labels = labels_by_stop.get(destination_id, [])
+    if not destination_labels:
         return None  # no fare-complete path found
 
-    # Reconstruct path.
+    best_label = min(
+        destination_labels,
+        key=lambda label: (label.total_fare, label.arrival_minutes),
+    )
     path: List[Connection] = []
-    current_stop = destination_id
-    while current_stop != origin_id:
-        conn = arriving_connection_cheap.get(current_stop)
-        if conn is None:
+    current_label = best_label
+    while current_label.connection is not None:
+        path.append(current_label.connection)
+        if current_label.previous is None:
             return None
-        path.append(conn)
-        current_stop = conn.from_stop_id
+        current_label = current_label.previous
     path.reverse()
 
-    journey = Journey(connections=path, fare_available=True)
-    journey.total_fare = cheapest_fare[destination_id]
-    return journey
+    return Journey(
+        connections=path,
+        total_fare=best_label.total_fare,
+        fare_available=True,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -410,9 +469,11 @@ def _assemble_option(
 
         # Intermediate stop names
         intermediate = [
-            td.stops_by_id[c.to_stop_id].stop_name
-            for c in conns[:-1]
-            if c.to_stop_id in td.stops_by_id
+            td.stops_by_id[stop_time.stop_id].stop_name
+            for stop_time in td.stop_times_by_trip[trip_id]
+            if first_conn.stop_sequence_from < stop_time.stop_sequence
+            < last_conn.stop_sequence_to
+            and stop_time.stop_id in td.stops_by_id
         ]
 
         # Fare for this leg
@@ -551,12 +612,14 @@ class RoutingService:
     def __init__(self, td: TransportData) -> None:
         self.td = td
         self.connections = build_connections(td)
+        self.ride_segments = build_ride_segments(td)
         self.graph = build_network_graph(td)
 
     def reload(self, td: TransportData) -> None:
         """Rebuild connections if the data has changed (e.g. after delays applied)."""
         self.td = td
         self.connections = build_connections(td)
+        self.ride_segments = build_ride_segments(td)
         self.graph = build_network_graph(td)
 
     def search(
@@ -600,7 +663,7 @@ class RoutingService:
 
         # Always compute the fastest option.
         fastest = _find_fastest_journey(
-            origin_id, destination_id, dep_minutes, self.connections, delay_minutes
+            origin_id, destination_id, dep_minutes, self.ride_segments, delay_minutes
         )
         if fastest:
             opt = _assemble_option(
@@ -610,7 +673,8 @@ class RoutingService:
 
         # For "cheapest" preference, also compute the cheapest path.
         cheapest = _find_cheapest_journey(
-            origin_id, destination_id, dep_minutes, self.connections, self.td, delay_minutes
+            origin_id, destination_id, dep_minutes, self.ride_segments, self.td,
+            delay_minutes,
         )
         if cheapest:
             cheapest_opt = _assemble_option(
@@ -622,9 +686,15 @@ class RoutingService:
                 total_fare_override=cheapest.total_fare,
                 fare_available=True,
             )
-            # Only add cheapest if it's genuinely different from fastest.
-            if not options or cheapest_opt.departure_time != options[0].departure_time \
-                    or cheapest_opt.arrival_time != options[0].arrival_time:
+            fastest_signature = [
+                (leg.trip_id, leg.board_stop_id, leg.alight_stop_id)
+                for leg in options[0].legs
+            ] if options else None
+            cheapest_signature = [
+                (leg.trip_id, leg.board_stop_id, leg.alight_stop_id)
+                for leg in cheapest_opt.legs
+            ]
+            if not options or cheapest_signature != fastest_signature:
                 options.append(cheapest_opt)
             elif cheapest_opt.total_fare is not None and options:
                 # Same path but now we have fare data – enrich the fastest option.

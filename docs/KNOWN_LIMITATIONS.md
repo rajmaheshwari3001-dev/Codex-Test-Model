@@ -20,11 +20,12 @@ Update it only when new evidence changes the actual state.
 
 ## Routing and passenger experience
 
-- Existing tests cover representative direct and transfer routing, but do not
-  yet establish every transfer-buffer boundary, delay-adjusted ordering,
-  Pareto/fare alternative, midnight crossing, or service-day case.
-- Cheapest-route behavior has not been validated against an independent
-  reference oracle for a network containing competing fare/arrival labels.
+- Routing tests now cover the two-minute transfer threshold, delayed
+  connection ordering, competing fare/arrival labels, and per-ride-leg fare
+  charging on synthetic timetables. Midnight crossing and service-day behavior
+  remain unverified.
+- Cheapest-route behavior is verified against constructed cases, not an
+  independent reference implementation or real transit timetable.
 - Input tests cover invalid stop IDs and no-route times, but do not yet cover
   all malformed and out-of-range clock strings.
 - Chat is keyword/intent based, not a general language model. It may not
@@ -39,15 +40,16 @@ Update it only when new evidence changes the actual state.
   deterministic demonstration simulator and do not dispatch vehicles.
 - Some metrics use fixed scenario assumptions. Their calibration against a
   transport operator or real passenger data has not been established.
-- The simulator's multi-bus coordination capability has not been demonstrated
-  or accepted; existing spare assignment and short-turn proposals are limited
-  examples.
-- Approval/rejection endpoint behavior and dashboard state effects do not yet
-  have complete API/browser acceptance coverage.
+- The simulator's multi-bus coordination capability is limited to simplified
+  spare deployment and a same-route short-turn scenario; it does not model
+  vehicle locations, travel-time reachability, or real dispatch constraints.
+- Approval/rejection endpoint responses have API coverage, but they are
+  simulated acknowledgements and do not dispatch vehicles or mutate the
+  displayed fleet state. Dashboard effects remain unverified in a browser.
 
 ## Quality and operations
 
-- Baseline backend tests pass (49 passed, 1 Starlette/httpx deprecation
+- Baseline backend tests pass (64 passed, 1 Starlette/httpx deprecation
   warning); frontend type checking and production build pass. This does not
   establish browser usability or a test-coverage percentage.
 - Local setup and API operation were verified; production deployment,

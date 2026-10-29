@@ -15,7 +15,7 @@ A full-stack web application that helps passengers find public transport routes 
 ### 1. Backend Setup
 
 ```powershell
-cd aaroh-saarthi\backend
+cd backend
 
 # Create a virtual environment
 python -m venv .venv
@@ -37,7 +37,7 @@ API docs: **http://localhost:8000/docs**
 ### 2. Frontend Setup (new terminal)
 
 ```powershell
-cd aaroh-saarthi\frontend
+cd frontend
 
 # Install dependencies
 npm install
@@ -51,7 +51,7 @@ The frontend is now running at **http://localhost:5173**
 ### 3. Run Backend Tests
 
 ```powershell
-cd aaroh-saarthi\backend
+cd backend
 .venv\Scripts\Activate.ps1
 python -m pytest tests/ -v
 ```

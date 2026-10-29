@@ -9,10 +9,10 @@ results do not yet establish complete passenger, fleet, or browser acceptance.
 
 | Measure | Current value | Meaning |
 |---|---:|---|
-| Verified requirement completion | **60%** | Weighted P/F/I register; only PASS earns full points and PARTIAL earns half |
+| Verified requirement completion | **78%** | Weighted P/F/I register; only PASS earns full points and PARTIAL earns half |
 | Implementation estimate | **About 75%** | Engineering estimate that the listed feature areas exist in code; not acceptance evidence |
-| Backend test execution | **49 passed, 0 failed** | Baseline suite executed on 29 Oct 2026 |
-| Frontend type-check/build | **Passed** | `tsc -b && vite build`; production output built |
+| Backend test execution | **69 passed, 0 failed** | Full suite rerun after routing and fleet acceptance tests |
+| Frontend type-check/build | **Passed** | `tsc -b && vite build`; production output built after routing changes |
 | API smoke checks | **5 checks passed** | Health, stops, routes, sample journey search, and fleet state |
 | Browser workflow | **Not tested** | A frontend build does not verify browser interactions |
 | Coverage percentage | **Not measured** | No coverage-instrumented test run was performed |
@@ -25,18 +25,18 @@ completion score. The verified score is calculated in
 
 - Repository: `https://github.com/rajmaheshwari3001-dev/Codex-Test-Model`
 - Branch: `main`
-- Baseline local and remote commit: `0e28bca`
+- Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`
 - Baseline working tree: clean before this documentation iteration.
-- Current development iteration: **0 — baseline and requirements ledger**.
-- Latest successful delivery before this ledger: `0e28bca`.
-- Last verified pushed commit at baseline: `0e28bca`; the baseline ledger is not yet committed.
+- Current development iteration: **1 — routing correctness and acceptance tests**.
+- Latest successful delivery: `b62c51b` (baseline audit documents).
+- Routing iteration changes are locally verified and await commit/push.
 
 ## Baseline verification
 
 **Backend**
 
 ```text
-49 passed, 1 warning in 1.72s
+64 passed, 1 warning in 1.74s
 ```
 
 The warning is a Starlette `TestClient` deprecation notice related to `httpx`.
@@ -78,16 +78,15 @@ These are representative smoke checks, not complete workflow acceptance tests.
 
 ## Known gaps and highest-priority concerns
 
-1. Existing routing tests establish only a small subset of edge cases. They do
-   not yet prove that delay-adjusted connections are scanned in effective
-   departure order or that cheapest search retains all relevant arrival/fare
-   alternatives.
+1. Routing now has regression evidence for delay-adjusted ordering, fare labels,
+   one fare per ride leg, and transfer-buffer boundaries. Midnight crossing
+   and service-date availability remain unverified.
 2. Passenger route search does not take a service date; weekday/weekend
    availability is therefore not verified in the search flow.
 3. API tests do not establish that visible frontend controls and the complete
    workflows work in a browser.
-4. Fleet response metrics and assignment/coordination assumptions have not
-   been independently validated against scenario invariants.
+4. Fleet metric formulas and response state have targeted tests, but fixed
+   passenger-impact assumptions are not validated against real operating data.
 5. The provided task identifies DEV-P05 but does not include an independently
    verifiable official statement URL or source document. The requirements
    register uses the supplied P/F/I criteria; source-to-register traceability
@@ -99,14 +98,13 @@ until tests reproduce them.
 
 ## Requirements summary
 
-- Passenger: P1 and P3 PASS on the currently scoped synthetic network; P10
-  PASS for the documented-sample-data fallback. Other requirements are
-  PARTIAL pending end-to-end/edge-case evidence.
-- Fleet: F1–F8 PARTIAL; routes return simulated state and scenario results, but
-  complete behavioral and metric acceptance is not established.
+- Passenger: P1–P4, P6, P10, and P11 PASS for the tested synthetic-data
+  scope; P5, P7–P9 remain PARTIAL.
+- Fleet: F3, F4, F7, and F8 PASS for tested simulator/API scope; F1, F2, F5,
+  and F6 remain PARTIAL.
 - Integration/quality: I5 PASS for local setup documentation plus verified
   backend startup/health and frontend build; I1–I4 and I6–I7 PARTIAL.
-- Weighted verified requirement score: **60 / 100 = 60%**.
+- Weighted verified requirement score: **78 / 100 = 78%**.
 
 See the requirement-by-requirement evidence and stable weights in
 [REQUIREMENTS_AUDIT.md](./REQUIREMENTS_AUDIT.md).
@@ -114,11 +112,11 @@ See the requirement-by-requirement evidence and stable weights in
 ## Iteration log and next work
 
 See [ITERATION_LOG.md](./ITERATION_LOG.md) for completed and ongoing
-iterations. The next code-focused iteration will test and correct the most
-important routing correctness gaps first, beginning with delay-adjusted
-connection ordering and cheapest-route labels. The following iteration will
-validate fleet state transitions and scenario metrics. Browser tests will be
-recorded separately from unit tests and builds.
+iterations. Iteration 1 fixed verified routing transfer/fare-label behavior,
+modeled the short-turn assignment in its scenario metrics, added API
+delay/crowding/approval/input validation tests, and documented quick local
+startup/API checks. Next, verify complete browser workflows; assess fleet
+metrics with clear limits on fixed assumptions.
 
 ## Current blockers
 
@@ -130,11 +128,12 @@ recorded separately from unit tests and builds.
 
 ## Latest test evidence
 
-- Backend: `49 passed, 1 warning`; command
+- Backend: `69 passed, 1 warning`; command
+  `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`.
   `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`
   from the project parent.
 - Frontend: `npm run build`; TypeScript check and Vite production build passed
   from `frontend`.
-- API: five checks in the table above passed against a locally started
-  Uvicorn backend.
+- API: five baseline checks and new TestClient regressions for invalid time,
+  delay/crowding effects, and fleet approval/rejection passed.
 - Browser: not tested.

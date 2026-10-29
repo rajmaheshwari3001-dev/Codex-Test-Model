@@ -4,6 +4,39 @@ Base URL (development): `http://localhost:8000`
 
 Interactive docs: `http://localhost:8000/docs`
 
+## Run and check the API locally (Windows PowerShell)
+
+From the repository root, start the backend in one terminal:
+
+```powershell
+cd backend
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
+```
+
+Open `http://localhost:8000/docs` for Swagger UI. Expand an endpoint, select
+**Try it out**, enter the request body where required, and select **Execute**.
+The OpenAPI document is also available at `http://localhost:8000/openapi.json`.
+
+Quick checks from a second PowerShell terminal:
+
+```powershell
+Invoke-RestMethod http://localhost:8000/api/health
+Invoke-RestMethod http://localhost:8000/api/stops
+Invoke-RestMethod -Method Post `
+  -Uri http://localhost:8000/api/journeys/search `
+  -ContentType 'application/json' `
+  -Body (@{
+    origin_stop_id = 'S13'
+    destination_stop_id = 'S01'
+    departure_time = '07:00'
+    preference = 'fastest'
+  } | ConvertTo-Json)
+```
+
+The sample stop IDs refer to the **synthetic demonstration dataset** bundled
+with the project; they are not real service information. Stop IDs can be
+checked with `GET /api/stops`.
+
 ---
 
 ## Health
@@ -77,7 +110,7 @@ Find journey options between two stops.
 | origin_stop_id      | string | ✓        | Valid stop ID                        |
 | destination_stop_id | string | ✓        | Valid stop ID (different from origin)|
 | departure_time      | string | ✓        | Format: HH:MM                        |
-| preference          | string | ✓        | "fastest" or "cheapest"              |
+| preference          | string | No       | "fastest" or "cheapest"; defaults to "fastest" |
 
 **Response 200 (routes found):**
 ```json
@@ -129,6 +162,10 @@ Find journey options between two stops.
 ```json
 { "detail": "Unknown origin stop ID: 'INVALID'" }
 ```
+
+Out-of-range clock values such as `08:75` and unknown stop IDs also return
+HTTP 400. If the time is valid but no scheduled connection is available, the
+API returns HTTP 200 with an empty `options` list and an explanatory `message`.
 
 ---
 

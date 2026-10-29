@@ -306,6 +306,10 @@ class FleetSimulator:
                 for bus in scenario_state_b.buses:
                     if bus.bus_id == disruption.affected_bus_id:
                         bus.status = "broken_down"
+                    elif bus.bus_id == divert_bus.bus_id:
+                        bus.status = "reassigned"
+                        bus.route_id = affected_bus.route_id
+                        bus.trip_id = affected_bus.trip_id
 
                 response_b_metrics = self._calculate_metrics(
                     scenario_state_b, "Short-turn existing bus",

@@ -83,6 +83,8 @@ def evaluate_disruption(req: DisruptionRequest):
     )
 
     result = _simulator.evaluate_disruption(disruption)
+    if result.get("error"):
+        raise HTTPException(status_code=404, detail=result["error"])
     _last_evaluation[disruption.disruption_id] = result
     return result
 

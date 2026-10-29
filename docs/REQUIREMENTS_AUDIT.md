@@ -41,18 +41,18 @@ measures verified requirement coverage, not implementation quantity.
 | ID / weight | Expected behavior | Current implementation and primary location | Verification method and evidence | Status | Remaining defect / priority |
 |---|---|---|---|---|---|
 | P1 / 6 | Plan public-transport journeys within the supplied city network. | Synthetic stop/trip CSVs; `GET /api/stops`, `GET /api/routes`, `POST /api/journeys/search`; passenger page. | API smoke: 15 stops, 4 routes, and a sample `S01`→`S05` query returned an option. | PASS | Network is fictional and limited; keep provenance visible. |
-| P2 / 7 | Provide separate fastest and cheapest options when supported by data. | `RoutingService.search`, fastest and cheapest scans; result cards. | Existing cheapest-preference test passes but does not assert minimum cost or distinct alternatives. | PARTIAL | Add test networks with distinct optimal times/fares and missing-fare cases; high. |
+| P2 / 7 | Provide separate fastest and cheapest options when supported by data. | `RoutingService.search`, fastest and fare/arrival-label search; result cards. | Synthetic timetable tests verify distinct fastest/cheapest itineraries, minimum fare, and one fare per ride leg. Full real-network validation remains unavailable. | PASS | Validate against organizer-provided data when available. |
 | P3 / 8 | Calculate journeys from scheduled departure/arrival times. | Connection scan in `routing_service.py`; trip stop-times CSV. | Direct and transfer tests pass; live sample journey returned. | PASS | Search has no service-date input, so weekday/weekend filtering is not proven. |
-| P4 / 8 | Permit feasible transfers and include required wait. | Two-minute transfer buffer and transfer assembly in `routing_service.py`. | Existing multi-leg transfer test passes. | PARTIAL | Verify exact buffer boundaries, temporal ordering after delays, and reported wait; highest. |
+| P4 / 8 | Permit feasible transfers and include required wait. | Two-minute transfer buffer and transfer assembly in `routing_service.py`. | Synthetic tests verify a 1-minute connection is missed, a 2-minute buffer is feasible and reported, and a delayed incoming trip selects a later service. | PASS | Validate station-specific transfer times if such data is added. |
 | P5 / 5 | Chat answers use transport data rather than fabricate network facts. | `chat.py`, `chat_service.py`; intent handlers use shared transport/routing data. | API test checks response shape and intent only; no grounded content assertions. | PARTIAL | Add intent/content assertions and unknown-data behavior; medium. |
-| P6 / 5 | Journey search reflects and labels simulated delays. | Delay API/service and routing delay parameter. | Delay service and one routing delay test pass; API delay CRUD test passes. | PARTIAL | Verify effective connection ordering, warning/times, and a full UI workflow; high. |
+| P6 / 5 | Journey search reflects and labels simulated delays. | Delay API/service and routing delay parameter. | API regression sets a trip delay, re-searches, and verifies revised arrival, simulated provenance, delay warning, and crowding warning. | PASS | Frontend display workflow still needs browser verification. |
 | P7 / 4 | Use available sample occupancy and communicate crowding or missing data honestly. | Occupancy CSV and `_assemble_option` warning logic. | Code inspection only; no focused test or API/browser assertion. | PARTIAL | Test high/low/missing occupancy and make unknown data behavior explicit; medium. |
 | P8 / 5 | Create, retrieve/reopen, and delete saved journeys. | SQLite service and `/api/saved-routes` CRUD; `SavedRoutes` UI. | API CRUD test creates, lists, reads, and deletes successfully. | PARTIAL | UI reopen/re-search and persistence across app restart not tested; medium. |
 | P9 / 4 | Show the journey/network on Leaflet/OpenStreetMap map. | `TransportMap.tsx`, Leaflet tile layer, route and selected journey layers. | Production build passes; no browser/map tile interaction test. | PARTIAL | Verify rendering, selection highlighting and external tile availability in browser; medium. |
 | P10 / 4 | Use GTFS where available or document sample data if not. | Simplified CSV data and `backend/app/data/README.md`. | Dataset docs explicitly state synthetic data and that no GTFS feed is consumed. | PASS | GTFS ingestion remains out of scope until suitable source data is provided. |
-| P11 / 4 | Validate inputs and handle missing/unavailable journeys clearly. | Pydantic request validation and route API error/no-route response. | Invalid stop, no-route and same-stop service tests; API invalid/no-route tests pass. | PARTIAL | Time values such as out-of-range HH:MM and malformed input edge cases need validation. |
+| P11 / 4 | Validate inputs and handle missing/unavailable journeys clearly. | Pydantic request validation and route API error/no-route response. | Tests cover malformed/out-of-range time, unknown stop/preference, same-stop request, no available journey, and fare-unavailable fallback without fabricated fare. | PASS | Add user-facing browser assertions for these states. |
 
-**Passenger earned points: 39 / 60.**
+**Passenger earned points: 51 / 60.**
 
 ## Fleet intelligence — 25 points
 
@@ -60,14 +60,14 @@ measures verified requirement coverage, not implementation quantity.
 |---|---|---|---|---|---|
 | F1 / 3 | Display the simulated fleet state. | `GET /api/fleet/state`, `FleetDashboard`. | API smoke returned 21 buses; fleet endpoint test passes. | PARTIAL | Browser rendering and state consistency not verified; medium. |
 | F2 / 3 | Evaluate breakdown and delay scenarios. | `POST /api/fleet/disruption`, `FleetSimulator`. | Existing breakdown and delay service tests pass. | PARTIAL | Validate bad type/bus handling and visible UI flows; medium. |
-| F3 / 4 | Compare a no-action baseline with evaluated alternatives. | `evaluate_disruption` baseline and response generation. | Tests assert baseline/responses exist but not metric correctness or comparable states. | PARTIAL | Add deterministic scenario metric comparisons; high. |
-| F4 / 3 | Reject interventions that are not feasible. | Response feasibility and approve endpoint guard. | Existing infeasible-response test has a narrow spare-unavailable setup. | PARTIAL | Cover every infeasible action and API approval rejection; high. |
+| F3 / 4 | Compare a no-action baseline with evaluated alternatives. | `evaluate_disruption` baseline and response generation. | Tests verify repeatable metrics, baseline bus counts, and lower-wait spare response; short-turn metrics reflect the diverted bus assignment. | PASS | Validate metric assumptions with a domain expert before operational use. |
+| F4 / 3 | Reject interventions that are not feasible. | Response feasibility and approve endpoint guard. | No-spare scenario marks spare deployment infeasible; API rejects approval for an infeasible response. | PASS | Add further intervention types if the simulator grows. |
 | F5 / 3 | Coordinate multiple buses when the scenario supports it. | Basic spare assignment and same-route short-turn proposal. | Code inspection only; a multi-bus coordinated scenario is not demonstrated. | PARTIAL | Either implement/test a defensible coordination case or explicitly scope it out. |
 | F6 / 4 | Calculate before/after metrics from scenario outcomes. | `ScenarioMetrics` and `_calculate_metrics`. | Metrics appear in API output, but formulas and effects are not independently tested. | PARTIAL | Test formulas, state changes, and metric invariants; high. |
-| F7 / 3 | Explain recommendations and trade-offs. | Recommendation selection and response explanations/tradeoffs. | Code inspection; no assertions that recommendation follows stated criteria. | PARTIAL | Test recommendation criteria and explanation consistency; medium. |
-| F8 / 2 | Approve or reject a proposed response consistently. | `POST /api/fleet/approve`. | No approval/rejection test was present in the baseline suite. | PARTIAL | Add approval, rejection, missing evaluation, and infeasible approval tests; medium. |
+| F7 / 3 | Explain recommendations and trade-offs. | Recommendation selection and response explanations/tradeoffs. | Test verifies the recommended feasible response improves modeled wait, and has explanation/trade-offs. | PASS | Document fixed assumptions and validate them with a domain expert. |
+| F8 / 2 | Approve or reject a proposed response consistently. | `POST /api/fleet/approve`. | API tests verify explicit approval and rejection results, and 404 responses for unevaluated disruptions and unknown responses. | PASS | This is a simulated acknowledgement; it does not dispatch a real vehicle. |
 
-**Fleet earned points: 12.5 / 25.**
+**Fleet earned points: 18.5 / 25.**
 
 ## Integration and quality — 15 points
 
@@ -87,19 +87,21 @@ measures verified requirement coverage, not implementation quantity.
 
 | Category | Earned | Available |
 |---|---:|---:|
-| Passenger | 39 | 60 |
-| Fleet | 12.5 | 25 |
+| Passenger | 49 | 60 |
+| Fleet | 18.5 | 25 |
 | Integration and quality | 8.5 | 15 |
-| **Total** | **60** | **100** |
+| **Total** | **78** | **100** |
 
-**Verified requirement completion: 60%.** The estimate does not include
-implementation-only claims outside this register. No browser check or test
-coverage percentage is included in this score.
+**Verified requirement completion: 78%.** The score increased from the
+original 60% baseline: P2, P4, P6, P11, F3, F4, F7, and F8 now have
+acceptance-test evidence. No implementation-only claims outside this register
+earn points. No browser check or test coverage percentage is included in this
+score.
 
 ## Baseline verification commands and outcome
 
 - Backend: `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`
-  — 49 passed, 0 failed, one deprecation warning.
+  — 69 passed, 0 failed, one deprecation warning.
 - Frontend from `frontend`: `npm run build` — TypeScript and Vite build passed.
 - Local API smoke: health, stops, routes, one journey query, and fleet state —
   passed.
