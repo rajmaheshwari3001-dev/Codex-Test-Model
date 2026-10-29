@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import type { SavedRoute } from '../types'
+import { formatTime12 } from '../utils/time'
 import { getSavedRoutes, deleteSavedRoute } from '../services/api'
 
 interface Props {
@@ -112,7 +113,7 @@ export default function SavedRoutes({ onReuse, refreshTrigger }: Props) {
                   {r.origin_stop_name} <span className="text-slate-400">➔</span> {r.destination_stop_name}
                 </div>
                 <div className="flex items-center gap-2 text-[11px] font-medium text-slate-400">
-                  <span>Dep: <strong className="font-mono font-bold text-slate-700">{r.preferred_departure_time}</strong></span>
+                  <span>Dep: <strong className="font-mono font-bold text-slate-700">{formatTime12(r.preferred_departure_time)}</strong></span>
                   <span>•</span>
                   <span>{r.service_day === 'weekend' ? 'Weekend' : 'Weekday'}</span>
                 </div>
