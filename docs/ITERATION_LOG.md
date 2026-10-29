@@ -51,7 +51,8 @@
 - **Verified score:** 60% before → 78% based on focused acceptance evidence.
   P2/P4/P6/P11/F3/F4/F7/F8 earned PASS evidence; no browser coverage points
   were claimed.
-- **Commit:** Pending staged diff and publish verification.
-- **Push status:** Pending.
+- **Commit:** `29f5a9c`.
+- **Push status:** Pushed to `origin/main`; `ls-remote` confirmed the branch
+  points to this commit.
 - **Next task:** Audit fleet state transition semantics and improve or narrowly
   document action/metric assumptions.

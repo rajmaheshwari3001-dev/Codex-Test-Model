@@ -28,8 +28,8 @@ completion score. The verified score is calculated in
 - Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`
 - Baseline working tree: clean before this documentation iteration.
 - Current development iteration: **1 — routing correctness and acceptance tests**.
-- Latest successful delivery: `b62c51b` (baseline audit documents).
-- Routing iteration changes are locally verified and await commit/push.
+- Latest successful delivery: `29f5a9c` (`main`).
+- Last remote verification: `origin/main` points to `29f5a9c7835ee7162da5d9ea45e9e8d8a5637c37`.
 
 ## Baseline verification
 
@@ -137,3 +137,6 @@ metrics with clear limits on fixed assumptions.
 - API: five baseline checks and new TestClient regressions for invalid time,
   delay/crowding effects, and fleet approval/rejection passed.
 - Browser: not tested.
+- Push: `29f5a9c` verified on `origin/main`; the unrelated untracked
+  `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` was preserved and excluded from the
+  commit.
