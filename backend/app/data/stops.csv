@@ -1,0 +1,16 @@
+stop_id,stop_name,stop_lat,stop_lon,zone_id
+S01,Rajiv Chowk,28.6328,77.2197,1
+S02,Kashmere Gate,28.6674,77.2289,1
+S03,Chandni Chowk,28.6560,77.2300,1
+S04,New Delhi Station,28.6425,77.2193,1
+S05,Connaught Place,28.6315,77.2167,1
+S06,India Gate,28.6129,77.2295,1
+S07,Lajpat Nagar,28.5700,77.2400,2
+S08,Saket,28.5224,77.2015,2
+S09,Hauz Khas,28.5494,77.2001,2
+S10,AIIMS,28.5672,77.2100,2
+S11,ITO,28.6275,77.2455,1
+S12,Nehru Place,28.5489,77.2533,2
+S13,Dwarka Sec-21,28.5529,77.0583,3
+S14,Janakpuri West,28.6296,77.0815,3
+S15,Rajouri Garden,28.6491,77.1221,3

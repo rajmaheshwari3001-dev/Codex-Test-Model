@@ -1,0 +1,5 @@
+route_id,route_name,route_type,route_color,description
+R01,Blue Line,bus,#2196F3,Dwarka Sec-21 to Rajiv Chowk via Janakpuri & Rajouri Garden
+R02,Green Line,bus,#4CAF50,Kashmere Gate to Hauz Khas via Chandni Chowk & AIIMS
+R03,Red Ring,bus,#F44336,Circular: Connaught Place - India Gate - Lajpat Nagar - Nehru Place - Saket
+R04,Yellow Express,bus,#FF9800,New Delhi Station to Saket via ITO & AIIMS (express with fewer stops)
