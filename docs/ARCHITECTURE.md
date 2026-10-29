@@ -148,7 +148,7 @@ CSV files loaded at startup: `stops.csv`, `routes.csv`, `trips.csv`, `stop_times
 | SQLite for persistence            | Zero setup, built into Python, sufficient for V1       |
 | `init()` dependency injection     | Avoids circular imports, keeps modules testable        |
 | Deterministic fleet simulation    | Reproducible results, no randomness to debug           |
-| Intent-based chat (not LLM)       | Works offline, deterministic, no API key needed        |
+| Rule-based, transit-grounded chat with optional Grok wording | Route and schedule facts stay deterministic; Grok is optional |
 | Vite proxy in dev                 | Eliminates CORS issues during development              |
 | Tailwind CSS v4                   | Utility-first, no custom CSS files needed              |
 

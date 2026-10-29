@@ -110,6 +110,7 @@ Press `Ctrl+C` in each terminal window.
 | Backend  | Python, FastAPI, Uvicorn                        |
 | Routing  | NetworkX, custom schedule-aware algorithm        |
 | Database | SQLite (saved routes)                           |
+| AI assist | Optional xAI Grok wording for selected help replies |
 | Testing  | Pytest (99 tests)                               |
 | Data     | Synthetic CSV dataset (15 stops, 4 routes)      |
 
@@ -176,6 +177,7 @@ The demo uses a **synthetic** transit network with:
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) – System design and component overview
+- [Technology Guide](docs/TECHNOLOGY_GUIDE.md) – What each technology does, where it is used, and why
 - [API Reference](docs/API_REFERENCE.md) – All API endpoints with examples
 - [Data Dictionary](docs/DATA_DICTIONARY.md) – Dataset field descriptions
 - [Learning Guide](docs/LEARNING_GUIDE.md) – Educational walkthrough
