@@ -202,7 +202,8 @@
   scenario rendered the new notes and passed. No code failure remains.
 - **Completion percentage:** 93% before → 93% after. This iteration improved
   evidence and disclosure but did not change requirement status.
-- **Commit:** Pending final review.
-- **Push status:** Not yet pushed.
+- **Commit:** `37b832f7fc4036393ca3ea285798181f6c9713c6`.
+- **Push status:** Pushed to `origin/main`; `git ls-remote` confirmed the
+  remote ref matches the commit.
 - **Next task:** Iteration 5 — make missing sample occupancy explicit in the
   passenger route UI.

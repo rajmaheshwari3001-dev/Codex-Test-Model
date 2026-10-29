@@ -32,10 +32,10 @@ completion score. The verified score is calculated in
 - Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`.
 - Latest completed iteration: **4 — verify and explain fleet metric formulas**.
 - Next iteration: **5 — explicitly label missing passenger occupancy as unknown**.
-- Latest successful delivery: `5c4a99d` (`main`), iteration 3 fleet state
-  transitions.
+- Latest successful delivery: `37b832f` (`main`), iteration 4 fleet metric
+  verification and provenance disclosure.
 - Remote verification: `origin/main` points to
-  `5c4a99d9c3a52bd7663fc3346c2eb1ddf7dbc90a`.
+  `37b832f7fc4036393ca3ea285798181f6c9713c6`.
 - The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
   preserved and excluded.
 
@@ -179,7 +179,7 @@ in the passenger UI.
   metric-provenance note.
 - Temporary simulated passenger delay was cleared; API confirmed no active
   delays remained.
-- Push: iteration 3 was pushed to `origin/main`; `git ls-remote` confirmed
-  the remote ref matches local commit `5c4a99d9c3a52bd7663fc3346c2eb1ddf7dbc90a`.
+- Push: iteration 4 was pushed to `origin/main`; `git ls-remote` confirmed
+  the remote ref matches local commit `37b832f7fc4036393ca3ea285798181f6c9713c6`.
   The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
   preserved and excluded.
