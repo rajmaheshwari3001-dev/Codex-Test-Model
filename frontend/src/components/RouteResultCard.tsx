@@ -66,86 +66,86 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
           onSelect()
         }
       }}
-      className={`bg-white rounded-xl shadow-xs p-4 cursor-pointer transition-all border-2 text-left relative focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+      className={`relative cursor-pointer rounded-[1.5rem] border-2 bg-[#fffdf7] p-5 text-left shadow-xs transition-all focus:outline-none focus:ring-4 focus:ring-[#d9ed55]/40 ${
         selected
-          ? 'border-indigo-600 ring-2 ring-indigo-100 bg-indigo-50/20'
-          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+          ? 'border-[#6c7d36] bg-[#f7f8ec] ring-4 ring-[#d9ed55]/20 shadow-sm'
+          : 'border-[#e2ded3] hover:border-[#aab487] hover:shadow-sm'
       }`}
     >
       {/* Header bar */}
-      <div className="flex items-center justify-between mb-2.5">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2.5">
           <span
-            className={`text-xs font-bold uppercase tracking-wide px-2.5 py-0.5 rounded-full ${
+            className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
               isFastest
-                ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                ? 'bg-blue-100 text-blue-900 border border-blue-200'
                 : isCheapest
-                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                : 'bg-indigo-100 text-indigo-800 border border-indigo-200'
+                ? 'border border-[#d6dfad] bg-[#f1f4df] text-[#45552f]'
+                : 'bg-indigo-100 text-indigo-900 border border-indigo-200'
             }`}
           >
             {option.label}
           </span>
           {option.transfers.length === 0 ? (
-            <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+            <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md">
               Direct Route
             </span>
           ) : (
-            <span className="text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
+            <span className="text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-md">
               {option.transfers.length} {option.transfers.length === 1 ? 'Transfer' : 'Transfers'}
             </span>
           )}
         </div>
-        <span className="text-[11px] text-gray-500 font-mono">
+        <span className="text-xs text-slate-500 font-mono font-medium">
           {option.data_status === 'scheduled' ? 'Scheduled Timetable' : option.data_status}
         </span>
       </div>
 
       {/* Main metrics (Duration, Times, Fare) */}
-      <div className="flex items-baseline justify-between mb-3 border-b border-gray-100 pb-2.5">
+      <div className="flex items-baseline justify-between mb-4 border-b border-slate-100 pb-3.5">
         <div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-extrabold text-gray-900 tracking-tight">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
               {option.total_duration_minutes}
             </span>
-            <span className="text-sm font-medium text-gray-500">min travel</span>
+            <span className="text-sm sm:text-base font-semibold text-slate-500">min travel</span>
           </div>
-          <div className="text-xs font-medium text-gray-700 mt-0.5">
-            Dep: <span className="font-mono text-gray-900 font-semibold">{option.departure_time}</span> → Arr:{' '}
-            <span className="font-mono text-gray-900 font-semibold">{option.arrival_time}</span>
+          <div className="text-xs sm:text-sm font-semibold text-slate-700 mt-1">
+            Dep: <span className="font-mono text-slate-950 font-bold">{option.departure_time}</span> → Arr:{' '}
+            <span className="font-mono text-slate-950 font-bold">{option.arrival_time}</span>
           </div>
         </div>
 
         <div className="text-right">
           {option.fare_available && option.total_fare !== null ? (
             <div>
-              <span className="text-xl font-bold text-emerald-700">₹{option.total_fare}</span>
-              <div className="text-[10px] text-gray-400">Total Fare</div>
+              <span className="text-2xl sm:text-3xl font-black text-emerald-800">₹{option.total_fare}</span>
+              <div className="text-xs text-slate-400 font-medium">Total Fare</div>
             </div>
           ) : (
-            <span className="text-xs text-gray-400 italic">Fare not specified</span>
+            <span className="text-xs text-slate-400 italic">Fare not specified</span>
           )}
         </div>
       </div>
 
       {/* Step-by-Step Leg Details */}
-      <div className="space-y-3 mb-3">
+      <div className="space-y-3.5 mb-4">
         {option.legs.map((leg, legIdx) => {
           const isExpanded = Boolean(expandedLegs[legIdx])
           const intermediateCount = leg.intermediate_stops?.length || 0
 
           return (
-            <div key={leg.leg_index} className="rounded-lg bg-gray-50/70 p-3 border border-gray-150">
+            <div key={leg.leg_index} className="rounded-xl bg-slate-50/80 p-3.5 border border-slate-200/80 space-y-2">
               {/* Leg Header with Route Badge */}
-              <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span
-                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: leg.route_color || '#4f46e5' }}
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: leg.route_color || '#059669' }}
                     aria-hidden="true"
                   />
-                  <span className="text-xs font-bold text-gray-800">{leg.route_name}</span>
-                  <span className="text-[10px] font-mono text-gray-500 bg-white px-1.5 py-0.5 rounded border border-gray-200">
+                  <span className="text-sm font-bold text-slate-900">{leg.route_name}</span>
+                  <span className="text-xs font-mono text-slate-600 bg-white px-2 py-0.5 rounded-md border border-slate-200 font-medium">
                     Trip {leg.trip_id}
                   </span>
                 </div>
@@ -153,14 +153,14 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                 {/* Crowding badge */}
                 {leg.boarding_crowding_level && (
                   <span
-                    className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                    className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${
                       leg.boarding_crowding_level === 'high'
-                        ? 'bg-red-100 text-red-700 border border-red-200'
+                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
                         : leg.boarding_crowding_level === 'medium'
-                        ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
                         : leg.boarding_crowding_level === 'low'
-                        ? 'bg-green-100 text-green-700 border border-green-200'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                        : 'bg-slate-100 text-slate-600'
                     }`}
                   >
                     {leg.boarding_crowding_level === 'unknown'
@@ -173,12 +173,12 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
               </div>
 
               {/* Boarding and Alighting points */}
-              <div className="space-y-1 text-xs">
-                <div className="flex items-baseline justify-between text-gray-800">
+              <div className="space-y-1.5 text-xs sm:text-sm">
+                <div className="flex items-baseline justify-between text-slate-800">
                   <span className="font-medium">
-                    🟢 Board at <span className="font-semibold">{leg.board_stop_name}</span>
+                    🟢 Board at <span className="font-bold text-slate-950">{leg.board_stop_name}</span>
                   </span>
-                  <span className="font-mono text-[11px] text-gray-600 font-semibold">{leg.departure_time}</span>
+                  <span className="font-mono text-xs sm:text-sm text-slate-700 font-bold">{leg.departure_time}</span>
                 </div>
 
                 {/* Intermediate stops toggle */}
@@ -187,7 +187,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                     <button
                       type="button"
                       onClick={e => toggleLeg(legIdx, e)}
-                      className="text-[11px] text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1 focus:outline-none"
+                      className="text-xs text-emerald-800 hover:text-emerald-950 font-bold flex items-center gap-1 focus:outline-none"
                     >
                       <span>
                         {isExpanded ? '▼ Hide' : '▶ Show'} {intermediateCount} intermediate{' '}
@@ -195,10 +195,10 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                       </span>
                     </button>
                     {isExpanded && (
-                      <ul className="my-1.5 ml-4 pl-2 border-l-2 border-indigo-200 space-y-1 text-[11px] text-gray-600">
+                      <ul className="my-2 ml-4 pl-2.5 border-l-2 border-emerald-300 space-y-1 text-xs text-slate-600">
                         {leg.intermediate_stops.map((stopName, idx) => (
-                          <li key={idx} className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-300" />
+                          <li key={idx} className="flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                             {stopName}
                           </li>
                         ))}
@@ -207,21 +207,21 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                   </div>
                 )}
 
-                <div className="flex items-baseline justify-between text-gray-800">
+                <div className="flex items-baseline justify-between text-slate-800">
                   <span className="font-medium">
-                    🔴 Alight at <span className="font-semibold">{leg.alight_stop_name}</span>
+                    🔴 Alight at <span className="font-bold text-slate-950">{leg.alight_stop_name}</span>
                   </span>
-                  <span className="font-mono text-[11px] text-gray-600 font-semibold">{leg.arrival_time}</span>
+                  <span className="font-mono text-xs sm:text-sm text-slate-700 font-bold">{leg.arrival_time}</span>
                 </div>
               </div>
 
               {/* Transfer junction information if followed by another leg */}
               {legIdx < option.legs.length - 1 && option.transfers[legIdx] && (
-                <div className="mt-2 pt-2 border-t border-dashed border-gray-200 flex items-center gap-2 text-xs text-amber-800 bg-amber-50/80 p-2 rounded">
-                  <span aria-hidden="true">🔄</span>
+                <div className="mt-2.5 pt-2.5 border-t border-dashed border-slate-200 flex items-center gap-2.5 text-xs sm:text-sm text-amber-950 bg-amber-50/90 p-2.5 rounded-lg border border-amber-200">
+                  <span aria-hidden="true" className="text-base">🔄</span>
                   <div>
-                    <span className="font-semibold">{option.transfers[legIdx].wait_minutes} min wait</span> at{' '}
-                    <span className="font-medium">{option.transfers[legIdx].at_stop_name}</span> for connecting bus
+                    <span className="font-bold">{option.transfers[legIdx].wait_minutes} min wait</span> at{' '}
+                    <span className="font-semibold">{option.transfers[legIdx].at_stop_name}</span> for connecting bus
                   </div>
                 </div>
               )}
@@ -232,9 +232,9 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
 
       {/* Warnings & Alerts */}
       {option.delay_warnings.length > 0 && (
-        <div className="mb-2 p-2 rounded bg-amber-50 border border-amber-200 text-xs text-amber-800 space-y-0.5">
+        <div className="mb-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs sm:text-sm text-amber-950 space-y-1">
           {option.delay_warnings.map((w, i) => (
-            <div key={i} className="flex items-start gap-1">
+            <div key={i} className="flex items-start gap-1.5">
               <span aria-hidden="true">⚠️</span>
               <span>{w}</span>
             </div>
@@ -243,9 +243,9 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
       )}
 
       {/* Card action footer: Map view indicator, Copy itinerary, Bookmark */}
-      <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
-        <div className="text-[11px] text-gray-500">
-          {selected ? '✓ Displayed on Map' : 'Click to display on map'}
+      <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div className="text-xs font-medium text-slate-500">
+          {selected ? '✓ Currently viewed on map' : 'Click card to view on map'}
         </div>
 
         <div className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
           <button
             type="button"
             onClick={handleCopyItinerary}
-            className="text-xs font-medium px-2.5 py-1 text-gray-600 hover:text-indigo-600 hover:bg-gray-100 rounded border border-gray-200 transition-colors"
+            className="text-xs font-bold px-3 py-1.5 text-slate-700 hover:text-emerald-900 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"
             title="Copy formatted journey plan"
           >
             {copied ? '✓ Copied' : '📋 Copy Plan'}
@@ -267,10 +267,10 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
               onSave()
             }}
             disabled={isSaved}
-            className={`text-xs font-semibold px-2.5 py-1 rounded transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 ${
+            className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
               isSaved
-                ? 'bg-gray-100 text-gray-500 cursor-default'
-                : 'text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 border border-indigo-200'
+                ? 'bg-slate-100 text-slate-500 cursor-default border border-slate-200'
+                : 'text-emerald-800 hover:text-emerald-950 hover:bg-emerald-50 border border-emerald-300'
             }`}
           >
             {isSaved ? '★ Saved' : '★ Save'}

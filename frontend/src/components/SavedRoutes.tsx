@@ -42,59 +42,59 @@ export default function SavedRoutes({ onReuse, refreshTrigger }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-xs border border-gray-200 p-4.5">
-      <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
+    <section className="rounded-[1.75rem] border border-[#d8d3c7] bg-[#fffdf7] p-5 shadow-[0_18px_50px_-36px_rgba(27,39,35,0.5)]">
+      <div className="mb-4 flex items-center justify-between gap-3 border-b border-[#e7e3d9] pb-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-gray-800">Saved Routes</span>
-          <span className="text-[11px] font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">
+          <span className="text-sm font-bold text-[#1c2925]">Saved journeys</span>
+          <span className="rounded-full bg-[#e9edcf] px-2.5 py-0.5 font-mono text-xs font-semibold text-[#47572d]">
             {routes.length}
           </span>
         </div>
-        <span className="text-[11px] text-gray-400">Stored locally in SQLite</span>
+        <span className="text-right text-[10px] font-semibold uppercase tracking-wider text-[#858d81]">Bookmarks</span>
       </div>
 
       {loading && routes.length === 0 ? (
-        <div className="py-6 text-center text-xs text-gray-400 flex items-center justify-center gap-2">
-          <span className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <span>Loading bookmarked routes...</span>
+        <div className="flex items-center justify-center gap-2 py-6 text-center text-xs text-slate-500">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
+          <span>Loading saved journeys…</span>
         </div>
       ) : routes.length === 0 ? (
-        <div className="py-6 px-3 text-center rounded-lg bg-gray-50 border border-dashed border-gray-200 text-gray-500">
-          <div className="text-base mb-1">🔖</div>
-          <div className="text-xs font-medium text-gray-700">No saved journeys yet</div>
-          <p className="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">
-            Search for any transit path above and click <span className="font-semibold text-indigo-600">Save Route</span> to pin it for one-click re-searching.
+        <div className="rounded-xl border border-dashed border-[#d8d3c7] bg-[#f8f6f0] px-4 py-6 text-center text-slate-600">
+          <div className="mb-1.5 text-lg" aria-hidden="true">🔖</div>
+          <div className="text-sm font-semibold text-slate-800">No saved journeys yet</div>
+          <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-slate-500">
+            Search for a route above and save it for one-click access.
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {routes.map(r => (
             <div
               key={r.saved_route_id}
-              className="group flex items-center justify-between p-2.5 rounded-lg border border-gray-150 bg-gray-50/60 hover:bg-white hover:border-indigo-200 hover:shadow-xs transition-all"
+              className="group flex items-center justify-between gap-3 rounded-xl border border-[#e2ded3] bg-[#f8f6f0] p-3.5 transition-all hover:border-[#9aab59] hover:bg-white hover:shadow-xs"
             >
-              <div className="space-y-0.5">
-                <div className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+              <div className="min-w-0 flex-1 space-y-1">
+                <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-900">
                   <span>{r.label}</span>
-                  <span className="text-[10px] font-normal text-indigo-700 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-100 uppercase">
+                  <span className="rounded-md border border-[#d8dfb4] bg-[#f1f4df] px-2 py-0.5 text-xs font-semibold uppercase text-[#47572d]">
                     {r.preference}
                   </span>
                 </div>
-                <div className="text-xs text-gray-600 font-medium">
+                <div className="truncate text-xs font-medium text-slate-600">
                   {r.origin_stop_name} → {r.destination_stop_name}
                 </div>
-                <div className="text-[10px] text-gray-400 flex items-center gap-2">
-                  <span>Preferred: <span className="font-mono text-gray-600">{r.preferred_departure_time}</span></span>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                  <span>Dep: <strong className="font-mono text-slate-700">{r.preferred_departure_time}</strong></span>
                   <span>•</span>
-                  <span>{r.service_day === 'weekend' ? 'Weekend Schedule' : 'Weekday Schedule'}</span>
+                  <span>{r.service_day === 'weekend' ? 'Weekend Timetable' : 'Weekday Timetable'}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 ml-2">
+              <div className="ml-2 flex shrink-0 items-center gap-2">
                 <button
                   type="button"
                   onClick={() => onReuse(r)}
-                  className="px-2.5 py-1 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-md border border-indigo-200 transition-colors focus:outline-none"
+                  className="rounded-lg border border-[#9aab59] bg-[#f1f4df] px-3 py-1.5 text-xs font-semibold text-[#3d4c32] transition-colors hover:bg-[#e7edc7] focus:outline-none focus:ring-2 focus:ring-[#9aab59]"
                   title="Search this route now"
                 >
                   Search
@@ -103,17 +103,17 @@ export default function SavedRoutes({ onReuse, refreshTrigger }: Props) {
                   type="button"
                   disabled={deletingId === r.saved_route_id}
                   onClick={e => r.saved_route_id !== null && handleDelete(r.saved_route_id, e)}
-                  className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors focus:outline-none"
+                  className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-500"
                   title="Remove saved route"
                   aria-label={`Delete ${r.label}`}
                 >
-                  {deletingId === r.saved_route_id ? '...' : '✕'}
+                  {deletingId === r.saved_route_id ? '…' : '✕'}
                 </button>
               </div>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </section>
   )
 }

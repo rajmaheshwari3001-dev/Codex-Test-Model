@@ -9,14 +9,10 @@ export default function Navigation() {
     let mounted = true
     getHealth()
       .then(res => {
-        if (mounted && res.status === 'ok') {
-          setBackendStatus('connected')
-        }
+        if (mounted && res.status === 'ok') setBackendStatus('connected')
       })
       .catch(() => {
-        if (mounted) {
-          setBackendStatus('disconnected')
-        }
+        if (mounted) setBackendStatus('disconnected')
       })
     return () => {
       mounted = false
@@ -24,53 +20,66 @@ export default function Navigation() {
   }, [])
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+    `rounded-xl px-3 py-2 text-xs font-bold transition-colors focus:outline-none focus:ring-4 focus:ring-[#d9ed55]/25 sm:px-4 sm:text-sm ${
       isActive
-        ? 'bg-indigo-600 text-white shadow-sm'
-        : 'text-gray-600 hover:text-indigo-600 hover:bg-indigo-50'
+        ? 'bg-[#d9ed55] text-[#172421]'
+        : 'text-[#d1d8ce] hover:bg-[#293a35] hover:text-white'
     }`
 
+  const statusLabel =
+    backendStatus === 'connected'
+      ? 'API online'
+      : backendStatus === 'disconnected'
+        ? 'API offline'
+        : 'Connecting'
+
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-14">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-indigo-600" aria-hidden="true" />
-            <span className="text-lg font-bold tracking-tight text-indigo-700">Aaroh-Saarthi</span>
+    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#172421] text-[#f6f2e7] shadow-[0_8px_28px_-20px_rgba(12,21,18,0.8)]">
+      <div className="mx-auto flex min-h-[72px] max-w-[1600px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[13px] bg-[#d9ed55] text-[#172421]">
+            <span className="font-mono text-xs font-black tracking-tighter" aria-hidden="true">AS/</span>
           </div>
-          <span className="text-xs text-gray-500 hidden md:inline border-l border-gray-200 pl-3">
-            Public Transit Assistant & Fleet Coordination
-          </span>
+          <div className="min-w-0">
+            <div className="truncate text-base font-black tracking-tight text-white sm:text-lg">
+              Aaroh<span className="text-[#d9ed55]">—</span>Saarthi
+            </div>
+            <div className="hidden text-[9px] font-semibold uppercase tracking-[0.2em] text-[#aeb9af] sm:block">
+              Delhi transit field guide
+            </div>
+          </div>
           <span
-            className={`hidden sm:inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+            className={`hidden shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold sm:inline-flex ${
               backendStatus === 'connected'
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                ? 'border-[#6f8851]/50 bg-[#293a35] text-[#d9ed55]'
                 : backendStatus === 'disconnected'
-                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                : 'bg-gray-100 text-gray-600'
+                  ? 'border-[#a66e54]/50 bg-[#3b2e2a] text-[#ffd4b8]'
+                  : 'border-white/15 bg-white/5 text-[#c8d0c8]'
             }`}
-            title={backendStatus === 'connected' ? 'FastAPI Backend Connected' : 'Checking backend connection'}
+            title={backendStatus === 'connected' ? 'FastAPI backend connected' : 'Backend connection status'}
+            aria-live="polite"
           >
             <span
-              className={`w-1.5 h-1.5 rounded-full ${
+              className={`h-1.5 w-1.5 rounded-full ${
                 backendStatus === 'connected'
-                  ? 'bg-emerald-500'
+                  ? 'bg-[#d9ed55]'
                   : backendStatus === 'disconnected'
-                  ? 'bg-amber-500'
-                  : 'bg-gray-400'
+                    ? 'bg-[#f0a77e]'
+                    : 'bg-[#aeb9af]'
               }`}
               aria-hidden="true"
             />
-            {backendStatus === 'connected' ? 'API Online' : backendStatus === 'disconnected' ? 'API Offline' : 'Connecting...'}
+            {statusLabel}
           </span>
         </div>
 
-        <nav aria-label="Main navigation" className="flex items-center gap-1 sm:gap-2">
+        <nav aria-label="Main navigation" className="flex shrink-0 items-center gap-1 rounded-2xl bg-[#25342f] p-1">
           <NavLink to="/" className={linkClass} end>
             Passenger
           </NavLink>
           <NavLink to="/fleet" className={linkClass}>
-            Fleet Intelligence
+            <span className="hidden sm:inline">Fleet desk</span>
+            <span className="sm:hidden">Fleet</span>
           </NavLink>
         </nav>
       </div>

@@ -1,6 +1,56 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-body {
+:root {
+  color-scheme: light;
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-width: 320px;
+  background: #f2f0e8;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  color: #172421;
+  background: #d9ed55;
+}
+
+:focus-visible {
+  outline-color: #8ca34e;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.leaflet-container {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #e9e6dd;
+}
+
+.leaflet-tile {
+  filter: saturate(0.72) sepia(0.1) contrast(1.02);
+}
+
+.leaflet-control-zoom a {
+  color: #172421 !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  box-shadow: 0 8px 26px -14px rgb(23 36 33 / 40%);
 }
