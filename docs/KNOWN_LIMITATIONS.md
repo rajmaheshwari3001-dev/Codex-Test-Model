@@ -60,15 +60,18 @@ Update it only when new evidence changes the actual state.
 
 ## Quality and operations
 
-- Backend tests pass (82 passed, 1 Starlette/httpx deprecation warning);
+- Backend tests pass (81 passed, 1 Starlette/httpx deprecation warning);
   frontend type checking and production build pass. Manual browser behavior has
   been exercised, but there is no automated E2E suite or test-coverage
   percentage.
-- A two-project Vercel demo configuration is provided, but a live Vercel
-  deployment has not been performed. Vercel's `/tmp` storage is temporary and
-  scoped to function instances; saved routes are not durable or shared across
-  instances. Delay, fleet, and approval state is also in memory and may diverge
-  across instances or cold starts.
+- A single-project Vercel multi-service configuration is provided, but a live
+  Vercel deployment has not been performed. Vercel's `/tmp` storage is
+  temporary and scoped to function instances; saved routes are not durable or
+  shared across instances. Delay, fleet, and approval state is also in memory
+  and may diverge across instances or cold starts.
+- When `XAI_API_KEY` is configured, chat messages and the corresponding
+  synthetic transit context are sent to xAI's API for response phrasing.
+  Without the key, the built-in deterministic intent-based chat is used.
 - User/session isolation is not implemented. Saved route data is a shared
   SQLite store within each running backend instance. Production use requires
   managed persistent storage, authentication, authorization, backups,

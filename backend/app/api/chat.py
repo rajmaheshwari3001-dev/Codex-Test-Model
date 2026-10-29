@@ -8,6 +8,7 @@ Endpoint:
 from __future__ import annotations
 
 from fastapi import APIRouter
+from fastapi import HTTPException
 from pydantic import BaseModel
 
 from app.services import chat_service
@@ -42,9 +43,12 @@ def chat(req: ChatRequest):
     if not req.message.strip():
         return {"intent": "help", "reply": "Please type a question.", "data": None}
 
-    return chat_service.handle_message(
-        req.message,
-        td=_td,
-        routing_service=_routing_service,
-        delay_service=_delay_service,
-    )
+    try:
+        return chat_service.handle_message(
+            req.message,
+            td=_td,
+            routing_service=_routing_service,
+            delay_service=_delay_service,
+        )
+    except chat_service.GrokChatError as error:
+        raise HTTPException(status_code=502, detail=str(error)) from error

@@ -35,6 +35,8 @@ class Settings(BaseSettings):
 
     # -- Chat --
     openai_api_key: str = ""
+    xai_api_key: str = ""
+    xai_model: str = "grok-3-mini"
 
     # -- CORS --
     frontend_origin: str = "http://localhost:5173"

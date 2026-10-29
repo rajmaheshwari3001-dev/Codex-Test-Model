@@ -48,16 +48,22 @@ npm run dev
 
 The frontend is now running at **http://localhost:5173**
 
-### Deploy on Vercel (demo)
+### Deploy on Vercel (single-project demo)
 
-Deploy the frontend and backend as **two separate Vercel projects** from this repository:
+The repository is configured as **one Vercel multi-service project**. Import
+the GitHub repository root, keep Root Directory set to `./`, and choose the
+**Services** preset. The root `vercel.json` defines the Vite frontend and
+FastAPI backend and routes `/api/*` to FastAPI; other paths go to the frontend.
+Do not import either subdirectory as a separate project.
 
-1. Create the backend project with the Vercel project root set to `backend`. Vercel should detect the Python function under `backend/api/` and install `backend/requirements.txt`.
-2. Set the backend project's `FRONTEND_ORIGIN` environment variable to the deployed frontend's exact origin (for example, `https://your-app.vercel.app`). Deploy it and verify `/api/health`.
-3. Create the frontend project with root directory `frontend`, framework preset **Vite**, build command `npm run build`, and output directory `dist`.
-4. Set the frontend project's `VITE_API_BASE_URL` to the backend API prefix, including `/api` (for example, `https://your-api.vercel.app/api`), then redeploy the frontend.
-
-The Vercel configuration files are in `frontend/vercel.json` and `backend/vercel.json`. `VITE_API_BASE_URL` is embedded at frontend build time. Keep the backend deployment URL and `FRONTEND_ORIGIN` aligned with your deployed project domains.
+Add `XAI_API_KEY` as a Vercel environment variable using a newly issued xAI
+key. Never put API keys in this file or source control. The built-in
+deterministic chat works without the key; setting it enables Grok to phrase
+answers based on verified transit data. Optionally set `XAI_MODEL` to an
+xAI-supported chat model (default: `grok-3-mini`). Leave
+`VITE_API_BASE_URL` unset on Vercel so frontend calls use same-origin `/api`.
+After importing, deploy `main` and verify `/api/health` on the generated
+domain.
 
 **Demo limitations:** This is not a durable production deployment. Vercel functions are stateless and `/tmp` is temporary; saved routes may disappear and local SQLite/in-memory delay, fleet, and approval state can differ between function instances or resets. Use an external persistent database and shared state store before relying on these features. The demo has no authentication or user isolation.
 
@@ -103,7 +109,7 @@ Press `Ctrl+C` in each terminal window.
 | Backend  | Python, FastAPI, Uvicorn                        |
 | Routing  | NetworkX, custom schedule-aware algorithm        |
 | Database | SQLite (saved routes)                           |
-| Testing  | Pytest (82 tests)                               |
+| Testing  | Pytest (81 tests)                               |
 | Data     | Synthetic CSV dataset (15 stops, 4 routes)      |
 
 ## Project Structure

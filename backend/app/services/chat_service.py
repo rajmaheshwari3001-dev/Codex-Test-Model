@@ -14,16 +14,20 @@ SUPPORTED INTENTS:
   • saved_routes   – "Show my saved routes"
   • help           – anything unrecognised
 
-If an OpenAI API key is set, a future version could use an LLM to
-parse free-form text, but the intent layer still ensures we only return
-verified backend data.
+If an xAI API key is set, Grok phrases a response using the deterministic
+intent layer's verified backend data. Without a key, the intent-based reply
+is returned directly.
 """
 
 from __future__ import annotations
 
+import json
 import re
 from typing import Any, Dict, List, Optional
 
+import httpx
+
+from app.config import settings
 from app.services.data_loader import TransportData
 from app.services.routing_service import RoutingService
 from app.services import schedule_service as sched
@@ -97,7 +101,7 @@ def _extract_stop_names(
     return origin_id, dest_id
 
 
-def handle_message(
+def _handle_with_rules(
     message: str,
     td: TransportData,
     routing_service: RoutingService,
@@ -281,3 +285,77 @@ def handle_message(
         ),
         "data": None,
     }
+
+
+class GrokChatError(RuntimeError):
+    """Raised when the configured Grok provider cannot return a valid reply."""
+
+
+def _compose_with_grok(message: str, grounded_response: Dict[str, Any]) -> str:
+    """Rephrase a deterministic, data-grounded response without adding facts."""
+    context = json.dumps(
+        {
+            "verified_reply": grounded_response["reply"],
+            "verified_data": grounded_response["data"],
+        },
+        ensure_ascii=False,
+        default=str,
+    )
+    try:
+        with httpx.Client(timeout=20.0) as client:
+            response = client.post(
+                "https://api.x.ai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {settings.xai_api_key}"},
+                json={
+                    "model": settings.xai_model,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": (
+                                "You are Aaroh-Saarthi, a public transit assistant. "
+                                "Answer the user's question using only the supplied "
+                                "verified transit context. Do not invent routes, "
+                                "times, fares, live status, or other facts. If the "
+                                "context does not answer the question, say so and "
+                                "ask what transit detail they need. The transit "
+                                "dataset is synthetic and simulated."
+                            ),
+                        },
+                        {
+                            "role": "user",
+                            "content": (
+                                f"Question: {message}\n\n"
+                                f"Verified transit context: {context}"
+                            ),
+                        },
+                    ],
+                    "temperature": 0.2,
+                },
+            )
+            response.raise_for_status()
+            payload = response.json()
+    except httpx.HTTPError as error:
+        raise GrokChatError("The configured Grok chat service is unavailable.") from error
+    except ValueError as error:
+        raise GrokChatError("The configured Grok chat service returned invalid data.") from error
+
+    try:
+        reply = payload["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError) as error:
+        raise GrokChatError("The configured Grok chat service returned an invalid response.") from error
+    if not isinstance(reply, str) or not reply.strip():
+        raise GrokChatError("The configured Grok chat service returned an empty reply.")
+    return reply.strip()
+
+
+def handle_message(
+    message: str,
+    td: TransportData,
+    routing_service: RoutingService,
+    delay_service: DelayService,
+) -> Dict[str, Any]:
+    """Return transit-grounded chat, optionally phrased by Grok."""
+    result = _handle_with_rules(message, td, routing_service, delay_service)
+    if settings.xai_api_key:
+        result["reply"] = _compose_with_grok(message, result)
+    return result

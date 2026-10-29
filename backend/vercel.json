@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/[...path].py": {
-      "includeFiles": "app/data/**"
-    }
-  }
-}
