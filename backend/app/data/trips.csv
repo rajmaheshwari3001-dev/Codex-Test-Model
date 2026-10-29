@@ -57,3 +57,9 @@ T53,R03,outbound,weekend
 T54,R03,outbound,weekend
 T55,R04,outbound,weekend
 T56,R04,outbound,weekend
+T59,R01,outbound,weekday
+T60,R01,inbound,weekday
+T61,R02,outbound,weekday
+T62,R02,inbound,weekday
+T63,R03,outbound,weekday
+T64,R03,inbound,weekday

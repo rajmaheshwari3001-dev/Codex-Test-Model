@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import type { JourneyOption, Stop, Route as TRoute } from '../types'
+import { getStationSubtitle, getStationIcon } from '../utils/transitData'
 
 interface Props {
   stops: Stop[]
@@ -147,38 +148,53 @@ export default function TransportMap({
         weight,
       })
 
+      const icon = getStationIcon(s.stop_name)
+      const subtitle = getStationSubtitle(s.stop_id)
+
       marker.bindTooltip(
-        `<div style="font-family: inherit;"><b>${s.stop_name}</b><br/><span style="font-size:11px;color:#64748b">Zone ${s.zone_id} • Stop ${s.stop_id}</span></div>`,
+        `<div style="font-family: inherit;"><b>${icon} ${s.stop_name}</b><br/><span style="font-size:11px;color:#2563eb;font-weight:600">${subtitle}</span><br/><span style="font-size:10px;color:#64748b">Zone ${s.zone_id} • Node ${s.stop_id}</span></div>`,
         { direction: 'top', offset: [0, -7] }
       )
 
       // Rich interactive Transit Stop Card in Popup
       const popupDiv = document.createElement('div')
-      popupDiv.className = 'text-xs font-sans p-1 min-w-[210px]'
+      popupDiv.className = 'text-xs font-sans p-1 min-w-[230px]'
       popupDiv.innerHTML = `
         <div style="font-family: inherit;">
-          <div style="font-weight: 900; font-size: 15px; color: #0f172a; margin-bottom: 2px;">${s.stop_name}</div>
-          <div style="font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Zone ${s.zone_id} • Node ${s.stop_id}</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span style="font-size: 22px;">${icon}</span>
+            <div>
+              <div style="font-weight: 900; font-size: 15px; color: #0f172a; line-height: 1.2;">${s.stop_name}</div>
+              <div style="font-size: 11px; font-weight: 700; color: #2563eb; margin-top: 2px;">${subtitle}</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; margin: 8px 0 10px 0; font-size: 11px;">
+            <span style="background: #f1f5f9; color: #475569; font-weight: 700; padding: 2px 7px; border-radius: 5px;">Zone ${s.zone_id}</span>
+            <span style="background: #f1f5f9; color: #475569; font-weight: 700; padding: 2px 7px; border-radius: 5px;">Node ${s.stop_id}</span>
+          </div>
           <div style="font-size: 11px; margin-bottom: 10px;">
-            <span style="font-weight: 700; color: #334155;">Connected Lines:</span>
-            <div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">
+            <span style="font-weight: 700; color: #334155;">Serving Lines:</span>
+            <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px;">
               ${
                 servingRoutes.length > 0
                   ? servingRoutes
                       .map(
                         r =>
-                          `<span style="display:inline-block; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 11px; background-color: ${r.route_color || '#2563eb'}20; color: ${r.route_color || '#2563eb'}; border: 1px solid ${r.route_color || '#2563eb'}50;">${r.route_name}</span>`
+                          `<span style="display:inline-flex; align-items:center; gap:4px; padding: 3px 8px; border-radius: 6px; font-weight: 800; font-size: 11px; background-color: ${r.route_color || '#2563eb'}18; color: ${r.route_color || '#2563eb'}; border: 1px solid ${r.route_color || '#2563eb'}50;">
+                            <span style="width:6px; height:6px; border-radius:50%; background-color:${r.route_color || '#2563eb'};"></span>
+                            ${r.route_name}
+                          </span>`
                       )
                       .join('')
                   : '<span style="color:#94a3b8">Delhi Transit Stop</span>'
               }
             </div>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0;">
-            <button id="btn-orig-${s.stop_id}" type="button" style="padding: 7px 10px; font-size: 12px; font-weight: 800; color: #ffffff; background-color: #059669; border: none; border-radius: 8px; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0;">
+            <button id="btn-orig-${s.stop_id}" type="button" style="padding: 8px 12px; font-size: 12px; font-weight: 800; color: #ffffff; background-color: #059669; border: none; border-radius: 8px; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: all 0.2s;">
               📍 Set Origin
             </button>
-            <button id="btn-dest-${s.stop_id}" type="button" style="padding: 7px 10px; font-size: 12px; font-weight: 800; color: #ffffff; background-color: #dc2626; border: none; border-radius: 8px; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
+            <button id="btn-dest-${s.stop_id}" type="button" style="padding: 8px 12px; font-size: 12px; font-weight: 800; color: #ffffff; background-color: #dc2626; border: none; border-radius: 8px; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.15); transition: all 0.2s;">
               🎯 Set Dest
             </button>
           </div>

@@ -24,10 +24,10 @@ const FEATURED_CORRIDORS = [
     badgeBg: 'bg-blue-500/10 text-blue-700 border-blue-300/40',
     originId: 'S13',
     originName: 'Dwarka Sec-21',
-    destId: 'S01',
-    destName: 'Rajiv Chowk',
+    destId: 'S18',
+    destName: 'Anand Vihar ISBT',
     departure: '08:00',
-    type: '🚇 Delhi Metro • Morning Rush',
+    type: '🚇 Delhi Metro • Trans-Delhi Artery',
   },
   {
     routeId: 'R02',
@@ -36,10 +36,10 @@ const FEATURED_CORRIDORS = [
     badgeBg: 'bg-emerald-500/10 text-emerald-800 border-emerald-300/40',
     originId: 'S02',
     originName: 'Kashmere Gate',
-    destId: 'S09',
-    destName: 'Hauz Khas',
+    destId: 'S16',
+    destName: 'Dilli Haat - INA',
     departure: '13:30',
-    type: '🚇 Delhi Metro • Afternoon',
+    type: '🚇 Delhi Metro • North-South Corridor',
   },
   {
     routeId: 'R03',
@@ -48,10 +48,10 @@ const FEATURED_CORRIDORS = [
     badgeBg: 'bg-rose-500/10 text-rose-800 border-rose-300/40',
     originId: 'S05',
     originName: 'Connaught Place',
-    destId: 'S08',
-    destName: 'Saket',
+    destId: 'S20',
+    destName: 'Sarai Kale Khan ISBT',
     departure: '17:30',
-    type: '🚌 Ring Bus • Evening Peak',
+    type: '🚌 Ring Bus • Evening Hub Link',
   },
   {
     routeId: 'R04',
@@ -60,10 +60,10 @@ const FEATURED_CORRIDORS = [
     badgeBg: 'bg-amber-500/10 text-amber-900 border-amber-300/40',
     originId: 'S04',
     originName: 'New Delhi Stn',
-    destId: 'S08',
-    destName: 'Saket Express',
+    destId: 'S17',
+    destName: 'Mandi House',
     departure: '20:30',
-    type: '🚌 Express Bus • Night Express',
+    type: '🚌 Express Bus • Cultural Hub Link',
   },
 ]
 
@@ -251,14 +251,14 @@ export default function PassengerPage() {
                 Metro & Bus Timetables
               </span>
               <span className="rounded-full border border-blue-400/30 bg-blue-500/20 px-3 py-1 font-mono text-xs font-semibold text-blue-200">
-                15 Mapped Stops • 4 Corridors
+                20 Mapped Stations • 4 Corridors
               </span>
             </div>
             <h1 className="text-2xl font-black tracking-tight text-white sm:text-3xl lg:text-4xl">
               Passenger Transit Assistant
             </h1>
             <p className="max-w-2xl text-xs sm:text-sm text-slate-300">
-              Discover optimal bus routes, compare schedules, inspect real-time stop paths, and consult the Delhi Transit Copilot.
+              Discover optimal metro & bus routes, compare fares & transfers, inspect live GIS stop paths, and consult the Delhi Transit Copilot.
             </p>
           </div>
 
@@ -275,7 +275,7 @@ export default function PassengerPage() {
                 06:00 <span className="text-xs font-semibold text-emerald-400">AM</span> <span className="font-light text-slate-400">—</span> 11:35 <span className="text-xs font-semibold text-emerald-400">PM</span>
               </div>
               <p className="mt-1 text-xs text-slate-300">
-                58 synchronized timetable trips across 4 metro & bus corridors (Day & Night). Fares are synthetic demonstration data.
+                64 synchronized timetable trips across 4 metro & bus corridors (Day & Night). Fares are synthetic demonstration data.
               </p>
             </div>
             <div className="flex items-center gap-1.5 pt-1 text-[11px] text-slate-400">
@@ -538,7 +538,7 @@ export default function PassengerPage() {
                   🗺️
                 </span>
                 <h2 className="text-xs font-extrabold uppercase tracking-widest text-slate-700">
-                  Delhi Bus Network & Interactive Stop GIS
+                  Delhi Multi-Modal Network & Interactive GIS Map
                 </h2>
               </div>
               <span className="text-xs font-semibold text-slate-500">
