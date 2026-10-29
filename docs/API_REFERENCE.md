@@ -285,6 +285,8 @@ Return current simulated fleet.
 ### POST /api/fleet/disruption
 
 Trigger and evaluate a disruption.
+Each evaluation starts from the simulator's initial state so its baseline and
+alternatives are comparable. The returned disruption ID is unique.
 
 **Request body:**
 ```json
@@ -301,7 +303,7 @@ Trigger and evaluate a disruption.
 **Response 200:**
 ```json
 {
-  "disruption": { "disruption_id": "D-B-T01-breakdown", "disruption_type": "breakdown", "affected_bus_id": "B-T01", ... },
+  "disruption": { "disruption_id": "D-B-T01-breakdown-a1b2c3d4", "disruption_type": "breakdown", "affected_bus_id": "B-T01", ... },
   "baseline": {
     "scenario_name": "No action (baseline)",
     "affected_passengers": 25,
@@ -328,21 +330,45 @@ Trigger and evaluate a disruption.
 }
 ```
 
+The response also includes `fleet_state`, shaped exactly like
+`GET /api/fleet/state`, so the dashboard can display the scenario's baseline
+state after each evaluation.
+
 **Response 400:** `{ "detail": "disruption_type must be 'breakdown' or 'delay'." }`
 
 ### POST /api/fleet/approve
 
 Approve or reject a proposed response.
+An approved response updates the in-memory simulated fleet. A rejection
+returns the unchanged state. Each disruption accepts only one decision.
 
 **Request body:**
 ```json
-{ "disruption_id": "D-B-T01-breakdown", "response_id": "deploy_spare", "approved": true }
+{ "disruption_id": "D-B-T01-breakdown-a1b2c3d4", "response_id": "deploy_spare", "approved": true }
 ```
 
 **Response 200:**
+The example shows the two affected buses; the actual `fleet_state.buses`
+array contains the full simulated fleet.
 ```json
-{ "disruption_id": "...", "response_id": "deploy_spare", "action": "approved", "message": "Response 'Deploy Spare Bus' has been approved.", "simulated": true }
+{
+  "disruption_id": "D-B-T01-breakdown-a1b2c3d4",
+  "response_id": "deploy_spare",
+  "action": "approved",
+  "message": "Response 'Deploy Spare Bus' has been approved.",
+  "simulated": true,
+  "fleet_state": {
+    "buses": [
+      { "bus_id": "B-T01", "route_id": "R01", "trip_id": "T01", "status": "broken_down", "occupancy_percent": 50, "delay_minutes": 0 },
+      { "bus_id": "B-SPARE-1", "route_id": "R01", "trip_id": "T01", "status": "reassigned", "occupancy_percent": 0, "delay_minutes": 0 }
+    ],
+    "simulated": true
+  }
+}
 ```
 
-**Response 400:** Infeasible response.  
+**Response 400:** Infeasible response.
+
 **Response 404:** Disruption or response not found.
+
+**Response 409:** A decision already exists or the modeled state transition is unavailable.

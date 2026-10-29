@@ -106,3 +106,58 @@
   `3f3ad08639a64364ae1c2bf2eec05c57e9f8476e`.
 - **Next task:** Apply approved fleet response state, keep rejected scenarios
   unchanged, and refresh the browser dashboard after a decision.
+
+## Iteration 3 — Apply fleet decisions to simulated state
+
+- **Date/time:** 29 Oct 2026, 13:22 IST.
+- **Objective:** Make accepted fleet responses change simulated bus state,
+  keep rejected responses unchanged, prevent conflicting decisions, and show
+  the resulting state in the dashboard.
+- **Why selected:** Iteration 2 reproduced a failure in the required
+  approve/reject workflow: approval returned success while the fleet remained
+  unchanged. The prompt explicitly requires verifying the resulting
+  simulated state.
+- **Candidates and prioritization:** Using
+  `(impact × user benefit × confidence) / (effort × risk factor)` with 1–5
+  ratings: validate fleet metric assumptions (4×5×4)/(3×2) = 13.3; explicitly
+  label missing occupancy (3×4×4)/(2×2) = 12; apply approval state
+  (5×5×5)/(4×3) = 10.4. The confirmed mandatory state-transition failure was
+  selected despite its lower heuristic score because the priority rules put
+  incorrect fleet simulation and required workflow failures ahead of optional
+  verification improvements.
+- **Files changed:** `backend/app/api/fleet.py`,
+  `backend/app/services/fleet_simulator.py`, `backend/tests/test_api.py`,
+  `frontend/src/services/api.ts`,
+  `frontend/src/components/FleetDashboard.tsx`,
+  `frontend/src/components/ScenarioComparison.tsx`, `frontend/src/types/index.ts`,
+  `docs/API_REFERENCE.md`, `docs/PROGRESS.md`,
+  `docs/REQUIREMENTS_AUDIT.md`, `docs/KNOWN_LIMITATIONS.md`, and this log.
+- **Implementation:** Accepted breakdown responses now mark the affected bus
+  broken and reassign a spare or same-route bus; delay responses apply the
+  modeled remaining delay. Rejection returns the unchanged state. Each
+  disruption ID is unique and accepts only one decision (HTTP 409 thereafter).
+  Evaluation and approval responses return fleet snapshots; the UI refreshes
+  all bus rows after both and disables further decisions for that scenario.
+  Starting another scenario returns the simulator and dashboard to the common
+  initial baseline.
+- **Tests executed:** Full backend pytest suite, frontend TypeScript/Vite
+  build, and manual browser rejection/approval checks.
+- **Tests passed:** Backend 74; frontend build passed. API tests verify spare
+  deployment, short-turn, delay responses, state/metric bus-count agreement,
+  rejection invariance, and duplicate-decision rejection. Browser checks
+  verify rejection leaves 19 active / 2 spare and approval updates to 18
+  active / 1 spare, with B-T01 broken down and B-SPARE-1 reassigned; the next
+  scenario restores both backend and UI to the 19-active / 2-spare baseline.
+- **Tests failed:** The first frontend build caught `decisionMade` and
+  `decisionPending` missing from `ScenarioComparison`'s destructured props.
+  The props were added and the build rerun successfully; no final test failed.
+- **Acceptance result:** F5, F8, and I4 now have state-transition evidence.
+  Approval remains simulated and in-memory; a new evaluation resets to the
+  initial baseline.
+- **Completion percentage:** 89.5% before → 93% after. P7 remains PARTIAL
+  because absent sample occupancy is not explicitly shown as unknown; F6
+  remains PARTIAL because scenario metrics use fixed assumptions.
+- **Commit:** Pending final review.
+- **Push status:** Not yet pushed.
+- **Next task:** Validate fleet metric inputs/formulas and clearly separate
+  fixed assumptions from measured scenario outcomes.

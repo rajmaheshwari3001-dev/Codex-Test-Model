@@ -11,16 +11,35 @@ export default function FleetDashboard() {
   const [delayMinutes, setDelayMinutes] = useState(15)
   const [result, setResult] = useState<DisruptionResult | null>(null)
   const [actionMsg, setActionMsg] = useState('')
+  const [decisionMade, setDecisionMade] = useState(false)
+  const [decisionPending, setDecisionPending] = useState(false)
 
   useEffect(() => {
     getFleetState()
-      .then(data => { setBuses(data.buses); if (data.buses.length) setSelectedBus(data.buses[0].bus_id) })
+      .then(data => updateFleetState(data.buses))
+      .catch(error => {
+        setActionMsg(
+          error instanceof Error
+            ? `Failed to load fleet state: ${error.message}`
+            : 'Failed to load fleet state.',
+        )
+      })
       .finally(() => setLoading(false))
   }, [])
+
+  function updateFleetState(nextBuses: BusState[]) {
+    setBuses(nextBuses)
+    setSelectedBus(current => (
+      nextBuses.some(bus => bus.bus_id === current && bus.status === 'active')
+        ? current
+        : nextBuses.find(bus => bus.status === 'active')?.bus_id ?? ''
+    ))
+  }
 
   async function handleDisrupt() {
     setResult(null)
     setActionMsg('')
+    setDecisionMade(false)
     try {
       const res = await triggerDisruption({
         disruption_type: disruptionType,
@@ -28,23 +47,29 @@ export default function FleetDashboard() {
         description: `Simulated ${disruptionType} for ${selectedBus}`,
         delay_minutes: disruptionType === 'delay' ? delayMinutes : 0,
       })
+      updateFleetState(res.fleet_state.buses)
       setResult(res)
-    } catch (e: any) {
-      setActionMsg(e.message)
+    } catch (error) {
+      setActionMsg(error instanceof Error ? error.message : 'Disruption evaluation failed.')
     }
   }
 
   async function handleApprove(responseId: string, approved: boolean) {
-    if (!result) return
+    if (!result || decisionMade || decisionPending) return
+    setDecisionPending(true)
     try {
       const res = await approveResponse({
         disruption_id: result.disruption.disruption_id,
         response_id: responseId,
         approved,
       })
+      updateFleetState(res.fleet_state.buses)
+      setDecisionMade(true)
       setActionMsg(res.message)
-    } catch (e: any) {
-      setActionMsg(e.message)
+    } catch (error) {
+      setActionMsg(error instanceof Error ? error.message : 'Response decision failed.')
+    } finally {
+      setDecisionPending(false)
     }
   }
 
@@ -93,7 +118,7 @@ export default function FleetDashboard() {
               </tr>
             </thead>
             <tbody>
-              {buses.slice(0, 15).map(b => (
+              {buses.map(b => (
                 <tr key={b.bus_id} className="border-b last:border-0">
                   <td className="py-1.5 pr-4 font-mono text-xs">{b.bus_id}</td>
                   <td className="py-1.5 pr-4">{b.route_id || '-'}</td>
@@ -162,13 +187,18 @@ export default function FleetDashboard() {
 
       {/* Scenario comparison */}
       {result && !result.error && (
-        <ScenarioComparison result={result} onApprove={handleApprove} />
+        <ScenarioComparison
+          result={result}
+          onApprove={handleApprove}
+          decisionMade={decisionMade}
+          decisionPending={decisionPending}
+        />
       )}
       {result?.error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">{result.error}</div>
       )}
       {actionMsg && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700">{actionMsg}</div>
+        <div role="status" className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700">{actionMsg}</div>
       )}
     </div>
   )

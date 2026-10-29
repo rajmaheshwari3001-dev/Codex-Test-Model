@@ -168,6 +168,12 @@ def test_fleet_disruption(client):
     data = resp.json()
     assert data["baseline"] is not None
     assert len(data["responses"]) >= 1
+    assert data["fleet_state"]["simulated"] is True
+    affected_bus = next(
+        bus for bus in data["fleet_state"]["buses"]
+        if bus["bus_id"] == "B-T01"
+    )
+    assert affected_bus["status"] == "active"
 
 
 def test_delays_crud(client):
@@ -215,7 +221,7 @@ def test_delay_changes_journey_times_and_crowding_is_reported(client):
     client.delete("/api/delays")
 
 
-def test_fleet_approval_and_rejection_are_explicit(client):
+def test_fleet_approval_applies_spare_assignment_and_prevents_second_decision(client):
     result = client.post("/api/fleet/disruption", json={
         "disruption_type": "breakdown",
         "affected_bus_id": "B-T01",
@@ -225,6 +231,11 @@ def test_fleet_approval_and_rejection_are_explicit(client):
     payload = result.json()
     disruption_id = payload["disruption"]["disruption_id"]
     response_id = payload["recommended_response_id"]
+    assert response_id == "deploy_spare"
+    response_metrics = next(
+        option["metrics"] for option in payload["responses"]
+        if option["response_id"] == response_id
+    )
 
     approved = client.post("/api/fleet/approve", json={
         "disruption_id": disruption_id,
@@ -234,14 +245,141 @@ def test_fleet_approval_and_rejection_are_explicit(client):
     assert approved.status_code == 200
     assert approved.json()["action"] == "approved"
     assert approved.json()["simulated"] is True
+    buses = {
+        bus["bus_id"]: bus
+        for bus in approved.json()["fleet_state"]["buses"]
+    }
+    assert buses["B-T01"]["status"] == "broken_down"
+    assert buses["B-SPARE-1"]["status"] == "reassigned"
+    assert buses["B-SPARE-1"]["route_id"] == "R01"
+    assert buses["B-SPARE-1"]["trip_id"] == "T01"
+    assert client.get("/api/fleet/state").json() == approved.json()["fleet_state"]
+    assert sum(bus["status"] == "active" for bus in buses.values()) == (
+        response_metrics["total_buses_active"]
+    )
+    assert sum(
+        bus["status"] in ("active", "spare", "reassigned")
+        for bus in buses.values()
+    ) == response_metrics["total_buses_available"]
 
-    rejected = client.post("/api/fleet/approve", json={
+    second_decision = client.post("/api/fleet/approve", json={
         "disruption_id": disruption_id,
         "response_id": response_id,
         "approved": False,
     })
+    assert second_decision.status_code == 409
+
+
+def test_fleet_rejection_leaves_simulated_state_unchanged(client):
+    result = client.post("/api/fleet/disruption", json={
+        "disruption_type": "breakdown",
+        "affected_bus_id": "B-T02",
+    })
+    payload = result.json()
+    before = payload["fleet_state"]
+
+    rejected = client.post("/api/fleet/approve", json={
+        "disruption_id": payload["disruption"]["disruption_id"],
+        "response_id": "deploy_spare",
+        "approved": False,
+    })
+
     assert rejected.status_code == 200
     assert rejected.json()["action"] == "rejected"
+    assert rejected.json()["fleet_state"] == before
+    assert client.get("/api/fleet/state").json() == before
+
+
+def test_evaluating_new_scenario_resets_previously_approved_state(client):
+    breakdown = client.post("/api/fleet/disruption", json={
+        "disruption_type": "breakdown",
+        "affected_bus_id": "B-T01",
+    }).json()
+    approved = client.post("/api/fleet/approve", json={
+        "disruption_id": breakdown["disruption"]["disruption_id"],
+        "response_id": "deploy_spare",
+        "approved": True,
+    })
+    assert approved.status_code == 200
+    approved_buses = {
+        bus["bus_id"]: bus for bus in approved.json()["fleet_state"]["buses"]
+    }
+    assert approved_buses["B-T01"]["status"] == "broken_down"
+
+    next_scenario = client.post("/api/fleet/disruption", json={
+        "disruption_type": "delay",
+        "affected_bus_id": "B-T05",
+        "delay_minutes": 15,
+    })
+
+    assert next_scenario.status_code == 200
+    buses = {
+        bus["bus_id"]: bus
+        for bus in next_scenario.json()["fleet_state"]["buses"]
+    }
+    assert buses["B-T01"]["status"] == "active"
+    assert buses["B-SPARE-1"]["status"] == "spare"
+
+
+def test_approved_short_turn_reassigns_same_route_bus(client):
+    result = client.post("/api/fleet/disruption", json={
+        "disruption_type": "breakdown",
+        "affected_bus_id": "B-T01",
+    })
+    payload = result.json()
+    disruption_id = payload["disruption"]["disruption_id"]
+    response_metrics = next(
+        option["metrics"] for option in payload["responses"]
+        if option["response_id"] == "short_turn"
+    )
+
+    approved = client.post("/api/fleet/approve", json={
+        "disruption_id": disruption_id,
+        "response_id": "short_turn",
+        "approved": True,
+    })
+
+    assert approved.status_code == 200
+    buses = {
+        bus["bus_id"]: bus
+        for bus in approved.json()["fleet_state"]["buses"]
+    }
+    assert buses["B-T01"]["status"] == "broken_down"
+    assert buses["B-T02"]["status"] == "reassigned"
+    assert buses["B-T02"]["trip_id"] == "T01"
+    assert sum(bus["status"] == "active" for bus in buses.values()) == (
+        response_metrics["total_buses_active"]
+    )
+    assert sum(
+        bus["status"] in ("active", "spare", "reassigned")
+        for bus in buses.values()
+    ) == response_metrics["total_buses_available"]
+
+
+def test_approved_delay_responses_apply_their_modeled_delay(client):
+    for response_id, expected_delay in [
+        ("absorb_delay", 15),
+        ("express_skip", 5),
+    ]:
+        result = client.post("/api/fleet/disruption", json={
+            "disruption_type": "delay",
+            "affected_bus_id": "B-T05",
+            "delay_minutes": 15,
+        })
+        disruption_id = result.json()["disruption"]["disruption_id"]
+
+        approved = client.post("/api/fleet/approve", json={
+            "disruption_id": disruption_id,
+            "response_id": response_id,
+            "approved": True,
+        })
+
+        assert approved.status_code == 200
+        affected_bus = next(
+            bus for bus in approved.json()["fleet_state"]["buses"]
+            if bus["bus_id"] == "B-T05"
+        )
+        assert affected_bus["delay_minutes"] == expected_delay
 
 
 def test_fleet_cannot_approve_without_evaluation_or_unknown_response(client):

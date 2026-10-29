@@ -3,6 +3,8 @@ import type { DisruptionResult, ScenarioMetrics } from '../types'
 interface Props {
   result: DisruptionResult
   onApprove: (responseId: string, approved: boolean) => void
+  decisionMade: boolean
+  decisionPending: boolean
 }
 
 function MetricCard({ label, value, unit, better }: { label: string; value: number | string; unit?: string; better?: boolean }) {
@@ -43,7 +45,12 @@ function MetricsGrid({ metrics, baseline }: { metrics: ScenarioMetrics; baseline
   )
 }
 
-export default function ScenarioComparison({ result, onApprove }: Props) {
+export default function ScenarioComparison({
+  result,
+  onApprove,
+  decisionMade,
+  decisionPending,
+}: Props) {
   const recommended = result.recommended_response_id
 
   return (
@@ -107,13 +114,15 @@ export default function ScenarioComparison({ result, onApprove }: Props) {
               <div className="mt-3 flex gap-2">
                 <button
                   onClick={() => onApprove(resp.response_id, true)}
-                  className="bg-green-600 text-white px-4 py-1.5 rounded text-xs font-medium hover:bg-green-700"
+                  disabled={decisionMade || decisionPending}
+                  className="bg-green-600 text-white px-4 py-1.5 rounded text-xs font-medium hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Approve
                 </button>
                 <button
                   onClick={() => onApprove(resp.response_id, false)}
-                  className="bg-gray-300 text-gray-700 px-4 py-1.5 rounded text-xs font-medium hover:bg-gray-400"
+                  disabled={decisionMade || decisionPending}
+                  className="bg-gray-300 text-gray-700 px-4 py-1.5 rounded text-xs font-medium hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Reject
                 </button>

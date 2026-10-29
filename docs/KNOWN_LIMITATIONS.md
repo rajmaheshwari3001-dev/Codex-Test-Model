@@ -41,17 +41,19 @@ Update it only when new evidence changes the actual state.
 - Some metrics use fixed scenario assumptions. Their calibration against a
   transport operator or real passenger data has not been established.
 - The simulator's multi-bus coordination capability is limited to simplified
-  spare deployment and a same-route short-turn scenario; it does not model
+  spare deployment and same-route short-turn assignments; it does not model
   vehicle locations, travel-time reachability, or real dispatch constraints.
-- Approve/reject buttons return visible simulated acknowledgements. An API
-  check confirmed that approving a spare deployment does not mutate the
-  simulated fleet state (the affected bus remains active and the spare remains
-  spare); the dashboard also does not refresh to reflect an action. Applying
-  approved scenario state and preserving state on rejection remain open.
+- Approved responses now update the in-memory simulated fleet state, and
+  rejected responses leave it unchanged. A new scenario evaluation resets the
+  simulator to its common initial state so alternatives remain comparable;
+  accepted decisions are not persisted across evaluations or app restarts.
+- Approval is a simulation only; it does not dispatch real vehicles. The
+  dashboard shows all buses and refreshes from state returned by scenario
+  evaluation and decision endpoints.
 
 ## Quality and operations
 
-- Backend tests pass (70 passed, 1 Starlette/httpx deprecation warning);
+- Backend tests pass (74 passed, 1 Starlette/httpx deprecation warning);
   frontend type checking and production build pass. Manual browser behavior has
   been exercised, but there is no automated E2E suite or test-coverage
   percentage.

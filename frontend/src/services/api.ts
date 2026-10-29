@@ -86,7 +86,10 @@ export async function approveResponse(body: {
   response_id: string
   approved: boolean
 }) {
-  return request<{ message: string }>('/fleet/approve', {
+  return request<{
+    message: string
+    fleet_state: { buses: BusState[]; simulated: boolean }
+  }>('/fleet/approve', {
     method: 'POST',
     body: JSON.stringify(body),
   })

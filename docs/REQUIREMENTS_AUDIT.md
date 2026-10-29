@@ -62,12 +62,12 @@ measures verified requirement coverage, not implementation quantity.
 | F2 / 3 | Evaluate breakdown and delay scenarios. | `POST /api/fleet/disruption`, `FleetSimulator`. | Browser exercised breakdown and 15-minute delay scenarios; each showed baseline, response alternatives, and metrics. API/service tests also pass. | PASS | Scenario assumptions are synthetic and simplified. |
 | F3 / 4 | Compare a no-action baseline with evaluated alternatives. | `evaluate_disruption` baseline and response generation. | Tests verify repeatable metrics, baseline bus counts, and lower-wait spare response; short-turn metrics reflect the diverted bus assignment. | PASS | Validate metric assumptions with a domain expert before operational use. |
 | F4 / 3 | Reject interventions that are not feasible. | Response feasibility and approve endpoint guard. | No-spare scenario marks spare deployment infeasible; API rejects approval for an infeasible response. | PASS | Add further intervention types if the simulator grows. |
-| F5 / 3 | Coordinate multiple buses when the scenario supports it. | Basic spare assignment and same-route short-turn proposal. | Code inspection only; a multi-bus coordinated scenario is not demonstrated. | PARTIAL | Either implement/test a defensible coordination case or explicitly scope it out. |
+| F5 / 3 | Coordinate multiple buses when the scenario supports it. | Spare deployment and same-route short-turn assignment in `FleetSimulator.apply_response`. | API acceptance tests approve both responses and verify affected-bus/spare or diverted-bus trip assignments; resulting active/available bus counts match scenario metrics. | PASS | Coordination is simplified; no positions, reachability, or real dispatch constraints. |
 | F6 / 4 | Calculate before/after metrics from scenario outcomes. | `ScenarioMetrics` and `_calculate_metrics`. | Metrics appear in API output, but formulas and effects are not independently tested. | PARTIAL | Test formulas, state changes, and metric invariants; high. |
 | F7 / 3 | Explain recommendations and trade-offs. | Recommendation selection and response explanations/tradeoffs. | Test verifies the recommended feasible response improves modeled wait, and has explanation/trade-offs. | PASS | Document fixed assumptions and validate them with a domain expert. |
-| F8 / 2 | Approve or reject a proposed response consistently and reflect the decision in simulated state. | `POST /api/fleet/approve`, `FleetSimulator`, `FleetDashboard`. | Browser showed approve/reject acknowledgements. State acceptance check then approved `deploy_spare` and found B-T01 still `active` and B-SPARE-1 still `spare`; decision is not applied. | PARTIAL | Apply approved response to simulated state; prove rejection does not mutate it; refresh the dashboard. High priority. |
+| F8 / 2 | Approve or reject a proposed response consistently and reflect the decision in simulated state. | `POST /api/fleet/approve`, `FleetSimulator.apply_response`, `FleetDashboard`. | API tests verify deployment, short-turn, and delay state changes; rejection preserves state; repeated decisions return 409. Browser verified rejection keeps 19 active/2 spare and approval changes to 18 active/1 spare with the affected bus and spare visibly updated; a new scenario resets the UI to baseline. | PASS | State is in-memory simulation only and resets to the initial baseline when a new scenario is evaluated. |
 
-**Fleet earned points: 20.5 / 25.**
+**Fleet earned points: 23 / 25.**
 
 ## Integration and quality — 15 points
 
@@ -76,47 +76,48 @@ measures verified requirement coverage, not implementation quantity.
 | I1 / 2 | Share a consistent transport model across features. | `TransportData` is loaded at startup and injected into routing/chat APIs. | Architecture/code inspection and successful API startup; cross-feature assertions absent. | PARTIAL | Prove same IDs/data are used in API, route results, chat, and map; medium. |
 | I2 / 2 | Handle delays consistently wherever applicable. | Shared passenger `DelayService`; fleet has separate scenario delay values. | Delay API and routing unit tests pass; fleet is an independent simulation. | PARTIAL | Specify and test intended shared-vs-isolated delay semantics; high. |
 | I3 / 2 | Keep route info consistent across API, frontend, map, and chat. | Shared API types/data and route result/map components. | Browser route card, chat response, stop names, and five-stop map path agreed for the R01 journey; map now draws trip-ordered stop IDs. | PASS | Cross-surface evidence currently covers the synthetic R01 journey. |
-| I4 / 2 | Keep fleet state and scenario calculations internally consistent. | Shared `FleetSimulator`, endpoint and dashboard. | State endpoint and service tests pass but detailed state/metric invariants are not proven. | PARTIAL | Add state-transition and result-vs-dashboard tests; high. |
+| I4 / 2 | Keep fleet state and scenario calculations internally consistent. | Shared `FleetSimulator`, state endpoint, and dashboard. | API tests compare resulting active/available counts to response metrics for spare deployment and short-turn; browser confirms decisions update the dashboard and the next scenario returns both to baseline. | PASS | Other metric assumptions remain fixed; see F6. |
 | I5 / 2 | Start reliably with documented setup instructions. | README commands; FastAPI lifespan; Vite development configuration. | Backend launched, health returned OK; frontend dev server loaded and browser workflows ran; production build passed. | PASS | Production deployment is outside this local-startup requirement. |
 | I6 / 3 | Provide regression, integration, and frontend verification. | Pytest backend/API tests; TypeScript/Vite build; manual browser acceptance. | 70 backend tests pass, production build passes, and browser workflows exercised passenger and fleet features. Coverage percentage is not measured. | PASS | Manual browser runs are not a repeatable automated E2E suite; no coverage percentage. |
 | I7 / 2 | Label sample/simulated data and provenance accurately. | README, data README, API `simulated` flags and UI text. | Documentation/code inspection; labels exist and synthetic source documented. | PARTIAL | Verify every user-facing surface, especially crowd and route provenance; medium. |
 
-**Integration/quality earned points: 11 / 15.**
+**Integration/quality earned points: 12 / 15.**
 
 ## Current verified score
 
 | Category | Earned | Available |
 |---|---:|---:|
 | Passenger | 58 | 60 |
-| Fleet | 20.5 | 25 |
-| Integration and quality | 11 | 15 |
-| **Total** | **89.5** | **100** |
+| Fleet | 23 | 25 |
+| Integration and quality | 12 | 15 |
+| **Total** | **93** | **100** |
 
-**Verified requirement completion: 89.5%.** The previous summary table
+**Verified requirement completion: 93%.** The previous summary table
 incorrectly listed 49 passenger points; the row weights sum to 51 at the
 previous 78% score. This iteration adds browser evidence and direction-aware
-map path support. P7 remains PARTIAL because the UI does not explicitly
-identify missing occupancy; F8 remains PARTIAL because the approved response
-does not change fleet state. No implementation-only claims outside this
-register earn points.
+map path support and verified fleet decision state changes. P7 remains PARTIAL
+because the UI does not explicitly identify missing occupancy; F6 remains
+PARTIAL because some scenario metrics use fixed assumptions. No
+implementation-only claims outside this register earn points.
 
 ## Baseline verification commands and outcome
 
 - Backend: `.\backend\.venv\Scripts\python.exe -m pytest .\backend\tests -q`
-  — 70 passed, 0 failed, one deprecation warning.
+  — 74 passed, 0 failed, one deprecation warning.
 - Frontend from `frontend`: `npm run build` — TypeScript and Vite build passed.
 - Local API smoke: health, stops, routes, one journey query, and fleet state —
   passed.
 - Browser workflows: passenger route, map path and tiles, crowding, delay,
   chat, saved route create/reopen/delete, fleet dashboard, breakdown/delay
   alternatives, and decision acknowledgements — passed manually.
-- Fleet state transition: approved spare deployment left the bus state
-  unchanged — failed; F8 is PARTIAL and is the next iteration.
+- Fleet state transition: approved spare deployment/short-turn/delay changed
+  the modeled state; rejection did not; the browser dashboard reflected the
+  state — passed.
 
 ## Next audit actions
 
-1. Apply an approved fleet response to the simulated state and verify rejected
-   responses leave state unchanged; update the fleet dashboard after decisions.
-2. Add fleet scenario metric/state invariants and test more response types.
+1. Validate fleet metric inputs and formulas with invariants; distinguish
+   fixed assumptions from calculated outcomes.
+2. Show an explicit unknown-occupancy status when sample occupancy is absent.
 3. Verify service-day and midnight routing semantics.
 4. Retrieve/record the canonical DEV-P05 statement source if available.

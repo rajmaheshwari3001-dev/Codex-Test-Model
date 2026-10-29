@@ -9,6 +9,8 @@ Endpoints:
 
 from __future__ import annotations
 
+from uuid import uuid4
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
@@ -40,24 +42,29 @@ class ApproveRequest(BaseModel):
 
 
 _last_evaluation = {}
+_decisions: dict[str, str] = {}
+
+
+def _serialize_fleet_state():
+    state = _simulator.get_state()
+    buses = [
+        {
+            "bus_id": bus.bus_id,
+            "route_id": bus.route_id,
+            "trip_id": bus.trip_id,
+            "status": bus.status,
+            "occupancy_percent": bus.occupancy_percent,
+            "delay_minutes": bus.delay_minutes,
+        }
+        for bus in state.buses
+    ]
+    return {"buses": buses, "simulated": True}
 
 
 @router.get("/state")
 def get_fleet_state():
     """Return the current simulated fleet state."""
-    state = _simulator.get_state()
-    buses = [
-        {
-            "bus_id": b.bus_id,
-            "route_id": b.route_id,
-            "trip_id": b.trip_id,
-            "status": b.status,
-            "occupancy_percent": b.occupancy_percent,
-            "delay_minutes": b.delay_minutes,
-        }
-        for b in state.buses
-    ]
-    return {"buses": buses, "simulated": True}
+    return _serialize_fleet_state()
 
 
 @router.post("/disruption")
@@ -75,7 +82,7 @@ def evaluate_disruption(req: DisruptionRequest):
         )
 
     disruption = Disruption(
-        disruption_id=f"D-{req.affected_bus_id}-{req.disruption_type}",
+        disruption_id=f"D-{req.affected_bus_id}-{req.disruption_type}-{uuid4().hex[:8]}",
         disruption_type=req.disruption_type,
         affected_bus_id=req.affected_bus_id,
         description=req.description or f"{req.disruption_type} affecting {req.affected_bus_id}",
@@ -85,6 +92,7 @@ def evaluate_disruption(req: DisruptionRequest):
     result = _simulator.evaluate_disruption(disruption)
     if result.get("error"):
         raise HTTPException(status_code=404, detail=result["error"])
+    result["fleet_state"] = _serialize_fleet_state()
     _last_evaluation[disruption.disruption_id] = result
     return result
 
@@ -95,6 +103,11 @@ def approve_response(req: ApproveRequest):
     evaluation = _last_evaluation.get(req.disruption_id)
     if not evaluation:
         raise HTTPException(status_code=404, detail="Disruption not found. Run evaluation first.")
+    if req.disruption_id in _decisions:
+        raise HTTPException(
+            status_code=409,
+            detail=f"A response has already been {_decisions[req.disruption_id]}.",
+        )
 
     response = next(
         (r for r in evaluation["responses"] if r["response_id"] == req.response_id),
@@ -106,10 +119,26 @@ def approve_response(req: ApproveRequest):
         raise HTTPException(status_code=400, detail="Cannot approve an infeasible response.")
 
     action = "approved" if req.approved else "rejected"
+    if req.approved:
+        disruption_data = evaluation["disruption"]
+        disruption = Disruption(
+            disruption_id=disruption_data["disruption_id"],
+            disruption_type=disruption_data["disruption_type"],
+            affected_bus_id=disruption_data["affected_bus_id"],
+            description=disruption_data["description"],
+            delay_minutes=disruption_data["delay_minutes"],
+        )
+        try:
+            _simulator.apply_response(disruption, req.response_id)
+        except (RuntimeError, ValueError) as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    _decisions[req.disruption_id] = action
     return {
         "disruption_id": req.disruption_id,
         "response_id": req.response_id,
         "action": action,
         "message": f"Response '{response['label']}' has been {action}.",
         "simulated": True,
+        "fleet_state": _serialize_fleet_state(),
     }

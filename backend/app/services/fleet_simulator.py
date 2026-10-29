@@ -161,6 +161,63 @@ class FleetSimulator:
         if self._initial_state:
             self._current_state = copy.deepcopy(self._initial_state)
 
+    def apply_response(self, disruption: Disruption, response_id: str) -> None:
+        """Apply one approved response to the simulated fleet state."""
+        if self._initial_state is None:
+            raise RuntimeError("Fleet simulator has not been initialized.")
+
+        scenario_state = copy.deepcopy(self._initial_state)
+        affected_bus = next(
+            (bus for bus in scenario_state.buses
+             if bus.bus_id == disruption.affected_bus_id),
+            None,
+        )
+        if affected_bus is None:
+            raise ValueError(f"Bus {disruption.affected_bus_id} not found in fleet.")
+
+        if disruption.disruption_type == "breakdown":
+            affected_bus.status = "broken_down"
+            if response_id == "deploy_spare":
+                spare = next(
+                    (bus for bus in scenario_state.buses if bus.status == "spare"),
+                    None,
+                )
+                if spare is None:
+                    raise ValueError("No spare bus is available for deployment.")
+                spare.status = "reassigned"
+                spare.route_id = affected_bus.route_id
+                spare.trip_id = affected_bus.trip_id
+            elif response_id == "short_turn":
+                diverted_bus = next(
+                    (
+                        bus for bus in scenario_state.buses
+                        if bus.route_id == affected_bus.route_id
+                        and bus.bus_id != affected_bus.bus_id
+                        and bus.status == "active"
+                    ),
+                    None,
+                )
+                if diverted_bus is None:
+                    raise ValueError("No active bus is available to short-turn.")
+                diverted_bus.status = "reassigned"
+                diverted_bus.route_id = affected_bus.route_id
+                diverted_bus.trip_id = affected_bus.trip_id
+            else:
+                raise ValueError(f"Unsupported breakdown response: {response_id}.")
+        elif disruption.disruption_type == "delay":
+            if response_id == "absorb_delay":
+                affected_bus.delay_minutes += disruption.delay_minutes
+            elif response_id == "express_skip":
+                affected_bus.delay_minutes += max(0, disruption.delay_minutes - 10)
+            else:
+                raise ValueError(f"Unsupported delay response: {response_id}.")
+        else:
+            raise ValueError(
+                f"Unsupported disruption type: {disruption.disruption_type}."
+            )
+
+        self._current_state = scenario_state
+
     def _calculate_metrics(
         self, state: FleetState, scenario_name: str,
         affected_passengers: int = 0,
