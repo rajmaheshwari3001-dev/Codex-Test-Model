@@ -33,10 +33,10 @@ completion score. The verified score is calculated in
 - Baseline local and remote commit: `0e28bca`; progress ledger delivery: `b62c51b`.
 - Latest completed iteration: **5 — expose passenger crowd-data availability**.
 - Next iteration: **6 — verify service-day and midnight routing semantics**.
-- Latest successful delivery: `37b832f` (`main`), iteration 4 fleet metric
-  verification and provenance disclosure.
+- Latest successful delivery: `c517189` (`main`), iteration 5 crowd-data
+  availability reporting.
 - Remote verification: `origin/main` points to
-  `37b832f7fc4036393ca3ea285798181f6c9713c6`.
+  `c51718957a8a75c26ec60aadbde7d47a8cb6028f`.
 - The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
   preserved and excluded.
 
@@ -183,7 +183,7 @@ routing boundaries.
   approval/rejection state behavior, and the fleet metric-provenance note.
 - Temporary simulated passenger delay was cleared; API confirmed no active
   delays remained.
-- Push: iteration 4 was pushed to `origin/main`; `git ls-remote` confirmed
-  the remote ref matches local commit `37b832f7fc4036393ca3ea285798181f6c9713c6`.
+- Push: iteration 5 was pushed to `origin/main`; `git ls-remote` confirmed
+  the remote ref matches local commit `c51718957a8a75c26ec60aadbde7d47a8cb6028f`.
   The unrelated untracked `docs/DEEP_BUILD_AND_PROGRESS_REPORT.md` remains
   preserved and excluded.

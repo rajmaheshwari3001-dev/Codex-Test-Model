@@ -243,7 +243,8 @@
 - **Tests failed:** 0.
 - **Completion percentage:** 93% before → 95% after; P7 moved from PARTIAL to
   PASS based on API and browser evidence.
-- **Commit:** Pending final review.
-- **Push status:** Not yet pushed.
+- **Commit:** `c51718957a8a75c26ec60aadbde7d47a8cb6028f`.
+- **Push status:** Pushed to `origin/main`; `git ls-remote` confirmed the
+  remote ref matches the commit.
 - **Next task:** Iteration 6 — verify service-day and midnight routing
   semantics.
