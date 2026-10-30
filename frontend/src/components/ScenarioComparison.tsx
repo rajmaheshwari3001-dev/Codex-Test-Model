@@ -52,11 +52,11 @@ function MetricCard({
 
   return (
     <div className={`rounded-xl border p-3.5 text-center transition-all ${cardBg}`}>
-      <div className="text-xl sm:text-2xl font-black tracking-tight">
+      <div className="font-ubuntu text-2xl sm:text-3xl font-bold tabular-nums tracking-tight">
         {value}
         {unit}
       </div>
-      <div className="text-xs font-semibold text-[#7A7269] mt-0.5 leading-snug">
+      <div className="text-xs font-semibold text-[#7A7269] mt-1 leading-snug">
         {label}
       </div>
       {deltaNode}
@@ -119,7 +119,7 @@ function VisualImpactBar({
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs sm:text-sm">
         <span className="font-bold text-[#1A2E3B]">{label}</span>
-        <span className="font-mono text-xs font-bold text-[#2E7D32]">
+        <span className="font-ubuntu text-xs font-bold text-[#2E7D32]">
           {diff < 0 ? `${diff}${unit} (Improved)` : diff === 0 ? 'No Change' : `+${diff}${unit}`}
         </span>
       </div>
@@ -129,14 +129,14 @@ function VisualImpactBar({
           <div className="flex-1 bg-[#EBE5DC] rounded-full h-2 overflow-hidden">
             <div className="bg-[#9B1C1C] h-2 rounded-full" style={{ width: `${basePct}%` }} />
           </div>
-          <span className="w-14 text-right font-mono font-bold text-[#1A2E3B]">{baselineVal}{unit}</span>
+          <span className="w-14 text-right font-ubuntu font-bold text-[#1A2E3B] tabular-nums">{baselineVal}{unit}</span>
         </div>
         <div className="flex items-center gap-3 text-xs text-[#7A7269] font-medium">
           <span className="w-18 shrink-0 font-bold text-[#2E7D32]">Mitigated:</span>
           <div className="flex-1 bg-[#EBE5DC] rounded-full h-2 overflow-hidden">
             <div className="bg-[#2E7D32] h-2 rounded-full" style={{ width: `${counterPct}%` }} />
           </div>
-          <span className="w-14 text-right font-mono font-bold text-[#2E7D32]">{counterVal}{unit}</span>
+          <span className="w-14 text-right font-ubuntu font-bold text-[#2E7D32] tabular-nums">{counterVal}{unit}</span>
         </div>
       </div>
     </div>

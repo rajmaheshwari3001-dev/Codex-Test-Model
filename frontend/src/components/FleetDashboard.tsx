@@ -386,141 +386,227 @@ export default function FleetDashboard() {
       )}
 
       {/* 4 Primary Operational Metric Counters */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="rounded-2xl border border-[#EBE5DC] bg-white p-4 shadow-xs">
-          <div className="flex items-center justify-between text-[#7A7269] text-xs font-semibold">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="rounded-2xl border border-[#EDE8E1] bg-white p-5 shadow-xs hover:border-[#C49A43]/40 transition-all">
+          <div className="flex items-center justify-between text-[#7A7269] text-xs font-bold uppercase tracking-wider">
             <span>Total Fleet</span>
-            <BusIcon className="w-4 h-4 text-[#7A7269]" />
+            <div className="w-8 h-8 rounded-xl bg-[#FAF7F2] border border-[#EDE8E1] flex items-center justify-center text-[#1A2E3B]">
+              <BusIcon className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#1A2E3B] mt-1">{buses.length}</div>
-          <div className="text-[11px] text-[#7A7269] mt-1 font-medium">100% Instrument Telemetry</div>
+          <div className="font-ubuntu text-3xl sm:text-4xl lg:text-[40px] font-bold tabular-nums text-[#1A2E3B] mt-2 tracking-tight">
+            {buses.length}
+          </div>
+          <div className="text-xs text-[#7A7269] mt-1.5 font-medium flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
+            <span>100% Instrument Telemetry</span>
+          </div>
         </div>
 
-        <div className="rounded-2xl border border-[#D1E7D5] bg-[#EAF5EC]/60 p-4 shadow-xs">
-          <div className="flex items-center justify-between text-[#2E7D32] text-xs font-bold">
+        <div className="rounded-2xl border border-[#D1E7D5] bg-[#EAF5EC]/50 p-5 shadow-xs hover:border-[#2E7D32]/50 transition-all">
+          <div className="flex items-center justify-between text-[#2E7D32] text-xs font-bold uppercase tracking-wider">
             <span>Active on Grid</span>
-            <ActivityIcon className="w-4 h-4 text-[#2E7D32]" />
+            <div className="w-8 h-8 rounded-xl bg-[#EAF5EC] border border-[#D1E7D5] flex items-center justify-center text-[#2E7D32]">
+              <ActivityIcon className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#2E7D32] mt-1">{activeBuses.length}</div>
-          <div className="text-[11px] text-[#2E7D32] mt-1 font-semibold">
-            {Math.round((activeBuses.length / Math.max(1, buses.length)) * 100)}% Fleet Utilization
+          <div className="font-ubuntu text-3xl sm:text-4xl lg:text-[40px] font-bold tabular-nums text-[#2E7D32] mt-2 tracking-tight">
+            {activeBuses.length}
+          </div>
+          <div className="text-xs text-[#2E7D32] mt-1.5 font-semibold flex items-center gap-1.5">
+            <span className="font-ubuntu tabular-nums font-bold">
+              {Math.round((activeBuses.length / Math.max(1, buses.length)) * 100)}%
+            </span>
+            <span>Fleet Utilization Rate</span>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#F0E2C2] bg-[#FAF0D9]/60 p-4 shadow-xs">
-          <div className="flex items-center justify-between text-[#A67C1E] text-xs font-bold">
+        <div className="rounded-2xl border border-[#F0E2C2] bg-[#FAF0D9]/50 p-5 shadow-xs hover:border-[#C49A43]/50 transition-all">
+          <div className="flex items-center justify-between text-[#A67C1E] text-xs font-bold uppercase tracking-wider">
             <span>Depot Spares</span>
-            <ParkingIcon className="w-4 h-4 text-[#A67C1E]" />
+            <div className="w-8 h-8 rounded-xl bg-[#FAF0D9] border border-[#F0E2C2] flex items-center justify-center text-[#A67C1E]">
+              <ParkingIcon className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#A67C1E] mt-1">{spareBuses.length}</div>
-          <div className="text-[11px] text-[#A67C1E] mt-1 font-semibold">
+          <div className="font-ubuntu text-3xl sm:text-4xl lg:text-[40px] font-bold tabular-nums text-[#A67C1E] mt-2 tracking-tight">
+            {spareBuses.length}
+          </div>
+          <div className="text-xs text-[#A67C1E] mt-1.5 font-semibold">
             Stationed at Kashmere & Dwarka
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#F8B4B4] bg-[#FDE8E8]/60 p-4 shadow-xs">
-          <div className="flex items-center justify-between text-[#9B1C1C] text-xs font-bold">
+        <div
+          className={`rounded-2xl border p-5 shadow-xs transition-all ${
+            brokenBuses.length + delayedBuses.length > 0
+              ? 'border-[#F8B4B4] bg-[#FDE8E8]/70 hover:border-[#9B1C1C]/50'
+              : 'border-[#EDE8E1] bg-white hover:border-[#2E7D32]/40'
+          }`}
+        >
+          <div
+            className={`flex items-center justify-between text-xs font-bold uppercase tracking-wider ${
+              brokenBuses.length + delayedBuses.length > 0 ? 'text-[#9B1C1C]' : 'text-[#7A7269]'
+            }`}
+          >
             <span>Disrupted</span>
-            <AlertTriangleIcon className="w-4 h-4 text-[#9B1C1C]" />
+            <div
+              className={`w-8 h-8 rounded-xl border flex items-center justify-center ${
+                brokenBuses.length + delayedBuses.length > 0
+                  ? 'bg-[#FDE8E8] border-[#F8B4B4] text-[#9B1C1C]'
+                  : 'bg-[#FAF7F2] border-[#EDE8E1] text-[#2E7D32]'
+              }`}
+            >
+              {brokenBuses.length + delayedBuses.length > 0 ? (
+                <AlertTriangleIcon className="w-4 h-4" />
+              ) : (
+                <ShieldCheckIcon className="w-4 h-4 text-[#2E7D32]" />
+              )}
+            </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-[#9B1C1C] mt-1">
+          <div
+            className={`font-ubuntu text-3xl sm:text-4xl lg:text-[40px] font-bold tabular-nums mt-2 tracking-tight ${
+              brokenBuses.length + delayedBuses.length > 0 ? 'text-[#9B1C1C]' : 'text-[#2E7D32]'
+            }`}
+          >
             {brokenBuses.length + delayedBuses.length}
           </div>
-          <div className="text-[11px] text-[#9B1C1C] mt-1 font-semibold">
-            {brokenBuses.length} broken • {delayedBuses.length} delayed
+          <div
+            className={`text-xs mt-1.5 font-semibold ${
+              brokenBuses.length + delayedBuses.length > 0 ? 'text-[#9B1C1C]' : 'text-[#2E7D32]'
+            }`}
+          >
+            {brokenBuses.length + delayedBuses.length > 0 ? (
+              <span className="font-ubuntu">
+                {brokenBuses.length} immobilized • {delayedBuses.length} delayed
+              </span>
+            ) : (
+              'All Corridors Operating Normally'
+            )}
           </div>
         </div>
       </div>
 
       {/* Corridor Punctuality Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {corridorHealth.map(c => (
-          <div key={c.id} className="rounded-2xl border border-[#EBE5DC] bg-white p-4 shadow-xs space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold flex items-center gap-2 text-[#1A2E3B]">
-                <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: c.color }} />
-                {c.id} Corridor
-              </span>
-              <span
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  c.brokenCount > 0
-                    ? 'bg-[#FDE8E8] text-[#9B1C1C] border border-[#F8B4B4]'
-                    : c.delayedCount > 0
-                    ? 'bg-[#FAF0D9] text-[#A67C1E] border border-[#F0E2C2]'
-                    : 'bg-[#EAF5EC] text-[#2E7D32] border border-[#D1E7D5]'
-                }`}
-              >
-                {c.onTimePercent === null ? 'No data' : `${c.onTimePercent}% on time`}
-              </span>
+        {corridorHealth.map(c => {
+          const isFault = c.brokenCount > 0
+          const isDelay = c.delayedCount > 0
+          const pct = c.onTimePercent ?? 100
+
+          return (
+            <div
+              key={c.id}
+              className="group rounded-2xl border border-[#EDE8E1] bg-white p-4 shadow-xs hover:border-[#C49A43]/50 hover:shadow-sm transition-all duration-200 flex flex-col justify-between"
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-3 h-3 rounded-full shrink-0 shadow-2xs border border-white"
+                      style={{ backgroundColor: c.color }}
+                    />
+                    <span className="font-ubuntu font-bold text-sm text-[#1A2E3B] tracking-tight">
+                      {c.id} Corridor
+                    </span>
+                  </div>
+                  <span
+                    className={`font-ubuntu text-xs font-bold px-2.5 py-0.5 rounded-full tabular-nums border ${
+                      isFault
+                        ? 'bg-[#FDE8E8] text-[#9B1C1C] border-[#F8B4B4]'
+                        : isDelay
+                        ? 'bg-[#FAF0D9] text-[#A67C1E] border-[#F0E2C2]'
+                        : 'bg-[#EAF5EC] text-[#2E7D32] border-[#D1E7D5]'
+                    }`}
+                  >
+                    {c.onTimePercent === null ? 'No data' : `${c.onTimePercent}% on time`}
+                  </span>
+                </div>
+
+                <div className="text-xs text-[#7A7269] font-medium leading-relaxed truncate" title={c.name}>
+                  {c.name}
+                </div>
+
+                {/* Progress bar of corridor reliability */}
+                <div className="w-full bg-[#EDE8E1] h-1.5 rounded-full overflow-hidden mt-1">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      isFault ? 'bg-[#9B1C1C]' : isDelay ? 'bg-[#C49A43]' : 'bg-[#2E7D32]'
+                    }`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-[#7A7269] pt-2.5 mt-2 border-t border-[#F4EFE6]">
+                <span className="font-ubuntu font-medium">
+                  <strong className="text-[#1A2E3B] font-bold">{c.busesCount}</strong> vehicles
+                </span>
+                {isDelay && (
+                  <span className="font-ubuntu text-[#A67C1E] font-bold">+{c.delayedCount} delayed</span>
+                )}
+                {isFault && (
+                  <span className="font-ubuntu text-[#9B1C1C] font-bold">+{c.brokenCount} failed</span>
+                )}
+                {c.busesCount > 0 && !isDelay && !isFault && (
+                  <span className="inline-flex items-center gap-1 text-[#2E7D32] font-bold text-[11px]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]" />
+                    <span>Nominal</span>
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="text-[11px] text-[#7A7269] truncate">{c.name}</div>
-            <div className="flex items-center justify-between text-[11px] text-[#7A7269] pt-2 border-t border-[#F0EAE1]">
-              <span>{c.busesCount} assigned</span>
-              {c.delayedCount > 0 && <span className="text-[#A67C1E] font-bold">+{c.delayedCount} delayed</span>}
-              {c.brokenCount > 0 && <span className="text-[#9B1C1C] font-bold">+{c.brokenCount} failed</span>}
-              {c.busesCount > 0 && c.delayedCount === 0 && c.brokenCount === 0 && (
-                <span className="text-[#2E7D32] font-bold">Nominal</span>
-              )}
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Segmented View Mode Tabs: Radar Map vs Roster vs Green EV vs Audit Log */}
-      <div className="flex items-center justify-between border-b border-[#EBE5DC] pb-2">
-        <div className="flex items-center gap-1.5 bg-[#FAF7F2] p-1 rounded-xl border border-[#EBE5DC]">
-          <button
-            type="button"
-            onClick={() => setActiveView('radar')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'radar'
-                ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                : 'text-[#7A7269] hover:text-[#1A2E3B]'
-            }`}
-          >
-            <MapIcon className="w-3.5 h-3.5" />
-            <span>Live Fleet Radar</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveView('roster')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'roster'
-                ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                : 'text-[#7A7269] hover:text-[#1A2E3B]'
-            }`}
-          >
-            <BarChartIcon className="w-3.5 h-3.5" />
-            <span>Roster & Table</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveView('green')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'green'
-                ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                : 'text-[#7A7269] hover:text-[#1A2E3B]'
-            }`}
-          >
-            <BatteryIcon className="w-3.5 h-3.5" />
-            <span>EV & Green Telemetry</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveView('audit')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              activeView === 'audit'
-                ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                : 'text-[#7A7269] hover:text-[#1A2E3B]'
-            }`}
-          >
-            <FileTextIcon className="w-3.5 h-3.5" />
-            <span>Dispatch Audit Log ({auditLogs.length})</span>
-          </button>
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#EDE8E1] pb-3">
+        <div className="inline-flex items-center gap-1.5 bg-[#FAF7F2] p-1.5 rounded-2xl border border-[#EDE8E1] shadow-2xs overflow-x-auto max-w-full">
+          {[
+            { id: 'radar', label: 'Live Fleet Radar', icon: MapIcon, count: null },
+            { id: 'roster', label: 'Roster & Table', icon: BarChartIcon, count: buses.length },
+            { id: 'green', label: 'EV & Green Telemetry', icon: BatteryIcon, count: null },
+            { id: 'audit', label: 'Dispatch Audit Log', icon: FileTextIcon, count: auditLogs.length },
+          ].map(tab => {
+            const Icon = tab.icon
+            const isActive = activeView === tab.id
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveView(tab.id as typeof activeView)}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer select-none whitespace-nowrap ${
+                  isActive
+                    ? 'bg-[#1A2E3B] text-white shadow-sm ring-1 ring-black/5'
+                    : 'text-[#7A7269] hover:text-[#1A2E3B] hover:bg-white/80'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#C49A43]' : 'text-[#7A7269]'}`} />
+                <span>{tab.label}</span>
+                {tab.count !== null && (
+                  <span
+                    className={`font-ubuntu text-[10px] px-1.5 py-0.5 rounded-full font-bold tabular-nums ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-[#EDE8E1] text-[#7A7269]'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
         </div>
 
-        <div className="text-xs text-[#7A7269] font-mono hidden sm:block">
-          Tick: #{liveStreamTick} • Auto-Sync Active
+        <div className="flex items-center gap-2 text-xs text-[#7A7269] font-medium shrink-0 self-end sm:self-center">
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2E7D32] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2E7D32]"></span>
+          </span>
+          <span className="font-ubuntu tabular-nums text-xs font-semibold text-[#1A2E3B]">
+            Tick #{liveStreamTick}
+          </span>
+          <span className="text-[#C49A43]">•</span>
+          <span>Auto-Sync Active (4s)</span>
         </div>
       </div>
 
@@ -635,29 +721,29 @@ export default function FleetDashboard() {
                         selectedBus === b.bus_id ? 'bg-[#FAF0D9]/30' : ''
                       }`}
                     >
-                      <td className="py-2.5 px-3 font-mono font-bold text-[#1A2E3B]">{b.bus_id}</td>
+                      <td className="py-2.5 px-3 font-ubuntu font-bold text-sm text-[#1A2E3B]">{b.bus_id}</td>
                       <td className="py-2.5 px-3 text-[#1A202C] font-medium">{b.vehicle_type || 'Tata Starbus EV'}</td>
                       <td className="py-2.5 px-3">
-                        <span className="font-bold text-[#1A2E3B]">{b.route_id || 'Depot'}</span>
-                        {b.trip_id && <span className="font-mono text-[10px] text-[#7A7269] ml-1.5">({b.trip_id})</span>}
+                        <span className="font-ubuntu font-bold text-[#1A2E3B]">{b.route_id || 'Depot'}</span>
+                        {b.trip_id && <span className="font-ubuntu text-[11px] text-[#7A7269] ml-1.5 font-medium">({b.trip_id})</span>}
                       </td>
                       <td className="py-2.5 px-3">
-                        <span className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusBadgeStyle[b.status] || ''}`}>
+                        <span className={`inline-block font-ubuntu text-[11px] font-bold px-2.5 py-0.5 rounded-full ${statusBadgeStyle[b.status] || ''}`}>
                           {b.status.replace('_', ' ')}
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 font-mono font-bold text-[#1A2E3B]">
+                      <td className="py-2.5 px-3 font-ubuntu font-bold text-xs text-[#1A2E3B]">
                         {b.status === 'broken_down' ? '0 km/h' : `${b.speed_kmh || 30} km/h`}
                       </td>
                       <td className="py-2.5 px-3">
                         <div className="flex items-center gap-1.5">
                           <BatteryIcon className="w-3.5 h-3.5 text-[#2E7D32]" />
-                          <span className="font-mono font-bold text-[#2E7D32]">{b.battery_level || 85}%</span>
+                          <span className="font-ubuntu font-bold text-xs text-[#2E7D32]">{b.battery_level || 85}%</span>
                         </div>
                       </td>
                       <td className="py-2.5 px-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-14 bg-[#EBE5DC] rounded-full h-1.5 overflow-hidden">
+                          <div className="w-16 bg-[#EDE8E1] rounded-full h-1.5 overflow-hidden">
                             <div
                               className={`h-1.5 rounded-full ${
                                 b.occupancy_percent > 80
@@ -669,10 +755,10 @@ export default function FleetDashboard() {
                               style={{ width: `${Math.min(b.occupancy_percent, 100)}%` }}
                             />
                           </div>
-                          <span className="font-mono text-[11px] text-[#7A7269]">{b.occupancy_percent}%</span>
+                          <span className="font-ubuntu text-xs text-[#7A7269] font-medium">{b.occupancy_percent}%</span>
                         </div>
                       </td>
-                      <td className="py-2.5 px-3 font-mono">
+                      <td className="py-2.5 px-3 font-ubuntu text-xs">
                         {b.delay_minutes > 0 ? (
                           <span className="text-[#9B1C1C] font-bold">+{b.delay_minutes}m delay</span>
                         ) : (
@@ -716,22 +802,37 @@ export default function FleetDashboard() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="rounded-xl border border-[#D1E7D5] bg-[#EAF5EC]/50 p-4 space-y-1">
-              <span className="text-xs font-bold text-[#2E7D32] uppercase tracking-wider">CO₂ Emissions Avoided</span>
-              <div className="text-3xl font-black text-[#2E7D32]">{totalCo2Saved.toFixed(1)} kg</div>
-              <p className="text-[11px] text-[#7A7269]">Displacing diesel PM2.5 emissions across NCT corridors today</p>
+            <div className="rounded-2xl border border-[#D1E7D5] bg-[#EAF5EC]/60 p-5 space-y-1.5 shadow-2xs">
+              <span className="text-xs font-bold text-[#2E7D32] uppercase tracking-wider flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#2E7D32]" />
+                <span>CO₂ Emissions Avoided</span>
+              </span>
+              <div className="font-ubuntu text-3xl sm:text-4xl font-bold tabular-nums text-[#2E7D32]">
+                {totalCo2Saved.toFixed(1)} <span className="text-xl sm:text-2xl font-semibold">kg</span>
+              </div>
+              <p className="text-xs text-[#7A7269] leading-relaxed">Displacing diesel PM2.5 emissions across NCT corridors today</p>
             </div>
 
-            <div className="rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] p-4 space-y-1">
-              <span className="text-xs font-bold text-[#1A2E3B] uppercase tracking-wider">Fleet Average State of Charge</span>
-              <div className="text-3xl font-black text-[#1A2E3B]">{averageBattery}%</div>
-              <p className="text-[11px] text-[#7A7269]">Nominal operating range &gt; 180 km remaining per vehicle</p>
+            <div className="rounded-2xl border border-[#EDE8E1] bg-[#FAF7F2] p-5 space-y-1.5 shadow-2xs">
+              <span className="text-xs font-bold text-[#1A2E3B] uppercase tracking-wider flex items-center gap-1.5">
+                <BatteryIcon className="w-3.5 h-3.5 text-[#2E7D32]" />
+                <span>Fleet Average State of Charge</span>
+              </span>
+              <div className="font-ubuntu text-3xl sm:text-4xl font-bold tabular-nums text-[#1A2E3B]">
+                {averageBattery}%
+              </div>
+              <p className="text-xs text-[#7A7269] leading-relaxed">Nominal operating range &gt; 180 km remaining per vehicle</p>
             </div>
 
-            <div className="rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] p-4 space-y-1">
-              <span className="text-xs font-bold text-[#C49A43] uppercase tracking-wider">Regenerative Braking Efficiency</span>
-              <div className="text-3xl font-black text-[#C49A43]">28.4%</div>
-              <p className="text-[11px] text-[#7A7269]">Kinetic energy recovered on stop-and-go Delhi Ring Road segments</p>
+            <div className="rounded-2xl border border-[#EDE8E1] bg-[#FAF7F2] p-5 space-y-1.5 shadow-2xs">
+              <span className="text-xs font-bold text-[#C49A43] uppercase tracking-wider flex items-center gap-1.5">
+                <ZapIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+                <span>Regenerative Braking Yield</span>
+              </span>
+              <div className="font-ubuntu text-3xl sm:text-4xl font-bold tabular-nums text-[#C49A43]">
+                28.4%
+              </div>
+              <p className="text-xs text-[#7A7269] leading-relaxed">Kinetic energy recovered on stop-and-go Delhi Ring Road segments</p>
             </div>
           </div>
 
@@ -800,14 +901,14 @@ export default function FleetDashboard() {
                 <tbody className="divide-y divide-[#EBE5DC]">
                   {auditLogs.map((log, idx) => (
                     <tr key={idx} className="hover:bg-[#FAF7F2]/60">
-                      <td className="py-2.5 px-3 font-mono font-bold text-[#1A2E3B]">{log.disruption_id}</td>
-                      <td className="py-2.5 px-3 font-mono font-bold text-[#C49A43]">{log.bus_id}</td>
+                      <td className="py-2.5 px-3 font-ubuntu font-bold text-xs text-[#1A2E3B]">{log.disruption_id}</td>
+                      <td className="py-2.5 px-3 font-ubuntu font-bold text-xs text-[#C49A43]">{log.bus_id}</td>
                       <td className="py-2.5 px-3 uppercase text-[11px] font-semibold">{log.type}</td>
-                      <td className="py-2.5 px-3 text-[#1A202C]">{log.description}</td>
-                      <td className="py-2.5 px-3 text-[#7A7269]">{log.total_options_evaluated} responses</td>
+                      <td className="py-2.5 px-3 text-[#1A202C] font-medium">{log.description}</td>
+                      <td className="py-2.5 px-3 font-ubuntu text-xs text-[#7A7269]">{log.total_options_evaluated} options evaluated</td>
                       <td className="py-2.5 px-3 text-right">
                         <span
-                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
+                          className={`inline-block font-ubuntu px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                             log.decision === 'approved'
                               ? 'bg-[#EAF5EC] text-[#2E7D32] border border-[#D1E7D5]'
                               : 'bg-[#FDE8E8] text-[#9B1C1C] border border-[#F8B4B4]'

@@ -86,7 +86,7 @@ export default function FleetMap({
   const layerGroupRef = useRef<L.LayerGroup | null>(null)
   const tileLayerRef = useRef<L.TileLayer | null>(null)
 
-  const [mapStyle, setMapStyle] = useState<'sandstone' | 'dark' | 'satellite'>('sandstone')
+  const [mapStyle, setMapStyle] = useState<'streets' | 'hot' | 'dark' | 'satellite'>('streets')
   const [filterMode, setFilterMode] = useState<'ALL' | 'active' | 'spare' | 'broken_down'>('ALL')
   const [showCorridors, setShowCorridors] = useState(true)
 
@@ -104,23 +104,27 @@ export default function FleetMap({
     }
   }, [onTriggerDisruptionForBus])
 
-  // Tile layer updater
-  const updateTiles = useCallback((style: 'sandstone' | 'dark' | 'satellite', map: L.Map) => {
+  // Tile layer updater using 100% free watermark-free Esri & OSM tile services
+  const updateTiles = useCallback((style: 'streets' | 'hot' | 'dark' | 'satellite', map: L.Map) => {
     if (tileLayerRef.current) {
       map.removeLayer(tileLayerRef.current)
     }
 
-    let url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    let attribution = '&copy; OpenStreetMap contributors'
-    let maxZoom = 18
+    let url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
+    let attribution = '&copy; Esri, HERE, Garmin'
+    let maxZoom = 19
 
-    if (style === 'dark') {
-      url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-      attribution = '&copy; OpenStreetMap contributors'
+    if (style === 'hot') {
+      url = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
+      attribution = '&copy; OpenStreetMap contributors, Humanitarian OSM Team'
       maxZoom = 19
+    } else if (style === 'dark') {
+      url = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+      attribution = '&copy; Esri, DeLorme, NAVTEQ'
+      maxZoom = 16
     } else if (style === 'satellite') {
       url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      attribution = '&copy; Esri, Maxar'
+      attribution = '&copy; Esri, Maxar, Earthstar Geographics'
       maxZoom = 18
     }
 
@@ -228,7 +232,7 @@ export default function FleetMap({
       }
 
       const iconHtml = `
-        <div style="position: absolute; transform: translate(-50%, -50%); cursor: pointer; pointer-events: auto;">
+        <div style="position: absolute; transform: translate(-50%, -50%); cursor: pointer; pointer-events: auto; font-family: 'Ubuntu', -apple-system, sans-serif;">
           ${
             isBroken
               ? '<div style="position: absolute; inset: -8px; border-radius: 50%; background: rgba(155,28,28,0.4); animation: pulseGlow 1.4s infinite ease-out;"></div>'
@@ -237,20 +241,20 @@ export default function FleetMap({
           <div style="
             background: ${bgColor};
             color: #FFFFFF;
-            padding: ${isSelected ? '5px 10px' : '3px 8px'};
-            border-radius: 20px;
-            font-size: 10px;
-            font-weight: 800;
+            padding: ${isSelected ? '5px 11px' : '3px 8px'};
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             border: ${isSelected ? '2.5px solid #FFD700' : '2px solid #FFFFFF'};
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
             white-space: nowrap;
           ">
-            <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 3px;">${isBroken ? '!' : isSpare ? 'P' : 'B'}</span>
-            <span>${bus.bus_id}</span>
-            <span style="font-size: 8px; opacity: 0.9; background: rgba(255,255,255,0.25); padding: 1px 4px; border-radius: 4px;">
+            <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 4px; font-size: 10px;">${isBroken ? '!' : isSpare ? 'P' : 'B'}</span>
+            <span style="font-family: 'Ubuntu', sans-serif; font-weight: 700; letter-spacing: -0.2px;">${bus.bus_id}</span>
+            <span style="font-size: 9px; opacity: 0.95; background: rgba(255,255,255,0.25); padding: 1px 5px; border-radius: 999px; font-family: 'Ubuntu', sans-serif; font-weight: 700;">
               ${statusLabel}
             </span>
           </div>
@@ -267,39 +271,39 @@ export default function FleetMap({
 
       // Interactive Telemetry Popup
       const popupHtml = `
-        <div style="font-family: 'Manrope', -apple-system, sans-serif; min-width: 230px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #EBE5DC; pb: 6px;">
-            <span style="font-size: 11px; font-weight: 800; color: #C49A43; text-transform: uppercase;">
+        <div style="font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; min-width: 240px; padding: 2px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #EDE8E1; padding-bottom: 6px;">
+            <span style="font-size: 11px; font-weight: 800; color: #C49A43; text-transform: uppercase; letter-spacing: 0.5px;">
               ${bus.vehicle_type || 'Tata Starbus EV'}
             </span>
-            <span style="font-size: 9px; font-weight: 800; padding: 1px 6px; border-radius: 4px; background: ${bgColor}; color: #FFF;">
+            <span style="font-size: 10px; font-weight: 700; padding: 1.5px 7px; border-radius: 999px; background: ${bgColor}; color: #FFF; font-family: 'Ubuntu', sans-serif;">
               ${bus.status.toUpperCase()}
             </span>
           </div>
-          <div style="font-size: 15px; font-weight: 800; color: #1A2E3B; margin-top: 4px;">
+          <div style="font-family: 'Playfair Display', Georgia, serif; font-size: 16px; font-weight: 700; color: #1A2E3B; margin-top: 6px;">
             Vehicle ${bus.bus_id}
           </div>
-          <div style="font-size: 11px; color: #7A7269; margin-top: 6px; line-height: 1.5;">
-            Route: <strong style="color: #1A2E3B;">${bus.route_id || 'Depot Reserve'}</strong> • Trip: <strong>${bus.trip_id || '—'}</strong><br />
-            Speed: <strong>${bus.speed_kmh || (isBroken ? 0 : 28)} km/h</strong> • SoC Battery: <strong style="color: #2E7D32;">${bus.battery_level || 82}%</strong><br />
-            Passenger Load: <strong>${bus.occupancy_percent}% (${Math.round(bus.occupancy_percent * 0.5)}/50)</strong><br />
-            Driver ID: <strong>${bus.driver_id || 'DTC-D104'}</strong><br />
-            Schedule: ${
+          <div style="font-size: 11.5px; color: #7A7269; margin-top: 8px; line-height: 1.6;">
+            <div>Corridor: <strong style="color: #1A2E3B; font-weight: 700;">${bus.route_id || 'Depot Reserve'}</strong> • Trip: <span style="font-family: 'Ubuntu', sans-serif; font-weight: 600;">${bus.trip_id || '—'}</span></div>
+            <div>Speed: <strong style="color: #1A2E3B; font-family: 'Ubuntu', sans-serif; font-weight: 700;">${bus.speed_kmh || (isBroken ? 0 : 28)} km/h</strong> • Battery SoC: <strong style="color: #2E7D32; font-family: 'Ubuntu', sans-serif; font-weight: 700;">${bus.battery_level || 82}%</strong></div>
+            <div>Passenger Occupancy: <strong style="color: #1A2E3B; font-family: 'Ubuntu', sans-serif; font-weight: 700;">${bus.occupancy_percent}% (${Math.round(bus.occupancy_percent * 0.5)}/50)</strong></div>
+            <div>Driver ID: <span style="font-family: 'Ubuntu', sans-serif; font-weight: 600; color: #1A2E3B;">${bus.driver_id || 'DTC-D104'}</span></div>
+            <div>Schedule: ${
               bus.delay_minutes > 0
-                ? `<strong style="color: #9B1C1C;">+${bus.delay_minutes} min behind schedule</strong>`
-                : '<strong style="color: #2E7D32;">On Schedule</strong>'
-            }
+                ? `<strong style="color: #9B1C1C; font-family: 'Ubuntu', sans-serif; font-weight: 700;">+${bus.delay_minutes} min behind schedule</strong>`
+                : '<strong style="color: #2E7D32; font-weight: 700;">On Schedule (Nominal)</strong>'
+            }</div>
           </div>
-          <div style="display: flex; gap: 6px; margin-top: 10px; border-top: 1px solid #EBE5DC; padding-top: 8px;">
+          <div style="display: flex; gap: 6px; margin-top: 12px; border-top: 1px solid #EDE8E1; padding-top: 10px;">
             <button
               onclick="window.__triggerFleetDisrupt && window.__triggerFleetDisrupt('${bus.bus_id}', 'breakdown')"
-              style="flex: 1; padding: 6px 8px; font-size: 10px; font-weight: 800; background: #FDE8E8; color: #9B1C1C; border: 1px solid #F8B4B4; border-radius: 8px; cursor: pointer;"
+              style="flex: 1; padding: 6px 10px; font-size: 11px; font-weight: 700; background: #FDE8E8; color: #9B1C1C; border: 1px solid #F8B4B4; border-radius: 8px; cursor: pointer; transition: all 0.2s;"
             >
               Simulate Failure
             </button>
             <button
               onclick="window.__triggerFleetDisrupt && window.__triggerFleetDisrupt('${bus.bus_id}', 'delay')"
-              style="flex: 1; padding: 6px 8px; font-size: 10px; font-weight: 800; background: #FAF0D9; color: #A67C1E; border: 1px solid #F0E2C2; border-radius: 8px; cursor: pointer;"
+              style="flex: 1; padding: 6px 10px; font-size: 11px; font-weight: 700; background: #FAF0D9; color: #A67C1E; border: 1px solid #F0E2C2; border-radius: 8px; cursor: pointer; transition: all 0.2s;"
             >
               Simulate Delay
             </button>
@@ -363,14 +367,25 @@ export default function FleetMap({
           <div className="flex rounded-lg bg-[#FAF7F2] p-0.5 border border-[#EBE5DC]">
             <button
               type="button"
-              onClick={() => setMapStyle('sandstone')}
+              onClick={() => setMapStyle('streets')}
               className={`px-2 py-0.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                mapStyle === 'sandstone'
+                mapStyle === 'streets'
                   ? 'bg-white text-[#1A2E3B] shadow-2xs'
                   : 'text-[#7A7269] hover:text-[#1A2E3B]'
               }`}
             >
-              Classic
+              Streets
+            </button>
+            <button
+              type="button"
+              onClick={() => setMapStyle('hot')}
+              className={`px-2 py-0.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
+                mapStyle === 'hot'
+                  ? 'bg-white text-[#1A2E3B] shadow-2xs'
+                  : 'text-[#7A7269] hover:text-[#1A2E3B]'
+              }`}
+            >
+              Pastel
             </button>
             <button
               type="button"
