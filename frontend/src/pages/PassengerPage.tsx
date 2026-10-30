@@ -157,6 +157,30 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
     loadInitialData()
   }, [])
 
+  // Listen to station selections from Global Header Search Bar or Map
+  useEffect(() => {
+    const handleStationSelect = (e: Event) => {
+      const customEvent = e as CustomEvent<{ stopId: string; type?: 'origin' | 'destination' }>
+      const { stopId, type } = customEvent.detail || {}
+      if (!stopId) return
+
+      if (type === 'origin') {
+        const effectiveDest = destination === stopId ? (stopId === 'S13' ? 'S01' : 'S13') : destination
+        setOrigin(stopId)
+        setDestination(effectiveDest)
+        handleSearch(stopId, effectiveDest, time, preference, serviceDay, modePreference, maxBudget)
+      } else {
+        const effectiveOrigin = origin === stopId ? (stopId === 'S13' ? 'S01' : 'S13') : origin
+        setOrigin(effectiveOrigin)
+        setDestination(stopId)
+        handleSearch(effectiveOrigin, stopId, time, preference, serviceDay, modePreference, maxBudget)
+      }
+    }
+
+    window.addEventListener('aaroh_station_select', handleStationSelect)
+    return () => window.removeEventListener('aaroh_station_select', handleStationSelect)
+  }, [origin, destination, time, preference, serviceDay, modePreference, maxBudget])
+
   // Hook query parameter into origin selection
   useEffect(() => {
     const originParam = searchParams.get('origin')
@@ -332,14 +356,20 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   }
 
   function handleSelectOriginFromMap(stopId: string) {
+    const effectiveDest = destination === stopId ? (stopId === 'S13' ? 'S01' : 'S13') : destination
     setOrigin(stopId)
+    setDestination(effectiveDest)
+    handleSearch(stopId, effectiveDest, time, preference, serviceDay, modePreference, maxBudget)
     const stopName = stops.find(s => s.stop_id === stopId)?.stop_name || stopId
     setSaveToast(`Origin set to ${stopName}`)
     window.setTimeout(() => setSaveToast(''), 3000)
   }
 
   function handleSelectDestinationFromMap(stopId: string) {
+    const effectiveOrigin = origin === stopId ? (stopId === 'S13' ? 'S01' : 'S13') : origin
+    setOrigin(effectiveOrigin)
     setDestination(stopId)
+    handleSearch(effectiveOrigin, stopId, time, preference, serviceDay, modePreference, maxBudget)
     const stopName = stops.find(s => s.stop_id === stopId)?.stop_name || stopId
     setSaveToast(`Destination set to ${stopName}`)
     window.setTimeout(() => setSaveToast(''), 3000)

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import L from 'leaflet'
 import type { JourneyOption, Stop, Route as TRoute } from '../../types'
+import { DELHI_STATION_METADATA } from '../../utils/transitData'
 import {
   SearchIcon,
   XIcon,
@@ -80,11 +81,40 @@ export default function DelhiMap({
 
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
+  const mapSearchRef = useRef<HTMLDivElement>(null)
   const [mapStyle, setMapStyle] = useState<MapStyle>('sandstone')
 
   // Map Filter Toggles
   const [showMetro, setShowMetro] = useState(true)
   const [showBus, setShowBus] = useState(true)
+
+  // Close map search dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (mapSearchRef.current && !mapSearchRef.current.contains(e.target as Node)) {
+        setShowSearchResults(false)
+      }
+    }
+    if (showSearchResults) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showSearchResults])
+
+  // Listen to Global Station Selections and fly camera to station
+  useEffect(() => {
+    const handleStationSelect = (e: Event) => {
+      const customEvent = e as CustomEvent<{ stopId: string }>
+      const { stopId } = customEvent.detail || {}
+      if (!stopId) return
+      const s = stops.find(st => st.stop_id === stopId)
+      if (s && mapRef.current && isValidCoord(s.stop_lat, s.stop_lon)) {
+        mapRef.current.flyTo([s.stop_lat, s.stop_lon], 14, { duration: 1.2 })
+      }
+    }
+    window.addEventListener('aaroh_station_select', handleStationSelect)
+    return () => window.removeEventListener('aaroh_station_select', handleStationSelect)
+  }, [stops])
 
   // Listen to Night / Day mode changes from Header
   useEffect(() => {
@@ -589,19 +619,32 @@ export default function DelhiMap({
     mapRef.current.flyTo(coord, zoom, { duration: 1.2 })
   }
 
-  const filteredSearchStops = searchQuery.trim()
-    ? stops.filter(s =>
-        s.stop_name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : []
+  const filteredSearchStops = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
+    if (!q) return []
+    return stops.filter(s => {
+      const meta = DELHI_STATION_METADATA[s.stop_id]
+      const nameMatch = s.stop_name.toLowerCase().includes(q)
+      const landmarkMatch = meta?.landmark?.toLowerCase().includes(q)
+      const lineMatch = meta?.interchanges?.some(i => i.toLowerCase().includes(q))
+      return nameMatch || landmarkMatch || lineMatch
+    }).slice(0, 8)
+  }, [stops, searchQuery])
 
-  const handleSelectSearchStop = (stop: Stop) => {
+  const handleSelectSearchStop = (stop: Stop, type: 'destination' | 'origin' = 'destination') => {
     setSearchQuery('')
     setShowSearchResults(false)
     if (mapRef.current && isValidCoord(stop.stop_lat, stop.stop_lon)) {
       mapRef.current.flyTo([stop.stop_lat, stop.stop_lon], 14, {
         duration: 1.2,
       })
+    }
+    if (type === 'origin') {
+      if (onSelectOrigin) onSelectOrigin(stop.stop_id)
+      else window.dispatchEvent(new CustomEvent('aaroh_station_select', { detail: { stopId: stop.stop_id, type: 'origin' } }))
+    } else {
+      if (onSelectDestination) onSelectDestination(stop.stop_id)
+      else window.dispatchEvent(new CustomEvent('aaroh_station_select', { detail: { stopId: stop.stop_id, type: 'destination' } }))
     }
   }
 
@@ -620,9 +663,9 @@ export default function DelhiMap({
         {/* Row 1: Search Bar & Mode Filter Chips */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
           {/* Search Bar */}
-          <div className="relative flex-1 min-w-[140px] max-w-sm pointer-events-auto">
+          <div ref={mapSearchRef} className="relative flex-1 min-w-[150px] max-w-sm pointer-events-auto">
             <div className="flex items-center rounded-2xl border border-[#EDE8E1] bg-white/95 px-3 py-1.5 sm:py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
-              <SearchIcon className="w-4 h-4 text-[#7A7269] mr-2 shrink-0" />
+              <SearchIcon className="w-4 h-4 text-[#C49A43] mr-2 shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
@@ -631,7 +674,17 @@ export default function DelhiMap({
                   setShowSearchResults(true)
                 }}
                 onFocus={() => setShowSearchResults(true)}
-                placeholder="Search station or landmark..."
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (filteredSearchStops.length > 0) {
+                      handleSelectSearchStop(filteredSearchStops[0], 'destination')
+                    }
+                  } else if (e.key === 'Escape') {
+                    setShowSearchResults(false)
+                  }
+                }}
+                placeholder="Search station or landmark (e.g. Dwarka, Noida)..."
                 aria-label="Search Delhi transit stops"
                 className="w-full bg-transparent text-xs sm:text-[13px] font-semibold text-[#1A202C] placeholder-[#7A7269] focus:outline-none"
               />
@@ -643,6 +696,7 @@ export default function DelhiMap({
                     setShowSearchResults(false)
                   }}
                   className="text-[#7A7269] hover:text-[#1A202C] p-0.5 cursor-pointer text-xs"
+                  aria-label="Clear map search"
                 >
                   <XIcon className="w-3.5 h-3.5" />
                 </button>
@@ -651,22 +705,58 @@ export default function DelhiMap({
 
             {/* Autocomplete Dropdown */}
             {showSearchResults && filteredSearchStops.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-2xl border border-[#EDE8E1] bg-white shadow-xl z-[501] divide-y divide-[#EDE8E1]/60 scrollbar-thin">
-                {filteredSearchStops.map(s => (
-                  <div
-                    key={s.stop_id}
-                    onClick={() => handleSelectSearchStop(s)}
-                    className="flex items-center justify-between p-2.5 text-xs sm:text-[13px] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
-                      <span className="font-bold text-[#1A202C]">{s.stop_name}</span>
+              <div className="absolute top-full left-0 right-0 mt-1.5 max-h-64 overflow-y-auto rounded-2xl border border-[#EDE8E1] bg-white shadow-2xl z-[501] divide-y divide-[#EDE8E1]/60 scrollbar-thin p-1.5 animate-fade-in">
+                <div className="px-2 py-1 text-[10px] font-bold text-[#A1988B] uppercase tracking-wider flex justify-between items-center">
+                  <span>Matching Stations</span>
+                  <span>{filteredSearchStops.length} Found</span>
+                </div>
+                {filteredSearchStops.map(s => {
+                  const meta = DELHI_STATION_METADATA[s.stop_id]
+                  const lines = meta?.interchanges?.slice(0, 2).join(' • ') || 'DMRC Network'
+
+                  return (
+                    <div
+                      key={s.stop_id}
+                      onClick={() => handleSelectSearchStop(s, 'destination')}
+                      className="flex items-center justify-between p-2 rounded-xl text-xs hover:bg-[#FAF7F2] transition-colors cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className="w-6 h-6 rounded-lg bg-[#FAF0D9] text-[#9A721C] flex items-center justify-center shrink-0 group-hover:bg-[#C49A43] group-hover:text-white transition-colors">
+                          <TrainIcon className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="font-bold text-[#1A202C] truncate">{s.stop_name}</div>
+                          <div className="text-[10px] text-[#7A7269] truncate">Zone {s.zone_id} • {lines}</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0 ml-1">
+                        <button
+                          type="button"
+                          onClick={e => {
+                            e.stopPropagation()
+                            handleSelectSearchStop(s, 'origin')
+                          }}
+                          className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FAF0D9] text-[#9A721C] hover:bg-[#F2E5C9] transition-colors cursor-pointer"
+                          title="Set as Origin"
+                        >
+                          From
+                        </button>
+                        <button
+                          type="button"
+                          onClick={e => {
+                            e.stopPropagation()
+                            handleSelectSearchStop(s, 'destination')
+                          }}
+                          className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#1A2E3B] text-white hover:bg-[#253D4E] transition-colors cursor-pointer"
+                          title="Set as Destination"
+                        >
+                          To →
+                        </button>
+                      </div>
                     </div>
-                    <span className="text-[10px] text-[#7A7269] font-mono">
-                      Zone {s.zone_id}
-                    </span>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>

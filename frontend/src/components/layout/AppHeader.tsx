@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { getHealth } from '../../services/api'
 import DataProvenanceModal from '../DataProvenanceModal'
 import CashbackPerksModal from '../journey/CashbackPerksModal'
+import { CANONICAL_DELHI_STOPS } from '../../utils/figmaRoutes'
+import { DELHI_STATION_METADATA } from '../../utils/transitData'
 import {
   CompassIcon,
   MapIcon,
@@ -48,6 +50,75 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
   const [shareToast, setShareToast] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [syncLabel, setSyncLabel] = useState('DATA UPDATED 2 MIN AGO')
+
+  const navigate = useNavigate()
+  // Global Header Transit Search State
+  const [headerSearchQuery, setHeaderSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // Filter stations based on user search query
+  const filteredHeaderStops = useMemo(() => {
+    const q = headerSearchQuery.trim().toLowerCase()
+    if (!q) {
+      // Default: Return 5 major Delhi Transit Hubs
+      return CANONICAL_DELHI_STOPS.filter(s =>
+        ['S01', 'S02', 'S04', 'S13', 'S19'].includes(s.stop_id)
+      )
+    }
+    return CANONICAL_DELHI_STOPS.filter(s => {
+      const meta = DELHI_STATION_METADATA[s.stop_id]
+      const nameMatch = s.stop_name.toLowerCase().includes(q)
+      const landmarkMatch = meta?.landmark?.toLowerCase().includes(q)
+      const lineMatch = meta?.interchanges?.some(i => i.toLowerCase().includes(q))
+      return nameMatch || landmarkMatch || lineMatch
+    }).slice(0, 7)
+  }, [headerSearchQuery])
+
+  // Close search dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false)
+      }
+    }
+    if (searchOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [searchOpen])
+
+  // Ctrl+K / Cmd+K shortcut to focus search input
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+        setSearchOpen(true)
+      } else if (e.key === 'Escape') {
+        setSearchOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  const handleSelectStation = (stopId: string, type: 'destination' | 'origin' = 'destination') => {
+    setHeaderSearchQuery('')
+    setSearchOpen(false)
+    if (location.pathname !== '/' && location.pathname !== '/map') {
+      navigate('/')
+    }
+    window.dispatchEvent(
+      new CustomEvent('aaroh_station_select', {
+        detail: { stopId, type },
+      })
+    )
+    const stName = CANONICAL_DELHI_STOPS.find(s => s.stop_id === stopId)?.stop_name || stopId
+    setAuthToast(`Route ${type === 'origin' ? 'starting from' : 'heading to'} ${stName}`)
+    setTimeout(() => setAuthToast(''), 3000)
+  }
 
   // User Authentication & Profile State
   const [user, setUser] = useState<{
@@ -250,7 +321,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
   return (
     <header
       role="banner"
-      className="sticky top-2 sm:top-3 z-30 w-full px-3 sm:px-6 lg:px-8 pointer-events-none transition-all duration-300 animate-page-slide-down"
+      className="sticky top-2 sm:top-3 z-[1000] w-full px-3 sm:px-6 lg:px-8 pointer-events-none transition-all duration-300 animate-page-slide-down"
     >
       {/* Floating Island / Capsule Bar matching Figma prototype styling */}
       <div className="pointer-events-auto max-w-[1720px] mx-auto rounded-2xl sm:rounded-full border border-[#EDE8E1] bg-white/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(26,46,59,0.06),0_2px_6px_rgba(26,46,59,0.02)] px-4 sm:px-6 py-2.5 transition-all hover:border-[#C49A43]/40">
@@ -325,17 +396,136 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
           {/* Right: Search Box, Dark Toggle, and User Profile (Matching Target) */}
           <div role="toolbar" aria-label="User Controls" className="flex items-center gap-2.5 shrink-0">
-            {/* Search stations/routes input box */}
-            <div className="hidden xl:flex items-center gap-2 bg-[#FAF7F2] border border-[#EDE8E1] rounded-full px-3.5 py-1.5 focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20 shadow-2xs">
-              <SearchIcon className="w-3.5 h-3.5 text-[#7A7269]" />
-              <input
-                type="text"
-                placeholder="Search stations, routes..."
-                className="bg-transparent text-xs sm:text-[13px] text-[#1A2E3B] placeholder-[#9C9488] focus:outline-none w-36 lg:w-44 font-medium"
-              />
-              <span className="text-[10px] font-mono font-bold text-[#A8A196] bg-white border border-[#EDE8E1] rounded px-1.5 py-0.5">
-                ⌘K
-              </span>
+            {/* Search stations/routes input box (Live Search with Autocomplete) */}
+            <div ref={searchRef} className="relative hidden sm:flex items-center">
+              <div
+                className={`flex items-center gap-2 rounded-full border transition-all duration-300 ${
+                  searchOpen
+                    ? 'w-72 xl:w-84 bg-white border-[#C49A43] ring-2 ring-[#C49A43]/20 shadow-md'
+                    : 'w-48 xl:w-60 bg-[#FAF7F2] border-[#EDE8E1] hover:border-[#C49A43]/50 shadow-2xs'
+                } px-3.5 py-1.5`}
+              >
+                <SearchIcon className="w-3.5 h-3.5 text-[#C49A43] shrink-0" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={headerSearchQuery}
+                  onChange={e => {
+                    setHeaderSearchQuery(e.target.value)
+                    setSearchOpen(true)
+                  }}
+                  onFocus={() => setSearchOpen(true)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (filteredHeaderStops.length > 0) {
+                        handleSelectStation(filteredHeaderStops[0].stop_id, 'destination')
+                      }
+                    } else if (e.key === 'Escape') {
+                      setSearchOpen(false)
+                    }
+                  }}
+                  placeholder="Search stations, routes..."
+                  aria-label="Search Delhi transit network"
+                  className="bg-transparent text-xs sm:text-[13px] text-[#1A2E3B] placeholder-[#9C9488] focus:outline-none w-full font-semibold"
+                />
+                {headerSearchQuery ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHeaderSearchQuery('')
+                      setSearchOpen(false)
+                    }}
+                    className="text-[#7A7269] hover:text-[#1A2E3B] p-0.5 cursor-pointer text-xs"
+                    aria-label="Clear search query"
+                  >
+                    <XIcon className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <span
+                    onClick={() => {
+                      searchInputRef.current?.focus()
+                      setSearchOpen(true)
+                    }}
+                    className="text-[10px] font-mono font-bold text-[#A8A196] bg-white border border-[#EDE8E1] rounded px-1.5 py-0.5 cursor-pointer hover:border-[#C49A43] shrink-0"
+                    title="Press ⌘K or Ctrl+K to search"
+                  >
+                    ⌘K
+                  </span>
+                )}
+              </div>
+
+              {/* Autocomplete Dropdown Menu */}
+              {searchOpen && (
+                <div className="absolute top-full right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white border border-[#EDE8E1] shadow-2xl p-2 z-[700] animate-fade-in divide-y divide-[#F5EFE6]">
+                  <div className="px-2.5 py-1.5 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-[#A1988B]">
+                    <span>{headerSearchQuery ? 'Matching Stations' : 'Popular Delhi Hubs'}</span>
+                    <span>{filteredHeaderStops.length} Found</span>
+                  </div>
+
+                  <div className="max-h-72 overflow-y-auto divide-y divide-[#F5EFE6]/60 scrollbar-thin py-1">
+                    {filteredHeaderStops.length > 0 ? (
+                      filteredHeaderStops.map(s => {
+                        const meta = DELHI_STATION_METADATA[s.stop_id]
+                        const linesStr = meta?.interchanges?.slice(0, 2).join(' • ') || 'DMRC Network'
+
+                        return (
+                          <div
+                            key={s.stop_id}
+                            className="p-2 sm:p-2.5 rounded-xl hover:bg-[#FAF7F2] transition-colors flex items-center justify-between gap-2 group cursor-pointer"
+                            onClick={() => handleSelectStation(s.stop_id, 'destination')}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF0D9] text-[#9A721C] font-bold shrink-0 group-hover:bg-[#C49A43] group-hover:text-white transition-colors">
+                                <TrainIcon className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="text-xs sm:text-[13px] font-bold text-[#1A2E3B] truncate">
+                                  {s.stop_name}
+                                </div>
+                                <div className="text-[10px] text-[#7A7269] truncate">
+                                  Zone {s.zone_id} • {linesStr}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Quick Action Buttons */}
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={e => {
+                                  e.stopPropagation()
+                                  handleSelectStation(s.stop_id, 'origin')
+                                }}
+                                className="text-[10px] font-bold px-2 py-1 rounded-lg bg-[#FAF0D9] text-[#9A721C] hover:bg-[#F2E5C9] transition-colors cursor-pointer"
+                                title="Set as Departure Origin"
+                              >
+                                From
+                              </button>
+                              <button
+                                type="button"
+                                onClick={e => {
+                                  e.stopPropagation()
+                                  handleSelectStation(s.stop_id, 'destination')
+                                }}
+                                className="text-[10px] font-bold px-2 py-1 rounded-lg bg-[#1A2E3B] text-white hover:bg-[#253D4E] transition-colors cursor-pointer"
+                                title="Set as Destination and Plan Route"
+                              >
+                                To →
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <div className="py-6 px-4 text-center text-xs text-[#7A7269] space-y-1">
+                        <p className="font-bold text-[#1A2E3B]">No stations matching "{headerSearchQuery}"</p>
+                        <p className="text-[11px]">Try searching Rajiv Chowk, Kashmere Gate, Dwarka, or Hauz Khas.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Night / Day Mode Toggle (Fully Functional) */}
