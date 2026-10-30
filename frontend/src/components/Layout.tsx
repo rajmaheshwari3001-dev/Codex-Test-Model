@@ -18,7 +18,7 @@ export default function Layout() {
       <Sidebar mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} />
 
       {/* Main Content Viewport */}
-      <main className="flex-1 px-3 sm:px-6 lg:px-8 py-5 max-w-[1760px] mx-auto w-full relative z-10">
+      <main className="flex-1 px-3 sm:px-6 lg:px-8 py-5 max-w-[1760px] mx-auto w-full relative">
         <Outlet />
       </main>
 
