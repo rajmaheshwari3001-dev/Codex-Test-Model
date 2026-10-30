@@ -89,7 +89,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
   ]
 
   return (
-    <header role="banner" className="sticky top-0 z-40 w-full border-b border-[#D8C8AA] bg-[#FFFCF5]/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 shadow-xs">
+    <header role="banner" className="sticky top-0 z-40 w-full border-b border-[#EBE5DC] bg-white/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 shadow-xs">
       <div className="flex h-16 items-center justify-between gap-3 max-w-[1720px] mx-auto">
         {/* Left: Mobile Toggle & Brand */}
         <div className="flex items-center gap-3 shrink-0">
@@ -98,42 +98,39 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
             onClick={onOpenMobileMenu || (() => setMobileNavOpen(prev => !prev))}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileNavOpen}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#D8C8AA] bg-[#EEE5D6] text-[#243B4A] hover:bg-[#F4EBDD] lg:hidden transition-colors cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] text-[#1A2E3B] hover:bg-[#F2ECE1] lg:hidden transition-colors cursor-pointer"
           >
             {mobileNavOpen ? <XIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
           </button>
 
           <NavLink to="/" className="flex flex-col group focus:outline-none" aria-label="AAROH-SAARTHI Home">
             <div className="flex items-center gap-2">
-              <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#243B4A]">
-                AAROH<span className="text-[#C49A43]">—</span>SAARTHI
+              <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#1A2E3B]">
+                AAROH<span className="text-[#C49A43] mx-1.5">•</span>SAARTHI
               </span>
-              <span className="hidden sm:inline-block h-2 w-2 rounded-full bg-[#C49A43] animate-pulse-glow" />
             </div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#77766D] -mt-0.5 hidden xs:block">
-              YOUR FLUID TRANSIT IN DELHI
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#7A7269] -mt-0.5 hidden xs:block">
+              YOUR JOURNEY, RE-IMAGINED IN DELHI
             </span>
           </NavLink>
         </div>
 
-        {/* Center: Desktop Navigation Tabs with restrained heritage gold active states */}
-        <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-1 xl:gap-2">
+        {/* Center: Desktop Navigation Tabs with clean gold underline */}
+        <nav aria-label="Main Navigation" className="hidden lg:flex items-center gap-6 xl:gap-8 h-full">
           {navItems.map(item => {
-            const { Icon } = item
             return (
               <NavLink
                 key={item.label}
                 to={item.to}
-                className={`relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                className={`relative flex items-center h-full text-xs transition-colors duration-200 cursor-pointer ${
                   item.active
-                    ? 'text-[#243B4A] bg-[#EEE5D6] shadow-2xs font-extrabold'
-                    : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]/60'
+                    ? 'text-[#1A2E3B] font-extrabold'
+                    : 'text-[#7A7269] hover:text-[#1A2E3B] font-medium'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${item.active ? 'text-[#C49A43]' : 'text-[#77766D]'}`} />
                 <span>{item.label}</span>
                 {item.active && (
-                  <span className="absolute bottom-0 left-3 right-3 h-[2.5px] bg-[#C49A43] rounded-full animate-fade-in" />
+                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#C49A43] rounded-full animate-fade-in" />
                 )}
               </NavLink>
             )
@@ -141,20 +138,20 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
         </nav>
 
         {/* Right: Quick Action Controls */}
-        <div role="toolbar" aria-label="Quick Actions" className="flex items-center gap-2 shrink-0">
+        <div role="toolbar" aria-label="Quick Actions" className="flex items-center gap-3 shrink-0">
           {/* Live Data Badge */}
-          <div className="hidden xl:flex items-center gap-1.5 rounded-full border border-[#D8C8AA] bg-[#EEE5D6]/70 px-3 py-1 text-[10px] font-bold text-[#243B4A]">
-            <span className="h-2 w-2 rounded-full bg-[#547A60] animate-pulse" />
+          <div className="hidden xl:flex items-center gap-1.5 rounded-full bg-[#EAF5EC] border border-[#D1E7D5] px-3 py-1 text-[11px] font-semibold text-[#2E7D32]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#2E7D32] animate-pulse" />
             <span>DATA UPDATED 2 MIN AGO</span>
           </div>
 
           {/* Location Selector */}
-          <div className="hidden xs:flex items-center gap-1.5 rounded-full border border-[#D8C8AA] bg-[#EEE5D6]/70 px-3 py-1 text-xs font-semibold text-[#243B4A]">
-            <MapPinIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+          <div className="hidden xs:flex items-center gap-1.5 rounded-full bg-[#FAF7F2] border border-[#EBE5DC] px-3 py-1 text-xs font-medium text-[#1A2E3B]">
+            <span className="text-xs text-[#C49A43]">📍</span>
             <select
               value={selectedCity}
               onChange={e => setSelectedCity(e.target.value)}
-              className="bg-transparent text-xs font-bold text-[#243B4A] focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs font-semibold text-[#1A2E3B] focus:outline-none cursor-pointer"
               aria-label="Select Transit Region"
             >
               <option value="Delhi NCR">Delhi NCR</option>
@@ -168,13 +165,13 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
           <button
             type="button"
             onClick={handleShareTrip}
-            className="flex items-center gap-1.5 rounded-xl bg-[#243B4A] hover:bg-[#1B303C] px-3.5 py-1.5 text-xs font-bold text-[#FFFCF5] shadow-xs transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-lg bg-[#1A2E3B] hover:bg-[#243B4A] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all cursor-pointer"
             aria-label="Share current trip"
           >
             {shareToast ? (
               <>
                 <CheckIcon className="w-3.5 h-3.5 text-[#547A60]" />
-                <span>Link Copied</span>
+                <span>Copied</span>
               </>
             ) : (
               <>

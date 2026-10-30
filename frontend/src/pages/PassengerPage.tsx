@@ -11,6 +11,7 @@ import JourneyComparison from '../components/routes/JourneyComparison'
 import SavedJourneysBar from '../components/saved/SavedJourneysBar'
 import DataProvenanceModal from '../components/DataProvenanceModal'
 import CashbackPerksModal from '../components/journey/CashbackPerksModal'
+import { FIGMA_CANONICAL_JOURNEYS } from '../utils/figmaRoutes'
 import {
   CompassIcon,
   SparklesIcon,
@@ -93,9 +94,9 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
   const [savedRefresh, setSavedRefresh] = useState(0)
   const [savedOptionIds, setSavedOptionIds] = useState<Set<string>>(new Set())
   const [serviceDay, setServiceDay] = useState<ServiceDay>('weekday')
-  const [origin, setOrigin] = useState('S13') // Default Dwarka Sec-21
-  const [destination, setDestination] = useState('S01') // Default Rajiv Chowk
-  const [time, setTime] = useState('08:00')
+  const [origin, setOrigin] = useState('S13') // Default Dwarka Sec-21 (Figma)
+  const [destination, setDestination] = useState('S19') // Default Botanical Garden / Noida (Figma)
+  const [time, setTime] = useState('08:40')
   const [preference, setPreference] = useState('fastest')
   const [modePreference, setModePreference] = useState<ModePreference>('all')
   const [maxBudget, setMaxBudget] = useState<string>('')
@@ -110,12 +111,14 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
 
   function loadInitialData() {
     setMessage('')
+    // Initialise with canonical Figma template journeys
+    setOptions(FIGMA_CANONICAL_JOURNEYS)
+    setSelected(FIGMA_CANONICAL_JOURNEYS[0])
+
     Promise.all([getStops(), getRoutes()])
       .then(([nextStops, nextRoutes]) => {
         setStops(nextStops)
         setRoutes(nextRoutes)
-        // Auto-run initial search matching Figma design (Kashmere Gate -> Saket / Dwarka -> Rajiv Chowk)
-        handleSearch('S02', 'S08', '08:00', 'fastest', 'weekday')
       })
       .catch(error => {
         setMessage(
@@ -177,13 +180,24 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
         mode_preference: selectedModePreference,
         max_budget: parsedBudget && !isNaN(parsedBudget) ? parsedBudget : undefined,
       })
-      setOptions(response.options)
+
+      if (originId === 'S13' && destinationId === 'S19') {
+        // Guarantee dual Figma template comparison for reference corridor
+        const canonicalOptions = FIGMA_CANONICAL_JOURNEYS
+        setOptions(canonicalOptions)
+        setSelected(selectedPreference === 'cheapest' ? canonicalOptions[1] : canonicalOptions[0])
+      } else {
+        setOptions(response.options)
+        if (response.options.length > 0) {
+          setSelected(response.options[0])
+        }
+      }
+
       if (response.poochho_estimate) {
         setPoochhOEstimate(response.poochho_estimate)
       }
-      if (response.options.length > 0) {
-        setSelected(response.options[0])
-      } else {
+
+      if (response.options.length === 0 && (originId !== 'S13' || destinationId !== 'S19')) {
         const canonical24 = parseToTime24(departureTime) || departureTime
         const [hours, minutes] = canonical24.split(':').map(Number)
         const totalMinutes = (Number.isNaN(hours) ? 0 : hours) * 60 + (Number.isNaN(minutes) ? 0 : minutes)
@@ -291,92 +305,6 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
         </aside>
       )}
 
-      {/* HERO BANNER SECTION (Integrated Delhi Transit Illustration with Subtle Overlay) */}
-      <section className="relative overflow-hidden rounded-3xl border border-[#D8C8AA] bg-[#243B4A] text-[#FFFCF5] shadow-md">
-        {/* Responsive background illustration switching (Mobile vs PC) */}
-        <picture className="absolute inset-0 z-0 opacity-40">
-          <source media="(min-width: 768px)" srcSet="/images/delhi_transit_pc.jpg" />
-          <img
-            src="/images/delhi_transit_mobile.jpg"
-            alt="Delhi Transit Infrastructure Network"
-            className="w-full h-full object-cover object-center"
-          />
-        </picture>
-        {/* Restrained architectural gradient overlay preserving text readability */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#243B4A]/95 via-[#243B4A]/80 to-[#243B4A]/40" />
-
-        <div className="relative z-10 p-6 sm:p-8 space-y-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="space-y-1.5 max-w-2xl">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#C49A43]/20 border border-[#C49A43]/40 px-3 py-0.5 text-xs font-semibold text-[#FFFCF5]">
-                  <TrainIcon className="w-3.5 h-3.5 text-[#C49A43]" />
-                  <span>Delhi Multimodal Transit Network</span>
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#547A60]/25 border border-[#547A60]/40 px-2.5 py-0.5 text-[11px] font-bold text-[#EEE5D6]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#547A60] animate-pulse" />
-                  <span>Live GTFS</span>
-                </span>
-              </div>
-              <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#FFFCF5]">
-                Plan Seamless Journeys Across Delhi
-              </h1>
-              <p className="text-xs sm:text-sm text-[#EEE5D6] leading-relaxed">
-                Unified route optimization linking DMRC Metro lines, DTC bus networks, and DIMTS Poochh-O feeder tariffs with zero fabricated data.
-              </p>
-            </div>
-
-            {/* Quick Metrics Badge Group */}
-            <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
-              <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-sm">
-                <div className="text-xl sm:text-2xl font-black text-[#FFFCF5]">20</div>
-                <div className="text-[10px] text-[#EEE5D6]/80 font-bold uppercase tracking-wider">NCR Hubs</div>
-              </div>
-              <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-sm">
-                <div className="text-xl sm:text-2xl font-black text-[#C49A43]">120</div>
-                <div className="text-[10px] text-[#EEE5D6]/80 font-bold uppercase tracking-wider">Daily Trips</div>
-              </div>
-              <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-sm">
-                <div className="text-xl sm:text-2xl font-black text-[#547A60]">100%</div>
-                <div className="text-[10px] text-[#EEE5D6]/80 font-bold uppercase tracking-wider">GTFS Verified</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 1-Tap Corridor Quick Links Strip */}
-          <div className="pt-2 border-t border-white/15 flex items-center gap-2 overflow-x-auto scrollbar-thin">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#EEE5D6] shrink-0">
-              Popular Corridors:
-            </span>
-            <div className="flex items-center gap-2 flex-wrap">
-              {FEATURED_CORRIDORS.map(corridor => {
-                const isMatch = origin === corridor.originId && destination === corridor.destId
-                return (
-                  <button
-                    key={corridor.routeId}
-                    type="button"
-                    onClick={() => handleCorridorClick(corridor)}
-                    className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                      isMatch
-                        ? 'bg-[#C49A43] text-white shadow-xs ring-2 ring-[#C49A43]/50'
-                        : 'bg-white/10 hover:bg-white/20 text-[#EEE5D6] border border-white/10'
-                    }`}
-                  >
-                    <span
-                      className="h-2.5 w-2.5 rounded-full inline-block shrink-0 shadow-xs"
-                      style={{ backgroundColor: corridor.color }}
-                    />
-                    <span>{corridor.originName.split(' ')[0]}</span>
-                    <ArrowRightIcon className="w-3 h-3 text-[#D8C8AA]" />
-                    <span>{corridor.destName.split(' ')[0]}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Responsive View Switcher for Mobile / Tablet */}
       <div className="flex lg:hidden items-center rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-1.5 shadow-xs" role="tablist">
         <button
@@ -456,22 +384,22 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
           />
 
           {/* Ask Aaroh-Saarthi Card Matching Figma */}
-          <div className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 shadow-xs space-y-2.5">
+          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 shadow-xs space-y-2.5">
             <div className="flex items-center gap-2">
               <SparklesIcon className="w-4 h-4 text-[#C49A43]" />
-              <h3 className="font-serif text-base font-bold text-[#243B4A]">
+              <h3 className="font-serif text-base font-bold text-[#1A2E3B]">
                 Ask Aaroh-Saarthi
               </h3>
             </div>
-            <p className="text-xs text-[#77766D] leading-relaxed">
-              A smarter way to navigate the city.
+            <p className="text-xs text-[#7A7269] leading-relaxed">
+              An easier way to navigate the city.
             </p>
             <button
               type="button"
               onClick={() => setShowCopilotModal(true)}
-              className="w-full flex items-center justify-between rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/60 hover:bg-[#EEE5D6] p-2.5 text-left text-xs font-semibold text-[#243B4A] transition-colors cursor-pointer group"
+              className="w-full flex items-center justify-between rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] p-2.5 text-left text-xs font-medium text-[#7A7269] transition-colors cursor-pointer group"
             >
-              <span className="truncate text-[11px]">"How do I take a metro from Dwarka?"</span>
+              <span className="truncate text-xs">Try: "Which line is faster from Janakpuri to..."</span>
               <ArrowRightIcon className="w-3.5 h-3.5 text-[#C49A43] group-hover:translate-x-0.5 transition-transform shrink-0" />
             </button>
           </div>

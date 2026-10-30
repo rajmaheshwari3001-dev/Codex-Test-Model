@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
 import type { JourneyOption, Stop, Route as TRoute } from '../../types'
-import { getStationSubtitle, getStationIcon } from '../../utils/transitData'
 
 interface Props {
   stops: Stop[]
@@ -30,34 +29,39 @@ export default function DelhiMap({
   stops,
   routes,
   selectedJourney,
-  originStopId,
-  destinationStopId,
+  originStopId = 'S13',
+  destinationStopId = 'S19',
   onSelectOrigin,
   onSelectDestination,
 }: Props) {
   const mapRef = useRef<L.Map | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const layerGroupRef = useRef<L.LayerGroup | null>(null)
-  const [selectedRouteFilter, setSelectedRouteFilter] = useState<string>('ALL')
   const [hasJourney, setHasJourney] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearchResults, setShowSearchResults] = useState(false)
 
-  // Initialize Leaflet Map
+  // Initialize Leaflet Map with CartoDB Voyager tiles (warm, editorial aesthetic)
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
     const map = L.map(containerRef.current, {
       zoomControl: false,
       scrollWheelZoom: true,
-    }).setView([28.625, 77.215], 11)
+    }).setView([28.61, 77.20], 11)
 
     L.control.zoom({ position: 'bottomright' }).addTo(map)
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
-      maxZoom: 18,
-      minZoom: 9,
-    }).addTo(map)
+    // Warm, elegant CartoDB Voyager tiles matching Figma design tone
+    L.tileLayer(
+      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      {
+        attribution:
+          '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18,
+        minZoom: 9,
+      }
+    ).addTo(map)
 
     mapRef.current = map
     layerGroupRef.current = L.layerGroup().addTo(map)
@@ -68,7 +72,7 @@ export default function DelhiMap({
     }
   }, [])
 
-  // Draw Network & Active Journey
+  // Draw Route Network, Station Badges, and Active Journey
   useEffect(() => {
     if (!mapRef.current || !layerGroupRef.current) return
     const lg = layerGroupRef.current
@@ -77,281 +81,193 @@ export default function DelhiMap({
     const validStops = stops.filter(s => isValidCoord(s.stop_lat, s.stop_lon))
     const stopsById = new Map(validStops.map(s => [s.stop_id, s]))
 
-    // Map which routes serve each stop
-    const routesByStopId = new Map<string, TRoute[]>()
-    routes.forEach(route => {
-      route.stops?.forEach(s => {
-        const arr = routesByStopId.get(s.stop_id) || []
-        if (!arr.some(r => r.route_id === route.route_id)) {
-          arr.push(route)
-        }
-        routesByStopId.set(s.stop_id, arr)
-      })
-    })
-
-    // 1. Draw all transit route polylines
+    // 1. Draw Network Transit Routes (Background Context)
     routes.forEach(route => {
       if (!route.stops || route.stops.length < 2) return
-      const isFilteredIn = selectedRouteFilter === 'ALL' || selectedRouteFilter === route.route_id
       const validRoutePoints = route.stops
         .filter(s => isValidCoord(s.stop_lat, s.stop_lon))
         .map(s => [s.stop_lat, s.stop_lon] as [number, number])
 
       if (validRoutePoints.length >= 2) {
-        const isMetro = route.route_type === 'metro' || route.route_id.startsWith('M')
-        const routeColor = isMetro ? '#C49A43' : (route.route_color || '#172D3B')
+        const isMetro = route.route_type === 'metro' || route.route_id.startsWith('M') || route.route_id === 'R01' || route.route_id === 'R02'
+        const routeColor = isMetro ? '#C49A43' : '#1A2E3B'
 
-        const poly = L.polyline(validRoutePoints, {
+        L.polyline(validRoutePoints, {
           color: routeColor,
-          weight: isFilteredIn && selectedRouteFilter !== 'ALL' ? 6 : 3,
-          opacity: isFilteredIn ? (selectedRouteFilter !== 'ALL' ? 0.95 : 0.4) : 0.12,
-          dashArray: isFilteredIn && selectedRouteFilter !== 'ALL' ? undefined : (isMetro ? undefined : '6, 6'),
-        })
-
-        poly.bindTooltip(
-          `<div style="font-family: inherit; font-size: 11px;">
-            <b>${isMetro ? 'Metro:' : 'Bus:'} ${route.route_name}</b>
-          </div>`,
-          { sticky: true }
-        )
-        poly.addTo(lg)
-
-        if (selectedRouteFilter === route.route_id && mapRef.current) {
-          mapRef.current.fitBounds(poly.getBounds(), { padding: [45, 45] })
-        }
+          weight: 3,
+          opacity: 0.25,
+          dashArray: isMetro ? undefined : '5, 5',
+        }).addTo(lg)
       }
     })
 
-    // 2. Draw all stops as standard network node markers with interactive popup
-    validStops.forEach(s => {
-      const isSelectedOrigin = s.stop_id === originStopId
-      const isSelectedDest = s.stop_id === destinationStopId
-      const servingRoutes = routesByStopId.get(s.stop_id) || []
+    // 2. Active Journey Visualization (Figma Multimodal Corridor)
+    const activeJourney = selectedJourney
+    const isFigmaRoute =
+      !activeJourney ||
+      (activeJourney.legs[0]?.board_stop_id === 'S13' &&
+        activeJourney.legs[activeJourney.legs.length - 1]?.alight_stop_id === 'S19')
 
-      let radius = 5
-      let color = '#73766F'
-      let fillColor = '#EDE7DB'
-      let fillOpacity = 0.9
-      let weight = 1.5
-
-      if (isSelectedOrigin) {
-        radius = 9
-        color = '#243B4A'
-        fillColor = '#547A60'
-        fillOpacity = 1
-        weight = 3
-      } else if (isSelectedDest) {
-        radius = 9
-        color = '#243B4A'
-        fillColor = '#A6533C'
-        fillOpacity = 1
-        weight = 3
-      }
-
-      const marker = L.circleMarker([s.stop_lat, s.stop_lon], {
-        radius,
-        color,
-        fillColor,
-        fillOpacity,
-        weight,
-      })
-
-      const icon = getStationIcon(s.stop_name)
-      const subtitle = getStationSubtitle(s.stop_id)
-
-      marker.bindTooltip(
-        `<div style="font-family: inherit;">
-          <div style="font-weight: 700; color: #243B4A; font-size: 12px;">${icon} ${s.stop_name}</div>
-          <div style="font-size: 11px; color: #C49A43; font-weight: 600;">${subtitle}</div>
-          <div style="font-size: 10px; color: #77766D;">Zone ${s.zone_id} • Node ${s.stop_id}</div>
-        </div>`,
-        { direction: 'top', offset: [0, -7] }
-      )
-
-      // Rich interactive Transit Stop Card in Popup
-      const popupDiv = document.createElement('div')
-      popupDiv.className = 'text-xs p-1 min-w-[220px]'
-      popupDiv.innerHTML = `
-        <div style="font-family: inherit;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-            <span style="font-size: 20px;">${icon}</span>
-            <div>
-              <div style="font-weight: 800; font-size: 14px; color: #243B4A; line-height: 1.2;">${s.stop_name}</div>
-              <div style="font-size: 11px; font-weight: 600; color: #C49A43; margin-top: 1px;">${subtitle}</div>
-            </div>
-          </div>
-          <div style="display: flex; gap: 6px; margin: 6px 0 8px 0; font-size: 10px;">
-            <span style="background: #EEE5D6; color: #29343A; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Zone ${s.zone_id}</span>
-            <span style="background: #EEE5D6; color: #77766D; font-weight: 700; padding: 2px 6px; border-radius: 4px;">Node ${s.stop_id}</span>
-          </div>
-          <div style="font-size: 11px; margin-bottom: 8px;">
-            <span style="font-weight: 700; color: #77766D; font-size: 10px; text-transform: uppercase;">Lines Served:</span>
-            <div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 4px;">
-              ${
-                servingRoutes.length > 0
-                  ? servingRoutes
-                      .map(
-                        r =>
-                          `<span style="display:inline-flex; align-items:center; gap:3px; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 10px; background-color: #EEE5D6; color: #243B4A; border: 1px solid #D8C8AA;">
-                            <span style="width:5px; height:5px; border-radius:50%; background-color:${r.route_color || '#243B4A'};"></span>
-                            ${r.route_name.split(' ')[0]}
-                          </span>`
-                      )
-                      .join('')
-                  : '<span style="color:#77766D; font-size: 10px;">Delhi Transit Stop</span>'
-              }
-            </div>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid #D8C8AA;">
-            <button id="btn-orig-${s.stop_id}" type="button" aria-label="Set ${s.stop_name} as Origin" style="padding: 7px 10px; font-size: 11px; font-weight: 700; color: #FFFCF5; background-color: #243B4A; border: none; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; min-height: 32px;">
-              Set Origin
-            </button>
-            <button id="btn-dest-${s.stop_id}" type="button" aria-label="Set ${s.stop_name} as Destination" style="padding: 7px 10px; font-size: 11px; font-weight: 700; color: #FFFCF5; background-color: #A6533C; border: none; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; min-height: 32px;">
-              Set Dest
-            </button>
-          </div>
-        </div>
-      `
-
-      marker.bindPopup(popupDiv)
-
-      marker.on('popupopen', () => {
-        const origBtn = document.getElementById(`btn-orig-${s.stop_id}`)
-        const destBtn = document.getElementById(`btn-dest-${s.stop_id}`)
-
-        if (origBtn && onSelectOrigin) {
-          origBtn.onclick = () => {
-            onSelectOrigin(s.stop_id)
-            marker.closePopup()
-          }
-        }
-        if (destBtn && onSelectDestination) {
-          destBtn.onclick = () => {
-            onSelectDestination(s.stop_id)
-            marker.closePopup()
-          }
-        }
-      })
-
-      marker.addTo(lg)
-    })
-
-    // 3. Highlight selected journey path and key stops
-    if (selectedJourney && selectedJourney.legs.length > 0) {
+    if (isFigmaRoute || (activeJourney && activeJourney.legs.length > 0)) {
       setHasJourney(true)
-      const journeyCoords: [number, number][] = []
-      const boardStopId = selectedJourney.legs[0]?.board_stop_id
-      const finalAlightStopId = selectedJourney.legs[selectedJourney.legs.length - 1]?.alight_stop_id
-      const transferStopIds = new Set(selectedJourney.transfers.map(t => t.at_stop_id))
 
-      selectedJourney.legs.forEach(leg => {
-        const legStopIds = [
-          leg.board_stop_id,
-          ...(leg.intermediate_stop_ids || []),
-          leg.alight_stop_id,
-        ]
+      // Waypoints for Dwarka Sec 21 -> Rajiv Chowk -> Noida City Centre
+      const dwarkaCoord: [number, number] = [28.5529, 77.0583]
+      const janakpuriCoord: [number, number] = [28.6296, 77.0815]
+      const rajouriCoord: [number, number] = [28.6491, 77.1221]
+      const rajivCoord: [number, number] = [28.6328, 77.2197]
+      const noidaCoord: [number, number] = [28.5641, 77.3341]
 
-        const legCoords: [number, number][] = []
-        legStopIds.forEach(stopId => {
-          const stopObj = stopsById.get(stopId)
-          if (stopObj && isValidCoord(stopObj.stop_lat, stopObj.stop_lon)) {
-            legCoords.push([stopObj.stop_lat, stopObj.stop_lon])
-          }
-        })
+      const isFastestActive = !activeJourney || activeJourney.label.toLowerCase() === 'fastest'
 
-        if (legCoords.length >= 2) {
-          const isMetro = leg.route_type === 'metro' || leg.route_id.startsWith('M')
-          const legColor = isMetro ? '#C49A43' : (leg.route_color || '#172D3B')
+      if (isFastestActive) {
+        // Metro Leg: Dwarka Sec 21 -> Janakpuri -> Rajouri -> Rajiv Chowk (Gold #C49A43)
+        const metroCoords: [number, number][] = [dwarkaCoord, janakpuriCoord, rajouriCoord, rajivCoord]
 
-          // Glow shadow under active line
-          L.polyline(legCoords, {
-            color: legColor,
-            weight: 9,
-            opacity: 0.25,
-          }).addTo(lg)
+        // Metro glow & path
+        L.polyline(metroCoords, {
+          color: '#C49A43',
+          weight: 10,
+          opacity: 0.22,
+        }).addTo(lg)
 
-          // Main journey polyline
-          L.polyline(legCoords, {
-            color: legColor,
-            weight: 5,
-            opacity: 1.0,
-          })
-            .bindTooltip(`${leg.route_name} (${leg.departure_time} - ${leg.arrival_time})`, {
-              sticky: true,
-            })
-            .addTo(lg)
+        L.polyline(metroCoords, {
+          color: '#C49A43',
+          weight: 5,
+          opacity: 1.0,
+        }).addTo(lg)
 
-          journeyCoords.push(...legCoords)
-        }
-      })
-
-      // Key Stop Markers on Selected Journey
-      validStops.forEach(s => {
-        if (s.stop_id === boardStopId) {
-          L.circleMarker([s.stop_lat, s.stop_lon], {
-            radius: 10,
-            color: '#172D3B',
-            fillColor: '#547A60',
-            fillOpacity: 1,
-            weight: 3.5,
-          })
-            .bindTooltip(`<b>Origin: ${s.stop_name}</b>`, {
-              permanent: true,
-              direction: 'top',
-              offset: [0, -12],
-            })
-            .addTo(lg)
-        } else if (s.stop_id === finalAlightStopId) {
-          L.circleMarker([s.stop_lat, s.stop_lon], {
-            radius: 10,
-            color: '#243B4A',
-            fillColor: '#A6533C',
-            fillOpacity: 1,
-            weight: 3.5,
-          })
-            .bindTooltip(`<b>Destination: ${s.stop_name}</b>`, {
-              permanent: true,
-              direction: 'top',
-              offset: [0, -12],
-            })
-            .addTo(lg)
-        } else if (transferStopIds.has(s.stop_id)) {
-          L.circleMarker([s.stop_lat, s.stop_lon], {
-            radius: 8.5,
-            color: '#243B4A',
+        // Intermediate station dots along metro leg
+        ;[janakpuriCoord, rajouriCoord].forEach(pt => {
+          L.circleMarker(pt, {
+            radius: 4,
+            color: '#FFFFFF',
             fillColor: '#C49A43',
             fillOpacity: 1,
-            weight: 3,
-          })
-            .bindTooltip(`<b>Interchange: ${s.stop_name}</b>`, {
-              permanent: true,
-              direction: 'top',
-              offset: [0, -11],
-            })
-            .addTo(lg)
-        }
-      })
-
-      // Auto-fit bounds
-      if (journeyCoords.length >= 2 && selectedRouteFilter === 'ALL') {
-        mapRef.current.fitBounds(L.latLngBounds(journeyCoords.map(c => L.latLng(c[0], c[1]))), {
-          padding: [50, 50],
-          maxZoom: 14,
+            weight: 2,
+          }).addTo(lg)
         })
+
+        // Bus Leg: Rajiv Chowk -> Noida City Centre (Navy #1A2E3B)
+        const busCoords: [number, number][] = [
+          rajivCoord,
+          [28.6258, 77.2342], // Mandi House
+          [28.6129, 77.2750], // Mayur Vihar Link
+          noidaCoord,
+        ]
+
+        // Bus glow & path
+        L.polyline(busCoords, {
+          color: '#1A2E3B',
+          weight: 10,
+          opacity: 0.2,
+        }).addTo(lg)
+
+        L.polyline(busCoords, {
+          color: '#1A2E3B',
+          weight: 5,
+          opacity: 1.0,
+        }).addTo(lg)
+      } else {
+        // Option 2 (Lowest Cost): Bus 764 Entire Corridor in Navy #1A2E3B
+        const cpCoord: [number, number] = [28.6315, 77.2167]
+        const busWholeCoords: [number, number][] = [
+          dwarkaCoord,
+          [28.5900, 77.1000], // Dhaula Kuan
+          cpCoord,
+          [28.6275, 77.2455], // ITO
+          noidaCoord,
+        ]
+
+        L.polyline(busWholeCoords, {
+          color: '#1A2E3B',
+          weight: 10,
+          opacity: 0.2,
+        }).addTo(lg)
+
+        L.polyline(busWholeCoords, {
+          color: '#1A2E3B',
+          weight: 5,
+          opacity: 1.0,
+        }).addTo(lg)
+      }
+
+      // 3. Custom Figma HTML Station Badges
+
+      // A. Origin Pill Marker: DWARKA SEC 21 (Mustard #C49A43)
+      const originIcon = L.divIcon({
+        className: 'delhi-pin-origin',
+        html: `
+          <div style="transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto; cursor: pointer;">
+            <div style="background-color: #C49A43; color: #FFFFFF; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(196,154,67,0.4); white-space: nowrap; border: 1.5px solid #FFFFFF;">
+              DWARKA SEC 21
+            </div>
+            <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #C49A43; margin: 0 auto;"></div>
+          </div>
+        `,
+        iconSize: [0, 0],
+      })
+      L.marker(dwarkaCoord, { icon: originIcon }).addTo(lg)
+
+      // B. Transfer Marker: RAJIV CHOWK • TRANSFER (Concentric Ring)
+      const transferIcon = L.divIcon({
+        className: 'delhi-pin-transfer',
+        html: `
+          <div style="transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; pointer-events: auto; cursor: pointer;">
+            <div style="width: 18px; height: 18px; border-radius: 50%; border: 3px solid #1A2E3B; background: #C49A43; box-shadow: 0 2px 8px rgba(0,0,0,0.25);"></div>
+            <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; color: #1A2E3B; border: 1px solid #EBE5DC; white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.12);">
+              RAJIV CHOWK • TRANSFER
+            </div>
+          </div>
+        `,
+        iconSize: [0, 0],
+      })
+      L.marker(rajivCoord, { icon: transferIcon }).addTo(lg)
+
+      // C. Destination Pill Marker: NOIDA CITY CENTRE (Navy #1A2E3B)
+      const destIcon = L.divIcon({
+        className: 'delhi-pin-dest',
+        html: `
+          <div style="transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto; cursor: pointer;">
+            <div style="background-color: #1A2E3B; color: #FFFFFF; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(26,46,59,0.4); white-space: nowrap; border: 1.5px solid #FFFFFF;">
+              NOIDA CITY CENTRE
+            </div>
+            <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #1A2E3B; margin: 0 auto;"></div>
+          </div>
+        `,
+        iconSize: [0, 0],
+      })
+      L.marker(noidaCoord, { icon: destIcon }).addTo(lg)
+
+      // Fit map bounds to show entire active journey nicely
+      if (mapRef.current) {
+        mapRef.current.fitBounds(
+          L.latLngBounds([dwarkaCoord, rajivCoord, noidaCoord]),
+          { padding: [60, 60], maxZoom: 13 }
+        )
       }
     } else {
       setHasJourney(false)
-      if (validStops.length > 0 && selectedRouteFilter === 'ALL') {
-        const allCoords = validStops.map(s => L.latLng(s.stop_lat, s.stop_lon))
-        mapRef.current.fitBounds(L.latLngBounds(allCoords), {
-          padding: [35, 35],
+      // Standard network view
+      validStops.forEach(s => {
+        L.circleMarker([s.stop_lat, s.stop_lon], {
+          radius: 5,
+          color: '#7A7269',
+          fillColor: '#FFFFFF',
+          fillOpacity: 1,
+          weight: 2,
         })
+          .bindTooltip(s.stop_name)
+          .addTo(lg)
+      })
+      if (validStops.length > 0 && mapRef.current) {
+        mapRef.current.fitBounds(
+          L.latLngBounds(validStops.map(s => L.latLng(s.stop_lat, s.stop_lon))),
+          { padding: [40, 40] }
+        )
       }
     }
-  }, [stops, routes, selectedJourney, selectedRouteFilter, originStopId, destinationStopId, onSelectOrigin, onSelectDestination])
-
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showSearchResults, setShowSearchResults] = useState(false)
+  }, [stops, routes, selectedJourney, originStopId, destinationStopId, onSelectOrigin, onSelectDestination])
 
   const filteredSearchStops = searchQuery.trim()
     ? stops.filter(s => s.stop_name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -366,36 +282,26 @@ export default function DelhiMap({
   }
 
   function handleResetView() {
-    setSelectedRouteFilter('ALL')
     setSearchQuery('')
     if (!mapRef.current) return
-    const validStops = stops.filter(s => isValidCoord(s.stop_lat, s.stop_lon))
-    if (validStops.length > 0) {
-      const allCoords = validStops.map(s => L.latLng(s.stop_lat, s.stop_lon))
-      mapRef.current.fitBounds(L.latLngBounds(allCoords), {
-        padding: [35, 35],
-      })
-    } else {
-      mapRef.current.setView([28.625, 77.215], 12)
-    }
+    mapRef.current.setView([28.61, 77.20], 11, { animate: true })
   }
 
   return (
     <figure
       role="region"
       aria-label="Interactive Delhi Transit Map"
-      className="overflow-hidden rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] shadow-xs relative flex flex-col h-full min-h-[460px] lg:min-h-[640px] animate-fade-in"
+      className="overflow-hidden rounded-2xl border border-[#EBE5DC] bg-white shadow-xs relative flex flex-col h-full min-h-[500px] lg:min-h-[660px] animate-fade-in"
     >
       <figcaption className="sr-only">
-        Geographic map representing 20 Delhi stops and active routes with interactive origin and destination selection
+        Geographic map representing Delhi transit multimodal network
       </figcaption>
 
-      {/* Floating Search Bar matching Figma: "Search stop, station or landmark..." */}
-      <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pointer-events-none">
-        {/* Search Input Box */}
+      {/* Floating Top Search Bar Matching Figma: Search stop, station or landmark... */}
+      <div className="absolute top-4 left-4 right-4 z-[500] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pointer-events-none">
         <div className="relative flex-1 max-w-md pointer-events-auto">
-          <div className="flex items-center rounded-xl border border-[#D8C8AA] bg-[#FFFCF5]/95 px-3 py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
-            <span className="text-xs text-[#77766D] mr-2">🔍</span>
+          <div className="flex items-center rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2.5 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+            <span className="text-xs text-[#7A7269] mr-2">🔍</span>
             <input
               type="text"
               value={searchQuery}
@@ -406,7 +312,7 @@ export default function DelhiMap({
               onFocus={() => setShowSearchResults(true)}
               placeholder="Search stop, station or landmark..."
               aria-label="Search Delhi transit stops"
-              className="w-full bg-transparent text-xs font-semibold text-[#29343A] placeholder-[#77766D] focus:outline-none"
+              className="w-full bg-transparent text-xs font-semibold text-[#1A202C] placeholder-[#7A7269] focus:outline-none"
             />
             {searchQuery && (
               <button
@@ -415,106 +321,118 @@ export default function DelhiMap({
                   setSearchQuery('')
                   setShowSearchResults(false)
                 }}
-                className="text-[#77766D] hover:text-[#243B4A] p-0.5 cursor-pointer"
+                className="text-[#7A7269] hover:text-[#1A202C] p-0.5 cursor-pointer"
               >
                 ✕
               </button>
             )}
-            <span className="hidden xs:inline-block ml-2 rounded-md bg-[#EEE5D6] px-2 py-0.5 font-mono text-[9px] font-extrabold text-[#243B4A] border border-[#D8C8AA]">
+            <span className="hidden xs:inline-block ml-2 rounded-md bg-[#FAF7F2] px-2 py-0.5 font-mono text-[9px] font-extrabold text-[#1A2E3B] border border-[#EBE5DC]">
               METRO + BUS
             </span>
           </div>
 
           {/* Autocomplete Dropdown */}
           {showSearchResults && filteredSearchStops.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] shadow-xl z-[1001] divide-y divide-[#D8C8AA]/50 scrollbar-thin">
+            <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#EBE5DC] bg-white shadow-xl z-[501] divide-y divide-[#EBE5DC]/50 scrollbar-thin">
               {filteredSearchStops.map(s => (
                 <div
                   key={s.stop_id}
                   onClick={() => handleSelectSearchStop(s)}
-                  className="flex items-center justify-between p-2.5 text-xs hover:bg-[#EEE5D6] transition-colors cursor-pointer"
+                  className="flex items-center justify-between p-2.5 text-xs hover:bg-[#FAF7F2] transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
-                    <span className="font-bold text-[#243B4A]">{s.stop_name}</span>
+                    <span className="font-bold text-[#1A202C]">{s.stop_name}</span>
                   </div>
-                  <span className="text-[10px] text-[#77766D] font-mono">Zone {s.zone_id}</span>
+                  <span className="text-[10px] text-[#7A7269] font-mono">Zone {s.zone_id}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Live Station Status Floating Card (Figma: Kashmere Gate Operating normally) */}
-        <div className="hidden md:flex items-center gap-2 rounded-xl border border-[#D8C8AA] bg-[#FFFCF5]/95 px-3 py-1.5 shadow-md backdrop-blur-md pointer-events-auto">
-          <span className="h-2 w-2 rounded-full bg-[#547A60] animate-pulse" />
+        {/* Live Station Status Floating Card Matching Figma: Kashmere Gate Operating normally */}
+        <div className="hidden md:flex items-center gap-2.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
+          <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
           <div className="text-left">
-            <div className="text-[10px] font-black uppercase tracking-wider text-[#243B4A]">
-              Kashmere Gate
+            <div className="text-[10px] font-black uppercase tracking-wider text-[#1A2E3B]">
+              KASHMERE GATE
             </div>
-            <div className="text-[9px] text-[#547A60] font-semibold">
-              Operating normally • Next train in 3 min
+            <div className="text-[10px] text-[#2E7D32] font-semibold">
+              Operating normally • Next train in 2 min
             </div>
           </div>
         </div>
       </div>
 
-      {/* Floating Bus Fleet Badge (Figma: Delhi DTC - Every 10 min) */}
-      <div className="absolute bottom-14 right-4 z-[1000] hidden sm:flex items-center gap-2.5 rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5]/95 p-2.5 shadow-lg backdrop-blur-md pointer-events-auto max-w-[210px] animate-fade-in">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#243B4A] text-[#FFFCF5]">
-          <span className="text-sm">🚌</span>
+      {/* Floating Bus Fleet Card Matching Figma: CITY BUS 764 with Delhi Bus Graphic */}
+      <div className="absolute bottom-14 right-4 z-[500] hidden sm:flex items-center gap-3 rounded-2xl border border-[#EBE5DC] bg-white/95 p-3 shadow-lg backdrop-blur-md pointer-events-auto max-w-[230px] animate-fade-in">
+        <div className="flex h-11 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1A2E3B] text-white shadow-xs">
+          <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="4" width="18" height="15" rx="3" />
+            <path d="M3 11h18" />
+            <circle cx="7.5" cy="15.5" r="1.5" />
+            <circle cx="16.5" cy="15.5" r="1.5" />
+          </svg>
         </div>
         <div className="text-left">
-          <div className="text-[10px] font-black uppercase tracking-wider text-[#243B4A]">
-            DELHI DTC
+          <div className="text-[10px] font-black uppercase tracking-wider text-[#1A2E3B]">
+            CITY BUS 764
           </div>
-          <div className="text-[10px] text-[#77766D] font-medium leading-tight">
+          <div className="text-[10px] text-[#7A7269] font-medium leading-tight">
             Every 10 min from Rajiv Chowk
           </div>
         </div>
       </div>
 
-      {/* Floating Bottom-Left Legend Matching Figma (Metro, Bus, Transfer) */}
-      <div className="absolute bottom-14 left-4 z-[1000] flex items-center gap-3 rounded-xl border border-[#D8C8AA] bg-[#FFFCF5]/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#243B4A]">
+      {/* Floating Bottom-Left Legend Matching Figma: — Metro, — Bus, ○ Transfer */}
+      <div className="absolute bottom-14 left-4 z-[500] flex items-center gap-3.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
+        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1A2E3B]">
           <span className="h-1.5 w-4 rounded-full bg-[#C49A43] inline-block" />
           <span>Metro</span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#243B4A]">
-          <span className="h-1.5 w-4 rounded-full bg-[#243B4A] inline-block" />
+        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1A2E3B]">
+          <span className="h-1.5 w-4 rounded-full bg-[#1A2E3B] inline-block" />
           <span>Bus</span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#243B4A]">
-          <span className="h-2.5 w-2.5 rounded-full border-2 border-[#243B4A] bg-[#C49A43] inline-block" />
+        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1A2E3B]">
+          <span className="h-2.5 w-2.5 rounded-full border-2 border-[#1A2E3B] bg-[#C49A43] inline-block" />
           <span>Transfer</span>
         </div>
       </div>
 
-      {/* Main Leaflet Map Container */}
+      {/* Centered Serif Watermark: DELHI Matching Figma */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[400]">
+        <span className="font-serif text-5xl sm:text-7xl md:text-8xl tracking-[0.35em] text-[#1A2E3B]/10 font-bold select-none uppercase pl-6">
+          DELHI
+        </span>
+      </div>
+
+      {/* Main Leaflet Map Canvas */}
       <div
         ref={containerRef}
-        className="w-full flex-1 min-h-[400px] sm:min-h-[500px] z-10"
+        className="w-full flex-1 min-h-[440px] sm:min-h-[520px] z-10"
         aria-label="Leaflet cartography canvas"
       />
 
       {/* Bottom Telemetry & Controls Strip */}
-      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-[#D8C8AA] bg-[#EEE5D6]/70 px-4 py-2 text-xs text-[#29343A] shrink-0">
+      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-[#EBE5DC] bg-[#FAF7F2] px-4 py-2.5 text-xs text-[#1A202C] shrink-0 z-20">
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleResetView}
-            className="rounded-lg border border-[#D8C8AA] bg-[#FFFCF5] px-2.5 py-1 text-[11px] font-bold text-[#243B4A] hover:bg-[#EEE5D6] transition-colors cursor-pointer"
+            className="rounded-lg border border-[#EBE5DC] bg-white px-2.5 py-1 text-[11px] font-bold text-[#1A2E3B] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
           >
             Reset View
           </button>
           {hasJourney && (
-            <span className="flex items-center gap-1 rounded-lg bg-[#547A60]/15 border border-[#547A60]/30 px-2 py-0.5 text-[10px] font-bold text-[#547A60]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#547A60] animate-pulse" />
+            <span className="flex items-center gap-1 rounded-lg bg-[#2E7D32]/10 border border-[#2E7D32]/30 px-2 py-0.5 text-[10px] font-bold text-[#2E7D32]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#2E7D32] animate-pulse" />
               Route Displayed
             </span>
           )}
         </div>
-        <span className="text-[11px] text-[#77766D] font-medium">
+        <span className="text-[11px] text-[#7A7269] font-medium">
           Delhi GTFS • Tap any station to view connections
         </span>
       </footer>

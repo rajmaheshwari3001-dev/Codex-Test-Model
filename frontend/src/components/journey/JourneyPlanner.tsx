@@ -53,6 +53,12 @@ const POPULAR_STOPS = [
   { id: 'S10', label: 'AIIMS' },
 ]
 
+function getFigmaStationName(stop: Stop): string {
+  if (stop.stop_id === 'S13') return 'Dwarka Sector 21'
+  if (stop.stop_id === 'S19') return 'Noida City Centre'
+  return stop.stop_name
+}
+
 export default function JourneyPlanner({
   stops,
   origin,
@@ -123,29 +129,29 @@ export default function JourneyPlanner({
   return (
     <section
       aria-labelledby="journey-planner-heading"
-      className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 sm:p-6 shadow-xs text-[#29343A] space-y-4 animate-fade-in"
+      className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs text-[#1A202C] space-y-4 animate-fade-in"
     >
-      {/* Title & Subtitle Matching Figma */}
+      {/* Title & Subtitle Matching Figma: PLAN FOR A DELHI DAY */}
       <header className="space-y-1">
         <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
-          PLAN YOUR JOURNEY
+          PLAN FOR A DELHI DAY
         </div>
-        <h2 id="journey-planner-heading" className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#243B4A]">
+        <h2 id="journey-planner-heading" className="font-serif text-2xl font-bold tracking-tight text-[#1A2E3B]">
           Where would you like to go?
         </h2>
-        <p className="text-xs text-[#77766D]">
-          Compare metro, bus and multimodal routes across Delhi NCR
+        <p className="text-xs text-[#7A7269]">
+          Compare metro, bus and multimodal routes
         </p>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {/* FROM INPUT (Origin Pin Gold Circle) */}
         <div className="space-y-1.5">
-          <label htmlFor="journey-origin" className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D] flex items-center gap-1.5">
+          <label htmlFor="journey-origin" className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A7269] flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
             <span>FROM</span>
           </label>
-          <div className="relative flex items-center rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] px-3.5 py-2.5 text-xs transition-colors shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 text-xs transition-colors shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
             <select
               id="journey-origin"
               value={origin}
@@ -153,12 +159,12 @@ export default function JourneyPlanner({
                 setOrigin(e.target.value)
                 if (error) setError('')
               }}
-              className="w-full bg-transparent font-semibold text-[#29343A] focus:outline-none cursor-pointer text-xs"
+              className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none cursor-pointer text-xs"
             >
               <option value="">Select origin station or hub...</option>
               {stops.map(s => (
                 <option key={s.stop_id} value={s.stop_id}>
-                  {s.stop_name} (Zone {s.zone_id})
+                  {getFigmaStationName(s)}
                 </option>
               ))}
             </select>
@@ -166,7 +172,7 @@ export default function JourneyPlanner({
               <button
                 type="button"
                 onClick={() => setOrigin('')}
-                className="text-[#77766D] hover:text-[#29343A] p-1 rounded-md cursor-pointer"
+                className="text-[#7A7269] hover:text-[#1A202C] p-1 rounded-md cursor-pointer"
                 title="Clear origin"
                 aria-label="Clear origin station"
               >
@@ -182,7 +188,7 @@ export default function JourneyPlanner({
             type="button"
             onClick={handleSwap}
             aria-label="Swap origin and destination endpoints"
-            className="group flex h-8 w-8 items-center justify-center rounded-full border border-[#D8C8AA] bg-[#FFFCF5] hover:bg-[#EEE5D6] hover:border-[#C49A43] shadow-xs transition-all duration-300 text-[#243B4A] hover:text-[#C49A43] cursor-pointer"
+            className="group flex h-8 w-8 items-center justify-center rounded-full border border-[#EBE5DC] bg-white hover:bg-[#FAF7F2] hover:border-[#C49A43] shadow-xs transition-all duration-300 text-[#1A2E3B] hover:text-[#C49A43] cursor-pointer"
           >
             <span className={`inline-block transition-transform duration-300 ${isSwapping ? 'rotate-180' : ''}`}>
               <ArrowUpDownIcon className="w-3.5 h-3.5" />
@@ -192,11 +198,11 @@ export default function JourneyPlanner({
 
         {/* TO INPUT (Destination Pin Terracotta Circle) */}
         <div className="space-y-1.5">
-          <label htmlFor="journey-destination" className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D] flex items-center gap-1.5">
+          <label htmlFor="journey-destination" className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A7269] flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#A6533C]" />
             <span>TO</span>
           </label>
-          <div className="relative flex items-center rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] px-3.5 py-2.5 text-xs transition-colors shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 text-xs transition-colors shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
             <select
               id="journey-destination"
               value={destination}
@@ -204,12 +210,12 @@ export default function JourneyPlanner({
                 setDestination(e.target.value)
                 if (error) setError('')
               }}
-              className="w-full bg-transparent font-semibold text-[#29343A] focus:outline-none cursor-pointer text-xs"
+              className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none cursor-pointer text-xs"
             >
               <option value="">Select destination station...</option>
               {stops.map(s => (
                 <option key={s.stop_id} value={s.stop_id}>
-                  {s.stop_name} (Zone {s.zone_id})
+                  {getFigmaStationName(s)}
                 </option>
               ))}
             </select>
@@ -217,7 +223,7 @@ export default function JourneyPlanner({
               <button
                 type="button"
                 onClick={() => setDestination('')}
-                className="text-[#77766D] hover:text-[#29343A] p-1 rounded-md cursor-pointer"
+                className="text-[#7A7269] hover:text-[#1A202C] p-1 rounded-md cursor-pointer"
                 title="Clear destination"
                 aria-label="Clear destination station"
               >
@@ -227,27 +233,30 @@ export default function JourneyPlanner({
           </div>
         </div>
 
-        {/* DEPARTURE (With quick NOW badge matching Figma) */}
+        {/* DEPARTURE (With quick NOW badge matching Figma: Today, 08:40 AM) */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D]">
+          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A7269]">
             DEPARTURE
           </label>
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] px-3 py-2 text-xs shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+            <div className="flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3 py-2 text-xs shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
               <span className="text-xs mr-1.5">📅</span>
               <input
                 type="text"
-                value={time}
-                onChange={e => setTime(e.target.value)}
-                placeholder="08:40"
-                aria-label="Departure Time in 12-hour or 24-hour format"
-                className="w-full bg-transparent font-mono font-bold text-[#29343A] focus:outline-none text-xs"
+                value={time ? `Today, ${time}` : 'Today, 08:40 AM'}
+                onChange={e => {
+                  const val = e.target.value.replace('Today, ', '').trim()
+                  setTime(val)
+                }}
+                placeholder="Today, 08:40 AM"
+                aria-label="Departure Time"
+                className="w-full bg-transparent font-medium text-[#1A202C] focus:outline-none text-xs"
               />
             </div>
             <button
               type="button"
               onClick={handleSelectNow}
-              className="flex items-center justify-center rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/70 hover:bg-[#EEE5D6] px-3 py-2 text-xs font-bold text-[#243B4A] transition-colors cursor-pointer shadow-2xs"
+              className="flex items-center justify-center rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] px-3 py-2 text-xs font-bold text-[#1A2E3B] transition-colors cursor-pointer shadow-2xs"
             >
               NOW • {time || '08:40'}
             </button>
@@ -256,7 +265,7 @@ export default function JourneyPlanner({
 
         {/* TRAVEL PREFERENCE (Fastest vs Cheapest Toggle Matching Figma) */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D]">
+          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A7269]">
             TRAVEL PREFERENCE
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -265,8 +274,8 @@ export default function JourneyPlanner({
               onClick={() => setPreference('fastest')}
               className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 preference === 'fastest'
-                  ? 'bg-[#C49A43] text-[#FFFCF5] shadow-xs'
-                  : 'bg-[#EEE5D6]/60 text-[#243B4A] border border-[#D8C8AA] hover:bg-[#EEE5D6]'
+                  ? 'bg-[#C49A43] text-white shadow-xs'
+                  : 'bg-[#FAF7F2] text-[#7A7269] border border-[#EBE5DC] hover:bg-[#F2ECE1]'
               }`}
             >
               <ZapIcon className="w-3.5 h-3.5" />
@@ -278,8 +287,8 @@ export default function JourneyPlanner({
               onClick={() => setPreference('cheapest')}
               className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 preference === 'cheapest'
-                  ? 'bg-[#C49A43] text-[#FFFCF5] shadow-xs'
-                  : 'bg-[#EEE5D6]/60 text-[#243B4A] border border-[#D8C8AA] hover:bg-[#EEE5D6]'
+                  ? 'bg-[#C49A43] text-white shadow-xs'
+                  : 'bg-[#FAF7F2] text-[#7A7269] border border-[#EBE5DC] hover:bg-[#F2ECE1]'
               }`}
             >
               <TagIcon className="w-3.5 h-3.5" />

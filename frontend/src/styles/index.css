@@ -5,41 +5,41 @@
   --font-serif: "DM Serif Display", Georgia, serif;
   --font-sans: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  --color-sandstone: #F4EBDD;
-  --color-ivory: #FFFCF5;
-  --color-ivory-secondary: #EEE5D6;
+  --color-sandstone: #FAF7F2;
+  --color-ivory: #FFFFFF;
+  --color-ivory-secondary: #F7F3EC;
 
   --color-primary: #C49A43;
   --color-primary-hover: #A77B32;
 
-  --color-navy: #243B4A;
+  --color-navy: #1A2E3B;
   --color-green: #263F38;
-  --color-success: #547A60;
+  --color-success: #2E7D32;
   --color-terracotta: #A6533C;
 
-  --color-text-primary: #29343A;
-  --color-text-secondary: #77766D;
+  --color-text-primary: #1A202C;
+  --color-text-secondary: #7A7269;
 
-  --color-border: #D8C8AA;
+  --color-border: #EBE5DC;
 }
 
 :root {
-  --background: #F4EBDD;
-  --surface: #FFFCF5;
-  --surface-secondary: #EEE5D6;
+  --background: #FAF7F2;
+  --surface: #FFFFFF;
+  --surface-secondary: #F7F3EC;
 
   --primary: #C49A43;
   --primary-hover: #A77B32;
 
-  --navy: #243B4A;
+  --navy: #1A2E3B;
   --green: #263F38;
-  --success: #547A60;
+  --success: #2E7D32;
   --terracotta: #A6533C;
 
-  --text-primary: #29343A;
-  --text-secondary: #77766D;
+  --text-primary: #1A202C;
+  --text-secondary: #7A7269;
 
-  --border: #D8C8AA;
+  --border: #EBE5DC;
 
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light;

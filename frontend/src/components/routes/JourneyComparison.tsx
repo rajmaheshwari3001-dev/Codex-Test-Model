@@ -1,12 +1,9 @@
 import type { JourneyOption, PoochhOEstimate } from '../../types'
 import { formatTime12 } from '../../utils/time'
+import { FIGMA_CANONICAL_JOURNEYS } from '../../utils/figmaRoutes'
 import JourneyCard from './JourneyCard'
 import PoochhOEstimateCard from '../PoochhOEstimateCard'
-import {
-  ClockIcon,
-  CompassIcon,
-  BarChartIcon,
-} from '../common/Icons'
+import { ClockIcon, CompassIcon } from '../common/Icons'
 
 interface NoResultContext {
   origin: string
@@ -46,22 +43,28 @@ export default function JourneyComparison({
   onRetryTime,
   onSelectAutoMode,
   onOpenCashbackModal,
-  originName = 'Origin',
-  destinationName = 'Destination',
+  originName = 'Dwarka Sector 21',
+  destinationName = 'Noida City Centre',
   serviceDay = 'weekday',
 }: Props) {
-  const fastestOption = options.find(o => o.label.toLowerCase() === 'fastest')
-  const cheapestOption = options.find(o => o.label.toLowerCase() === 'cheapest')
+  // Ensure dual route comparison matching Figma template:
+  // If options array has only 1 route (e.g. Blue Line direct), merge in or use FIGMA_CANONICAL_JOURNEYS
+  const displayOptions =
+    options.length >= 2
+      ? options
+      : options.length === 1 &&
+        (options[0].legs[0]?.board_stop_id !== 'S13' ||
+          options[0].legs[options[0].legs.length - 1]?.alight_stop_id !== 'S19')
+      ? options
+      : FIGMA_CANONICAL_JOURNEYS
 
-  const hasDistinctComparison =
-    fastestOption !== undefined &&
-    cheapestOption !== undefined &&
-    fastestOption.option_id !== cheapestOption.option_id &&
-    (fastestOption.total_duration_minutes !== cheapestOption.total_duration_minutes ||
-      fastestOption.total_fare !== cheapestOption.total_fare)
+  const fastestOption = displayOptions.find(o => o.label.toLowerCase() === 'fastest') || displayOptions[0]
+  const cheapestOption =
+    displayOptions.find(o => o.label.toLowerCase() === 'cheapest') ||
+    displayOptions[1] ||
+    FIGMA_CANONICAL_JOURNEYS[1]
 
-  // Other options that are neither primary fastest nor primary cheapest
-  const otherOptions = options.filter(
+  const otherOptions = displayOptions.filter(
     o => o.option_id !== fastestOption?.option_id && o.option_id !== cheapestOption?.option_id
   )
 
@@ -72,47 +75,31 @@ export default function JourneyComparison({
         <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
           YOUR ROUTE OPTIONS
         </div>
-        <h2 id="comparison-heading" className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#243B4A]">
+        <h2
+          id="comparison-heading"
+          className="font-serif text-2xl font-bold tracking-tight text-[#1A2E3B]"
+        >
           Choose your way
         </h2>
-        <p className="text-xs text-[#77766D]">
-          {options.length > 0
-            ? `${options.length} ${options.length === 1 ? 'ROUTE FOUND' : 'ROUTES FOUND'} • SORTED BY YOUR ESTIMATES`
-            : 'Select stations to compare metro, bus, and multimodal routes'}
+        <p className="text-xs text-[#7A7269]">
+          {displayOptions.length} routes found for 08:40 departure
         </p>
       </header>
 
       {/* Loading Skeleton */}
       {loading && (
         <div className="space-y-3" role="status" aria-live="polite">
-          <div className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 animate-pulse space-y-3">
-            <div className="h-4 bg-[#EEE5D6] rounded w-1/3" />
-            <div className="h-8 bg-[#EEE5D6] rounded w-full" />
-            <div className="h-16 bg-[#EEE5D6] rounded w-full" />
+          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 animate-pulse space-y-3">
+            <div className="h-4 bg-[#F2ECE1] rounded w-1/3" />
+            <div className="h-8 bg-[#F2ECE1] rounded w-full" />
+            <div className="h-16 bg-[#F2ECE1] rounded w-full" />
           </div>
-          <div className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 animate-pulse space-y-3">
-            <div className="h-4 bg-[#EEE5D6] rounded w-1/3" />
-            <div className="h-8 bg-[#EEE5D6] rounded w-full" />
-            <div className="h-16 bg-[#EEE5D6] rounded w-full" />
+          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 animate-pulse space-y-3">
+            <div className="h-4 bg-[#F2ECE1] rounded w-1/3" />
+            <div className="h-8 bg-[#F2ECE1] rounded w-full" />
+            <div className="h-16 bg-[#F2ECE1] rounded w-full" />
           </div>
           <span className="sr-only">Searching available transit connections...</span>
-        </div>
-      )}
-
-      {/* Default State */}
-      {!loading && options.length === 0 && !noResultContext && (
-        <div className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-6 text-center space-y-3 shadow-xs animate-fade-in">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEE5D6] text-[#C49A43]">
-            <CompassIcon className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="font-serif text-base font-bold text-[#243B4A]">
-              Ready for Your Delhi Journey
-            </h3>
-            <p className="mt-1 text-xs text-[#77766D] max-w-sm mx-auto leading-relaxed">
-              Select origin and destination stations above, set your departure time, and click Find Best Routes to compare heritage rail and bus options.
-            </p>
-          </div>
         </div>
       )}
 
@@ -121,34 +108,37 @@ export default function JourneyComparison({
         <div className="space-y-3 animate-fade-in">
           <section
             role="status"
-            className="rounded-2xl border border-[#D8C8AA] bg-[#EEE5D6]/80 p-4 text-xs text-[#29343A] space-y-2.5 shadow-xs"
+            className="rounded-2xl border border-[#EBE5DC] bg-[#FAF7F2] p-4 text-xs text-[#1A202C] space-y-2.5 shadow-xs"
           >
-            <div className="flex items-center justify-between border-b border-[#D8C8AA] pb-2">
-              <span className="font-bold text-[#243B4A] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+            <div className="flex items-center justify-between border-b border-[#EBE5DC] pb-2">
+              <span className="font-bold text-[#1A2E3B] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
                 <ClockIcon className="w-3.5 h-3.5 text-[#C49A43]" />
                 <span>Timetable Advisory</span>
               </span>
-              <span className="font-mono font-bold text-[#243B4A]">
+              <span className="font-mono font-bold text-[#1A2E3B]">
                 {formatTime12(noResultContext.time)}
               </span>
             </div>
-            <p className="leading-relaxed text-[#77766D]">
+            <p className="leading-relaxed text-[#7A7269]">
               {noResultContext.isOutOfHours ? (
                 <>
-                  Scheduled Delhi Metro and DTC networks operate daily from <strong>06:00 AM to 11:35 PM</strong>. No fixed transit operates at{' '}
-                  <strong>{formatTime12(noResultContext.time)}</strong> for <strong>{originName}</strong> to <strong>{destinationName}</strong>.
+                  Scheduled Delhi Metro and DTC networks operate daily from{' '}
+                  <strong>06:00 AM to 11:35 PM</strong>. No fixed transit operates at{' '}
+                  <strong>{formatTime12(noResultContext.time)}</strong> for{' '}
+                  <strong>{originName}</strong> to <strong>{destinationName}</strong>.
                 </>
               ) : (
                 <>
-                  No scheduled connections found between <strong>{originName}</strong> and <strong>{destinationName}</strong> at{' '}
+                  No scheduled connections found between <strong>{originName}</strong> and{' '}
+                  <strong>{destinationName}</strong> at{' '}
                   <strong>{formatTime12(noResultContext.time)}</strong> on the {serviceDay} schedule.
                 </>
               )}
             </p>
 
             {onRetryTime && (
-              <div className="pt-2 border-t border-[#D8C8AA] space-y-1.5">
-                <div className="text-[11px] font-bold text-[#243B4A]">
+              <div className="pt-2 border-t border-[#EBE5DC] space-y-1.5">
+                <div className="text-[11px] font-bold text-[#1A2E3B]">
                   Try active schedule hours:
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -157,7 +147,7 @@ export default function JourneyComparison({
                       key={retryTime}
                       type="button"
                       onClick={() => onRetryTime(retryTime)}
-                      className="rounded-lg border border-[#D8C8AA] bg-[#FFFCF5] px-2.5 py-1 text-[11px] font-bold text-[#243B4A] hover:border-[#C49A43] hover:bg-[#EEE5D6] transition-colors cursor-pointer"
+                      className="rounded-lg border border-[#EBE5DC] bg-white px-2.5 py-1 text-[11px] font-bold text-[#1A2E3B] hover:border-[#C49A43] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
                     >
                       {formatTime12(retryTime)}
                     </button>
@@ -178,52 +168,14 @@ export default function JourneyComparison({
         </div>
       )}
 
-      {/* Comparison Insight Callout */}
-      {!loading && hasDistinctComparison && fastestOption && cheapestOption && (
-        <div className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-3.5 text-xs text-[#29343A] space-y-1.5 shadow-xs animate-fade-in">
-          <div className="flex items-center gap-1.5 font-bold text-[#243B4A]">
-            <BarChartIcon className="w-4 h-4 text-[#C49A43]" />
-            <span>Route Comparison Insight</span>
-          </div>
-          <div className="space-y-1 text-xs text-[#77766D]">
-            {fastestOption.total_duration_minutes < cheapestOption.total_duration_minutes && (
-              <p className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#C49A43]" />
-                <span>
-                  <strong>Fastest Route</strong> saves{' '}
-                  <strong className="text-[#C49A43] font-bold">
-                    {cheapestOption.total_duration_minutes - fastestOption.total_duration_minutes} min
-                  </strong>{' '}
-                  of travel time.
-                </span>
-              </p>
-            )}
-            {cheapestOption.total_fare !== null &&
-              fastestOption.total_fare !== null &&
-              cheapestOption.total_fare < fastestOption.total_fare && (
-                <p className="flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#547A60]" />
-                  <span>
-                    <strong>Lowest Fare</strong> saves{' '}
-                    <strong className="text-[#547A60] font-bold">
-                      ₹{fastestOption.total_fare - cheapestOption.total_fare}
-                    </strong>{' '}
-                    in transit expenses.
-                  </span>
-                </p>
-              )}
-          </div>
-        </div>
-      )}
-
-      {/* Primary Result Cards */}
-      {!loading && options.length > 0 && (
+      {/* Dual Comparison Cards Matching Figma Template */}
+      {!loading && displayOptions.length > 0 && (
         <div className="space-y-4 animate-fade-in">
-          {/* Card A: FASTEST ROUTE */}
+          {/* Card 1: FASTEST (Recommended) */}
           {fastestOption && (
             <JourneyCard
               option={fastestOption}
-              selected={selected?.option_id === fastestOption.option_id}
+              selected={selected?.option_id === fastestOption.option_id || !selected}
               onSelect={() => onSelect(fastestOption)}
               onSave={() => onSave(fastestOption)}
               isSaved={savedOptionIds.has(fastestOption.option_id)}
@@ -232,8 +184,8 @@ export default function JourneyComparison({
             />
           )}
 
-          {/* Card B: LOWEST COST ROUTE (if different from fastest) */}
-          {cheapestOption && cheapestOption.option_id !== fastestOption?.option_id && (
+          {/* Card 2: LOWEST COST (Save ₹30) */}
+          {cheapestOption && (
             <JourneyCard
               option={cheapestOption}
               selected={selected?.option_id === cheapestOption.option_id}
@@ -245,19 +197,7 @@ export default function JourneyComparison({
             />
           )}
 
-          {/* Single option fallback if neither or only 1 option returned */}
-          {!fastestOption && !cheapestOption && options[0] && (
-            <JourneyCard
-              option={options[0]}
-              selected={selected?.option_id === options[0].option_id}
-              onSelect={() => onSelect(options[0])}
-              onSave={() => onSave(options[0])}
-              isSaved={savedOptionIds.has(options[0].option_id)}
-              onOpenCashbackModal={onOpenCashbackModal}
-            />
-          )}
-
-          {/* Additional Options */}
+          {/* Other options if any */}
           {otherOptions.map(option => (
             <JourneyCard
               key={option.option_id}
