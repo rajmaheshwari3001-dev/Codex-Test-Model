@@ -89,14 +89,14 @@ export default function DelhiMap({
       const saved = localStorage.getItem('aaroh_map_style') as MapStyle
       // Clear out deprecated CARTO watermark styles
       if (saved === 'voyager' || saved === 'sandstone' || saved === 'positron') {
-        localStorage.setItem('aaroh_map_style', 'hot')
-        return 'hot'
+        localStorage.setItem('aaroh_map_style', 'streets')
+        return 'streets'
       }
       if (saved && MAP_STYLES_CATALOG.some(s => s.id === saved)) return saved
       const savedTheme = localStorage.getItem('aaroh_theme')
       if (savedTheme === 'dark') return 'dark'
     } catch {}
-    return 'hot' // Default to Apple Pastel (100% Watermark-Free!)
+    return 'streets' // Default to World Street Navigation (Clean, Serene, Zero Watermark)
   })
   const [showLayerDrawer, setShowLayerDrawer] = useState(false)
   const [layerFilter, setLayerFilter] = useState<'all' | 'apple' | 'satellite' | 'transit'>('all')
@@ -161,7 +161,7 @@ export default function DelhiMap({
       if (customEvent.detail?.theme === 'dark') {
         setMapStyle('dark')
       } else {
-        setMapStyle('hot')
+        setMapStyle('streets')
       }
     }
     try {
@@ -265,237 +265,72 @@ export default function DelhiMap({
     }
   }, [mapStyle, updateTileLayer])
 
+  // Stop coordinate and name helpers
+  const getStopCoord = (stopId?: string): [number, number] | null => {
+    if (!stopId) return null
+    const s = stops.find(st => st.stop_id === stopId)
+    if (s && isValidCoord(s.stop_lat, s.stop_lon)) {
+      return [s.stop_lat, s.stop_lon]
+    }
+    return null
+  }
+
+  const getStopName = (stopId?: string): string => {
+    if (!stopId) return ''
+    const s = stops.find(st => st.stop_id === stopId)
+    return s ? s.stop_name : stopId
+  }
+
   // Draw Delhi Multi-Modal Network, Halos, Active Route, and GPS Vehicles
   useEffect(() => {
     if (!mapRef.current || !layerGroupRef.current) return
     const lg = layerGroupRef.current
     lg.clearLayers()
 
-    // 1. CLEAN & ELEGANT DELHI TRANSIT NETWORK CORRIDORS (Subtle background paths)
-    if (showMetro) {
-      const blueLineWest: [number, number][] = [
-        DWARKA_COORD,
-        JANAKPURI_COORD,
-        RAJOURI_COORD,
-        RAJIV_COORD,
-        MANDI_COORD,
-      ]
-      const blueLineNoidaBranch: [number, number][] = [
-        MANDI_COORD,
-        MAYUR_COORD,
-        NOIDA_COORD,
-      ]
-      const blueLineAnandBranch: [number, number][] = [
-        MANDI_COORD,
-        ITO_COORD,
-        ANAND_VIHAR_COORD,
-      ]
+    // 1. SERENE & UNCLUTTERED TRANSIT MAP (Hero Route First, Zero Spiderweb Chaos)
+    // Background lines removed so the clean street/transit basemap shines through without visual noise.
 
-      ;[blueLineWest, blueLineNoidaBranch, blueLineAnandBranch].forEach(pts => {
-        L.polyline(pts, {
-          color: '#0072CE',
-          weight: 2.5,
-          opacity: 0.4,
-        }).addTo(lg)
-      })
-
-      // Yellow Line Spine
-      const yellowSpine: [number, number][] = [
-        KASHMERE_COORD,
-        CHANDNI_COORD,
-        NDLS_COORD,
-        CP_COORD,
-        RAJIV_COORD,
-        INA_COORD,
-        AIIMS_COORD,
-        HAUZ_KHAS_COORD,
-        SAKET_COORD,
-      ]
-      L.polyline(yellowSpine, {
-        color: '#E5A800',
-        weight: 2.5,
-        opacity: 0.4,
-      }).addTo(lg)
-
-      // Airport Express Line
-      const orangeAirport: [number, number][] = [
-        NDLS_COORD,
-        [28.6290, 77.2130],
-        DHAULA_KUAN_COORD,
-        AEROCITY_COORD,
-        AIRPORT_T3_COORD,
-        DWARKA_COORD,
-      ]
-      L.polyline(orangeAirport, {
-        color: '#FF6F00',
-        weight: 2.5,
-        opacity: 0.45,
-      }).addTo(lg)
-
-      // Magenta Line
-      const magentaLine: [number, number][] = [
-        JANAKPURI_COORD,
-        HAUZ_KHAS_COORD,
-        NEHRU_COORD,
-        BOTANICAL_COORD,
-      ]
-      L.polyline(magentaLine, {
-        color: '#C2185B',
-        weight: 2.5,
-        opacity: 0.35,
-      }).addTo(lg)
-
-      // Pink Line
-      const pinkLine: [number, number][] = [
-        RAJOURI_COORD,
-        DHAULA_KUAN_COORD,
-        INA_COORD,
-        LAJPAT_COORD,
-        MAYUR_COORD,
-      ]
-      L.polyline(pinkLine, {
-        color: '#E91E63',
-        weight: 2.5,
-        opacity: 0.35,
-      }).addTo(lg)
-
-      // Green Line
-      const greenLine: [number, number][] = [
-        KASHMERE_COORD,
-        [28.674, 77.165],
-        RAJOURI_COORD,
-      ]
-      L.polyline(greenLine, {
-        color: '#00A651',
-        weight: 2.5,
-        opacity: 0.35,
-      }).addTo(lg)
-
-      // Violet Line
-      const violetLine: [number, number][] = [
-        KASHMERE_COORD,
-        ITO_COORD,
-        MANDI_COORD,
-        SARAI_KALE_COORD,
-        LAJPAT_COORD,
-        NEHRU_COORD,
-      ]
-      L.polyline(violetLine, {
-        color: '#8A2BE2',
-        weight: 2.5,
-        opacity: 0.35,
-      }).addTo(lg)
-    }
-
-    if (showBus) {
-      // Ring Road Bus
-      const ringRoadBus: [number, number][] = [
-        CP_COORD,
-        INDIA_GATE_COORD,
-        SARAI_KALE_COORD,
-        LAJPAT_COORD,
-        AIIMS_COORD,
-        DHAULA_KUAN_COORD,
-        JANAKPURI_COORD,
-      ]
-      L.polyline(ringRoadBus, {
-        color: '#E31B23',
-        weight: 2,
-        opacity: 0.35,
-        dashArray: '5, 5',
-      }).addTo(lg)
-
-      // Bus 764
-      const bus764Whole: [number, number][] = [
-        DWARKA_COORD,
-        [28.59, 77.10],
-        CP_COORD,
-        MANDI_COORD,
-        MAYUR_COORD,
-        NOIDA_COORD,
-      ]
-      L.polyline(bus764Whole, {
-        color: '#1A2E3B',
-        weight: 2,
-        opacity: 0.35,
-        dashArray: '5, 5',
-      }).addTo(lg)
-    }
-
-    // 2. INTERACTIVE STATION STOPS WITH GLOWING HALOS
+    // 2. SUBTLE MAJOR TRANSIT HUBS (Only key interchanges for one-tap destination planning)
+    const KEY_HUBS = ['S01', 'S02', 'S04', 'S09'] // Rajiv Chowk, Kashmere Gate, New Delhi, Hauz Khas
     stops.forEach(stop => {
       if (!isValidCoord(stop.stop_lat, stop.stop_lon)) return
+      if (!KEY_HUBS.includes(stop.stop_id)) return
+      if (stop.stop_id === originStopId || stop.stop_id === destinationStopId) return
 
-      const isRajiv = stop.stop_id === 'S01'
-      const isKashmere = stop.stop_id === 'S02'
-      const isInterchange =
-        isRajiv ||
-        isKashmere ||
-        stop.stop_id === 'S04' || // New Delhi Stn
-        stop.stop_id === 'S10' || // AIIMS
-        stop.stop_id === 'S13' || // Dwarka Sec 21
-        stop.stop_id === 'S19' || // Noida
-        stop.stop_id === 'S15' || // Rajouri
-        stop.stop_id === 'S17'    // Mandi House
-
-      const isOrigin = stop.stop_id === originStopId
-      const isDest = stop.stop_id === destinationStopId
-
-      // Highlight active origin / destination with distinct glowing hero badges
-      if (isOrigin || isDest) return
-
-      // Station Marker
-      const circle = L.circleMarker([stop.stop_lat, stop.stop_lon], {
-        radius: isInterchange ? 6.5 : 4.5,
+      const hubDot = L.circleMarker([stop.stop_lat, stop.stop_lon], {
+        radius: 4,
         color: '#FFFFFF',
-        fillColor: isRajiv ? '#C49A43' : isInterchange ? '#1A2E3B' : '#7A7269',
-        fillOpacity: 0.95,
-        weight: 2,
+        fillColor: '#C49A43',
+        fillOpacity: 0.85,
+        weight: 1.5,
       }).addTo(lg)
 
-      // Station Tooltip on Hover
-      circle.bindTooltip(
-        `<strong>${stop.stop_name}</strong><br/><span style="font-size: 10px; color: #7A7269;">Zone ${stop.zone_id} ${isInterchange ? '• Major Hub' : ''}</span>`,
-        { direction: 'top', offset: [0, -6] }
+      hubDot.bindTooltip(
+        `<strong>${stop.stop_name}</strong><br/><span style="font-size: 10px; color: #7A7269;">Major Transit Hub</span>`,
+        { direction: 'top', offset: [0, -5] }
       )
 
-      // Connected line badges HTML
-      const lineBadges = isRajiv
-        ? '<span style="background: #0072CE; color: #FFF; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">Blue Line</span> <span style="background: #E5A800; color: #FFF; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">Yellow Line</span>'
-        : isKashmere
-        ? '<span style="background: #E31B23; color: #FFF; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">Red Line</span> <span style="background: #E5A800; color: #FFF; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">Yellow Line</span> <span style="background: #8A2BE2; color: #FFF; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">Violet Line</span>'
-        : stop.stop_id === 'S04'
-        ? '<span style="background: #E5A800; color: #FFF; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">Yellow Line</span> <span style="background: #FF6F00; color: #FFF; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">Airport Express</span>'
-        : '<span style="background: #1A2E3B; color: #FFF; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 800;">DMRC Network</span>'
-
-      // Station Popup on Click
-      const popupHtml = `
-        <div style="font-family: 'Manrope', -apple-system, sans-serif; min-width: 220px;">
-          <div style="font-size: 10px; font-weight: 800; color: #C49A43; text-transform: uppercase; letter-spacing: 0.5px;">
-            ${isInterchange ? 'Major Interchange Hub' : 'Delhi Transit Station'} • Zone ${stop.zone_id}
+      hubDot.bindPopup(`
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 180px; padding: 2px;">
+          <div style="font-size: 10px; font-weight: 800; color: #C49A43; text-transform: uppercase;">
+            Major Interchange Hub
           </div>
-          <div style="font-size: 15px; font-weight: 800; color: #1A2E3B; margin-top: 3px;">
+          <div style="font-size: 14px; font-weight: 800; color: #1A2E3B; margin-top: 2px;">
             ${stop.stop_name}
           </div>
-          <div style="margin-top: 6px; display: flex; gap: 4px; flex-wrap: wrap;">
-            ${lineBadges}
-          </div>
-          <div style="font-size: 11px; color: #2E7D32; font-weight: 700; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
-            <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #2E7D32;"></span>
-            Operating normally • Next train in 2 min
-          </div>
-          <div style="display: flex; gap: 6px; margin-top: 10px; border-top: 1px solid #EBE5DC; padding-top: 8px;">
-            <button onclick="window.__selectOrigin && window.__selectOrigin('${stop.stop_id}')" style="flex: 1; padding: 6px 8px; font-size: 11px; font-weight: 800; background: #FAF0D9; color: #9A721C; border: 1px solid #E8D4AE; border-radius: 8px; cursor: pointer;">
-              Set Origin
+          <div style="display: flex; gap: 6px; margin-top: 8px;">
+            <button onclick="window.__selectOrigin && window.__selectOrigin('${stop.stop_id}')" style="flex: 1; padding: 5px 8px; font-size: 11px; font-weight: 800; background: #FAF0D9; color: #9A721C; border: 1px solid #E8D4AE; border-radius: 8px; cursor: pointer;">
+              From
             </button>
-            <button onclick="window.__selectDest && window.__selectDest('${stop.stop_id}')" style="flex: 1; padding: 6px 8px; font-size: 11px; font-weight: 800; background: #1A2E3B; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer;">
-              Set Destination
+            <button onclick="window.__selectDest && window.__selectDest('${stop.stop_id}')" style="flex: 1; padding: 5px 8px; font-size: 11px; font-weight: 800; background: #1A2E3B; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer;">
+              To →
             </button>
           </div>
         </div>
-      `
-      circle.bindPopup(popupHtml)
-    })    // 3. DYNAMIC ACTIVE ROUTE & JOURNEY RENDERING
+      `)
+    })
+
+    // 3. DYNAMIC ACTIVE ROUTE & JOURNEY RENDERING
     const activeJourney = selectedJourney
     const allJourneyCoords: [number, number][] = []
 
@@ -538,28 +373,47 @@ export default function DelhiMap({
         const isBus = leg.route_type === 'bus' || leg.route_name.toLowerCase().includes('bus')
         const color = isBus ? '#1D4ED8' : (leg.route_color || '#0070BA')
 
-        // Outer white casing for crisp visibility
+        // Mode visibility filter based on top HUD filter chips
+        const isLegVisible = (isBus && showBus) || (!isBus && showMetro) || (showBus && showMetro)
+        const legOpacity = isLegVisible ? 1.0 : 0.25
+
+        // Outer soft glow & casing
         L.polyline(legPath, {
           color: '#FFFFFF',
           weight: 9,
-          opacity: 0.95,
+          opacity: isLegVisible ? 0.95 : 0.3,
         }).addTo(lg)
 
-        // Inner vibrant mode line
+        // Inner vibrant transit line (Blue Line Cyan / Bus Royal Blue)
         L.polyline(legPath, {
           color,
           weight: 5.5,
-          opacity: 1.0,
+          opacity: legOpacity,
         }).addTo(lg)
 
-        // Flow dashed inner animation
-        L.polyline(legPath, {
-          color: isBus ? '#BFDBFE' : '#BAE6FD',
-          weight: 2,
-          opacity: 0.85,
-          dashArray: '8, 12',
-          className: 'delhi-path-flow',
-        }).addTo(lg)
+        // Flow dashed directional highlight
+        if (isLegVisible) {
+          L.polyline(legPath, {
+            color: '#FFFFFF',
+            weight: 2,
+            opacity: 0.85,
+            dashArray: '6, 12',
+            className: 'delhi-path-flow',
+          }).addTo(lg)
+        }
+
+        // Intermediate Waypoint Stop Dots along the active corridor
+        legPath.forEach((pt, ptIdx) => {
+          if (ptIdx > 0 && ptIdx < legPath.length - 1) {
+            L.circleMarker(pt, {
+              radius: 3.5,
+              color: '#FFFFFF',
+              fillColor: color,
+              fillOpacity: 1,
+              weight: 1.5,
+            }).addTo(lg)
+          }
+        })
 
         // Transfer badge between legs
         if (index > 0) {
@@ -877,24 +731,14 @@ export default function DelhiMap({
 
       {/* Floating Bottom HUD Controls (Legend & Layer Switchers - Responsive, Non-Overlapping) */}
       <div className="absolute bottom-3.5 left-3.5 right-3.5 z-[500] flex items-center justify-between gap-2 pointer-events-none flex-wrap">
-        {/* Legend */}
-        <div className="flex items-center gap-2.5 sm:gap-3 rounded-full border border-[#EDE8E1] bg-white/95 px-3 sm:px-4 py-1.5 shadow-md backdrop-blur-md pointer-events-auto text-[11px] sm:text-xs font-bold text-[#1A2E3B] overflow-x-auto scrollbar-none max-w-full">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#8B5CF6] inline-block" />
-            <span>Metro Line</span>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#0284C7] inline-block" />
-            <span>Bus Route</span>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0 hidden sm:flex">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#1E293B] inline-block" />
-            <span>Airport</span>
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#C49A43] inline-block" />
-            <span>Your Route</span>
-          </div>
+        {/* Dynamic Active Route Indicator (Zero Clutter) */}
+        <div className="flex items-center gap-2 rounded-full border border-[#EDE8E1] bg-white/95 px-3.5 py-1.5 shadow-md backdrop-blur-md pointer-events-auto text-[11px] sm:text-xs font-bold text-[#1A2E3B]">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#166534] animate-pulse" />
+          <span className="text-[#9A721C] font-extrabold">Active Transit Route</span>
+          <span className="text-[#C49A43]">•</span>
+          <span className="truncate max-w-[150px] sm:max-w-none">
+            {getStopName(originStopId) || 'Dwarka Sec 21'} → {getStopName(destinationStopId) || 'Noida City Centre'}
+          </span>
         </div>
 
         {/* Map / Satellite & Zoom Controls */}
@@ -903,9 +747,9 @@ export default function DelhiMap({
           <div className="flex rounded-full bg-white border border-[#EDE8E1] p-0.5 sm:p-1 shadow-md">
             <button
               type="button"
-              onClick={() => setMapStyle('hot')}
+              onClick={() => setMapStyle('streets')}
               className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
-                mapStyle === 'hot' || mapStyle === 'gray' || mapStyle === 'voyager' || mapStyle === 'sandstone'
+                mapStyle === 'streets' || mapStyle === 'hot' || mapStyle === 'gray' || mapStyle === 'voyager' || mapStyle === 'sandstone'
                   ? 'bg-[#1A2E3B] text-white shadow-2xs'
                   : 'text-[#6E665D] hover:text-[#1A2E3B]'
               }`}
