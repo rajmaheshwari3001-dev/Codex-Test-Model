@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import type { BusState, DisruptionResult } from '../types'
 import { getFleetState, triggerDisruption, approveResponse } from '../services/api'
 import ScenarioComparison from './ScenarioComparison'
+import { AlertTriangleIcon, InfoIcon, BusIcon } from './common/Icons'
 
 export default function FleetDashboard() {
   const [searchParams] = useSearchParams()
@@ -187,7 +188,7 @@ export default function FleetDashboard() {
       {/* Simulation Transparency Banner */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-4 shadow-xs">
         <div className="flex items-center gap-3">
-          <span className="text-base text-[#173B32]">ℹ</span>
+          <InfoIcon className="w-4 h-4 text-[#173B32] shrink-0" />
           <div>
             <div className="text-xs font-bold text-[#25312D]">Simulated Fleet Telemetry</div>
             <div className="text-[11px] text-[#53645F]">
@@ -203,7 +204,7 @@ export default function FleetDashboard() {
       {/* Disruption Alert Banner if any failures exist */}
       {(brokenBuses.length > 0 || delayedBuses.length > 0) && (
         <div className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-4 flex items-center gap-3 text-xs text-[#A44735] shadow-xs">
-          <span className="text-xl">⚠️</span>
+          <AlertTriangleIcon className="w-5 h-5 shrink-0" />
           <div>
             <span className="font-bold">Active Fleet Disruption Alerts: </span>
             <span>

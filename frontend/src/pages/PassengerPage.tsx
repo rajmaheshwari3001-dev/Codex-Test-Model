@@ -4,7 +4,6 @@ import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay, ModePreference
 import { getStops, getRoutes, searchJourneys, createSavedRoute } from '../services/api'
 import { parseToTime24 } from '../utils/time'
 
-import AppShell from '../components/layout/AppShell'
 import JourneyPlanner from '../components/journey/JourneyPlanner'
 import AssistantPanel from '../components/assistant/AssistantPanel'
 import DelhiMap from '../components/map/DelhiMap'
@@ -12,6 +11,17 @@ import JourneyComparison from '../components/routes/JourneyComparison'
 import SavedJourneysBar from '../components/saved/SavedJourneysBar'
 import DataProvenanceModal from '../components/DataProvenanceModal'
 import CashbackPerksModal from '../components/journey/CashbackPerksModal'
+import {
+  CompassIcon,
+  SparklesIcon,
+  BookmarkIcon,
+  CheckIcon,
+  AlertTriangleIcon,
+  ArrowRightIcon,
+  DatabaseIcon,
+  TrainIcon,
+  BusIcon,
+} from '../components/common/Icons'
 
 interface NoResultContext {
   origin: string
@@ -25,13 +35,13 @@ const FEATURED_CORRIDORS = [
   {
     routeId: 'R01',
     lineName: 'Blue Line',
-    color: '#2196F3',
+    color: '#2563EB',
     originId: 'S13',
     originName: 'Dwarka Sec-21',
     destId: 'S18',
     destName: 'Anand Vihar ISBT',
     departure: '08:00',
-    type: 'Bus Line • East-West Link',
+    type: 'Metro • East-West Link',
   },
   {
     routeId: 'R02',
@@ -42,7 +52,7 @@ const FEATURED_CORRIDORS = [
     destId: 'S16',
     destName: 'Dilli Haat - INA',
     departure: '13:30',
-    type: 'Bus Line • North-South Link',
+    type: 'Metro • North-South Link',
   },
   {
     routeId: 'R03',
@@ -53,7 +63,7 @@ const FEATURED_CORRIDORS = [
     destId: 'S20',
     destName: 'Sarai Kale Khan ISBT',
     departure: '17:30',
-    type: 'Ring Bus • Evening Hub Link',
+    type: 'Ring Bus • Evening Feeder',
   },
   {
     routeId: 'R04',
@@ -72,7 +82,7 @@ interface PassengerPageProps {
   defaultTab?: 'planner' | 'map' | 'saved' | 'chat'
 }
 
-export default function PassengerPage({ defaultTab }: PassengerPageProps) {
+export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPageProps) {
   const [searchParams] = useSearchParams()
   const [stops, setStops] = useState<Stop[]>([])
   const [routes, setRoutes] = useState<Route[]>([])
@@ -94,6 +104,9 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [showProvenanceModal, setShowProvenanceModal] = useState(false)
   const [showCashbackModal, setShowCashbackModal] = useState(false)
   const [poochhoEstimate, setPoochhOEstimate] = useState<PoochhOEstimate | null>(null)
+
+  // Console active tab: 'plan' | 'assistant' | 'saved'
+  const [activeConsoleTab, setActiveConsoleTab] = useState<'plan' | 'assistant' | 'saved'>('plan')
 
   function loadInitialData() {
     setMessage('')
@@ -148,6 +161,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
     setOptions([])
     setSelected(null)
     setPoochhOEstimate(null)
+    setActiveConsoleTab('plan')
 
     const parsedBudget = selectedMaxBudget.trim() ? parseFloat(selectedMaxBudget.trim()) : null
 
@@ -193,7 +207,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
 
     try {
       await createSavedRoute({
-        label: `${originStop?.stop_name || 'Origin'} → ${destinationStop?.stop_name || 'Destination'}`,
+        label: `${originStop?.stop_name || 'Origin'} to ${destinationStop?.stop_name || 'Destination'}`,
         origin_stop_id: firstLeg?.board_stop_id || '',
         origin_stop_name: originStop?.stop_name || '',
         destination_stop_id: finalLeg?.alight_stop_id || '',
@@ -203,11 +217,11 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         service_day: serviceDay,
       })
       setSavedOptionIds(previous => new Set(previous).add(option.option_id))
-      setSaveToast(`Journey saved • ${option.label} • ₹${option.total_fare ?? 'N/A'}`)
+      setSaveToast(`Route saved: ${option.label} • ₹${option.total_fare ?? 'N/A'}`)
       setSavedRefresh(previous => previous + 1)
       window.setTimeout(() => setSaveToast(''), 4000)
     } catch {
-      setSaveToast('Could not save this journey. Please try again.')
+      setSaveToast('Could not save this route. Please try again.')
       window.setTimeout(() => setSaveToast(''), 4000)
     }
   }
@@ -251,16 +265,16 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
       id="main-content"
       role="main"
       aria-label="AAROH-SAARTHI Delhi Transit Assistant"
-      className="space-y-4 animate-fade-in"
+      className="space-y-6 animate-fade-in"
     >
       {/* Toast Alert / Status Feedback */}
       {saveToast && (
         <aside
           role="status"
           aria-live="polite"
-          className="flex items-center gap-2 rounded-lg border border-[#547A60]/40 bg-[#EBF4F0] px-4 py-2.5 text-xs font-bold text-[#547A60] shadow-xs animate-slide-in-right"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-2xl border border-emerald-300 bg-white px-5 py-3 text-xs font-bold text-emerald-800 shadow-xl animate-fade-in"
         >
-          <span>✓</span>
+          <CheckIcon className="w-4 h-4 text-emerald-600" />
           <span>{saveToast}</span>
         </aside>
       )}
@@ -268,48 +282,69 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
       {message && (
         <aside
           role="alert"
-          className="flex items-center gap-2 rounded-lg border border-[#A64C42]/30 bg-[#F9EBEA] p-3 text-xs font-semibold text-[#A64C42] animate-fade-in"
+          className="flex items-center gap-2.5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-semibold text-rose-800 animate-fade-in"
         >
-          <span>⚠️</span>
+          <AlertTriangleIcon className="w-4 h-4 text-rose-600 shrink-0" />
           <span>{message}</span>
         </aside>
       )}
 
-      {/* 3-Column Orchestration Shell */}
-      <AppShell
-        leftColumn={
-          <div className="space-y-4">
-            <JourneyPlanner
-              stops={stops}
-              origin={origin}
-              setOrigin={setOrigin}
-              destination={destination}
-              setDestination={setDestination}
-              time={time}
-              setTime={setTime}
-              preference={preference}
-              setPreference={setPreference}
-              serviceDay={serviceDay}
-              onServiceDayChange={setServiceDay}
-              modePreference={modePreference}
-              setModePreference={setModePreference}
-              maxBudget={maxBudget}
-              setMaxBudget={setMaxBudget}
-              onSearch={handleSearch}
-              loading={loading}
-              onOpenCashbackModal={() => setShowCashbackModal(true)}
-            />
+      {/* HERO BANNER SECTION */}
+      <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 text-white shadow-lg">
+        {/* Background artwork with subtle dark overlay */}
+        <div className="absolute inset-0 z-0 opacity-25 mix-blend-luminosity">
+          <img
+            src="/images/delhi_transit_hero.jpg"
+            alt="Delhi Transit Infrastructure Network"
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-slate-900/60" />
 
-            <AssistantPanel serviceDay={serviceDay} />
+        <div className="relative z-10 p-6 sm:p-8 space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 px-3 py-0.5 text-xs font-semibold text-blue-300">
+                  <TrainIcon className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Delhi Multimodal Transit Network</span>
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Live GTFS</span>
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
+                Plan Seamless Journeys Across Delhi
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Unified route optimization linking DMRC Metro lines, DTC bus networks, and DIMTS Poochh-O feeder tariffs with zero fabricated data.
+              </p>
+            </div>
+
+            {/* Quick Metrics Badge Group */}
+            <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-black text-white">20</div>
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">NCR Hubs</div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-black text-blue-400">120</div>
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Daily Trips</div>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-black text-emerald-400">100%</div>
+                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">GTFS Verified</div>
+              </div>
+            </div>
           </div>
-        }
-        centerColumn={
-          <div className="space-y-3">
-            {/* Quick Corridor Selection Strip */}
-            <nav aria-label="Key Delhi Corridors" className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs scrollbar-thin">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#73766F] shrink-0">
-                Key Links:
-              </span>
+
+          {/* 1-Tap Corridor Quick Links Strip */}
+          <div className="pt-2 border-t border-white/10 flex items-center gap-2 overflow-x-auto scrollbar-thin">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
+              Popular Corridors:
+            </span>
+            <div className="flex items-center gap-2 flex-wrap">
               {FEATURED_CORRIDORS.map(corridor => {
                 const isMatch = origin === corridor.originId && destination === corridor.destId
                 return (
@@ -317,75 +352,182 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
                     key={corridor.routeId}
                     type="button"
                     onClick={() => handleCorridorClick(corridor)}
-                    aria-pressed={isMatch}
-                    className={`flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-bold border transition-all shrink-0 ${
+                    className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
                       isMatch
-                        ? 'border-[#C49A43] bg-[#FBF8F1] text-[#172D3B] ring-1 ring-[#C49A43]'
-                        : 'border-[#DAD3C6] bg-[#FFFFFF] text-[#73766F] hover:bg-[#EDE7DB] hover:text-[#29343A]'
+                        ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-400'
+                        : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10'
                     }`}
                   >
                     <span
-                      className="h-2 w-2 rounded-full inline-block"
+                      className="h-2.5 w-2.5 rounded-full inline-block shrink-0 shadow-xs"
                       style={{ backgroundColor: corridor.color }}
-                      aria-hidden="true"
                     />
-                    <span>{corridor.originName.split(' ')[0]} ➔ {corridor.destName.split(' ')[0]}</span>
+                    <span>{corridor.originName.split(' ')[0]}</span>
+                    <ArrowRightIcon className="w-3 h-3 text-slate-400" />
+                    <span>{corridor.destName.split(' ')[0]}</span>
                   </button>
                 )
               })}
-            </nav>
-
-            {/* Centerpiece Delhi Map */}
-            <DelhiMap
-              stops={stops}
-              routes={routes}
-              selectedJourney={selected}
-              originStopId={origin}
-              destinationStopId={destination}
-              onSelectOrigin={handleSelectOriginFromMap}
-              onSelectDestination={handleSelectDestinationFromMap}
-            />
+            </div>
           </div>
-        }
-        rightColumn={
-          <div className="space-y-4">
-            <header className="flex items-center justify-between border-b border-[#DAD3C6] pb-2 text-xs">
-              <h2 className="font-serif font-bold text-sm text-[#172D3B]">
-                Route Comparison
-              </h2>
+        </div>
+      </section>
+
+      {/* 2-COLUMN UNIFIED SPLIT LAYOUT (No Empty 3rd Column!) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* LEFT COLUMN: Interactive Console (Tabs for Plan Route, Copilot, Saved) */}
+        <div className="lg:col-span-5 xl:col-span-5 space-y-4">
+          {/* Console Mode Switcher */}
+          <div className="flex items-center rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeConsoleTab === 'plan'}
+              onClick={() => setActiveConsoleTab('plan')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeConsoleTab === 'plan'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <CompassIcon className="w-4 h-4" />
+              <span>Plan Journey</span>
               {options.length > 0 && (
-                <span className="font-mono text-[11px] text-[#73766F]">
-                  {options.length} {options.length === 1 ? 'Option' : 'Options'} Ranked
+                <span className="rounded-full bg-white/20 px-1.5 py-0.2 text-[10px] font-mono">
+                  {options.length}
                 </span>
               )}
-            </header>
+            </button>
 
-            <JourneyComparison
-              options={options}
-              selected={selected}
-              onSelect={setSelected}
-              onSave={handleSave}
-              savedOptionIds={savedOptionIds}
-              poochhoEstimate={poochhoEstimate}
-              noResultContext={noResultContext}
-              loading={loading}
-              onRetryTime={retryTime => handleSearch(origin, destination, retryTime, preference, serviceDay, modePreference, maxBudget)}
-              onSelectAutoMode={() => handleSearch(origin, destination, time, preference, serviceDay, 'auto', maxBudget)}
-              onOpenCashbackModal={() => setShowCashbackModal(true)}
-              originName={originName}
-              destinationName={destinationName}
-              serviceDay={serviceDay}
-            />
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeConsoleTab === 'assistant'}
+              onClick={() => setActiveConsoleTab('assistant')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeConsoleTab === 'assistant'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <SparklesIcon className="w-4 h-4" />
+              <span>Transit Copilot</span>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeConsoleTab === 'saved'}
+              onClick={() => setActiveConsoleTab('saved')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeConsoleTab === 'saved'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <BookmarkIcon className="w-4 h-4" />
+              <span>Saved Routes</span>
+            </button>
           </div>
-        }
-        bottomSection={
-          <SavedJourneysBar
-            onReuse={handleReuse}
-            refreshTrigger={savedRefresh}
-          />
-        }
-      />
 
+          {/* TAB 1: JOURNEY PLANNER & RANKED RESULTS */}
+          {activeConsoleTab === 'plan' && (
+            <div className="space-y-4 animate-fade-in">
+              <JourneyPlanner
+                stops={stops}
+                origin={origin}
+                setOrigin={setOrigin}
+                destination={destination}
+                setDestination={setDestination}
+                time={time}
+                setTime={setTime}
+                preference={preference}
+                setPreference={setPreference}
+                serviceDay={serviceDay}
+                onServiceDayChange={setServiceDay}
+                modePreference={modePreference}
+                setModePreference={setModePreference}
+                maxBudget={maxBudget}
+                setMaxBudget={setMaxBudget}
+                onSearch={handleSearch}
+                loading={loading}
+                onOpenCashbackModal={() => setShowCashbackModal(true)}
+              />
+
+              {/* ROUTE COMPARISON & RANKED RESULTS */}
+              <div className="space-y-3">
+                <header className="flex items-center justify-between px-1">
+                  <h2 className="text-sm font-bold text-slate-900">
+                    Route Recommendations
+                  </h2>
+                  {options.length > 0 && (
+                    <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                      {options.length} {options.length === 1 ? 'Option' : 'Options'} Ranked
+                    </span>
+                  )}
+                </header>
+
+                <JourneyComparison
+                  options={options}
+                  selected={selected}
+                  onSelect={setSelected}
+                  onSave={handleSave}
+                  savedOptionIds={savedOptionIds}
+                  poochhoEstimate={poochhoEstimate}
+                  noResultContext={noResultContext}
+                  loading={loading}
+                  onRetryTime={retryTime => handleSearch(origin, destination, retryTime, preference, serviceDay, modePreference, maxBudget)}
+                  onSelectAutoMode={() => handleSearch(origin, destination, time, preference, serviceDay, 'auto', maxBudget)}
+                  onOpenCashbackModal={() => setShowCashbackModal(true)}
+                  originName={originName}
+                  destinationName={destinationName}
+                  serviceDay={serviceDay}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: TRANSIT COPILOT ASSISTANT */}
+          {activeConsoleTab === 'assistant' && (
+            <div className="animate-fade-in">
+              <AssistantPanel />
+            </div>
+          )}
+
+          {/* TAB 3: SAVED JOURNEYS */}
+          {activeConsoleTab === 'saved' && (
+            <div className="animate-fade-in">
+              <SavedJourneysBar
+                onReuse={handleReuse}
+                refreshTrigger={savedRefresh}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT COLUMN: Full-Height Interactive Map Canvas */}
+        <div className="lg:col-span-7 xl:col-span-7 flex flex-col min-h-[580px] lg:min-h-[720px] sticky top-20">
+          <DelhiMap
+            stops={stops}
+            routes={routes}
+            selectedJourney={selected}
+            originStopId={origin}
+            destinationStopId={destination}
+            onSelectOrigin={handleSelectOriginFromMap}
+            onSelectDestination={handleSelectDestinationFromMap}
+          />
+        </div>
+      </div>
+
+      {/* Bottom Horizontal Saved Journeys Bar */}
+      <div className="pt-2">
+        <SavedJourneysBar
+          onReuse={handleReuse}
+          refreshTrigger={savedRefresh}
+        />
+      </div>
+
+      {/* Modals */}
       <DataProvenanceModal
         isOpen={showProvenanceModal}
         onClose={() => setShowProvenanceModal(false)}
@@ -394,7 +536,6 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
       <CashbackPerksModal
         isOpen={showCashbackModal}
         onClose={() => setShowCashbackModal(false)}
-        currentFare={selected?.total_fare}
       />
     </main>
   )

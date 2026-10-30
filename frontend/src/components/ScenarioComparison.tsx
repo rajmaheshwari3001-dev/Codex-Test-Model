@@ -1,4 +1,5 @@
 import type { DisruptionResult, ScenarioMetrics } from '../types'
+import { AlertTriangleIcon, CheckCircleIcon } from './common/Icons'
 
 interface Props {
   result: DisruptionResult
@@ -154,7 +155,7 @@ export default function ScenarioComparison({
       <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="text-xl" aria-hidden="true">⚠️</span>
+            <AlertTriangleIcon className="w-5 h-5 text-rose-600" />
             <div className="text-xs sm:text-sm font-bold text-rose-900 uppercase tracking-wide">
               Simulated Disruption Profile
             </div>
@@ -223,8 +224,9 @@ export default function ScenarioComparison({
                 <div className="flex items-center gap-2.5">
                   <h4 className="font-bold text-base sm:text-lg text-slate-950">{resp.label}</h4>
                   {isRecommended && (
-                    <span className="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-200 px-3 py-0.5 rounded-full">
-                      ★ Recommended Option
+                    <span className="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-200 px-3 py-0.5 rounded-full flex items-center gap-1">
+                      <CheckCircleIcon className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>Recommended Option</span>
                     </span>
                   )}
                 </div>

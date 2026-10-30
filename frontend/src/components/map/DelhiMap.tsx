@@ -110,7 +110,7 @@ export default function DelhiMap({
 
         poly.bindTooltip(
           `<div style="font-family: inherit; font-size: 11px;">
-            <b>${isMetro ? '🚇 Metro:' : '🚍 Bus:'} ${route.route_name}</b>
+            <b>${isMetro ? 'Metro:' : 'Bus:'} ${route.route_name}</b>
           </div>`,
           { sticky: true }
         )
@@ -202,12 +202,12 @@ export default function DelhiMap({
               }
             </div>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid #DAD3C6;">
-            <button id="btn-orig-${s.stop_id}" type="button" aria-label="Set ${s.stop_name} as Origin" style="padding: 7px 10px; font-size: 11px; font-weight: 700; color: #ffffff; background-color: #172D3B; border: none; border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.2s; min-height: 32px;">
-              📍 Set Origin
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid #E2E8F0;">
+            <button id="btn-orig-${s.stop_id}" type="button" aria-label="Set ${s.stop_name} as Origin" style="padding: 7px 10px; font-size: 11px; font-weight: 700; color: #ffffff; background-color: #2563EB; border: none; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; min-height: 32px;">
+              Set Origin
             </button>
-            <button id="btn-dest-${s.stop_id}" type="button" aria-label="Set ${s.stop_name} as Destination" style="padding: 7px 10px; font-size: 11px; font-weight: 700; color: #ffffff; background-color: #C49A43; border: none; border-radius: 6px; cursor: pointer; text-align: center; transition: all 0.2s; min-height: 32px;">
-              🎯 Set Dest
+            <button id="btn-dest-${s.stop_id}" type="button" aria-label="Set ${s.stop_name} as Destination" style="padding: 7px 10px; font-size: 11px; font-weight: 700; color: #ffffff; background-color: #0F172A; border: none; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; min-height: 32px;">
+              Set Dest
             </button>
           </div>
         </div>
@@ -295,7 +295,7 @@ export default function DelhiMap({
             fillOpacity: 1,
             weight: 3.5,
           })
-            .bindTooltip(`🟢 <b>Origin: ${s.stop_name}</b>`, {
+            .bindTooltip(`<b>Origin: ${s.stop_name}</b>`, {
               permanent: true,
               direction: 'top',
               offset: [0, -12],
@@ -309,7 +309,7 @@ export default function DelhiMap({
             fillOpacity: 1,
             weight: 3.5,
           })
-            .bindTooltip(`🔴 <b>Destination: ${s.stop_name}</b>`, {
+            .bindTooltip(`<b>Destination: ${s.stop_name}</b>`, {
               permanent: true,
               direction: 'top',
               offset: [0, -12],
@@ -323,7 +323,7 @@ export default function DelhiMap({
             fillOpacity: 1,
             weight: 3,
           })
-            .bindTooltip(`🔄 <b>Interchange: ${s.stop_name}</b>`, {
+            .bindTooltip(`<b>Interchange: ${s.stop_name}</b>`, {
               permanent: true,
               direction: 'top',
               offset: [0, -11],
@@ -368,27 +368,27 @@ export default function DelhiMap({
     <figure
       role="region"
       aria-label="Interactive Delhi Transit Map"
-      className="overflow-hidden rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] shadow-xs relative flex flex-col h-full min-h-[380px] sm:min-h-[460px] lg:min-h-[500px] animate-fade-in"
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm relative flex flex-col h-full min-h-[440px] lg:min-h-[620px] animate-fade-in"
     >
       <figcaption className="sr-only">
         Geographic map representing 20 Delhi stops and active routes with interactive origin and destination selection
       </figcaption>
 
       {/* Floating Mobility HUD Header */}
-      <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 right-2.5 sm:right-3 z-[1000] flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 pointer-events-none">
+      <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         {/* Corridor Quick Selector */}
-        <div className="flex items-center gap-1 overflow-x-auto max-w-[calc(100%-80px)] rounded-lg border border-[#DAD3C6] bg-[#FBF8F1]/95 p-1 text-[#29343A] shadow-sm backdrop-blur-md pointer-events-auto scrollbar-thin">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#73766F] px-1.5 shrink-0">
+        <div className="flex items-center gap-1 overflow-x-auto max-w-[calc(100%-90px)] rounded-xl border border-slate-200 bg-white/95 p-1 text-slate-800 shadow-md backdrop-blur-md pointer-events-auto scrollbar-thin">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 px-2 shrink-0">
             Corridors:
           </span>
           <button
             type="button"
             onClick={() => setSelectedRouteFilter('ALL')}
             aria-pressed={selectedRouteFilter === 'ALL'}
-            className={`rounded px-2 py-0.5 text-xs font-semibold transition-all shrink-0 ${
+            className={`rounded-lg px-2.5 py-1 text-xs font-bold transition-all shrink-0 cursor-pointer ${
               selectedRouteFilter === 'ALL'
-                ? 'bg-[#172D3B] text-white shadow-2xs'
-                : 'text-[#73766F] hover:bg-[#EDE7DB] hover:text-[#29343A]'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
           >
             All
@@ -399,15 +399,15 @@ export default function DelhiMap({
               type="button"
               onClick={() => setSelectedRouteFilter(r.route_id)}
               aria-pressed={selectedRouteFilter === r.route_id}
-              className={`flex items-center gap-1 rounded px-2 py-0.5 text-xs font-semibold transition-all shrink-0 ${
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition-all shrink-0 cursor-pointer ${
                 selectedRouteFilter === r.route_id
-                  ? 'bg-[#172D3B] text-white shadow-2xs'
-                  : 'text-[#73766F] hover:bg-[#EDE7DB] hover:text-[#29343A]'
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
               <span
                 className="h-2 w-2 rounded-full inline-block"
-                style={{ backgroundColor: r.route_color || '#172D3B' }}
+                style={{ backgroundColor: r.route_color || '#2563EB' }}
                 aria-hidden="true"
               />
               <span>{r.route_name.split(' ')[0]}</span>
@@ -416,19 +416,19 @@ export default function DelhiMap({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-1 rounded-lg border border-[#DAD3C6] bg-[#FBF8F1]/95 p-1 text-[#29343A] shadow-sm backdrop-blur-md pointer-events-auto shrink-0">
+        <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white/95 p-1 text-slate-800 shadow-md backdrop-blur-md pointer-events-auto shrink-0">
           <button
             type="button"
             onClick={handleResetView}
-            className="rounded px-2 py-0.5 text-xs font-medium text-[#73766F] hover:bg-[#EDE7DB] hover:text-[#29343A] transition-colors"
+            className="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors cursor-pointer"
             title="Reset network view"
             aria-label="Reset map view"
           >
             Reset
           </button>
           {hasJourney && (
-            <span className="flex items-center gap-1 rounded bg-[#EBF4F0] border border-[#547A60]/30 px-1.5 py-0.5 text-[10px] font-bold text-[#547A60]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#547A60]" />
+            <span className="flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
               Active
             </span>
           )}
@@ -443,27 +443,27 @@ export default function DelhiMap({
       />
 
       {/* Bottom Telemetry & Provenance Strip */}
-      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-[#DAD3C6] bg-[#F5F0E6] px-3 sm:px-4 py-2 text-xs text-[#73766F] shrink-0">
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span className="flex items-center gap-1 font-semibold text-[#547A60]">
-            <span className="h-2 w-2 rounded-full bg-[#547A60]" aria-hidden="true" />
+      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-slate-50 px-4 py-2.5 text-xs text-slate-600 shrink-0">
+        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+          <span className="flex items-center gap-1.5 font-semibold text-blue-700">
+            <span className="h-2 w-2 rounded-full bg-blue-600" aria-hidden="true" />
             Origin
           </span>
-          <span className="flex items-center gap-1 font-semibold text-[#A64C42]">
-            <span className="h-2 w-2 rounded-full bg-[#A64C42]" aria-hidden="true" />
+          <span className="flex items-center gap-1.5 font-semibold text-rose-700">
+            <span className="h-2 w-2 rounded-full bg-rose-600" aria-hidden="true" />
             Destination
           </span>
-          <span className="flex items-center gap-1 font-semibold text-[#C49A43]">
-            <span className="h-2 w-2 rounded-full bg-[#C49A43]" aria-hidden="true" />
+          <span className="flex items-center gap-1.5 font-semibold text-amber-700">
+            <span className="h-2 w-2 rounded-full bg-amber-600" aria-hidden="true" />
             Metro Line
           </span>
-          <span className="flex items-center gap-1 font-semibold text-[#172D3B]">
-            <span className="h-2 w-2 rounded-full bg-[#172D3B]" aria-hidden="true" />
+          <span className="flex items-center gap-1.5 font-semibold text-slate-800">
+            <span className="h-2 w-2 rounded-full bg-slate-800" aria-hidden="true" />
             Bus Route
           </span>
         </div>
-        <span className="text-[10px] sm:text-[11px] text-[#73766F]">
-          Delhi GTFS • Tap stop marker to route
+        <span className="text-[11px] text-slate-500 font-medium">
+          Delhi GTFS • Tap stop marker to set route
         </span>
       </footer>
     </figure>

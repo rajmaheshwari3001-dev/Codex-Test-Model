@@ -5,49 +5,45 @@
   --font-serif: "DM Serif Display", Georgia, serif;
   --font-sans: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  --color-background: #F5F0E6;
-  --color-surface: #FBF8F1;
-  --color-surface-secondary: #EDE7DB;
+  --color-background: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #F1F5F9;
 
-  --color-accent-gold: #C49A43;
-  --color-accent-gold-dark: #A97C2E;
-  --color-accent-gold-light: #F7F1E5;
+  --color-accent-blue: #2563EB;
+  --color-accent-blue-dark: #1D4ED8;
+  --color-accent-gold: #D97706;
+  --color-accent-gold-dark: #B45309;
 
-  --color-navy: #172D3B;
-  --color-navy-dark: #0F1E28;
-  --color-navy-light: #244255;
+  --color-navy: #0F172A;
+  --color-navy-dark: #020617;
+  --color-navy-light: #1E293B;
 
-  --color-text-primary: #29343A;
-  --color-text-secondary: #73766F;
-  --color-text-muted: #949690;
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748B;
 
-  --color-border: #DAD3C6;
-  --color-border-subtle: #E8E2D6;
+  --color-border: #E2E8F0;
+  --color-border-subtle: #F1F5F9;
 
-  --color-success: #547A60;
-  --color-success-light: #EBF2ED;
-  --color-warning: #B8873B;
-  --color-danger: #A64C42;
-  --color-danger-light: #F9EBEA;
+  --color-success: #059669;
+  --color-success-light: #ECFDF5;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+  --color-danger-light: #FEF2F2;
 }
 
 :root {
-  --background: #F5F0E6;
-  --surface: #FBF8F1;
-  --surface-secondary: #EDE7DB;
+  --background: #F8FAFC;
+  --surface: #FFFFFF;
+  --surface-secondary: #F1F5F9;
 
-  --accent-gold: #C49A43;
-  --accent-gold-dark: #A97C2E;
-
-  --navy: #172D3B;
-  --text-primary: #29343A;
-  --text-secondary: #73766F;
-
-  --border: #DAD3C6;
-
-  --success: #547A60;
-  --warning: #B8873B;
-  --danger: #A64C42;
+  --accent-blue: #2563EB;
+  --accent-gold: #D97706;
+  --navy: #0F172A;
+  
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --border: #E2E8F0;
 
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light;
@@ -56,8 +52,8 @@
 
 body {
   min-width: 320px;
-  background-color: var(--background);
-  color: var(--text-primary);
+  background-color: #F8FAFC;
+  color: #0F172A;
   overflow-x: hidden;
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -70,7 +66,6 @@ body {
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Tabular numerals for fares, times and telemetry */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
@@ -84,28 +79,24 @@ textarea {
 
 ::selection {
   color: #ffffff;
-  background-color: #C49A43;
+  background-color: #2563EB;
 }
 
 :focus-visible {
-  outline: 2px solid #C49A43;
+  outline: 2px solid #2563EB;
   outline-offset: 2px;
 }
 
-/* Next.js & Framer Style Animation Keyframes */
+/* Animations */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -116,33 +107,11 @@ textarea {
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }
 
@@ -152,21 +121,11 @@ textarea {
     transform: scale(1);
   }
   50% {
-    opacity: 0.65;
+    opacity: 0.6;
     transform: scale(1.15);
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-/* Animation Utility Classes */
 .animate-fade-in {
   animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -179,32 +138,17 @@ textarea {
   animation: fadeInDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.animate-slide-in-right {
-  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
 .animate-pulse-glow {
-  animation: pulseGlow 2.2s infinite ease-in-out;
-}
-
-/* Modern Glass & Elevation Tokens */
-.glass-panel {
-  background: rgba(251, 248, 241, 0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  animation: pulseGlow 2s infinite ease-in-out;
 }
 
 .card-elevated {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-elevated:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px -4px rgba(23, 45, 59, 0.08);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
 }
 
 /* Custom Scrollbars */
@@ -216,23 +160,15 @@ textarea {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #DAD3C6;
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C49A43;
+  background: #94A3B8;
 }
 
-.no-scrollbar {
-  scrollbar-width: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Responsive Media Queries for Typography & Mobile Touch Accessibility */
+/* Media Queries for Typography & Responsiveness */
 @media (max-width: 640px) {
-  /* Mobile Fluid Typography */
   h1 {
     font-size: clamp(1.25rem, 5vw, 1.5rem) !important;
     line-height: 1.25 !important;
@@ -241,27 +177,16 @@ textarea {
     font-size: clamp(1.1rem, 4.2vw, 1.25rem) !important;
     line-height: 1.3 !important;
   }
-  
-  /* Ensure min 44px touch targets on mobile interactive controls */
   button, 
   [role="button"],
   select,
   input[type="button"],
   input[type="submit"] {
-    min-height: 38px;
-  }
-
-  /* Prevent text clipped overflows on mobile */
-  .truncate-mobile {
-    max-width: 130px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-height: 40px;
   }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
-  /* Tablet Viewport Optimizations */
   h1 {
     font-size: clamp(1.5rem, 3vw, 1.85rem) !important;
   }
@@ -271,67 +196,66 @@ textarea {
 }
 
 @media (min-width: 1025px) {
-  /* Desktop Wide Screen Refinements */
   h1 {
     font-size: clamp(1.75rem, 2.5vw, 2.25rem) !important;
   }
 }
 
-/* Leaflet Container Styling for Low-Contrast Warm Delhi Map */
+/* Leaflet Container Styling */
 .leaflet-container {
   font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #F5F0E6;
+  background-color: #F1F5F9;
 }
 
-/* Map tiles filter: warm, subtle, low-contrast cartography */
+/* Clean, crisp tiles without yellow cast */
 .leaflet-tile {
-  filter: sepia(0.08) saturate(0.85) contrast(0.96) brightness(1.02);
+  filter: saturate(1.05) contrast(1.02);
 }
 
-/* Leaflet Zoom Control Styling */
+/* Leaflet Bar */
 .leaflet-bar {
-  border: 1px solid #DAD3C6 !important;
-  box-shadow: 0 1px 3px rgba(41, 52, 58, 0.08) !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
   border-radius: 8px !important;
   overflow: hidden;
 }
 
 .leaflet-bar a {
-  background-color: #FBF8F1 !important;
-  color: #29343A !important;
-  border-bottom: 1px solid #DAD3C6 !important;
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  border-bottom: 1px solid #E2E8F0 !important;
   font-family: 'Manrope', sans-serif !important;
   font-weight: 700 !important;
 }
 
 .leaflet-bar a:hover {
-  background-color: #EDE7DB !important;
-  color: #172D3B !important;
+  background-color: #F8FAFC !important;
+  color: #2563EB !important;
 }
 
 /* Leaflet Tooltips */
 .leaflet-tooltip {
-  background: #FBF8F1 !important;
-  color: #29343A !important;
-  border: 1px solid #DAD3C6 !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 6px !important;
-  padding: 4px 8px !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  box-shadow: 0 2px 6px rgba(41, 52, 58, 0.08) !important;
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1) !important;
 }
 
 .leaflet-tooltip-top:before {
-  border-top-color: #DAD3C6 !important;
+  border-top-color: #E2E8F0 !important;
 }
 
 /* Leaflet Popups */
 .leaflet-popup-content-wrapper {
-  background: #FBF8F1 !important;
-  color: #29343A !important;
-  border: 1px solid #DAD3C6 !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #E2E8F0 !important;
   border-radius: 12px !important;
-  box-shadow: 0 6px 18px rgba(41, 52, 58, 0.12) !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15) !important;
   padding: 0 !important;
 }
 
@@ -341,6 +265,6 @@ textarea {
 }
 
 .leaflet-popup-tip {
-  background: #FBF8F1 !important;
-  border: 1px solid #DAD3C6 !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
 }

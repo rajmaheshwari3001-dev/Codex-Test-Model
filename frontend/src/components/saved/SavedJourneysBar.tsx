@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import type { SavedRoute } from '../../types'
 import { formatTime12 } from '../../utils/time'
 import { getSavedRoutes, deleteSavedRoute } from '../../services/api'
+import { BookmarkIcon, ArrowRightIcon, TrashIcon } from '../common/Icons'
 
 interface Props {
   onReuse: (route: SavedRoute) => void
@@ -45,22 +46,22 @@ export default function SavedJourneysBar({ onReuse, refreshTrigger }: Props) {
   return (
     <section
       aria-labelledby="saved-journeys-title"
-      className="rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] shadow-xs overflow-hidden transition-all duration-300 animate-fade-in"
+      className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all duration-300 animate-fade-in"
     >
       {/* Header Bar */}
-      <header className="flex items-center justify-between border-b border-[#DAD3C6] px-3 sm:px-4 py-2.5 bg-[#F5F0E6]">
+      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-3 bg-slate-50/70">
         <div className="flex items-center gap-2">
-          <span className="text-[#C49A43] text-sm" aria-hidden="true">★</span>
-          <h3 id="saved-journeys-title" className="font-serif text-xs sm:text-sm font-bold text-[#172D3B]">
+          <BookmarkIcon className="w-4 h-4 text-blue-600" />
+          <h3 id="saved-journeys-title" className="text-xs sm:text-sm font-bold text-slate-900">
             Saved Journeys
           </h3>
-          <span className="rounded-full bg-[#EDE7DB] border border-[#DAD3C6] px-2 py-0.2 font-mono text-[10px] font-bold text-[#29343A]">
+          <span className="rounded-full bg-slate-200/80 px-2 py-0.2 font-mono text-[10px] font-bold text-slate-700">
             {routes.length}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[#73766F] hidden sm:inline">
+          <span className="text-[11px] text-slate-400 hidden sm:inline">
             1-click route recall
           </span>
           <button
@@ -68,26 +69,26 @@ export default function SavedJourneysBar({ onReuse, refreshTrigger }: Props) {
             onClick={() => setIsExpanded(prev => !prev)}
             aria-expanded={isExpanded}
             aria-controls="saved-journeys-content"
-            className="text-[11px] font-bold text-[#73766F] hover:text-[#172D3B] px-2 py-1 rounded hover:bg-[#EDE7DB] transition-colors"
+            className="text-[11px] font-semibold text-slate-500 hover:text-slate-900 px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
           >
-            {isExpanded ? 'Collapse ▲' : 'Expand ▼'}
+            {isExpanded ? 'Collapse' : 'Expand'}
           </button>
         </div>
       </header>
 
       {/* Content Bar */}
       {isExpanded && (
-        <div id="saved-journeys-content" className="p-3 bg-[#FBF8F1] animate-fade-in">
+        <div id="saved-journeys-content" className="p-3.5 bg-white animate-fade-in">
           {loading && routes.length === 0 ? (
-            <div className="flex items-center gap-2 py-3 px-2 text-xs text-[#73766F]" role="status">
-              <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#C49A43] border-t-transparent" />
+            <div className="flex items-center gap-2 py-2 px-2 text-xs text-slate-500" role="status">
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
               <span>Loading saved journeys…</span>
             </div>
           ) : routes.length === 0 ? (
-            <div className="flex items-center justify-between gap-3 py-2 px-3 rounded-lg border border-dashed border-[#DAD3C6] bg-[#FFFFFF] text-xs text-[#73766F]">
+            <div className="flex items-center justify-between gap-3 py-3 px-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 text-xs text-slate-500">
               <div className="flex items-center gap-2">
-                <span>📌</span>
-                <span>No saved journeys yet. Search any route and click <strong>Save</strong> to keep it here for 1-click access.</span>
+                <BookmarkIcon className="w-4 h-4 text-slate-400 shrink-0" />
+                <span>No saved journeys yet. Search any corridor above and click <strong>Save Route</strong> to bookmark it for quick access.</span>
               </div>
             </div>
           ) : (
@@ -97,27 +98,19 @@ export default function SavedJourneysBar({ onReuse, refreshTrigger }: Props) {
                   key={r.saved_route_id}
                   role="listitem"
                   onClick={() => onReuse(r)}
-                  className="flex-shrink-0 flex items-center justify-between gap-3 rounded-lg border border-[#DAD3C6] bg-[#FFFFFF] hover:border-[#C49A43] hover:shadow-2xs p-2.5 min-w-[240px] max-w-[280px] cursor-pointer transition-all group card-elevated"
+                  className="shrink-0 flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-blue-300 hover:shadow-xs p-3 min-w-[240px] max-w-[280px] cursor-pointer transition-all group"
                 >
                   <div className="space-y-1 min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#172D3B] truncate">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 truncate">
                       <span className="truncate">{r.origin_stop_name || r.origin_stop_id}</span>
-                      <span className="text-[#C49A43] shrink-0" aria-hidden="true">➔</span>
+                      <ArrowRightIcon className="w-3 h-3 text-slate-400 shrink-0" />
                       <span className="truncate">{r.destination_stop_name || r.destination_stop_id}</span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-[10px] text-[#73766F]">
-                      <time className="font-mono font-semibold">
-                        {formatTime12(r.preferred_departure_time || '08:00')}
-                      </time>
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-mono">
+                      <span>{formatTime12(r.preferred_departure_time || '08:00')}</span>
                       <span>•</span>
-                      <span className="capitalize font-medium">
-                        {r.preference}
-                      </span>
-                      <span>•</span>
-                      <span className="capitalize font-medium">
-                        {r.service_day}
-                      </span>
+                      <span className="capitalize">{r.preference}</span>
                     </div>
                   </div>
 
@@ -128,22 +121,22 @@ export default function SavedJourneysBar({ onReuse, refreshTrigger }: Props) {
                         e.stopPropagation()
                         onReuse(r)
                       }}
-                      className="rounded bg-[#C49A43] hover:bg-[#A97C2E] px-2.5 py-1 text-[10px] font-bold text-white shadow-2xs transition-all"
+                      className="rounded-lg bg-blue-600 hover:bg-blue-700 px-2.5 py-1 text-[11px] font-bold text-white shadow-2xs transition-all cursor-pointer"
                       title="Reuse this route"
                       aria-label={`Search again for ${r.origin_stop_name || r.origin_stop_id} to ${r.destination_stop_name || r.destination_stop_id}`}
                     >
-                      Reuse
+                      Search
                     </button>
                     {r.saved_route_id !== null && r.saved_route_id !== undefined && (
                       <button
                         type="button"
                         disabled={deletingId === r.saved_route_id}
                         onClick={e => handleDelete(r.saved_route_id as number, e)}
-                        className="rounded p-1 text-[11px] text-[#73766F] hover:text-[#A64C42] hover:bg-[#F9EBEA] transition-colors"
+                        className="rounded-lg p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                         title="Delete bookmark"
                         aria-label="Delete saved journey"
                       >
-                        {deletingId === r.saved_route_id ? '…' : '✕'}
+                        <TrashIcon className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>

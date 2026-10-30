@@ -2,6 +2,13 @@ import type { JourneyOption, PoochhOEstimate } from '../../types'
 import { formatTime12 } from '../../utils/time'
 import JourneyCard from './JourneyCard'
 import PoochhOEstimateCard from '../PoochhOEstimateCard'
+import {
+  ClockIcon,
+  CompassIcon,
+  BarChartIcon,
+  AlertTriangleIcon,
+  SparklesIcon,
+} from '../common/Icons'
 
 interface NoResultContext {
   origin: string
@@ -69,15 +76,15 @@ export default function JourneyComparison({
       {/* Loading Skeleton */}
       {loading && (
         <div className="space-y-3" role="status" aria-live="polite">
-          <div className="rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] p-5 animate-pulse space-y-3">
-            <div className="h-4 bg-[#EDE7DB] rounded w-1/3" />
-            <div className="h-8 bg-[#EDE7DB] rounded w-full" />
-            <div className="h-16 bg-[#EDE7DB] rounded w-full" />
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 animate-pulse space-y-3">
+            <div className="h-4 bg-slate-100 rounded w-1/3" />
+            <div className="h-8 bg-slate-100 rounded w-full" />
+            <div className="h-16 bg-slate-100 rounded w-full" />
           </div>
-          <div className="rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] p-5 animate-pulse space-y-3">
-            <div className="h-4 bg-[#EDE7DB] rounded w-1/3" />
-            <div className="h-8 bg-[#EDE7DB] rounded w-full" />
-            <div className="h-16 bg-[#EDE7DB] rounded w-full" />
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 animate-pulse space-y-3">
+            <div className="h-4 bg-slate-100 rounded w-1/3" />
+            <div className="h-8 bg-slate-100 rounded w-full" />
+            <div className="h-16 bg-slate-100 rounded w-full" />
           </div>
           <span className="sr-only">Searching available transit connections...</span>
         </div>
@@ -85,16 +92,16 @@ export default function JourneyComparison({
 
       {/* Default State */}
       {!loading && options.length === 0 && !noResultContext && (
-        <div className="rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] p-6 text-center space-y-3 shadow-xs animate-fade-in">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#EDE7DB] text-2xl">
-            🧭
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center space-y-3 shadow-xs animate-fade-in">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+            <CompassIcon className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-serif text-base font-bold text-[#172D3B]">
+            <h3 className="text-base font-bold text-slate-900">
               Ready for Your Delhi Journey
             </h3>
-            <p className="mt-1 text-xs text-[#73766F] max-w-sm mx-auto">
-              Select origin and destination stations, set your departure time, and click Search Journey to compare fastest and lowest-cost routes.
+            <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+              Select your origin and destination above, set your departure time, and click Find Best Routes to compare transit options.
             </p>
           </div>
         </div>
@@ -105,21 +112,22 @@ export default function JourneyComparison({
         <div className="space-y-3 animate-fade-in">
           <section
             role="status"
-            className="rounded-xl border border-[#C49A43]/40 bg-[#F5F0E6] p-4 text-xs text-[#29343A] space-y-2.5 shadow-xs"
+            className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-xs text-amber-900 space-y-2.5 shadow-xs"
           >
-            <div className="flex items-center justify-between border-b border-[#DAD3C6] pb-2">
-              <span className="font-bold text-[#A97C2E] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                <span>⏱</span> Timetable Notice
+            <div className="flex items-center justify-between border-b border-amber-200/80 pb-2">
+              <span className="font-bold text-amber-900 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <ClockIcon className="w-3.5 h-3.5 text-amber-700" />
+                <span>Timetable Advisory</span>
               </span>
-              <span className="font-mono font-bold text-[#172D3B]">
+              <span className="font-mono font-bold text-amber-950">
                 {formatTime12(noResultContext.time)}
               </span>
             </div>
-            <p className="leading-relaxed text-[#73766F]">
+            <p className="leading-relaxed text-amber-800">
               {noResultContext.isOutOfHours ? (
                 <>
-                  The scheduled Delhi network runs from <strong>06:00 AM to 11:35 PM</strong>. No transit service runs at{' '}
-                  <strong>{formatTime12(noResultContext.time)}</strong> for <strong>{originName}</strong> ➔ <strong>{destinationName}</strong>.
+                  Scheduled Delhi Metro and DTC networks run from <strong>06:00 AM to 11:35 PM</strong>. No fixed transit operates at{' '}
+                  <strong>{formatTime12(noResultContext.time)}</strong> for <strong>{originName}</strong> to <strong>{destinationName}</strong>.
                 </>
               ) : (
                 <>
@@ -130,9 +138,9 @@ export default function JourneyComparison({
             </p>
 
             {onRetryTime && (
-              <div className="pt-2 border-t border-[#DAD3C6] space-y-1.5">
-                <div className="text-[11px] font-bold text-[#172D3B]">
-                  Try active timetable hours:
+              <div className="pt-2 border-t border-amber-200/60 space-y-1.5">
+                <div className="text-[11px] font-bold text-amber-950">
+                  Try active schedule hours:
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {ACTIVE_SERVICE_HOURS.filter(t => t !== noResultContext.time).map(retryTime => (
@@ -140,7 +148,7 @@ export default function JourneyComparison({
                       key={retryTime}
                       type="button"
                       onClick={() => onRetryTime(retryTime)}
-                      className="rounded border border-[#DAD3C6] bg-white px-2 py-1 text-[11px] font-bold text-[#172D3B] hover:border-[#C49A43] hover:bg-[#FBF8F1] transition-colors"
+                      className="rounded-lg border border-amber-300 bg-white px-2.5 py-1 text-[11px] font-bold text-amber-900 hover:border-amber-400 hover:bg-amber-100/50 transition-colors cursor-pointer"
                     >
                       {formatTime12(retryTime)}
                     </button>
@@ -163,30 +171,36 @@ export default function JourneyComparison({
 
       {/* Comparison Insight Callout */}
       {!loading && hasDistinctComparison && fastestOption && cheapestOption && (
-        <div className="rounded-lg border border-[#DAD3C6] bg-[#FFFFFF] p-3 text-xs text-[#29343A] space-y-1 shadow-2xs animate-fade-in">
-          <div className="flex items-center gap-1.5 font-bold text-[#172D3B]">
-            <span>📊</span>
+        <div className="rounded-2xl border border-slate-200 bg-white p-3.5 text-xs text-slate-700 space-y-1.5 shadow-xs animate-fade-in">
+          <div className="flex items-center gap-1.5 font-bold text-slate-900">
+            <BarChartIcon className="w-4 h-4 text-blue-600" />
             <span>Route Comparison Insight</span>
           </div>
-          <div className="space-y-0.5 text-[11px] text-[#73766F]">
+          <div className="space-y-1 text-xs text-slate-600">
             {fastestOption.total_duration_minutes < cheapestOption.total_duration_minutes && (
-              <p>
-                • <strong className="text-[#172D3B]">Fastest Route</strong> saves{' '}
-                <strong className="text-[#C49A43]">
-                  {cheapestOption.total_duration_minutes - fastestOption.total_duration_minutes} min
-                </strong>{' '}
-                of travel time.
+              <p className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
+                <span>
+                  <strong>Fastest Route</strong> saves{' '}
+                  <strong className="text-blue-700 font-bold">
+                    {cheapestOption.total_duration_minutes - fastestOption.total_duration_minutes} min
+                  </strong>{' '}
+                  of travel time.
+                </span>
               </p>
             )}
             {cheapestOption.total_fare !== null &&
               fastestOption.total_fare !== null &&
               cheapestOption.total_fare < fastestOption.total_fare && (
-                <p>
-                  • <strong className="text-[#172D3B]">Lowest Cost</strong> saves{' '}
-                  <strong className="text-[#547A60]">
-                    ₹{fastestOption.total_fare - cheapestOption.total_fare}
-                  </strong>{' '}
-                  in transit fare.
+                <p className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                  <span>
+                    <strong>Lowest Fare</strong> saves{' '}
+                    <strong className="text-emerald-700 font-bold">
+                      ₹{fastestOption.total_fare - cheapestOption.total_fare}
+                    </strong>{' '}
+                    in transit expenses.
+                  </span>
                 </p>
               )}
           </div>
@@ -195,7 +209,7 @@ export default function JourneyComparison({
 
       {/* Primary Result Cards */}
       {!loading && options.length > 0 && (
-        <div className="space-y-3.5 animate-fade-in-up">
+        <div className="space-y-4 animate-fade-in">
           {/* Card A: FASTEST ROUTE */}
           {fastestOption && (
             <JourneyCard
