@@ -9,7 +9,6 @@ import JourneyPlanner from '../components/journey/JourneyPlanner'
 import AssistantPanel from '../components/assistant/AssistantPanel'
 import MovableCopilotLauncher from '../components/assistant/MovableCopilotLauncher'
 import DelhiMap from '../components/map/DelhiMap'
-import StaticDelhiMap from '../components/map/StaticDelhiMap'
 import JourneyComparison from '../components/routes/JourneyComparison'
 import SavedJourneysBar from '../components/saved/SavedJourneysBar'
 import PopularDestinationsBar from '../components/journey/PopularDestinationsBar'
@@ -110,7 +109,6 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [showCashbackModal, setShowCashbackModal] = useState(false)
   const [poochhoEstimate, setPoochhOEstimate] = useState<PoochhOEstimate | null>(null)
   const [showRouteMap, setShowRouteMap] = useState(false)
-  const [mapMode, setMapMode] = useState<'static' | 'live'>('static')
 
   // Console active tab for mobile/tablet: 'plan' | 'map' | 'routes' | 'assistant' | 'saved'
   const [activeConsoleTab, setActiveConsoleTab] = useState<'plan' | 'map' | 'routes' | 'assistant' | 'saved'>('plan')
@@ -123,7 +121,6 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
       setShowCopilotModal(true)
       setActiveConsoleTab('assistant')
     } else if (defaultTab === 'map') {
-      setMapMode('live')
       setActiveConsoleTab('map')
     } else if (defaultTab === 'saved') {
       setActiveConsoleTab('saved')
@@ -475,44 +472,19 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
 
         {/* COLUMN 2: CENTER (5 of 12) - THE MAP & POPULAR DESTINATIONS BAR */}
         <div className={`lg:col-span-4 xl:col-span-5 space-y-4.5 ${activeConsoleTab !== 'map' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
-          {mapMode === 'live' ? (
-            <div className="rounded-3xl border border-[#EDE8E1] bg-white p-3.5 shadow-sm flex flex-col gap-2.5">
-              <div className="flex items-center justify-between px-2 pt-1">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs font-bold text-[#1A2E3B]">Live GPS Radar Map</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setMapMode('static')}
-                  className="text-xs font-bold text-[#C49A43] hover:text-[#A77B32] bg-[#FAF0D9] hover:bg-[#F3E2BD] px-3 py-1 rounded-xl transition-all cursor-pointer"
-                >
-                  ← Back to Clean Target Map
-                </button>
-              </div>
-              <div className="min-h-[560px] lg:min-h-[660px] rounded-2xl overflow-hidden border border-[#EDE8E1]">
-                <DelhiMap
-                  stops={stops}
-                  routes={routes}
-                  selectedJourney={selected}
-                  originStopId={origin}
-                  destinationStopId={destination}
-                  onSelectOrigin={handleSelectOriginFromMap}
-                  onSelectDestination={handleSelectDestinationFromMap}
-                />
-              </div>
+          <div className="rounded-3xl border border-[#EDE8E1] bg-white p-3.5 shadow-sm">
+            <div className="min-h-[560px] lg:min-h-[660px] rounded-2xl overflow-hidden border border-[#EDE8E1] relative">
+              <DelhiMap
+                stops={stops}
+                routes={routes}
+                selectedJourney={selected}
+                originStopId={origin}
+                destinationStopId={destination}
+                onSelectOrigin={handleSelectOriginFromMap}
+                onSelectDestination={handleSelectDestinationFromMap}
+              />
             </div>
-          ) : (
-            <StaticDelhiMap
-              stops={stops}
-              selectedJourney={selected}
-              originStopId={origin}
-              destinationStopId={destination}
-              onSelectOrigin={handleSelectOriginFromMap}
-              onSelectDestination={handleSelectDestinationFromMap}
-              onSwitchToLive={() => setMapMode('live')}
-            />
-          )}
+          </div>
 
           {/* Popular Destinations Photo Strip placed directly below map */}
           <PopularDestinationsBar
@@ -541,8 +513,8 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             originName={originName}
             destinationName={destinationName}
             serviceDay={serviceDay}
-            showMap={mapMode === 'live'}
-            onToggleMap={() => setMapMode(prev => (prev === 'static' ? 'live' : 'static'))}
+            showMap={true}
+            onToggleMap={() => {}}
           />
         </div>
       </div>
