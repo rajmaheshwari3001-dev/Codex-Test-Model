@@ -122,6 +122,11 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
     if (defaultTab === 'chat') {
       setShowCopilotModal(true)
       setActiveConsoleTab('assistant')
+    } else if (defaultTab === 'map') {
+      setMapMode('live')
+      setActiveConsoleTab('map')
+    } else if (defaultTab === 'saved') {
+      setActiveConsoleTab('saved')
     }
   }, [defaultTab])
 

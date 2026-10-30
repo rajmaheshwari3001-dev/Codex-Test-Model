@@ -190,8 +190,8 @@ export default function StaticDelhiMap({
       <div className="relative w-full h-full flex-1 overflow-hidden">
         <svg
           viewBox="0 0 1000 700"
-          className="w-full h-full object-cover transition-transform duration-500"
-          preserveAspectRatio="xMidYMid slice"
+          className="w-full h-full transition-transform duration-500"
+          preserveAspectRatio="xMidYMid meet"
           aria-hidden="true"
         >
           {/* Defs for gradients and shadow filters */}
@@ -612,3 +612,4 @@ export default function StaticDelhiMap({
     </figure>
   )
 }
+
