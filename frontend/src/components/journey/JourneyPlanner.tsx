@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import type { ModePreference, ServiceDay, Stop } from '../../types'
-import { parseToTime24 } from '../../utils/time'
+import { parseToTime24, formatTime12, toTime24 } from '../../utils/time'
 import {
   ArrowUpDownIcon,
   XIcon,
   ZapIcon,
   TagIcon,
   ArrowRightIcon,
+  ClockIcon,
 } from '../common/Icons'
 
 interface Props {
@@ -75,7 +76,35 @@ export default function JourneyPlanner({
 }: Props) {
   const [error, setError] = useState('')
   const [departMode, setDepartMode] = useState<'now' | 'later'>('now')
+  const [showClockCustomizer, setShowClockCustomizer] = useState(false)
   const [isSwapping, setIsSwapping] = useState(false)
+
+  // Derived 12-hour and 24-hour clock values for interactive customizer
+  const time24 = parseToTime24(time) || '08:40'
+  const [hStr, mStr] = time24.split(':')
+  const hour24 = parseInt(hStr, 10) || 8
+  const minute = parseInt(mStr, 10) || 0
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12
+  const currentPeriod: 'AM' | 'PM' = hour24 >= 12 ? 'PM' : 'AM'
+  const formattedDisplay = formatTime12(time24)
+
+  const handleHourChange = (newHour12: number) => {
+    const updated = toTime24(newHour12, minute, currentPeriod)
+    setTime(updated)
+    if (error) setError('')
+  }
+
+  const handleMinuteChange = (newMinute: number) => {
+    const updated = toTime24(hour12, newMinute, currentPeriod)
+    setTime(updated)
+    if (error) setError('')
+  }
+
+  const handlePeriodChange = (newPeriod: 'AM' | 'PM') => {
+    const updated = toTime24(hour12, minute, newPeriod)
+    setTime(updated)
+    if (error) setError('')
+  }
 
   const handleSwap = () => {
     setIsSwapping(true)
@@ -227,35 +256,234 @@ export default function JourneyPlanner({
           </div>
         </div>
 
-        {/* DEPARTURE (With quick NOW badge matching Figma: Today, 08:40 AM) */}
+        {/* DEPARTURE (With interactive Customize Time & Clock Option) */}
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269]">
-            DEPARTURE
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269] flex items-center gap-1.5">
+              <ClockIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+              <span>DEPARTURE</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowClockCustomizer(prev => !prev)}
+              className="text-[11px] font-bold text-[#C49A43] hover:text-[#A77B32] transition-colors cursor-pointer"
+            >
+              {showClockCustomizer ? 'Hide Clock ▲' : 'Customize Clock ▼'}
+            </button>
+          </div>
+
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3 py-2 sm:py-2.5 shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20 transition-all">
-              <span className="text-sm mr-1.5">📅</span>
-              <input
-                type="text"
-                value={time ? `Today, ${time}` : 'Today, 08:40 AM'}
-                onChange={e => {
-                  const val = e.target.value.replace('Today, ', '').trim()
-                  setTime(val)
-                }}
-                placeholder="Today, 08:40 AM"
-                aria-label="Departure Time"
-                className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none text-xs sm:text-sm"
-              />
-            </div>
+            {/* Left Button: Custom Time / Clock Opener */}
+            <button
+              type="button"
+              onClick={() => setShowClockCustomizer(prev => !prev)}
+              className={`flex items-center justify-between rounded-xl border px-3 py-2 sm:py-2.5 transition-all shadow-2xs cursor-pointer group active:scale-[0.99] ${
+                showClockCustomizer
+                  ? 'border-[#C49A43] bg-[#FAF0D9]/70 text-[#1A2E3B] ring-2 ring-[#C49A43]/20'
+                  : 'border-[#EBE5DC] bg-white hover:border-[#D8CFBF] text-[#1A2E3B]'
+              }`}
+              title="Click to customize departure time & clock"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-sm">🕐</span>
+                <span className="font-bold text-xs sm:text-sm truncate">
+                  Today, {formattedDisplay}
+                </span>
+              </div>
+              <span className="text-[10px] uppercase font-extrabold text-[#C49A43] bg-white/90 px-1.5 py-0.5 rounded-md border border-[#EBE5DC] shrink-0">
+                Clock
+              </span>
+            </button>
+
+            {/* Right Button: Live NOW Button */}
             <button
               type="button"
               onClick={handleSelectNow}
               className="flex items-center justify-center gap-1.5 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-[#1A2E3B] transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
+              title="Set departure to current Delhi clock"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#C49A43] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
               <span>NOW • {time || '08:40'}</span>
             </button>
           </div>
+
+          {/* Interactive Customize Time & Clock Console */}
+          {showClockCustomizer && (
+            <div className="rounded-2xl border border-[#C49A43]/40 bg-[#FAF7F2] p-3.5 space-y-3 animate-fade-in shadow-xs mt-2">
+              <div className="flex items-center justify-between border-b border-[#EBE5DC] pb-2">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#C49A43] flex items-center gap-1.5">
+                  <ClockIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+                  <span>CUSTOMIZE DEPARTURE CLOCK</span>
+                </span>
+                <span className="text-xs font-extrabold text-[#1A2E3B] bg-white px-2 py-0.5 rounded-md border border-[#EBE5DC]">
+                  {formattedDisplay}
+                </span>
+              </div>
+
+              {/* 1. Interactive Dial Steppers: Hour, Minute, AM/PM */}
+              <div className="grid grid-cols-12 gap-2 items-center">
+                {/* Hour */}
+                <div className="col-span-4">
+                  <label htmlFor="clock-hour" className="text-[10px] font-bold text-[#7A7269] block mb-1">
+                    HOUR (1–12)
+                  </label>
+                  <select
+                    id="clock-hour"
+                    value={hour12}
+                    onChange={e => handleHourChange(Number(e.target.value))}
+                    className="w-full rounded-xl border border-[#EBE5DC] bg-white px-2.5 py-1.5 text-xs font-bold text-[#1A2E3B] focus:outline-none focus:border-[#C49A43] cursor-pointer"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(h => (
+                      <option key={h} value={h}>
+                        {String(h).padStart(2, '0')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Minute */}
+                <div className="col-span-4">
+                  <label htmlFor="clock-minute" className="text-[10px] font-bold text-[#7A7269] block mb-1">
+                    MINUTE (0–55)
+                  </label>
+                  <select
+                    id="clock-minute"
+                    value={minute - (minute % 5)}
+                    onChange={e => handleMinuteChange(Number(e.target.value))}
+                    className="w-full rounded-xl border border-[#EBE5DC] bg-white px-2.5 py-1.5 text-xs font-bold text-[#1A2E3B] focus:outline-none focus:border-[#C49A43] cursor-pointer"
+                  >
+                    {[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(m => (
+                      <option key={m} value={m}>
+                        {String(m).padStart(2, '0')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Period */}
+                <div className="col-span-4">
+                  <span className="text-[10px] font-bold text-[#7A7269] block mb-1">
+                    PERIOD
+                  </span>
+                  <div className="flex rounded-xl border border-[#EBE5DC] bg-white p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => handlePeriodChange('AM')}
+                      className={`flex-1 py-1 text-[11px] font-extrabold rounded-lg transition-all cursor-pointer ${
+                        currentPeriod === 'AM'
+                          ? 'bg-[#1A2E3B] text-white shadow-xs'
+                          : 'text-[#7A7269] hover:text-[#1A2E3B]'
+                      }`}
+                    >
+                      AM
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePeriodChange('PM')}
+                      className={`flex-1 py-1 text-[11px] font-extrabold rounded-lg transition-all cursor-pointer ${
+                        currentPeriod === 'PM'
+                          ? 'bg-[#1A2E3B] text-white shadow-xs'
+                          : 'text-[#7A7269] hover:text-[#1A2E3B]'
+                      }`}
+                    >
+                      PM
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. Native System Clock Wheel Input */}
+              <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#EBE5DC]">
+                <label className="flex items-center gap-2 text-[11px] font-bold text-[#7A7269]">
+                  <span>System Clock:</span>
+                  <input
+                    type="time"
+                    value={time24}
+                    onChange={e => {
+                      if (e.target.value) {
+                        setTime(e.target.value)
+                        if (error) setError('')
+                      }
+                    }}
+                    className="rounded-lg border border-[#EBE5DC] bg-white px-2 py-0.5 text-xs font-bold text-[#1A2E3B] focus:outline-none focus:border-[#C49A43] cursor-pointer"
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowClockCustomizer(false)}
+                  className="text-xs font-bold text-[#C49A43] hover:underline cursor-pointer"
+                >
+                  Done ✓
+                </button>
+              </div>
+
+              {/* 3. Quick Commute Slot Presets */}
+              <div className="space-y-1.5 pt-1 border-t border-[#EBE5DC]">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#7A7269]">
+                  Commuter Rush Presets
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {[
+                    { label: '🌅 08:30 AM Morning Peak', value: '08:30' },
+                    { label: '☀️ 01:00 PM Midday', value: '13:00' },
+                    { label: '🌆 06:00 PM Evening Peak', value: '18:00' },
+                    { label: '🌙 09:30 PM Night Feeder', value: '21:30' },
+                  ].map(preset => (
+                    <button
+                      key={preset.value}
+                      type="button"
+                      onClick={() => {
+                        setTime(preset.value)
+                        setShowClockCustomizer(false)
+                        if (error) setError('')
+                      }}
+                      className={`rounded-lg border px-2 py-1 text-[11px] font-semibold text-left transition-all cursor-pointer ${
+                        time === preset.value
+                          ? 'border-[#C49A43] bg-[#FAF0D9] text-[#9A721C] font-bold shadow-2xs'
+                          : 'border-[#EBE5DC] bg-white text-[#1A2E3B] hover:border-[#C49A43]'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Schedule Day Category (Weekday vs Weekend) */}
+              <div className="flex items-center justify-between pt-1 border-t border-[#EBE5DC] text-[11px]">
+                <span className="font-bold text-[#7A7269]">Timetable Category:</span>
+                <div className="flex rounded-lg border border-[#EBE5DC] bg-white p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => onServiceDayChange('weekday')}
+                    className={`px-2.5 py-1 rounded-md font-bold text-[10px] transition-all cursor-pointer ${
+                      serviceDay === 'weekday'
+                        ? 'bg-[#1A2E3B] text-white shadow-2xs'
+                        : 'text-[#7A7269] hover:text-[#1A2E3B]'
+                    }`}
+                  >
+                    Weekday (Mon–Fri)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onServiceDayChange('weekend')}
+                    className={`px-2.5 py-1 rounded-md font-bold text-[10px] transition-all cursor-pointer ${
+                      serviceDay === 'weekend'
+                        ? 'bg-[#1A2E3B] text-white shadow-2xs'
+                        : 'text-[#7A7269] hover:text-[#1A2E3B]'
+                    }`}
+                  >
+                    Weekend (Sat–Sun)
+                  </button>
+                </div>
+              </div>
+
+              {/* Timetable Operating Range Notice */}
+              <div className="text-[10px] text-[#7A7269] bg-white/70 rounded-lg p-1.5 border border-[#EBE5DC]/60 text-center font-medium">
+                Active Delhi Service Window: 06:00 AM – 11:35 PM Daily
+              </div>
+            </div>
+          )}
         </div>
 
         {/* TRAVEL PREFERENCE (Fastest vs Cheapest Toggle Matching Figma) */}

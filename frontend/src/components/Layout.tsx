@@ -7,7 +7,10 @@ export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF7F2] text-[#1A202C] relative">
+    <div className="flex min-h-screen flex-col bg-[#FAF7F2]/90 text-[#1A202C] relative">
+      {/* Responsive Delhi Transit Ambient Background Layer */}
+      <div className="app-transit-backdrop" aria-hidden="true" />
+
       {/* Top Application Header matching Figma */}
       <AppHeader onOpenMobileMenu={() => setMobileOpen(true)} />
 

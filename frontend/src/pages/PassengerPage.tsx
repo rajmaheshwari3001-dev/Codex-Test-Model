@@ -81,7 +81,7 @@ interface PassengerPageProps {
   defaultTab?: 'planner' | 'map' | 'saved' | 'chat'
 }
 
-export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPageProps) {
+export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [searchParams] = useSearchParams()
   const [stops, setStops] = useState<Stop[]>([])
   const [routes, setRoutes] = useState<Route[]>([])
@@ -108,6 +108,14 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
   const [activeConsoleTab, setActiveConsoleTab] = useState<'plan' | 'assistant' | 'saved'>('plan')
 
   const [showCopilotModal, setShowCopilotModal] = useState(false)
+  const [copilotPrompt, setCopilotPrompt] = useState('')
+
+  useEffect(() => {
+    if (defaultTab === 'chat') {
+      setShowCopilotModal(true)
+      setActiveConsoleTab('assistant')
+    }
+  }, [defaultTab])
 
   function loadInitialData() {
     setMessage('')
@@ -396,7 +404,10 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
             </p>
             <button
               type="button"
-              onClick={() => setShowCopilotModal(true)}
+              onClick={() => {
+                setCopilotPrompt('Which line is faster from Janakpuri to Rajiv Chowk?')
+                setShowCopilotModal(true)
+              }}
               className="w-full flex items-center justify-between rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 p-3 sm:p-3.5 text-left text-xs sm:text-sm font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
             >
               <span className="truncate text-xs sm:text-sm">Try: "Which line is faster from Janakpuri to..."</span>
@@ -441,8 +452,17 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
 
       {/* MOBILE-ONLY ALTERNATE TABS (Copilot & Shortcuts) */}
       {activeConsoleTab === 'assistant' && (
-        <div className="lg:hidden animate-fade-in">
-          <AssistantPanel />
+        <div className="lg:hidden animate-fade-in min-h-[560px]">
+          <AssistantPanel
+            stops={stops}
+            serviceDay={serviceDay}
+            onRouteRecommendation={(orig, dest) => {
+              setOrigin(orig)
+              setDestination(dest)
+              setActiveConsoleTab('plan')
+              handleSearch(orig, dest, time, preference, serviceDay, modePreference, maxBudget)
+            }}
+          />
         </div>
       )}
 
@@ -455,28 +475,56 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
         />
       </div>
 
-      {/* Transit Copilot Modal */}
+      {/* Transit Copilot Modal / Drawer */}
       {showCopilotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#D8C8AA] pb-3">
-              <div className="flex items-center gap-2">
-                <SparklesIcon className="w-5 h-5 text-[#C49A43]" />
-                <h3 className="font-serif text-lg font-bold text-[#243B4A]">Transit Copilot</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowCopilotModal(false)}
-                className="rounded-xl p-2 text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6] cursor-pointer"
-                aria-label="Close copilot"
-              >
-                ✕
-              </button>
-            </div>
-            <AssistantPanel />
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1A2E3B]/60 backdrop-blur-xs animate-fade-in"
+          onClick={() => setShowCopilotModal(false)}
+        >
+          <div
+            className="relative w-full max-w-xl max-h-[92vh] flex flex-col rounded-3xl shadow-2xl overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            <AssistantPanel
+              isOpen={showCopilotModal}
+              onClose={() => setShowCopilotModal(false)}
+              initialPrompt={copilotPrompt}
+              stops={stops}
+              serviceDay={serviceDay}
+              onRouteRecommendation={(orig, dest) => {
+                setOrigin(orig)
+                setDestination(dest)
+                handleSearch(orig, dest, time, preference, serviceDay, modePreference, maxBudget)
+                setShowCopilotModal(false)
+              }}
+            />
           </div>
         </div>
       )}
+
+      {/* Floating AI Transit Copilot Quick Launcher Button */}
+      <aside className="fixed bottom-6 right-6 z-40 hidden md:block">
+        <button
+          type="button"
+          onClick={() => {
+            setCopilotPrompt('')
+            setShowCopilotModal(true)
+          }}
+          className="flex items-center gap-2.5 rounded-full border border-[#EBE5DC] bg-[#1A2E3B] hover:bg-[#243B4A] text-white px-4 py-2.5 shadow-xl hover:shadow-2xl transition-all cursor-pointer group active:scale-95"
+          title="Open Aaroh-Saarthi AI Transit Copilot"
+          aria-label="Open Aaroh-Saarthi AI Transit Copilot"
+        >
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#C49A43] text-white shadow-2xs group-hover:rotate-12 transition-transform">
+            <SparklesIcon className="w-4 h-4" />
+          </span>
+          <span className="text-xs font-bold tracking-wide">
+            Ask Copilot
+          </span>
+          <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
+        </button>
+      </aside>
 
       {/* Modals */}
       <DataProvenanceModal
