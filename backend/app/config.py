@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     """
 
     # -- Server --
-    backend_port: int = 8001
+    backend_port: int = 8080
 
     # -- Database --
     database_url: str = str(
