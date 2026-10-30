@@ -2,12 +2,15 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import AppHeader from './layout/AppHeader'
 import Sidebar from './Sidebar'
+import PageLoadTransition from './common/PageLoadTransition'
 
 export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
     <div className="flex min-h-screen flex-col bg-transparent text-[#1A202C] relative overflow-x-hidden font-sans">
+      {/* Visual Reload & Page Start Entrance Transition */}
+      <PageLoadTransition />
       {/* Responsive Delhi Transit Ambient Pastel Gradient Layer */}
       <div className="app-transit-backdrop" aria-hidden="true" />
 

@@ -415,7 +415,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
       {/* 3-COLUMN FIGMA-IDENTICAL DESKTOP LAYOUT (Clean, Lightweight & Uncongested) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-6 items-start">
         {/* COLUMN 1: LEFT (3 of 12 on xl, 4 of 12 on lg) - JOURNEY PLANNER */}
-        <div className={`lg:col-span-5 xl:col-span-3 lg:sticky lg:top-24 lg:self-start ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+        <div className={`lg:col-span-5 xl:col-span-3 lg:sticky lg:top-24 lg:self-start animate-col-planner ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
           <JourneyPlanner
             stops={stops}
             origin={origin}
@@ -439,7 +439,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         </div>
 
         {/* COLUMN 2: CENTER (5 of 12) - THE MAP & POPULAR DESTINATIONS BAR (Sticky & Fixed in View) */}
-        <div className={`lg:col-span-7 xl:col-span-5 lg:sticky lg:top-24 lg:self-start flex flex-col justify-between space-y-3 ${activeConsoleTab !== 'map' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+        <div className={`lg:col-span-7 xl:col-span-5 lg:sticky lg:top-24 lg:self-start flex flex-col justify-between space-y-3 animate-col-map ${activeConsoleTab !== 'map' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
           <div className="rounded-3xl border border-[#EDE8E1] bg-white p-2.5 sm:p-3 shadow-sm flex-1 flex flex-col">
             <div className="flex-1 min-h-[560px] lg:min-h-[620px] xl:min-h-[660px] rounded-2xl overflow-hidden border border-[#EDE8E1] relative">
               <DelhiMap
@@ -465,7 +465,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         </div>
 
         {/* COLUMN 3: RIGHT (4 of 12) - CHOOSE YOUR WAY & ROUTE OPTIONS (Independently Scrollable Fare Side) */}
-        <div className={`lg:col-span-12 xl:col-span-4 space-y-4.5 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto xl:pr-1.5 scrollbar-thin ${activeConsoleTab !== 'routes' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+        <div className={`lg:col-span-12 xl:col-span-4 space-y-4.5 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto xl:pr-1.5 scrollbar-thin animate-col-routes ${activeConsoleTab !== 'routes' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
           <JourneyComparison
             options={options}
             selected={selected}

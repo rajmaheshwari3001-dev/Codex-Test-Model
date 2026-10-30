@@ -222,7 +222,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
   return (
     <header
       role="banner"
-      className="sticky top-2 sm:top-3 z-30 w-full px-3 sm:px-6 lg:px-8 pointer-events-none transition-all duration-300"
+      className="sticky top-2 sm:top-3 z-30 w-full px-3 sm:px-6 lg:px-8 pointer-events-none transition-all duration-300 animate-page-slide-down"
     >
       {/* Floating Island / Capsule Bar matching Figma prototype styling */}
       <div className="pointer-events-auto max-w-[1720px] mx-auto rounded-2xl sm:rounded-full border border-[#EDE8E1] bg-white/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(26,46,59,0.06),0_2px_6px_rgba(26,46,59,0.02)] px-4 sm:px-6 py-2.5 transition-all hover:border-[#C49A43]/40">

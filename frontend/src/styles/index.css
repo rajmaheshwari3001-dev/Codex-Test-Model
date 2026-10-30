@@ -153,6 +153,88 @@ textarea {
   animation: pulseGlow 2s infinite ease-in-out;
 }
 
+/* Page Enter Animations on Start / Reload */
+@keyframes pageSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes colSlideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes colZoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.975);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes colSlideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseTrack {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-page-slide-down {
+  animation: pageSlideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-col-planner {
+  animation: colSlideLeft 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.1s;
+}
+
+.animate-col-map {
+  animation: colZoomIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.18s;
+}
+
+.animate-col-routes {
+  animation: colSlideRight 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.25s;
+}
+
+.animate-cascade-up {
+  animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.32s;
+}
+
+.animate-pulseTrack {
+  animation: pulseTrack 1.8s ease-in-out infinite;
+}
+
 .card-elevated {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
