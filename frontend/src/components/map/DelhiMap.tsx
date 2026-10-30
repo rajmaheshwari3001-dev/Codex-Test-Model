@@ -115,6 +115,25 @@ export default function DelhiMap({
   const [showBus, setShowBus] = useState(true)
   const [showLiveVehicles, setShowLiveVehicles] = useState(true)
 
+  // Listen to Night / Day mode changes from Header
+  useEffect(() => {
+    const handleTheme = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: 'light' | 'dark' }>
+      if (customEvent.detail?.theme === 'dark') {
+        setMapStyle('dark')
+      } else {
+        setMapStyle('sandstone')
+      }
+    }
+    // Initial check from localStorage
+    try {
+      const savedTheme = localStorage.getItem('aaroh_theme')
+      if (savedTheme === 'dark') setMapStyle('dark')
+    } catch {}
+    window.addEventListener('aaroh_theme_change', handleTheme)
+    return () => window.removeEventListener('aaroh_theme_change', handleTheme)
+  }, [])
+
   // Real-Time GPS Simulation Ticker (Advances every 1.5s)
   const [simTick, setSimTick] = useState(0)
 
@@ -626,8 +645,8 @@ export default function DelhiMap({
           RAJIV_COORD,
           RAJOURI_COORD,
         ]
-        const trainProgress = (simTick % 50) / 50
-        const currentTrainPos = interpolateRoute(trainRouteWaypoints, trainProgress)
+        // Train 302 fixed at Rajiv Chowk Hub (Stable & Non-moving)
+        const currentTrainPos = RAJIV_COORD
         const trainSpeed = 50 + (simTick % 8)
 
         const trainIcon = L.divIcon({
@@ -667,8 +686,8 @@ export default function DelhiMap({
           MAYUR_COORD,
           MANDI_COORD,
         ]
-        const busProgress = ((simTick + 25) % 50) / 50
-        const currentBusPos = interpolateRoute(busRouteWaypoints, busProgress)
+        // City Bus 764 fixed at Mayur Vihar Link (Stable & Non-moving)
+        const currentBusPos = MAYUR_COORD
         const busSpeed = 26 + (simTick % 6)
 
         const busIcon = L.divIcon({
@@ -706,8 +725,8 @@ export default function DelhiMap({
           HAUZ_KHAS_COORD,
           AIIMS_COORD,
         ]
-        const autoProgress = ((simTick + 15) % 40) / 40
-        const currentAutoPos = interpolateRoute(autoRouteWaypoints, autoProgress)
+        // Poochh-O Auto fixed at AIIMS Feeder (Stable & Non-moving)
+        const currentAutoPos = AIIMS_COORD
 
         const autoIcon = L.divIcon({
           className: 'delhi-vehicle-auto',

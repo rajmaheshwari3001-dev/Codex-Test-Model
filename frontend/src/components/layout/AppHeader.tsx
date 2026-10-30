@@ -73,6 +73,34 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
   const [loginPhone, setLoginPhone] = useState('9876543210')
   const [authToast, setAuthToast] = useState('')
 
+  // Night / Day Theme State
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const saved = localStorage.getItem('aaroh_theme')
+      if (saved === 'dark' || saved === 'light') return saved
+    } catch {}
+    return 'light'
+  })
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+    try {
+      localStorage.setItem('aaroh_theme', theme)
+    } catch {}
+    window.dispatchEvent(new CustomEvent('aaroh_theme_change', { detail: { theme } }))
+  }, [theme])
+
+  const toggleTheme = () => {
+    const next = theme === 'light' ? 'dark' : 'light'
+    setTheme(next)
+    setAuthToast(next === 'dark' ? 'Night Mode activated (Dark Map & HUD)' : 'Day Mode activated (Sandstone Map)')
+    setTimeout(() => setAuthToast(''), 2500)
+  }
+
   const regionMenuRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
 
@@ -310,16 +338,37 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               </span>
             </div>
 
-            {/* Dark Mode Toggle Button */}
+            {/* Night / Day Mode Toggle (Fully Functional) */}
             <button
               type="button"
-              title="Toggle Dark / Light Theme"
-              aria-label="Toggle Theme"
-              className="flex items-center justify-center h-9 w-9 rounded-full border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#6E665D] hover:text-[#1A2E3B] transition-colors cursor-pointer shadow-2xs active:scale-95"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to Day Mode (Light)' : 'Switch to Night Mode (Dark)'}
+              aria-label={theme === 'dark' ? 'Switch to Day Mode' : 'Switch to Night Mode'}
+              className={`flex items-center justify-center h-9 w-9 rounded-full border transition-all cursor-pointer shadow-2xs active:scale-95 ${
+                theme === 'dark'
+                  ? 'bg-[#1E293B] text-[#F59E0B] border-[#F59E0B]/50 hover:bg-[#334155] shadow-[0_0_10px_rgba(245,158,11,0.3)]'
+                  : 'bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#6E665D] hover:text-[#1A2E3B] border-[#EDE8E1]'
+              }`}
             >
-              <svg className="w-4 h-4 text-[#6E665D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
+              {theme === 'dark' ? (
+                // Sun Icon (Day Mode)
+                <svg className="w-4 h-4 text-[#F59E0B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+              ) : (
+                // Moon Icon (Night Mode)
+                <svg className="w-4 h-4 text-[#6E665D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              )}
             </button>
 
             {/* User Profile Pill & Interactive Auth Dropdown */}

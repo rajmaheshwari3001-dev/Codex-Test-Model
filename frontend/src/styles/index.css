@@ -432,3 +432,53 @@ textarea {
 .leaflet-tile {
   filter: contrast(0.96) brightness(1.02) saturate(0.88);
 }
+
+/* Night Mode (Dark Theme) Styles */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: #0F172A;
+  color: #F8FAFC;
+}
+
+html.dark .app-transit-backdrop {
+  background: 
+    radial-gradient(ellipse at 90% 8%, rgba(30, 41, 59, 0.7) 0%, transparent 60%),
+    radial-gradient(ellipse at 10% 12%, rgba(15, 23, 42, 0.9) 0%, transparent 60%),
+    linear-gradient(145deg, #0B1120 0%, #0F172A 50%, #131D31 100%) !important;
+}
+
+html.dark header > div {
+  background-color: rgba(15, 23, 42, 0.94) !important;
+  border-color: #334155 !important;
+}
+
+html.dark .bg-white {
+  background-color: #1E293B !important;
+}
+
+html.dark .bg-\[\#FAF7F2\] {
+  background-color: #0F172A !important;
+}
+
+html.dark .border-\[\#EDE8E1\],
+html.dark .border-\[\#EBE5DC\] {
+  border-color: #334155 !important;
+}
+
+html.dark .text-\[\#1A2E3B\],
+html.dark .text-\[\#1A202C\] {
+  color: #F8FAFC !important;
+}
+
+html.dark .text-\[\#7A7269\],
+html.dark .text-\[\#6E665D\] {
+  color: #94A3B8 !important;
+}
+
+html.dark .delhi-monument-skyline {
+  opacity: 0.08 !important;
+  filter: invert(1);
+}
