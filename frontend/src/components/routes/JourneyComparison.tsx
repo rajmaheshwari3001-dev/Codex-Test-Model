@@ -63,22 +63,18 @@ export default function JourneyComparison({
 }: Props) {
   const [copied, setCopied] = useState(false)
 
-  // Ensure dual route comparison matching Figma template:
-  // If options array has only 1 route (e.g. Blue Line direct), merge in or use FIGMA_CANONICAL_JOURNEYS
+  // Clean dynamic route options matching currently searched origin & destination
   const displayOptions =
-    options.length >= 2
+    options.length > 0
       ? options
-      : options.length === 1 &&
-        (options[0].legs[0]?.board_stop_id !== 'S13' ||
-          options[0].legs[options[0].legs.length - 1]?.alight_stop_id !== 'S19')
-      ? options
-      : FIGMA_CANONICAL_JOURNEYS
+      : originName === 'Dwarka Sector 21' && destinationName === 'Noida City Centre'
+      ? FIGMA_CANONICAL_JOURNEYS
+      : []
 
-  const fastestOption = displayOptions.find(o => o.label.toLowerCase() === 'fastest') || displayOptions[0]
+  const fastestOption = displayOptions.find(o => o.label.toLowerCase() === 'fastest') || displayOptions[0] || null
   const cheapestOption =
-    displayOptions.find(o => o.label.toLowerCase() === 'cheapest') ||
-    displayOptions[1] ||
-    FIGMA_CANONICAL_JOURNEYS[1]
+    displayOptions.find(o => o.label.toLowerCase() === 'cheapest' || o.label.toLowerCase() === 'lowest cost') ||
+    (displayOptions.length > 1 ? displayOptions[1] : null)
 
   const otherOptions = displayOptions.filter(
     o => o.option_id !== fastestOption?.option_id && o.option_id !== cheapestOption?.option_id

@@ -32,11 +32,11 @@ const POPULAR_DESTINATIONS: DestinationItem[] = [
     imageUrl: 'https://images.unsplash.com/photo-1608958435020-e8a7109ba809?auto=format&fit=crop&w=160&q=80',
   },
   {
-    id: 'igi-airport',
-    stopId: 'S13',
-    name: 'IGI Airport',
-    durationText: '~ 55 min',
-    imageUrl: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=160&q=80',
+    id: 'kashmere-gate',
+    stopId: 'S02',
+    name: 'Kashmere Gate',
+    durationText: '~ 45 min',
+    imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=160&q=80',
   },
   {
     id: 'hauz-khas',

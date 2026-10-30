@@ -418,163 +418,146 @@ export default function DelhiMap({
         </div>
       `
       circle.bindPopup(popupHtml)
-    })
-
-    // 3. ACTIVE ROUTE NEON HIGHLIGHTING (Selected Journey)
+    })    // 3. DYNAMIC ACTIVE ROUTE & JOURNEY RENDERING
     const activeJourney = selectedJourney
-    const isFigmaRoute =
-      !activeJourney ||
-      (activeJourney.legs[0]?.board_stop_id === 'S13' &&
-        activeJourney.legs[activeJourney.legs.length - 1]?.alight_stop_id === 'S19')
+    const allJourneyCoords: [number, number][] = []
 
-    if (isFigmaRoute || (activeJourney && activeJourney.legs.length > 0)) {
-      const isFastestActive =
-        !activeJourney || activeJourney.label.toLowerCase() === 'fastest'
+    // Helper to find coords for a stop id
+    const getStopCoord = (stopId?: string): [number, number] | null => {
+      if (!stopId) return null
+      const s = stops.find(st => st.stop_id === stopId)
+      if (s && isValidCoord(s.stop_lat, s.stop_lon)) {
+        return [s.stop_lat, s.stop_lon]
+      }
+      return null
+    }
 
-      if (isFastestActive) {
-        // Leg 1: Blue Line Metro from Dwarka to Rajiv Chowk (Vibrant Blue with White Casing)
-        const metroCoords: [number, number][] = [
-          DWARKA_COORD,
-          JANAKPURI_COORD,
-          RAJOURI_COORD,
-          RAJIV_COORD,
-        ]
+    const getStopName = (stopId?: string): string => {
+      if (!stopId) return ''
+      const s = stops.find(st => st.stop_id === stopId)
+      return s ? s.stop_name : stopId
+    }
 
-        if (showMetro) {
-          // White outer casing
-          L.polyline(metroCoords, {
-            color: '#FFFFFF',
-            weight: 9,
-            opacity: 0.95,
-          }).addTo(lg)
+    if (activeJourney && activeJourney.legs && activeJourney.legs.length > 0) {
+      // Render each leg of the journey with matching transit colors
+      activeJourney.legs.forEach((leg, index) => {
+        const boardCoord = getStopCoord(leg.board_stop_id)
+        const alightCoord = getStopCoord(leg.alight_stop_id)
 
-          // Inner vibrant Blue line
-          L.polyline(metroCoords, {
-            color: '#0070BA',
-            weight: 5.5,
-            opacity: 1.0,
-          }).addTo(lg)
+        if (!boardCoord || !alightCoord) return
 
-          // Subtle animated dashed inner pulse
-          L.polyline(metroCoords, {
-            color: '#BAE6FD',
-            weight: 2,
-            opacity: 0.8,
-            dashArray: '8, 12',
-            className: 'delhi-path-flow',
-          }).addTo(lg)
+        // Build path: board -> intermediate stops -> alight
+        const legPath: [number, number][] = [boardCoord]
+
+        if (leg.intermediate_stop_ids && leg.intermediate_stop_ids.length > 0) {
+          leg.intermediate_stop_ids.forEach(intId => {
+            const intCoord = getStopCoord(intId)
+            if (intCoord) legPath.push(intCoord)
+          })
         }
+        legPath.push(alightCoord)
+        legPath.forEach(c => allJourneyCoords.push(c))
 
-        // Leg 2: Bus 764 from Rajiv Chowk to Noida City Centre (Royal Navy with White Casing)
-        const busCoords: [number, number][] = [
-          RAJIV_COORD,
-          MANDI_COORD,
-          MAYUR_COORD,
-          NOIDA_COORD,
-        ]
+        const isBus = leg.route_type === 'bus' || leg.route_name.toLowerCase().includes('bus')
+        const color = isBus ? '#1D4ED8' : (leg.route_color || '#0070BA')
 
-        if (showBus) {
-          // White outer casing
-          L.polyline(busCoords, {
-            color: '#FFFFFF',
-            weight: 9,
-            opacity: 0.95,
-          }).addTo(lg)
+        // Outer white casing for crisp visibility
+        L.polyline(legPath, {
+          color: '#FFFFFF',
+          weight: 9,
+          opacity: 0.95,
+        }).addTo(lg)
 
-          // Inner Royal Blue line
-          L.polyline(busCoords, {
-            color: '#1D4ED8',
-            weight: 5.5,
-            opacity: 1.0,
-          }).addTo(lg)
+        // Inner vibrant mode line
+        L.polyline(legPath, {
+          color,
+          weight: 5.5,
+          opacity: 1.0,
+        }).addTo(lg)
 
-          // Subtle animated dashed inner pulse
-          L.polyline(busCoords, {
-            color: '#BFDBFE',
-            weight: 2,
-            opacity: 0.8,
-            dashArray: '8, 12',
-            className: 'delhi-path-flow',
-          }).addTo(lg)
+        // Flow dashed inner animation
+        L.polyline(legPath, {
+          color: isBus ? '#BFDBFE' : '#BAE6FD',
+          weight: 2,
+          opacity: 0.85,
+          dashArray: '8, 12',
+          className: 'delhi-path-flow',
+        }).addTo(lg)
+
+        // Transfer badge between legs
+        if (index > 0) {
+          const transferStopName = getStopName(leg.board_stop_id)
+          const transferIcon = L.divIcon({
+            className: 'delhi-pin-transfer',
+            html: `
+              <div style="position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; pointer-events: auto;">
+                <div style="background: #0284C7; color: #FFFFFF; padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 2px solid #FFFFFF; white-space: nowrap; box-shadow: 0 4px 14px rgba(2,132,199,0.45); display: flex; align-items: center; gap: 5px;">
+                  <span style="font-size: 11px;">⇄</span>
+                  <span>${transferStopName.toUpperCase()} • transfer</span>
+                </div>
+              </div>
+            `,
+            iconSize: [0, 0],
+          })
+          L.marker(boardCoord, { icon: transferIcon }).addTo(lg)
         }
-      } else {
-        // Lowest Cost: Entire Bus Corridor
-        const busWholeCoords: [number, number][] = [
-          DWARKA_COORD,
-          [28.59, 77.10],
-          CP_COORD,
-          MANDI_COORD,
-          MAYUR_COORD,
-          NOIDA_COORD,
-        ]
+      })
 
-        if (showBus) {
-          L.polyline(busWholeCoords, {
-            color: '#FFFFFF',
-            weight: 9,
-            opacity: 0.95,
-          }).addTo(lg)
+      // Origin Hero Pin
+      const firstLeg = activeJourney.legs[0]
+      const originCoord = getStopCoord(firstLeg.board_stop_id) || getStopCoord(originStopId)
+      const originLabel = getStopName(firstLeg.board_stop_id) || getStopName(originStopId) || 'ORIGIN'
 
-          L.polyline(busWholeCoords, {
-            color: '#1D4ED8',
-            weight: 5.5,
-            opacity: 1.0,
-          }).addTo(lg)
-
-          L.polyline(busWholeCoords, {
-            color: '#BFDBFE',
-            weight: 2,
-            opacity: 0.8,
-            dashArray: '8, 12',
-            className: 'delhi-path-flow',
-          }).addTo(lg)
-        }
+      if (originCoord) {
+        allJourneyCoords.push(originCoord)
+        const originIcon = L.divIcon({
+          className: 'delhi-pin-origin',
+          html: `
+            <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
+              <div style="background-color: #B45309; color: #FFFFFF; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(180,83,9,0.45); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 10px; background: rgba(255,255,255,0.25); border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">●</span>
+                <span>${originLabel.toUpperCase()}</span>
+              </div>
+            </div>
+          `,
+          iconSize: [0, 0],
+        })
+        L.marker(originCoord, { icon: originIcon }).addTo(lg)
       }
 
-      // Origin Hero Pin Marker (Dwarka Sec 21) - Warm Gold Pill
-      const originIcon = L.divIcon({
-        className: 'delhi-pin-origin',
-        html: `
-          <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
-            <div style="background-color: #B45309; color: #FFFFFF; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(180,83,9,0.45); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
-              <span style="font-size: 10px; background: rgba(255,255,255,0.25); border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">●</span>
-              <span>DWARKA SEC 21</span>
-            </div>
-          </div>
-        `,
-        iconSize: [0, 0],
-      })
-      L.marker(DWARKA_COORD, { icon: originIcon }).addTo(lg)
+      // Destination Hero Pin
+      const lastLeg = activeJourney.legs[activeJourney.legs.length - 1]
+      const destCoord = getStopCoord(lastLeg.alight_stop_id) || getStopCoord(destinationStopId)
+      const destLabel = getStopName(lastLeg.alight_stop_id) || getStopName(destinationStopId) || 'DESTINATION'
 
-      // Transfer Hero Marker (Rajiv Chowk) - Target Blue Pill
-      const transferIcon = L.divIcon({
-        className: 'delhi-pin-transfer',
-        html: `
-          <div style="position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; pointer-events: auto;">
-            <div style="background: #0284C7; color: #FFFFFF; padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 2px solid #FFFFFF; white-space: nowrap; box-shadow: 0 4px 14px rgba(2,132,199,0.45); display: flex; align-items: center; gap: 5px;">
-              <span style="font-size: 11px;">⇄</span>
-              <span>RAJIV CHOWK • 5m transfer</span>
+      if (destCoord) {
+        allJourneyCoords.push(destCoord)
+        const destIcon = L.divIcon({
+          className: 'delhi-pin-dest',
+          html: `
+            <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
+              <div style="background-color: #1A2E3B; color: #FFFFFF; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(26,46,59,0.5); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
+                <span style="color: #E11D48; font-size: 12px;">●</span>
+                <span>${destLabel.toUpperCase()}</span>
+              </div>
             </div>
-          </div>
-        `,
-        iconSize: [0, 0],
-      })
-      L.marker(RAJIV_COORD, { icon: transferIcon }).addTo(lg)
+          `,
+          iconSize: [0, 0],
+        })
+        L.marker(destCoord, { icon: destIcon }).addTo(lg)
+      }
 
-      // Destination Hero Pin Marker (Noida City Centre) - Target Dark Navy Pill
-      const destIcon = L.divIcon({
-        className: 'delhi-pin-dest',
-        html: `
-          <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
-            <div style="background-color: #1A2E3B; color: #FFFFFF; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(26,46,59,0.5); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
-              <span style="color: #E11D48; font-size: 12px;">●</span>
-              <span>NOIDA CITY CENTRE</span>
-            </div>
-          </div>
-        `,
-        iconSize: [0, 0],
-      })
-      L.marker(NOIDA_COORD, { icon: destIcon }).addTo(lg)
+      // Automatically frame map around active journey
+      if (allJourneyCoords.length > 0 && mapRef.current) {
+        try {
+          mapRef.current.fitBounds(L.latLngBounds(allJourneyCoords), {
+            padding: [60, 60],
+            maxZoom: 13,
+            animate: true,
+            duration: 0.8,
+          })
+        } catch {}
+      }
     }
   }, [
     stops,
