@@ -87,11 +87,16 @@ export default function DelhiMap({
   const [mapStyle, setMapStyle] = useState<MapStyle>(() => {
     try {
       const saved = localStorage.getItem('aaroh_map_style') as MapStyle
+      // Clear out deprecated CARTO watermark styles
+      if (saved === 'voyager' || saved === 'sandstone' || saved === 'positron') {
+        localStorage.setItem('aaroh_map_style', 'hot')
+        return 'hot'
+      }
       if (saved && MAP_STYLES_CATALOG.some(s => s.id === saved)) return saved
       const savedTheme = localStorage.getItem('aaroh_theme')
       if (savedTheme === 'dark') return 'dark'
     } catch {}
-    return 'voyager' // Default to Apple Maps style
+    return 'hot' // Default to Apple Pastel (100% Watermark-Free!)
   })
   const [showLayerDrawer, setShowLayerDrawer] = useState(false)
   const [layerFilter, setLayerFilter] = useState<'all' | 'apple' | 'satellite' | 'transit'>('all')
@@ -156,7 +161,7 @@ export default function DelhiMap({
       if (customEvent.detail?.theme === 'dark') {
         setMapStyle('dark')
       } else {
-        setMapStyle('voyager')
+        setMapStyle('hot')
       }
     }
     try {
@@ -184,8 +189,11 @@ export default function DelhiMap({
       map.removeLayer(tileLayerRef.current)
     }
 
-    // Resolve 'sandstone' alias to 'voyager' (Apple Maps style)
-    const effectiveId = style === 'sandstone' ? 'voyager' : style
+    // Resolve legacy aliases to watermark-free providers
+    let effectiveId: MapStyle = style
+    if (style === 'voyager' || style === 'sandstone') effectiveId = 'hot'
+    if (style === 'positron') effectiveId = 'gray'
+    if (style === 'dark_gray') effectiveId = 'dark'
     const conf = MAP_STYLES_CATALOG.find(s => s.id === effectiveId) || MAP_STYLES_CATALOG[0]
 
     const newLayer = L.tileLayer(conf.url, {
@@ -895,9 +903,9 @@ export default function DelhiMap({
           <div className="flex rounded-full bg-white border border-[#EDE8E1] p-0.5 sm:p-1 shadow-md">
             <button
               type="button"
-              onClick={() => setMapStyle('voyager')}
+              onClick={() => setMapStyle('hot')}
               className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
-                mapStyle === 'voyager' || mapStyle === 'sandstone' || mapStyle === 'positron'
+                mapStyle === 'hot' || mapStyle === 'gray' || mapStyle === 'voyager' || mapStyle === 'sandstone'
                   ? 'bg-[#1A2E3B] text-white shadow-2xs'
                   : 'text-[#6E665D] hover:text-[#1A2E3B]'
               }`}
@@ -1014,7 +1022,7 @@ export default function DelhiMap({
           {/* Catalog Grid */}
           <div className="pt-2 max-h-[300px] sm:max-h-[340px] overflow-y-auto space-y-2 pr-1 scrollbar-thin">
             {MAP_STYLES_CATALOG.filter(item => layerFilter === 'all' || item.category === layerFilter).map(item => {
-              const isSelected = mapStyle === item.id || (item.id === 'voyager' && mapStyle === 'sandstone')
+              const isSelected = mapStyle === item.id || (item.id === 'hot' && (mapStyle === 'voyager' || mapStyle === 'sandstone' || mapStyle === 'hot'))
               return (
                 <button
                   key={item.id}

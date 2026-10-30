@@ -1,15 +1,18 @@
 export type MapStyle =
-  | 'voyager'
-  | 'dark'
-  | 'positron'
-  | 'satellite'
-  | 'streets'
-  | 'topo'
   | 'hot'
-  | 'natgeo'
   | 'gray'
-  | 'dark_gray'
-  | 'sandstone'
+  | 'dark'
+  | 'streets'
+  | 'satellite'
+  | 'topo'
+  | 'cyclosm'
+  | 'natgeo'
+  | 'osm'
+  | 'opentopo'
+  | 'voyager'    // Legacy alias mapped to 'hot'
+  | 'sandstone'  // Legacy alias mapped to 'hot'
+  | 'positron'   // Legacy alias mapped to 'gray'
+  | 'dark_gray'  // Legacy alias mapped to 'dark'
 
 export interface MapStyleConfig {
   id: MapStyle
@@ -27,55 +30,42 @@ export interface MapStyleConfig {
 
 export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
   {
-    id: 'voyager',
-    name: 'Apple Maps (Voyager)',
-    engine: 'CARTO Fastly CDN',
+    id: 'hot',
+    name: 'Apple Pastel (Humanitarian)',
+    engine: 'OSM Humanitarian CDN',
     category: 'apple',
-    tagline: 'Signature Apple Maps look with smooth roads, clean pastel greenery & zero clutter.',
+    tagline: 'Apple Maps pastel aesthetic with soft green parks, warm cream roads & zero watermarks.',
     badge: 'Apple Style',
     swatchBg: 'from-[#E0F2FE] via-[#BAE6FD] to-[#38BDF8]',
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; CARTO &copy; OpenStreetMap',
+    url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap contributors, Humanitarian OSM Team',
     maxZoom: 19,
-    subdomains: 'abcd',
+    subdomains: 'abc',
+  },
+  {
+    id: 'gray',
+    name: 'Apple Minimal (Light Gray)',
+    engine: 'Esri Canvas Light',
+    category: 'apple',
+    tagline: 'Ultra-clean Apple monochrome light canvas with maximum transit route contrast.',
+    badge: 'Clean Vector',
+    swatchBg: 'from-[#F8FAFC] via-[#E2E8F0] to-[#CBD5E1]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, HERE, Garmin',
+    maxZoom: 16,
+    subdomains: 'abc',
   },
   {
     id: 'dark',
-    name: 'Apple Midnight (Dark)',
-    engine: 'CARTO Dark Matter',
+    name: 'Apple Midnight (Dark Slate)',
+    engine: 'Esri Canvas Dark',
     category: 'apple',
-    tagline: 'Apple Dark Mode with deep obsidian contrast for glowing metro lines.',
+    tagline: 'Pure obsidian dark mode where neon Delhi Metro lines glow with zero watermarks.',
     badge: 'Night Mode',
     swatchBg: 'from-[#0F172A] via-[#1E293B] to-[#334155]',
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; CARTO &copy; OpenStreetMap',
-    maxZoom: 19,
-    subdomains: 'abcd',
-  },
-  {
-    id: 'positron',
-    name: 'Minimal Light (Positron)',
-    engine: 'CARTO Positron',
-    category: 'apple',
-    tagline: 'Ultra-clean Apple monochrome style for high readability and focus.',
-    badge: 'Clean Vector',
-    swatchBg: 'from-[#F8FAFC] via-[#E2E8F0] to-[#CBD5E1]',
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; CARTO &copy; OpenStreetMap',
-    maxZoom: 19,
-    subdomains: 'abcd',
-  },
-  {
-    id: 'satellite',
-    name: 'Photoreal Satellite',
-    engine: 'Esri World Imagery',
-    category: 'satellite',
-    tagline: 'High-resolution aerial satellite photography across Delhi NCR & Yamuna.',
-    badge: 'Photoreal',
-    swatchBg: 'from-[#064E3B] via-[#047857] to-[#10B981]',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
-    maxZoom: 18,
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, DeLorme, NAVTEQ',
+    maxZoom: 16,
     subdomains: 'abc',
   },
   {
@@ -92,6 +82,19 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     subdomains: 'abc',
   },
   {
+    id: 'satellite',
+    name: 'Photoreal Aerial Satellite',
+    engine: 'Esri World Imagery',
+    category: 'satellite',
+    tagline: 'High-resolution aerial satellite photography across Delhi NCR & Yamuna.',
+    badge: 'Photoreal',
+    swatchBg: 'from-[#064E3B] via-[#047857] to-[#10B981]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+    maxZoom: 18,
+    subdomains: 'abc',
+  },
+  {
     id: 'topo',
     name: 'Delhi Topographic',
     engine: 'Esri World Topo',
@@ -105,15 +108,15 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     subdomains: 'abc',
   },
   {
-    id: 'hot',
-    name: 'Urban Transit (HOT)',
-    engine: 'OSM Humanitarian',
+    id: 'cyclosm',
+    name: 'Urban Transit & Mobility',
+    engine: 'CyclOSM Fast CDN',
     category: 'transit',
-    tagline: 'Pedestrian corridors, bus priority lanes, and city landmarks.',
-    badge: 'Transit Focus',
-    swatchBg: 'from-[#FFE4E6] via-[#FECDD3] to-[#FB7185]',
-    url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-    attribution: '&copy; OpenStreetMap contributors, Humanitarian OSM',
+    tagline: 'Dedicated urban mobility, bus priority corridors, and pedestrian paths.',
+    badge: 'Mobility',
+    swatchBg: 'from-[#DCFCE7] via-[#86EFAC] to-[#16A34A]',
+    url: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap contributors, CyclOSM',
     maxZoom: 19,
     subdomains: 'abc',
   },
@@ -131,30 +134,29 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     subdomains: 'abc',
   },
   {
-    id: 'gray',
-    name: 'Light Gray Canvas',
-    engine: 'Esri Canvas Light',
+    id: 'osm',
+    name: 'OpenStreetMap Standard',
+    engine: 'OpenStreetMap Community',
     category: 'transit',
-    tagline: 'Soft studio gray base engineered for bus GPS & route clarity.',
-    badge: 'Data Canvas',
-    swatchBg: 'from-[#F1F5F9] via-[#E2E8F0] to-[#94A3B8]',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-    attribution: '&copy; Esri, HERE, Garmin',
-    maxZoom: 16,
+    tagline: 'Global crowdsourced base cartography with landmark labels.',
+    badge: 'Community',
+    swatchBg: 'from-[#E2E8F0] via-[#CBD5E1] to-[#94A3B8]',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19,
     subdomains: 'abc',
   },
   {
-    id: 'dark_gray',
-    name: 'Dark Slate Canvas',
-    engine: 'Esri Canvas Dark',
+    id: 'opentopo',
+    name: 'OpenTopoMap Contours',
+    engine: 'OpenTopoMap Global',
     category: 'transit',
-    tagline: 'Modern midnight charcoal canvas for night travel and telemetry.',
-    badge: 'Dark Slate',
-    swatchBg: 'from-[#0F172A] via-[#1E293B] to-[#475569]',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-    attribution: '&copy; Esri, DeLorme, NAVTEQ',
-    maxZoom: 16,
+    tagline: 'Crisp European topographic contours, hillshading, and rail corridors.',
+    badge: 'Contours',
+    swatchBg: 'from-[#FEF3C7] via-[#FDE68A] to-[#B45309]',
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap contributors, SRTM',
+    maxZoom: 17,
     subdomains: 'abc',
   },
 ]
-
