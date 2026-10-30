@@ -12,7 +12,7 @@
 
 AAROH—SAARTHI is a production-grade, dual-module urban mobility platform engineered for the National Capital Territory of Delhi. The application merges static GTFS schedules from the Delhi Transport Stack (DTC Buses) and the Delhi Metro Rail Corporation (DMRC) with live statutory tariffs from the PoochhO (DIMTS) auto-rickshaw network to deliver:
 
-1. **Passenger Multimodal Route Assistant:** An editorial 3-column interface delivering fastest and lowest-cost journey recommendations across metro rail, DTC buses, and last-mile auto-rickshaws, complete with interactive Leaflet cartography, fare calculation, intermediate stops, transfer wait penalties, and offline timetable heuristics.
+1. **Passenger Multimodal Route Assistant:** An editorial 5-column interface delivering fastest and lowest-cost journey recommendations across metro rail, DTC buses, and last-mile auto-rickshaws, complete with interactive Leaflet cartography, fare calculation, intermediate stops, transfer wait penalties, and offline timetable heuristics.
 2. **Intelligent Fleet Coordination Engine:** An operations control center for transit operators to monitor vehicle rosters, simulate dynamic route disruptions (vehicle breakdowns, corridor congestion), evaluate algorithmic mitigations via graph recalculations, and approve intervention scenarios with audit logging.
 
 ### Technology Stack Matrix
@@ -171,6 +171,7 @@ aaroh-saarthi/
         │   │   └── AssistantPanel.tsx
         │   │
         │   ├── journey/
+        │   │   ├── CashbackPerksModal.tsx
         │   │   └── JourneyPlanner.tsx
         │   │
         │   ├── layout/
@@ -361,6 +362,7 @@ aaroh-saarthi/
 | `frontend/src/components/layout/AppHeader.tsx` | 6,797 | Top navigation header. Features `AAROH—SAARTHI` brand mark in DM Serif Display, subtitle, navigation tabs (`Plan Journey`, `Live Map`, `Fleet`, `Disruptions`, `Analytics`), live FastAPI connectivity indicator, Delhi NCR location picker, Data Sources modal trigger, and profile avatar. |
 | `frontend/src/components/layout/AppShell.tsx` | 1,280 | Orchestrates the desktop 16:9 layout grid: Left Column (~26%), Center Map (~44%), Right Comparison (~30%), and bottom full-width drawer. |
 | `frontend/src/components/journey/JourneyPlanner.tsx` | 14,758 | Commuter search panel. Features searchable Origin/Destination selectors, swap button (`⇅`), popular Delhi hub chips, Depart At toggles (`Now`/`Later`), Weekday/Weekend selector, travel preferences (`⚡ Fastest` / `💰 Cheapest`), transport mode pills (`All`, `🚇 Metro`, `🚍 Bus`, `🛺 Auto`), and full-width gold submit button. |
+| `frontend/src/components/journey/CashbackPerksModal.tsx` | 8,240 | Dedicated dialog and calculator answering the Cashback Question. Calculates 10%–20% Smart Card savings, DTC Pink Ticket free travel, and ₹40/₹50 daily pass unlimited benefits. |
 | `frontend/src/components/assistant/AssistantPanel.tsx` | 7,347 | AI transit assistant positioned under the planner. Features question chips, chat history, timetable-grounded answers, and clear conversation action. |
 | `frontend/src/components/map/DelhiMap.tsx` | 17,948 | Centerpiece Leaflet map. Implements low-contrast warm parchment cartography tiles, renders Metro lines in ochre-gold (`#C49A43`) and Bus lines in deep navy (`#172D3B`), renders stop markers with interactive popups (`📍 Set Origin` / `🎯 Set Dest`), highlights active journey polyline, and provides corridor filters. |
 | `frontend/src/components/routes/JourneyCard.tsx` | 14,910 | Detailed route card displaying duration, arrival time, fare, timeline legs, intermediate stops toggle, transfer wait box, `★ Save Route`, `📋 Copy`, and `View on Map` actions. |
@@ -447,3 +449,4 @@ aaroh-saarthi/
 | **Git Working Tree** | **Clean** | Synced with GitHub remote (`origin/main`) |
 | **Backend Port** | `8000` | FastAPI ASGI server running on `http://127.0.0.1:8000` |
 | **Frontend Port** | `5173` | Vite dev server running on `http://127.0.0.1:5173` |
+

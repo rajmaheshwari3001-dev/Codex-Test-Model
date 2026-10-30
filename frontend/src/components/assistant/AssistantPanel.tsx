@@ -89,19 +89,22 @@ export default function AssistantPanel({ serviceDay }: Props) {
   }
 
   return (
-    <div className="flex flex-col rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] shadow-xs text-[#29343A] overflow-hidden">
+    <aside
+      aria-labelledby="assistant-panel-heading"
+      className="flex flex-col rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] shadow-xs text-[#29343A] overflow-hidden animate-fade-in"
+    >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#DAD3C6] px-4 py-3 bg-[#F5F0E6]">
+      <header className="flex items-center justify-between border-b border-[#DAD3C6] px-4 py-3 bg-[#F5F0E6]">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#C49A43] text-white text-xs font-bold shadow-2xs">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#C49A43] text-white text-xs font-bold shadow-2xs" aria-hidden="true">
             ✦
           </div>
           <div>
-            <h3 className="font-serif text-sm font-bold text-[#172D3B]">
+            <h3 id="assistant-panel-heading" className="font-serif text-sm font-bold text-[#172D3B]">
               Ask AAROH-SAARTHI
             </h3>
             <p className="text-[10px] text-[#73766F]">
-              Get instant answers about routes, fares, delays and more.
+              Get instant answers about routes, fares, delays and more
             </p>
           </div>
         </div>
@@ -109,14 +112,20 @@ export default function AssistantPanel({ serviceDay }: Props) {
         <button
           type="button"
           onClick={handleClear}
+          aria-label="Clear chat conversation"
           className="text-[10px] font-semibold text-[#73766F] hover:text-[#172D3B] px-2 py-0.5 rounded border border-[#DAD3C6] hover:bg-[#EDE7DB] transition-colors"
         >
           Clear
         </button>
-      </div>
+      </header>
 
       {/* Messages Scroll Area */}
-      <div className="h-64 overflow-y-auto p-3.5 space-y-3 bg-[#FBF8F1]">
+      <div
+        role="log"
+        aria-live="polite"
+        aria-label="Transit conversation history"
+        className="h-60 sm:h-64 overflow-y-auto p-3.5 space-y-3 bg-[#FBF8F1]"
+      >
         {messages.map(m => (
           <div
             key={m.id}
@@ -131,14 +140,14 @@ export default function AssistantPanel({ serviceDay }: Props) {
             >
               <div className="whitespace-pre-line">{m.text}</div>
             </div>
-            <span className="mt-1 px-1 text-[10px] text-[#73766F] font-mono">
+            <time className="mt-1 px-1 text-[10px] text-[#73766F] font-mono">
               {m.timestamp}
-            </span>
+            </time>
           </div>
         ))}
 
         {loading && (
-          <div className="flex items-center gap-2 rounded-xl bg-white border border-[#DAD3C6] p-2.5 text-xs text-[#73766F]">
+          <div className="flex items-center gap-2 rounded-xl bg-white border border-[#DAD3C6] p-2.5 text-xs text-[#73766F]" role="status">
             <span className="h-3 w-3 animate-spin rounded-full border-2 border-[#C49A43] border-t-transparent" />
             <span>Consulting Delhi transit database…</span>
           </div>
@@ -149,7 +158,7 @@ export default function AssistantPanel({ serviceDay }: Props) {
 
       {/* Suggested Questions */}
       <div className="border-t border-[#DAD3C6] bg-[#F5F0E6] px-3 py-2">
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1" role="group" aria-label="Suggested transit questions">
           {SUGGESTED_QUESTIONS.map(q => (
             <button
               key={q}
@@ -165,9 +174,9 @@ export default function AssistantPanel({ serviceDay }: Props) {
       </div>
 
       {/* Message Input & Gold Send Button */}
-      <div className="border-t border-[#DAD3C6] bg-[#FFFFFF] p-2.5">
+      <footer className="border-t border-[#DAD3C6] bg-[#FFFFFF] p-2.5">
         {errorMsg && (
-          <div className="mb-1 text-[10px] text-[#A64C42] font-semibold">{errorMsg}</div>
+          <div role="alert" className="mb-1 text-[10px] text-[#A64C42] font-semibold">{errorMsg}</div>
         )}
         <form
           onSubmit={e => {
@@ -176,7 +185,11 @@ export default function AssistantPanel({ serviceDay }: Props) {
           }}
           className="flex items-center gap-2"
         >
+          <label htmlFor="assistant-query-input" className="sr-only">
+            Ask transit question
+          </label>
           <input
+            id="assistant-query-input"
             type="text"
             placeholder="Ask a transit question..."
             value={input}
@@ -187,12 +200,13 @@ export default function AssistantPanel({ serviceDay }: Props) {
           <button
             type="submit"
             disabled={loading || !input.trim()}
+            aria-label="Send message to transit assistant"
             className="rounded-lg bg-[#C49A43] hover:bg-[#A97C2E] px-3 py-1.5 text-xs font-bold text-white transition-all disabled:opacity-40 shadow-2xs"
           >
             Send
           </button>
         </form>
-      </div>
-    </div>
+      </footer>
+    </aside>
   )
 }

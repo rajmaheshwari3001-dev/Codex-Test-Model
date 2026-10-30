@@ -1,6 +1,6 @@
 {
   "application": "Aaroh-Saarthi Delhi Multimodal Transit Engine",
-  "last_pipeline_run": "2026-10-30T05:43:13.340135+00:00",
+  "last_pipeline_run": "2026-10-30T06:15:08.848510+00:00",
   "version": "2.2.0",
   "datasets": {
     "poochho": {

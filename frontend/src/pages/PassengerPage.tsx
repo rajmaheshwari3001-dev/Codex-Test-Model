@@ -11,6 +11,7 @@ import DelhiMap from '../components/map/DelhiMap'
 import JourneyComparison from '../components/routes/JourneyComparison'
 import SavedJourneysBar from '../components/saved/SavedJourneysBar'
 import DataProvenanceModal from '../components/DataProvenanceModal'
+import CashbackPerksModal from '../components/journey/CashbackPerksModal'
 
 interface NoResultContext {
   origin: string
@@ -91,6 +92,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [modePreference, setModePreference] = useState<ModePreference>('all')
   const [maxBudget, setMaxBudget] = useState<string>('')
   const [showProvenanceModal, setShowProvenanceModal] = useState(false)
+  const [showCashbackModal, setShowCashbackModal] = useState(false)
   const [poochhoEstimate, setPoochhOEstimate] = useState<PoochhOEstimate | null>(null)
 
   function loadInitialData() {
@@ -245,26 +247,32 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const destinationName = stops.find(stop => stop.stop_id === destination)?.stop_name || destination || 'Destination'
 
   return (
-    <div className="space-y-4">
+    <main
+      id="main-content"
+      role="main"
+      aria-label="AAROH-SAARTHI Delhi Transit Assistant"
+      className="space-y-4 animate-fade-in"
+    >
       {/* Toast Alert / Status Feedback */}
       {saveToast && (
-        <div
+        <aside
           role="status"
-          className="flex items-center gap-2 rounded-lg border border-[#547A60]/40 bg-[#EBF4F0] px-4 py-2.5 text-xs font-bold text-[#547A60] shadow-xs"
+          aria-live="polite"
+          className="flex items-center gap-2 rounded-lg border border-[#547A60]/40 bg-[#EBF4F0] px-4 py-2.5 text-xs font-bold text-[#547A60] shadow-xs animate-slide-in-right"
         >
           <span>✓</span>
           <span>{saveToast}</span>
-        </div>
+        </aside>
       )}
 
       {message && (
-        <div
+        <aside
           role="alert"
-          className="flex items-center gap-2 rounded-lg border border-[#A64C42]/30 bg-[#F9EBEA] p-3 text-xs font-semibold text-[#A64C42]"
+          className="flex items-center gap-2 rounded-lg border border-[#A64C42]/30 bg-[#F9EBEA] p-3 text-xs font-semibold text-[#A64C42] animate-fade-in"
         >
           <span>⚠️</span>
           <span>{message}</span>
-        </div>
+        </aside>
       )}
 
       {/* 3-Column Orchestration Shell */}
@@ -289,6 +297,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
               setMaxBudget={setMaxBudget}
               onSearch={handleSearch}
               loading={loading}
+              onOpenCashbackModal={() => setShowCashbackModal(true)}
             />
 
             <AssistantPanel serviceDay={serviceDay} />
@@ -297,7 +306,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         centerColumn={
           <div className="space-y-3">
             {/* Quick Corridor Selection Strip */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+            <nav aria-label="Key Delhi Corridors" className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs scrollbar-thin">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#73766F] shrink-0">
                 Key Links:
               </span>
@@ -308,6 +317,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
                     key={corridor.routeId}
                     type="button"
                     onClick={() => handleCorridorClick(corridor)}
+                    aria-pressed={isMatch}
                     className={`flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-bold border transition-all shrink-0 ${
                       isMatch
                         ? 'border-[#C49A43] bg-[#FBF8F1] text-[#172D3B] ring-1 ring-[#C49A43]'
@@ -317,12 +327,13 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
                     <span
                       className="h-2 w-2 rounded-full inline-block"
                       style={{ backgroundColor: corridor.color }}
+                      aria-hidden="true"
                     />
                     <span>{corridor.originName.split(' ')[0]} ➔ {corridor.destName.split(' ')[0]}</span>
                   </button>
                 )
               })}
-            </div>
+            </nav>
 
             {/* Centerpiece Delhi Map */}
             <DelhiMap
@@ -338,16 +349,16 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         }
         rightColumn={
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-[#DAD3C6] pb-2 text-xs">
-              <span className="font-serif font-bold text-sm text-[#172D3B]">
+            <header className="flex items-center justify-between border-b border-[#DAD3C6] pb-2 text-xs">
+              <h2 className="font-serif font-bold text-sm text-[#172D3B]">
                 Route Comparison
-              </span>
+              </h2>
               {options.length > 0 && (
                 <span className="font-mono text-[11px] text-[#73766F]">
                   {options.length} {options.length === 1 ? 'Option' : 'Options'} Ranked
                 </span>
               )}
-            </div>
+            </header>
 
             <JourneyComparison
               options={options}
@@ -360,6 +371,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
               loading={loading}
               onRetryTime={retryTime => handleSearch(origin, destination, retryTime, preference, serviceDay, modePreference, maxBudget)}
               onSelectAutoMode={() => handleSearch(origin, destination, time, preference, serviceDay, 'auto', maxBudget)}
+              onOpenCashbackModal={() => setShowCashbackModal(true)}
               originName={originName}
               destinationName={destinationName}
               serviceDay={serviceDay}
@@ -378,6 +390,12 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         isOpen={showProvenanceModal}
         onClose={() => setShowProvenanceModal(false)}
       />
-    </div>
+
+      <CashbackPerksModal
+        isOpen={showCashbackModal}
+        onClose={() => setShowCashbackModal(false)}
+        currentFare={selected?.total_fare}
+      />
+    </main>
   )
 }

@@ -21,6 +21,7 @@ interface Props {
   loading: boolean
   onRetryTime?: (time: string) => void
   onSelectAutoMode?: () => void
+  onOpenCashbackModal?: () => void
   originName?: string
   destinationName?: string
   serviceDay?: string
@@ -39,6 +40,7 @@ export default function JourneyComparison({
   loading,
   onRetryTime,
   onSelectAutoMode,
+  onOpenCashbackModal,
   originName = 'Origin',
   destinationName = 'Destination',
   serviceDay = 'weekday',
@@ -53,16 +55,20 @@ export default function JourneyComparison({
     (fastestOption.total_duration_minutes !== cheapestOption.total_duration_minutes ||
       fastestOption.total_fare !== cheapestOption.total_fare)
 
-  // Other options that are neither the primary fastest nor primary cheapest
+  // Other options that are neither primary fastest nor primary cheapest
   const otherOptions = options.filter(
     o => o.option_id !== fastestOption?.option_id && o.option_id !== cheapestOption?.option_id
   )
 
   return (
-    <div className="space-y-4">
+    <section aria-labelledby="comparison-heading" className="space-y-4">
+      <h2 id="comparison-heading" className="sr-only">
+        Journey Options and Comparison
+      </h2>
+
       {/* Loading Skeleton */}
       {loading && (
-        <div className="space-y-3">
+        <div className="space-y-3" role="status" aria-live="polite">
           <div className="rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] p-5 animate-pulse space-y-3">
             <div className="h-4 bg-[#EDE7DB] rounded w-1/3" />
             <div className="h-8 bg-[#EDE7DB] rounded w-full" />
@@ -73,12 +79,13 @@ export default function JourneyComparison({
             <div className="h-8 bg-[#EDE7DB] rounded w-full" />
             <div className="h-16 bg-[#EDE7DB] rounded w-full" />
           </div>
+          <span className="sr-only">Searching available transit connections...</span>
         </div>
       )}
 
-      {/* No Search Executed Yet / Default State */}
+      {/* Default State */}
       {!loading && options.length === 0 && !noResultContext && (
-        <div className="rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] p-6 text-center space-y-3 shadow-xs">
+        <div className="rounded-xl border border-[#DAD3C6] bg-[#FBF8F1] p-6 text-center space-y-3 shadow-xs animate-fade-in">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#EDE7DB] text-2xl">
             🧭
           </div>
@@ -95,7 +102,7 @@ export default function JourneyComparison({
 
       {/* Timetable Schedule Notice (Out of hours or no connection) */}
       {!loading && noResultContext && (
-        <div className="space-y-3">
+        <div className="space-y-3 animate-fade-in">
           <section
             role="status"
             className="rounded-xl border border-[#C49A43]/40 bg-[#F5F0E6] p-4 text-xs text-[#29343A] space-y-2.5 shadow-xs"
@@ -143,7 +150,7 @@ export default function JourneyComparison({
             )}
           </section>
 
-          {/* 24/7 PoochhO Auto fallback when public transit is closed or unserved */}
+          {/* 24/7 PoochhO Auto fallback */}
           {poochhoEstimate && (
             <PoochhOEstimateCard
               estimate={poochhoEstimate}
@@ -156,7 +163,7 @@ export default function JourneyComparison({
 
       {/* Comparison Insight Callout */}
       {!loading && hasDistinctComparison && fastestOption && cheapestOption && (
-        <div className="rounded-lg border border-[#DAD3C6] bg-[#FFFFFF] p-3 text-xs text-[#29343A] space-y-1 shadow-2xs">
+        <div className="rounded-lg border border-[#DAD3C6] bg-[#FFFFFF] p-3 text-xs text-[#29343A] space-y-1 shadow-2xs animate-fade-in">
           <div className="flex items-center gap-1.5 font-bold text-[#172D3B]">
             <span>📊</span>
             <span>Route Comparison Insight</span>
@@ -188,7 +195,7 @@ export default function JourneyComparison({
 
       {/* Primary Result Cards */}
       {!loading && options.length > 0 && (
-        <div className="space-y-3.5">
+        <div className="space-y-3.5 animate-fade-in-up">
           {/* Card A: FASTEST ROUTE */}
           {fastestOption && (
             <JourneyCard
@@ -198,6 +205,7 @@ export default function JourneyComparison({
               onSave={() => onSave(fastestOption)}
               isSaved={savedOptionIds.has(fastestOption.option_id)}
               type="fastest"
+              onOpenCashbackModal={onOpenCashbackModal}
             />
           )}
 
@@ -210,6 +218,7 @@ export default function JourneyComparison({
               onSave={() => onSave(cheapestOption)}
               isSaved={savedOptionIds.has(cheapestOption.option_id)}
               type="cheapest"
+              onOpenCashbackModal={onOpenCashbackModal}
             />
           )}
 
@@ -221,6 +230,7 @@ export default function JourneyComparison({
               onSelect={() => onSelect(options[0])}
               onSave={() => onSave(options[0])}
               isSaved={savedOptionIds.has(options[0].option_id)}
+              onOpenCashbackModal={onOpenCashbackModal}
             />
           )}
 
@@ -233,6 +243,7 @@ export default function JourneyComparison({
               onSelect={() => onSelect(option)}
               onSave={() => onSave(option)}
               isSaved={savedOptionIds.has(option.option_id)}
+              onOpenCashbackModal={onOpenCashbackModal}
             />
           ))}
 
@@ -247,6 +258,6 @@ export default function JourneyComparison({
           )}
         </div>
       )}
-    </div>
+    </section>
   )
 }
