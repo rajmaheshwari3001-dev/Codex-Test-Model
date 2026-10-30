@@ -119,6 +119,16 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
     }
   }, [defaultTab])
 
+  // Close Copilot drawer on Escape key
+  useEffect(() => {
+    if (!showCopilotModal) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowCopilotModal(false)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showCopilotModal])
+
   function loadInitialData() {
     setMessage('')
     // Initialise with canonical Figma template journeys
@@ -489,12 +499,12 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             role="dialog"
             aria-modal="true"
             style={{ zIndex: 9999999, position: 'fixed', inset: 0 }}
-            className="flex items-stretch justify-end bg-black/75 backdrop-blur-sm animate-fade-in"
+            className="flex items-stretch justify-end bg-black/75 backdrop-blur-sm animate-fade-in pointer-events-auto"
             onClick={() => setShowCopilotModal(false)}
           >
             <div
               style={{ zIndex: 10000000 }}
-              className="relative w-full sm:w-[580px] md:w-[640px] lg:w-[700px] h-full flex flex-col bg-white shadow-2xl border-l-2 border-[#C49A43] overflow-hidden"
+              className="relative w-full sm:w-[580px] md:w-[640px] lg:w-[700px] h-full flex flex-col bg-white shadow-2xl border-l-2 border-[#C49A43] overflow-hidden pointer-events-auto"
               onClick={e => e.stopPropagation()}
             >
               <AssistantPanel

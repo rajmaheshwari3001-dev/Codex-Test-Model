@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import type { SavedRoute, Stop } from '../../types'
 import {
   BookmarkIcon,
@@ -47,6 +48,16 @@ export default function AllSavedJourneysModal({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [toast, setToast] = useState('')
+
+  // Close on Escape key press
+  useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, onClose])
 
   if (!isOpen) return null
 
@@ -98,16 +109,20 @@ export default function AllSavedJourneysModal({
     }
   }
 
-  return (
+  const modalContent = (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="all-saved-title"
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#1A2E3B]/60 p-4 backdrop-blur-xs animate-fade-in"
-      onClick={onClose}
+      className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#1A2E3B]/70 p-3 sm:p-4 backdrop-blur-sm pointer-events-auto overflow-y-auto animate-fade-in"
+      onClick={e => {
+        if (e.target === e.currentTarget) {
+          onClose()
+        }
+      }}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl border border-[#EBE5DC] bg-white shadow-2xl p-6 sm:p-7 text-[#1A202C] animate-fade-in"
+        className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl border border-[#EBE5DC] bg-white shadow-2xl p-6 sm:p-7 text-[#1A202C] animate-fade-in pointer-events-auto"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -377,5 +392,7 @@ export default function AllSavedJourneysModal({
       </div>
     </div>
   )
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent
 }
 
