@@ -278,6 +278,34 @@ textarea {
   animation: vehiclePulse 2.5s infinite ease-in-out;
 }
 
+@keyframes stationHalo {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.delhi-station-halo {
+  animation: stationHalo 2.2s infinite ease-out;
+}
+
+/* Map Style Filters */
+.map-tiles-sandstone .leaflet-tile {
+  filter: brightness(0.97) contrast(1.04) saturate(0.85);
+}
+
+.map-tiles-dark .leaflet-tile {
+  filter: brightness(0.65) invert(1) contrast(2.4) hue-rotate(205deg) saturate(0.35);
+}
+
+.map-tiles-satellite .leaflet-tile {
+  filter: none !important;
+}
+
 /* Responsive Delhi Transit Ambient Background (Mobile vs PC) */
 .app-transit-backdrop {
   position: fixed;
