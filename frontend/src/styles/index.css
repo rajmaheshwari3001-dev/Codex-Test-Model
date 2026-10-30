@@ -233,22 +233,49 @@ textarea {
 
 /* Leaflet Popups */
 .leaflet-popup-content-wrapper {
-  background: #FFFCF5 !important;
-  color: #29343A !important;
-  border: 1px solid #D8C8AA !important;
-  border-radius: 14px !important;
-  box-shadow: 0 10px 25px -5px rgba(36, 59, 74, 0.15) !important;
+  background: #FFFFFF !important;
+  color: #1A202C !important;
+  border: 1px solid #EBE5DC !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px -5px rgba(26, 46, 59, 0.18) !important;
   padding: 0 !important;
 }
 
 .leaflet-popup-content {
-  margin: 12px 14px !important;
+  margin: 14px 16px !important;
   line-height: 1.4 !important;
 }
 
 .leaflet-popup-tip {
-  background: #FFFCF5 !important;
-  border: 1px solid #D8C8AA !important;
+  background: #FFFFFF !important;
+  border: 1px solid #EBE5DC !important;
+}
+
+/* Animated Transit Route Flow */
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+.delhi-path-flow path {
+  stroke-dasharray: 8, 8;
+  animation: flowDash 1.2s linear infinite;
+}
+
+@keyframes vehiclePulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(196, 154, 67, 0.6);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 10px rgba(196, 154, 67, 0);
+  }
+}
+
+.delhi-vehicle-live {
+  animation: vehiclePulse 2.5s infinite ease-in-out;
 }
 
 /* Responsive Delhi Transit Ambient Background (Mobile vs PC) */

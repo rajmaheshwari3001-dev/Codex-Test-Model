@@ -451,6 +451,7 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
         <SavedJourneysBar
           onReuse={handleReuse}
           refreshTrigger={savedRefresh}
+          stops={stops}
         />
       </div>
 
