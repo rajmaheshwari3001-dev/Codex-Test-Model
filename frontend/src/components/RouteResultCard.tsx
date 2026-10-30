@@ -102,6 +102,8 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                   ? 'border-[#2196F3]/30 bg-[#E8F4FD] text-[#0D47A1]'
                   : option.primary_mode === 'multimodal'
                   ? 'border-[#9C27B0]/30 bg-[#F3E5F5] text-[#4A148C]'
+                  : option.primary_mode === 'auto'
+                  ? 'border-[#B88A43]/40 bg-[#F4EBD9] text-[#B88A43]'
                   : 'border-[#E8DFCE] bg-[#FAF7F2] text-[#53645F]'
               }`}
             >
@@ -109,6 +111,8 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                 ? '🚇 Metro Rail'
                 : option.primary_mode === 'multimodal'
                 ? '🔄 Bus + Metro Link'
+                : option.primary_mode === 'auto'
+                ? '🛺 PoochhO Auto'
                 : '🚍 Bus Transit'}
             </span>
 
@@ -179,10 +183,13 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
             const isExpanded = expandedLegs[idx] || false
             const boardMeta = getStationMeta(leg.board_stop_id)
             const alightMeta = getStationMeta(leg.alight_stop_id)
+            const isAutoLeg = leg.route_type === 'auto' || leg.route_id === 'POOCHHO_AUTO'
             const isMetroLeg =
-              leg.route_name.toLowerCase().includes('line') ||
-              leg.route_name.toLowerCase().includes('metro') ||
-              leg.route_id.startsWith('M')
+              !isAutoLeg &&
+              (leg.route_name.toLowerCase().includes('line') ||
+                leg.route_name.toLowerCase().includes('metro') ||
+                leg.route_id.startsWith('M') ||
+                leg.route_type === 'metro')
 
             return (
               <div key={`${leg.trip_id}-${idx}`} className="space-y-2">
@@ -197,7 +204,7 @@ export default function RouteResultCard({ option, selected, onSelect, onSave, is
                         Leg {idx + 1}: {leg.route_name}
                       </span>
                       <span className="rounded bg-[#FAF7F2] border border-[#E8DFCE] px-1.5 py-0.2 text-[10px] font-semibold text-[#53645F]">
-                        {isMetroLeg ? '🚇 Metro' : '🚍 Bus'}
+                        {isAutoLeg ? '🛺 Auto' : isMetroLeg ? '🚇 Metro' : '🚍 Bus'}
                       </span>
                       <span className="text-[#53645F] font-mono text-[11px]">
                         (Trip {leg.trip_id})

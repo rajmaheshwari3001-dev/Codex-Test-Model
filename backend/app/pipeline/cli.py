@@ -23,9 +23,34 @@ def main() -> None:
     parser.add_argument("--run", action="store_true", help="Run full pipeline including remote scraping and GTFS downloads")
     parser.add_argument("--offline", action="store_true", help="Run pipeline using cached local datasets without remote HTTP calls")
     parser.add_argument("--status", action="store_true", help="Display current dataset provenance and pipeline metadata")
+    parser.add_argument("--poochho", action="store_true", help="Display PoochhO auto-rickshaw & taxi statutory fare model details")
     args = parser.parse_args()
 
     importer = DataImporter()
+
+    if args.poochho:
+        from app.pipeline.sources.poochho_scraper import PoochhOScraper
+        scraper = PoochhOScraper()
+        info = scraper.fetch_app_metadata()
+        print("\n=== POOCHHO (DIMTS) DATA & FARE MODEL ===")
+        print(f"Source: {info.get('source')}")
+        print(f"Package: {info.get('package_name')}")
+        print(f"Modes Supported: {', '.join(info.get('modes_supported', []))}")
+        print("\nFeatures:")
+        for feat in info.get("features", []):
+            print(f"  • {feat}")
+        print("\nStatutory Fare Rules:")
+        print(f"  • Auto: Rs.{info['fare_rules']['auto_rickshaw']['base_fare']} first {info['fare_rules']['auto_rickshaw']['base_distance_km']}km, Rs.{info['fare_rules']['auto_rickshaw']['rate_per_km']}/km thereafter")
+        print(f"  • Auto Night Charge: +{info['fare_rules']['auto_rickshaw']['night_surcharge_percent']}% ({info['fare_rules']['auto_rickshaw']['night_hours']})")
+        print(f"  • Taxi Non-AC: Rs.{info['fare_rules']['taxi']['base_fare']} first {info['fare_rules']['taxi']['base_distance_km']}km, Rs.{info['fare_rules']['taxi']['non_ac_rate_per_km']}/km thereafter")
+        print(f"  • Taxi AC: Rs.{info['fare_rules']['taxi']['base_fare']} first {info['fare_rules']['taxi']['base_distance_km']}km, Rs.{info['fare_rules']['taxi']['ac_rate_per_km']}/km thereafter")
+        print("\nSample Calculations:")
+        for dist in [2.0, 5.0, 12.0]:
+            day_fare = scraper.calculate_auto_fare(dist, departure_time="14:00")
+            night_fare = scraper.calculate_auto_fare(dist, departure_time="23:30")
+            road_km, duration = scraper.estimate_travel_metrics(dist, "14:00")
+            print(f"  • {dist} km straight ({road_km} km road): Daytime Auto Rs.{day_fare:.0f} (~{duration} min) | Night Auto Rs.{night_fare:.0f}")
+        return
 
     if args.status:
         meta_path = importer.metadata_file
@@ -56,3 +81,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

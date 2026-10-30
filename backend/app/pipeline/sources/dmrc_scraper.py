@@ -131,3 +131,4 @@ class DMRCScraper:
         discount_rate = 0.20 if is_off_peak else 0.10
         discounted = base_fare * (1.0 - discount_rate)
         return round(discounted, 1)
+

@@ -52,9 +52,13 @@ class JourneySearchRequest(BaseModel):
         default="weekday",
         description="Sample schedule category to search",
     )
-    mode_preference: Literal["all", "metro", "bus"] = Field(
+    mode_preference: Literal["all", "metro", "bus", "auto"] = Field(
         default="all",
-        description="Filter by transport mode: 'all', 'metro', or 'bus'",
+        description="Filter by transport mode: 'all', 'metro', 'bus', or 'auto'",
+    )
+    include_auto: bool = Field(
+        default=False,
+        description="Whether to include auto-rickshaw option in response options",
     )
     max_budget: Optional[float] = Field(
         default=None,
@@ -132,6 +136,15 @@ def search_journeys(req: JourneySearchRequest):
             mode_preference=req.mode_preference,
             max_budget=req.max_budget,
         )
+        if req.include_auto and req.mode_preference != "auto":
+            auto_opt = _routing_service.get_poochho_auto_option(
+                req.origin_stop_id, req.destination_stop_id, req.departure_time
+            )
+            options.append(auto_opt)
+
+        poochho_estimate = _routing_service.get_poochho_estimate(
+            req.origin_stop_id, req.destination_stop_id, req.departure_time
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -143,9 +156,13 @@ def search_journeys(req: JourneySearchRequest):
                 f"{req.destination_stop_id} departing at {req.departure_time} "
                 f"on the {req.service_day} schedule."
             ),
+            "poochho_estimate": poochho_estimate,
         }
 
-    return {"options": [opt.model_dump() for opt in options]}
+    return {
+        "options": [opt.model_dump() for opt in options],
+        "poochho_estimate": poochho_estimate,
+    }
 
 
 @router.post("/delays")
@@ -228,3 +245,34 @@ def refresh_transit_data(remote: bool = False):
         "message": "Transit data pipeline completed and reloaded into routing engine.",
         "pipeline_result": result,
     }
+
+
+@router.get("/poochho/estimate")
+def get_poochho_estimate(
+    origin_stop_id: str,
+    destination_stop_id: str,
+    departure_time: str = "12:00",
+):
+    """
+    Get PoochhO (DIMTS) statutory auto-rickshaw and taxi fare, distance,
+    travel time, and first/last-mile feeder recommendation.
+    """
+    if not _td:
+        raise HTTPException(status_code=503, detail="Transit data not loaded.")
+    if origin_stop_id not in _td.stops_by_id:
+        raise HTTPException(status_code=400, detail=f"Unknown origin stop ID: {origin_stop_id!r}")
+    if destination_stop_id not in _td.stops_by_id:
+        raise HTTPException(status_code=400, detail=f"Unknown destination stop ID: {destination_stop_id!r}")
+
+    estimate = _routing_service.get_poochho_estimate(
+        origin_stop_id, destination_stop_id, departure_time
+    )
+    return estimate
+
+
+@router.get("/poochho/info")
+def get_poochho_info():
+    """Return PoochhO (DIMTS) integration details, features, and statutory tariff formulas."""
+    from app.pipeline.sources.poochho_scraper import PoochhOScraper
+    scraper = PoochhOScraper()
+    return scraper.fetch_app_metadata()

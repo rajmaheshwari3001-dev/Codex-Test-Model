@@ -2,7 +2,8 @@
 
 import type {
   Stop, Route, JourneyOption, SavedRoute, ChatResponse,
-  BusState, DisruptionResult, ServiceDay,
+  BusState, DisruptionResult, ServiceDay, ModePreference,
+  PoochhOEstimate, JourneySearchResponse,
 } from '../types'
 
 const BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
@@ -37,10 +38,11 @@ export async function searchJourneys(body: {
   departure_time: string
   preference: string
   service_day: ServiceDay
-  mode_preference?: 'all' | 'metro' | 'bus'
+  mode_preference?: ModePreference
   max_budget?: number | null
+  include_auto?: boolean
 }) {
-  return request<{ options: JourneyOption[]; message?: string }>(
+  return request<JourneySearchResponse>(
     '/journeys/search',
     { method: 'POST', body: JSON.stringify(body) },
   )
@@ -121,4 +123,18 @@ export async function refreshTransitData(remote = false) {
   return request<{ message: string; pipeline_result: any }>(`/data/refresh?remote=${remote}`, {
     method: 'POST',
   })
+}
+
+export async function getPoochhOEstimate(
+  originStopId: string,
+  destinationStopId: string,
+  departureTime = '12:00'
+) {
+  return request<PoochhOEstimate>(
+    `/poochho/estimate?origin_stop_id=${originStopId}&destination_stop_id=${destinationStopId}&departure_time=${departureTime}`
+  )
+}
+
+export async function getPoochhOInfo() {
+  return request<any>('/poochho/info')
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay, ModePreference } from '../types'
+import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay, ModePreference, PoochhOEstimate } from '../types'
 import { getStops, getRoutes, searchJourneys, createSavedRoute } from '../services/api'
 import { formatTime12, parseToTime24 } from '../utils/time'
 import RouteSearchForm from '../components/RouteSearchForm'
@@ -9,6 +9,7 @@ import TransportMap from '../components/TransportMap'
 import ChatAssistant from '../components/ChatAssistant'
 import SavedRoutesPanel from '../components/SavedRoutes'
 import DataProvenanceModal from '../components/DataProvenanceModal'
+import PoochhOEstimateCard from '../components/PoochhOEstimateCard'
 
 interface NoResultContext {
   origin: string
@@ -91,6 +92,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [modePreference, setModePreference] = useState<ModePreference>('all')
   const [maxBudget, setMaxBudget] = useState<string>('')
   const [showProvenanceModal, setShowProvenanceModal] = useState(false)
+  const [poochhoEstimate, setPoochhOEstimate] = useState<PoochhOEstimate | null>(null)
 
   function loadInitialData() {
     setMessage('')
@@ -144,6 +146,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
     setSaveToast('')
     setOptions([])
     setSelected(null)
+    setPoochhOEstimate(null)
 
     const parsedBudget = selectedMaxBudget.trim() ? parseFloat(selectedMaxBudget.trim()) : null
 
@@ -158,6 +161,9 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         max_budget: parsedBudget && !isNaN(parsedBudget) ? parsedBudget : undefined,
       })
       setOptions(response.options)
+      if (response.poochho_estimate) {
+        setPoochhOEstimate(response.poochho_estimate)
+      }
       if (response.options.length > 0) {
         setSelected(response.options[0])
       } else {
@@ -446,6 +452,17 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             </section>
           )}
 
+          {/* Out-of-hours or No-transit PoochhO 24/7 Option */}
+          {noResultContext && poochhoEstimate && (
+            <PoochhOEstimateCard
+              estimate={poochhoEstimate}
+              isNightOutOfHours={noResultContext.isOutOfHours}
+              onSelectAutoOption={() =>
+                handleSearch(origin, destination, time, preference, serviceDay, 'auto', maxBudget)
+              }
+            />
+          )}
+
           {/* Route Comparison Insight */}
           {hasDistinctComparison && fastestOption && cheapestOption && (
             <section className="rounded-lg border border-[#E8DFCE] bg-[#FFFFFF] p-4 text-xs text-[#25312D] space-y-1.5 shadow-xs">
@@ -499,6 +516,23 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
                   isSaved={savedOptionIds.has(option.option_id)}
                 />
               ))}
+
+              {/* PoochhO First/Last Mile Feeder Alternative */}
+              {poochhoEstimate && modePreference !== 'auto' && (
+                <div className="pt-2">
+                  <div className="flex items-center justify-between text-xs mb-1.5">
+                    <span className="font-bold uppercase tracking-wider text-[#53645F] text-[11px]">
+                      First / Last Mile & Door-to-Door Alternative
+                    </span>
+                  </div>
+                  <PoochhOEstimateCard
+                    estimate={poochhoEstimate}
+                    onSelectAutoOption={() =>
+                      handleSearch(origin, destination, time, preference, serviceDay, 'auto', maxBudget)
+                    }
+                  />
+                </div>
+              )}
             </section>
           )}
 

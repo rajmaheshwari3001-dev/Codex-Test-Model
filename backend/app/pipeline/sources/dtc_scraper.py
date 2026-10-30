@@ -119,3 +119,4 @@ class DTCScraper:
             if distance_km <= slab["max_km"]:
                 return slab["fare"]
         return slabs[-1]["fare"]
+

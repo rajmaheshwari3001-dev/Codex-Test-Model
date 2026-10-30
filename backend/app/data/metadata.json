@@ -1,8 +1,13 @@
 {
   "application": "Aaroh-Saarthi Delhi Multimodal Transit Engine",
-  "last_pipeline_run": "2026-10-29T23:50:38.660956+00:00",
-  "version": "2.1.0",
+  "last_pipeline_run": "2026-10-30T04:54:12.583367+00:00",
+  "version": "2.2.0",
   "datasets": {
+    "poochho": {
+      "source": "Poochh-O (DIMTS: com.dimts.delhiautojunction) & Delhi Transport Dept",
+      "transport_mode": "auto_rickshaw, taxi, first-last mile feeder",
+      "fare_rules": "Official Delhi Statutory Tariff (Auto: \u20b930 + \u20b911/km; Taxi: \u20b940 + \u20b917-20/km, 25% night charge)"
+    },
     "delhi_buses": {
       "source": "Delhi Transport Stack (Dataset 1: DTC / DoT GTFS)",
       "transport_mode": "bus",
@@ -37,6 +42,14 @@
     },
     "otd": {
       "source": "Delhi Open Transit Data (https://otd.delhi.gov.in/)"
+    },
+    "poochho": {
+      "source": "Poochh-O (DIMTS - Delhi Integrated Multi-Modal Transit System)",
+      "package_name": "com.dimts.delhiautojunction",
+      "fare_rules": {
+        "auto_rickshaw": "Statutory Delhi Govt Tariff (\u20b930 first 1.5km, \u20b911/km thereafter, 25% night charge)",
+        "taxi": "Statutory Delhi Govt Tariff (\u20b940 first 1.0km, Non-AC \u20b917/km, AC \u20b920/km)"
+      }
     }
   }
 }

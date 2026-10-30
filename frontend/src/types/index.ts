@@ -1,7 +1,7 @@
 /* Shared TypeScript types matching the backend API models. */
 
 export type ServiceDay = 'weekday' | 'weekend'
-export type ModePreference = 'all' | 'metro' | 'bus'
+export type ModePreference = 'all' | 'metro' | 'bus' | 'auto'
 
 export interface Stop {
   stop_id: string
@@ -69,7 +69,7 @@ export interface JourneyOption {
   delay_warnings: string[]
   data_status: string
   warnings: string[]
-  primary_mode?: 'metro' | 'bus' | 'multimodal'
+  primary_mode?: 'metro' | 'bus' | 'multimodal' | 'auto'
   fare_comparison_note?: string | null
   budget_status?: string | null
 }
@@ -137,4 +137,39 @@ export interface DisruptionResult {
   metric_notes: string[]
   fleet_state: { buses: BusState[]; simulated: boolean }
   error?: string
+}
+
+export interface PoochhOEstimate {
+  origin_stop_id: string
+  origin_stop_name: string
+  destination_stop_id: string
+  destination_stop_name: string
+  haversine_distance_km: number
+  estimated_road_distance_km: number
+  estimated_duration_minutes: number
+  traffic_speed_kmh: number
+  is_night_time: boolean
+  departure_time: string
+  auto_rickshaw: {
+    fare: number
+    currency: string
+    base_fare: number
+    rate_per_km: number
+    night_surcharge: number
+    fare_breakdown: string
+  }
+  taxi: {
+    non_ac_fare: number
+    ac_fare: number
+    currency: string
+    fare_breakdown: string
+  }
+  feeder_recommendation: string
+  provenance: string
+}
+
+export interface JourneySearchResponse {
+  options: JourneyOption[]
+  message?: string
+  poochho_estimate?: PoochhOEstimate
 }

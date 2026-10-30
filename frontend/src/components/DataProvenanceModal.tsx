@@ -242,6 +242,26 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
                     GTFS static specifications audited. Note: Real-time Protobuf API (<code>VehiclePositions.pb</code>) requires registered developer API key.
                   </p>
                 </div>
+
+                {/* 5. Poochh-O (DIMTS) Auto & Taxi Model */}
+                <div className="rounded-lg border border-[#E8DFCE] p-3 space-y-1 bg-[#FFFFFF]">
+                  <div className="flex items-center justify-between">
+                    <div className="font-bold text-[#25312D] flex items-center gap-1.5">
+                      <span>🛺</span> Poochh-O (DIMTS) Auto-Rickshaw & Taxi
+                    </div>
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.dimts.delhiautojunction"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono text-[10px] text-[#B88A43] hover:underline"
+                    >
+                      com.dimts.delhiautojunction ↗
+                    </a>
+                  </div>
+                  <p className="text-[11px] text-[#53645F]">
+                    Statutory Delhi Government meter tariffs: Auto (₹30 for first 1.5 km + ₹11/km), Taxi (₹40 for first 1.0 km + ₹17-₹20/km), 25% night charge (23:00-05:00), and first/last-mile feeder intelligence.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -267,3 +287,4 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
     </div>
   )
 }
+

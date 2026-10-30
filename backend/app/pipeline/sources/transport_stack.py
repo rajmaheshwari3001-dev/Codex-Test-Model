@@ -140,3 +140,4 @@ class TransportStackClient:
             "buses_available": bus_path is not None and bus_path.exists(),
             "metro_available": metro_path is not None and metro_path.exists(),
         }
+

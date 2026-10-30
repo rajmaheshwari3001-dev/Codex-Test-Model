@@ -347,6 +347,60 @@ export default function RouteSearchForm({
           </div>
         </div>
 
+        {/* Preferred Transport Mode */}
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-semibold uppercase tracking-wider text-[#53645F]">
+            Transport Mode
+          </label>
+          <div className="grid grid-cols-4 gap-1.5 text-xs">
+            <button
+              type="button"
+              onClick={() => setModePreference('all')}
+              className={`rounded-lg border py-1.5 font-bold transition-all ${
+                modePreference === 'all'
+                  ? 'border-[#173B32] bg-[#173B32] text-white shadow-xs'
+                  : 'border-[#E8DFCE] bg-[#FAF7F2] text-[#53645F] hover:bg-[#FFFFFF] hover:text-[#25312D]'
+              }`}
+            >
+              All
+            </button>
+            <button
+              type="button"
+              onClick={() => setModePreference('metro')}
+              className={`rounded-lg border py-1.5 font-bold transition-all ${
+                modePreference === 'metro'
+                  ? 'border-[#173B32] bg-[#173B32] text-white shadow-xs'
+                  : 'border-[#E8DFCE] bg-[#FAF7F2] text-[#53645F] hover:bg-[#FFFFFF] hover:text-[#25312D]'
+              }`}
+            >
+              🚇 Metro
+            </button>
+            <button
+              type="button"
+              onClick={() => setModePreference('bus')}
+              className={`rounded-lg border py-1.5 font-bold transition-all ${
+                modePreference === 'bus'
+                  ? 'border-[#173B32] bg-[#173B32] text-white shadow-xs'
+                  : 'border-[#E8DFCE] bg-[#FAF7F2] text-[#53645F] hover:bg-[#FFFFFF] hover:text-[#25312D]'
+              }`}
+            >
+              🚍 Bus
+            </button>
+            <button
+              type="button"
+              onClick={() => setModePreference('auto')}
+              className={`rounded-lg border py-1.5 font-bold transition-all ${
+                modePreference === 'auto'
+                  ? 'border-[#B88A43] bg-[#B88A43] text-white shadow-xs'
+                  : 'border-[#E8DFCE] bg-[#FAF7F2] text-[#53645F] hover:bg-[#FFFFFF] hover:text-[#25312D]'
+              }`}
+              title="PoochhO (DIMTS) Auto-Rickshaw & Taxi"
+            >
+              🛺 Auto
+            </button>
+          </div>
+        </div>
+
         {/* Routing Preference (Fastest vs Lowest Cost) */}
         <div className="space-y-1.5">
           <label className="text-[11px] font-semibold uppercase tracking-wider text-[#53645F]">

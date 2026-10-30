@@ -47,6 +47,11 @@ import networkx as nx
 from app.models.journey import JourneyLeg, JourneyOption, TransferInfo
 from app.models.transport import Stop, StopTime, Trip
 from app.services.data_loader import TransportData
+from app.pipeline.sources.poochho_scraper import (
+    PoochhOScraper,
+    is_night_time,
+    get_traffic_speed_kmh,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -737,6 +742,133 @@ class RoutingService:
         self.ride_segments = build_ride_segments(td)
         self.graph = build_network_graph(td)
 
+    def get_poochho_auto_option(
+        self,
+        origin_id: str,
+        destination_id: str,
+        departure_time: str,
+    ) -> JourneyOption:
+        origin_stop = self.td.stops_by_id[origin_id]
+        dest_stop = self.td.stops_by_id[destination_id]
+        dist_km = haversine_km(
+            origin_stop.stop_lat, origin_stop.stop_lon,
+            dest_stop.stop_lat, dest_stop.stop_lon,
+        )
+        road_km, duration_min = PoochhOScraper.estimate_travel_metrics(dist_km, departure_time)
+        auto_fare = PoochhOScraper.calculate_auto_fare(road_km, departure_time)
+        dep_min = time_to_minutes(departure_time)
+        arr_min = dep_min + duration_min
+        arr_time = minutes_to_time(arr_min)
+        is_night = is_night_time(departure_time)
+        night_note = " (includes 25% night charge 23:00-05:00)" if is_night else ""
+
+        leg = JourneyLeg(
+            leg_index=0,
+            trip_id="POOCHHO_AUTO",
+            route_id="POOCHHO_AUTO",
+            route_name="PoochhO Auto-Rickshaw",
+            route_type="auto",
+            route_color="#EAB308",
+            board_stop_id=origin_id,
+            board_stop_name=origin_stop.stop_name,
+            alight_stop_id=destination_id,
+            alight_stop_name=dest_stop.stop_name,
+            departure_time=departure_time,
+            arrival_time=arr_time,
+            boarding_crowding_level="low",
+            boarding_crowding_percent=20,
+            intermediate_stops=[],
+            intermediate_stop_ids=[],
+            fare=auto_fare,
+            currency="INR",
+            distance_km=dist_km,
+            route_distance_km=road_km,
+            fare_provenance="PoochhO / Delhi Govt Statutory Tariff",
+        )
+
+        return JourneyOption(
+            option_id="poochho_auto",
+            label="PoochhO Auto",
+            total_duration_minutes=duration_min,
+            departure_time=departure_time,
+            arrival_time=arr_time,
+            legs=[leg],
+            transfers=[],
+            total_fare=auto_fare,
+            currency="INR",
+            fare_available=True,
+            total_distance_km=road_km,
+            crowding_warnings=[],
+            delay_warnings=[],
+            data_status="estimated",
+            warnings=[f"Point-to-point auto-rickshaw estimate via shortest road route ({road_km} km){night_note}."],
+            primary_mode="auto",
+            fare_comparison_note=f"PoochhO Auto: ₹{auto_fare:.0f} for {road_km} km ({duration_min} min door-to-door).",
+            budget_status=None,
+        )
+
+    def get_poochho_estimate(
+        self,
+        origin_id: str,
+        destination_id: str,
+        departure_time: str,
+    ) -> Dict[str, Any]:
+        origin_stop = self.td.stops_by_id.get(origin_id)
+        dest_stop = self.td.stops_by_id.get(destination_id)
+        if not origin_stop or not dest_stop:
+            return {}
+
+        dist_km = haversine_km(
+            origin_stop.stop_lat, origin_stop.stop_lon,
+            dest_stop.stop_lat, dest_stop.stop_lon,
+        )
+        road_km, duration_min = PoochhOScraper.estimate_travel_metrics(dist_km, departure_time)
+        auto_fare = PoochhOScraper.calculate_auto_fare(road_km, departure_time)
+        taxi_non_ac = PoochhOScraper.calculate_taxi_fare(road_km, is_ac=False, departure_time=departure_time)
+        taxi_ac = PoochhOScraper.calculate_taxi_fare(road_km, is_ac=True, departure_time=departure_time)
+        is_night = is_night_time(departure_time)
+        speed_kmh = get_traffic_speed_kmh(departure_time)
+
+        if dist_km <= 3.5:
+            feeder_advice = (
+                f"Short corridor ({road_km} km): Direct PoochhO auto (₹{auto_fare:.0f}, ~{duration_min} min) "
+                f"is faster and avoids waiting for bus/metro transfers."
+            )
+        else:
+            feeder_advice = (
+                f"Longer corridor ({road_km} km): Recommend taking Metro/Bus trunk service to save cost, "
+                f"and using PoochhO auto as first-mile or last-mile feeder connection."
+            )
+
+        return {
+            "origin_stop_id": origin_id,
+            "origin_stop_name": origin_stop.stop_name,
+            "destination_stop_id": destination_id,
+            "destination_stop_name": dest_stop.stop_name,
+            "haversine_distance_km": dist_km,
+            "estimated_road_distance_km": road_km,
+            "estimated_duration_minutes": duration_min,
+            "traffic_speed_kmh": speed_kmh,
+            "is_night_time": is_night,
+            "departure_time": departure_time,
+            "auto_rickshaw": {
+                "fare": auto_fare,
+                "currency": "INR",
+                "base_fare": 30.0,
+                "rate_per_km": 11.0,
+                "night_surcharge": round(auto_fare - (30.0 + max(road_km - 1.5, 0.0) * 11.0), 2) if is_night else 0.0,
+                "fare_breakdown": f"₹30 first 1.5 km + ₹11/km thereafter{' + 25% night charge (23:00-05:00)' if is_night else ''}",
+            },
+            "taxi": {
+                "non_ac_fare": taxi_non_ac,
+                "ac_fare": taxi_ac,
+                "currency": "INR",
+                "fare_breakdown": f"₹40 first 1.0 km + ₹17/km (Non-AC) or ₹20/km (AC){' + 25% night charge (23:00-05:00)' if is_night else ''}",
+            },
+            "feeder_recommendation": feeder_advice,
+            "provenance": "Poochh-O (DIMTS - com.dimts.delhiautojunction) & Delhi Statutory Tariffs",
+        }
+
     def search(
         self,
         origin_id: str,
@@ -782,10 +914,20 @@ class RoutingService:
             raise ValueError("Origin and destination must be different stops.")
         if service_day not in ("weekday", "weekend"):
             raise ValueError("service_day must be 'weekday' or 'weekend'.")
-        if mode_preference not in ("all", "metro", "bus"):
-            raise ValueError("mode_preference must be 'all', 'metro', or 'bus'.")
+        if mode_preference not in ("all", "metro", "bus", "auto"):
+            raise ValueError("mode_preference must be 'all', 'metro', 'bus', or 'auto'.")
         if max_budget is not None and max_budget < 0:
             raise ValueError("max_budget cannot be negative.")
+
+        if mode_preference == "auto":
+            auto_opt = self.get_poochho_auto_option(origin_id, destination_id, departure_time)
+            if max_budget is not None and auto_opt.total_fare is not None:
+                if auto_opt.total_fare <= max_budget:
+                    auto_opt.budget_status = f"Within budget (₹{auto_opt.total_fare:.0f} ≤ ₹{max_budget:.0f})"
+                else:
+                    exceeds = auto_opt.total_fare - max_budget
+                    auto_opt.budget_status = f"Exceeds budget by ₹{exceeds:.0f} (₹{auto_opt.total_fare:.0f} > ₹{max_budget:.0f})"
+            return [auto_opt]
 
         dep_minutes = time_to_minutes(departure_time)
         options: List[JourneyOption] = []

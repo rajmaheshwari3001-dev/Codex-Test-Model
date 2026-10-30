@@ -222,3 +222,4 @@ def test_journey_search_includes_distance_and_transfer_modes(client):
     assert transfer["from_mode"] is not None
     assert transfer["to_mode"] is not None
     assert transfer["transfer_description"] is not None
+

@@ -17,6 +17,7 @@ from app.pipeline.sources.transport_stack import TransportStackClient
 from app.pipeline.sources.dtc_scraper import DTCScraper
 from app.pipeline.sources.dmrc_scraper import DMRCScraper
 from app.pipeline.sources.otd_scraper import OTDScraper
+from app.pipeline.sources.poochho_scraper import PoochhOScraper
 from app.pipeline.normalizer import TransitDataNormalizer
 
 logger = logging.getLogger(__name__)
@@ -92,13 +93,29 @@ class DataImporter:
             }
         results["sources"]["otd"] = otd_summary
 
-        # 5. Normalize and Validate Network
+        # 5. Collect PoochhO (DIMTS) Auto-Rickshaw & Multimodal Data
+        poochho_scraper = PoochhOScraper()
+        if download_remote:
+            logger.info("Collecting PoochhO / DIMTS auto-rickshaw and multimodal metadata...")
+            poochho_summary = poochho_scraper.fetch_app_metadata()
+        else:
+            poochho_summary = {
+                "source": "Poochh-O (DIMTS - Delhi Integrated Multi-Modal Transit System)",
+                "package_name": "com.dimts.delhiautojunction",
+                "fare_rules": {
+                    "auto_rickshaw": "Statutory Delhi Govt Tariff (₹30 first 1.5km, ₹11/km thereafter, 25% night charge)",
+                    "taxi": "Statutory Delhi Govt Tariff (₹40 first 1.0km, Non-AC ₹17/km, AC ₹20/km)",
+                },
+            }
+        results["sources"]["poochho"] = poochho_summary
+
+        # 6. Normalize and Validate Network
         normalizer = TransitDataNormalizer(data_dir=self.data_dir)
         norm_result = normalizer.normalize_network()
         validation = norm_result["validation_report"]
         results["network_metrics"] = validation
 
-        # 6. Save comprehensive metadata file
+        # 7. Save comprehensive metadata file
         finished_at = datetime.now(timezone.utc).isoformat()
         results["status"] = "success"
         results["completed_at"] = finished_at
@@ -106,8 +123,13 @@ class DataImporter:
         metadata_payload = {
             "application": "Aaroh-Saarthi Delhi Multimodal Transit Engine",
             "last_pipeline_run": finished_at,
-            "version": "2.1.0",
+            "version": "2.2.0",
             "datasets": {
+                "poochho": {
+                    "source": "Poochh-O (DIMTS: com.dimts.delhiautojunction) & Delhi Transport Dept",
+                    "transport_mode": "auto_rickshaw, taxi, first-last mile feeder",
+                    "fare_rules": "Official Delhi Statutory Tariff (Auto: ₹30 + ₹11/km; Taxi: ₹40 + ₹17-20/km, 25% night charge)",
+                },
                 "delhi_buses": {
                     "source": "Delhi Transport Stack (Dataset 1: DTC / DoT GTFS)",
                     "transport_mode": "bus",
@@ -136,3 +158,4 @@ class DataImporter:
         logger.info("Saved pipeline metadata to %s.", self.metadata_file)
         results["metadata_file"] = str(self.metadata_file)
         return results
+

@@ -91,3 +91,4 @@ class OTDScraper:
                 "realtime_data": "Requires official registration at otd.delhi.gov.in for private API key.",
             }
             return result
+

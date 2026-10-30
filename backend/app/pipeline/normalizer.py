@@ -245,6 +245,11 @@ class TransitDataNormalizer:
                     "source": "Delhi Open Transit Data (https://otd.delhi.gov.in/)",
                     "type": "GTFS Static & Real-Time Specifications",
                     "status": "Audited",
+                },
+                {
+                    "source": "Poochh-O (DIMTS - com.dimts.delhiautojunction)",
+                    "type": "Statutory Auto & Taxi Fare Model + Multimodal Feeder Guidance",
+                    "status": "Verified & Implemented",
                 }
             ],
             "last_validated": datetime.now(timezone.utc).isoformat(),
@@ -259,3 +264,4 @@ class TransitDataNormalizer:
             "transfers": transfers,
             "validation_report": validation_report,
         }
+
