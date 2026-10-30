@@ -106,12 +106,16 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
   // Console active tab: 'plan' | 'assistant' | 'saved'
   const [activeConsoleTab, setActiveConsoleTab] = useState<'plan' | 'assistant' | 'saved'>('plan')
 
+  const [showCopilotModal, setShowCopilotModal] = useState(false)
+
   function loadInitialData() {
     setMessage('')
     Promise.all([getStops(), getRoutes()])
       .then(([nextStops, nextRoutes]) => {
         setStops(nextStops)
         setRoutes(nextRoutes)
+        // Auto-run initial search matching Figma design (Kashmere Gate -> Saket / Dwarka -> Rajiv Chowk)
+        handleSearch('S02', 'S08', '08:00', 'fastest', 'weekday')
       })
       .catch(error => {
         setMessage(
@@ -373,140 +377,108 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
         </div>
       </section>
 
-      {/* 2-COLUMN UNIFIED SPLIT LAYOUT (Ivory Surfaces & Sandstone Architecture) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* LEFT COLUMN: Interactive Console (Tabs for Plan Route, Copilot, Saved) */}
-        <div className="lg:col-span-5 xl:col-span-5 space-y-4">
-          {/* Console Mode Switcher */}
-          <div className="flex items-center rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-1.5 shadow-xs" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeConsoleTab === 'plan'}
-              onClick={() => setActiveConsoleTab('plan')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeConsoleTab === 'plan'
-                  ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
-                  : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
-              }`}
-            >
-              <CompassIcon className="w-4 h-4" />
-              <span>Plan Journey</span>
-              {options.length > 0 && (
-                <span className="rounded-full bg-white/20 px-1.5 py-0.2 text-[10px] font-mono">
-                  {options.length}
-                </span>
-              )}
-            </button>
+      {/* Responsive View Switcher for Mobile / Tablet */}
+      <div className="flex lg:hidden items-center rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-1.5 shadow-xs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeConsoleTab === 'plan'}
+          onClick={() => setActiveConsoleTab('plan')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            activeConsoleTab === 'plan'
+              ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+              : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
+          }`}
+        >
+          <CompassIcon className="w-3.5 h-3.5" />
+          <span>Plan & Routes</span>
+          {options.length > 0 && (
+            <span className="rounded-full bg-[#C49A43] text-white px-1.5 py-0.2 text-[9px] font-mono">
+              {options.length}
+            </span>
+          )}
+        </button>
 
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeConsoleTab === 'assistant'}
-              onClick={() => setActiveConsoleTab('assistant')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeConsoleTab === 'assistant'
-                  ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
-                  : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
-              }`}
-            >
-              <SparklesIcon className="w-4 h-4" />
-              <span>Transit Copilot</span>
-            </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeConsoleTab === 'saved'}
+          onClick={() => setActiveConsoleTab('saved')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            activeConsoleTab === 'saved'
+              ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+              : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
+          }`}
+        >
+          <BookmarkIcon className="w-3.5 h-3.5" />
+          <span>Shortcuts</span>
+        </button>
 
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeConsoleTab === 'assistant'}
+          onClick={() => setActiveConsoleTab('assistant')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            activeConsoleTab === 'assistant'
+              ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+              : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
+          }`}
+        >
+          <SparklesIcon className="w-3.5 h-3.5" />
+          <span>Copilot</span>
+        </button>
+      </div>
+
+      {/* 3-COLUMN UNIFIED DESKTOP LAYOUT (Matching Figma Design Specification) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* COLUMN 1: LEFT (~3 of 12) - PLANNER & ASK COPILOT CARD */}
+        <div className={`lg:col-span-4 xl:col-span-3 space-y-4 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+          <JourneyPlanner
+            stops={stops}
+            origin={origin}
+            setOrigin={setOrigin}
+            destination={destination}
+            setDestination={setDestination}
+            time={time}
+            setTime={setTime}
+            preference={preference}
+            setPreference={setPreference}
+            serviceDay={serviceDay}
+            onServiceDayChange={setServiceDay}
+            modePreference={modePreference}
+            setModePreference={setModePreference}
+            maxBudget={maxBudget}
+            setMaxBudget={setMaxBudget}
+            onSearch={handleSearch}
+            loading={loading}
+            onOpenCashbackModal={() => setShowCashbackModal(true)}
+          />
+
+          {/* Ask Aaroh-Saarthi Card Matching Figma */}
+          <div className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 shadow-xs space-y-2.5">
+            <div className="flex items-center gap-2">
+              <SparklesIcon className="w-4 h-4 text-[#C49A43]" />
+              <h3 className="font-serif text-base font-bold text-[#243B4A]">
+                Ask Aaroh-Saarthi
+              </h3>
+            </div>
+            <p className="text-xs text-[#77766D] leading-relaxed">
+              A smarter way to navigate the city.
+            </p>
             <button
               type="button"
-              role="tab"
-              aria-selected={activeConsoleTab === 'saved'}
-              onClick={() => setActiveConsoleTab('saved')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                activeConsoleTab === 'saved'
-                  ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
-                  : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
-              }`}
+              onClick={() => setShowCopilotModal(true)}
+              className="w-full flex items-center justify-between rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/60 hover:bg-[#EEE5D6] p-2.5 text-left text-xs font-semibold text-[#243B4A] transition-colors cursor-pointer group"
             >
-              <BookmarkIcon className="w-4 h-4" />
-              <span>Saved Routes</span>
+              <span className="truncate text-[11px]">"How do I take a metro from Dwarka?"</span>
+              <ArrowRightIcon className="w-3.5 h-3.5 text-[#C49A43] group-hover:translate-x-0.5 transition-transform shrink-0" />
             </button>
           </div>
-
-          {/* TAB 1: JOURNEY PLANNER & RANKED RESULTS */}
-          {activeConsoleTab === 'plan' && (
-            <div className="space-y-4 animate-fade-in">
-              <JourneyPlanner
-                stops={stops}
-                origin={origin}
-                setOrigin={setOrigin}
-                destination={destination}
-                setDestination={setDestination}
-                time={time}
-                setTime={setTime}
-                preference={preference}
-                setPreference={setPreference}
-                serviceDay={serviceDay}
-                onServiceDayChange={setServiceDay}
-                modePreference={modePreference}
-                setModePreference={setModePreference}
-                maxBudget={maxBudget}
-                setMaxBudget={setMaxBudget}
-                onSearch={handleSearch}
-                loading={loading}
-                onOpenCashbackModal={() => setShowCashbackModal(true)}
-              />
-
-              {/* ROUTE COMPARISON & RANKED RESULTS */}
-              <div className="space-y-3">
-                <header className="flex items-center justify-between px-1">
-                  <h2 className="font-serif text-sm font-bold text-[#243B4A]">
-                    Route Recommendations
-                  </h2>
-                  {options.length > 0 && (
-                    <span className="text-[11px] font-semibold text-[#243B4A] bg-[#EEE5D6] px-2.5 py-0.5 rounded-full border border-[#D8C8AA]">
-                      {options.length} {options.length === 1 ? 'Option' : 'Options'} Ranked
-                    </span>
-                  )}
-                </header>
-
-                <JourneyComparison
-                  options={options}
-                  selected={selected}
-                  onSelect={setSelected}
-                  onSave={handleSave}
-                  savedOptionIds={savedOptionIds}
-                  poochhoEstimate={poochhoEstimate}
-                  noResultContext={noResultContext}
-                  loading={loading}
-                  onRetryTime={retryTime => handleSearch(origin, destination, retryTime, preference, serviceDay, modePreference, maxBudget)}
-                  onSelectAutoMode={() => handleSearch(origin, destination, time, preference, serviceDay, 'auto', maxBudget)}
-                  onOpenCashbackModal={() => setShowCashbackModal(true)}
-                  originName={originName}
-                  destinationName={destinationName}
-                  serviceDay={serviceDay}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: TRANSIT COPILOT ASSISTANT */}
-          {activeConsoleTab === 'assistant' && (
-            <div className="animate-fade-in">
-              <AssistantPanel />
-            </div>
-          )}
-
-          {/* TAB 3: SAVED JOURNEYS */}
-          {activeConsoleTab === 'saved' && (
-            <div className="animate-fade-in">
-              <SavedJourneysBar
-                onReuse={handleReuse}
-                refreshTrigger={savedRefresh}
-              />
-            </div>
-          )}
         </div>
 
-        {/* RIGHT COLUMN: Full-Height Interactive Map Canvas */}
-        <div className="lg:col-span-7 xl:col-span-7 flex flex-col min-h-[580px] lg:min-h-[720px] sticky top-20">
+        {/* COLUMN 2: CENTER (~5 of 12) - INTERACTIVE DELHI TRANSIT MAP */}
+        <div className={`lg:col-span-4 xl:col-span-5 flex flex-col min-h-[500px] lg:min-h-[660px] sticky top-20 ${activeConsoleTab !== 'plan' && 'hidden lg:flex'}`}>
           <DelhiMap
             stops={stops}
             routes={routes}
@@ -517,15 +489,65 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
             onSelectDestination={handleSelectDestinationFromMap}
           />
         </div>
+
+        {/* COLUMN 3: RIGHT (~4 of 12) - ROUTE OPTIONS / CHOOSE YOUR WAY */}
+        <div className={`lg:col-span-4 xl:col-span-4 space-y-4 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+          <JourneyComparison
+            options={options}
+            selected={selected}
+            onSelect={setSelected}
+            onSave={handleSave}
+            savedOptionIds={savedOptionIds}
+            poochhoEstimate={poochhoEstimate}
+            noResultContext={noResultContext}
+            loading={loading}
+            onRetryTime={retryTime => handleSearch(origin, destination, retryTime, preference, serviceDay, modePreference, maxBudget)}
+            onSelectAutoMode={() => handleSearch(origin, destination, time, preference, serviceDay, 'auto', maxBudget)}
+            onOpenCashbackModal={() => setShowCashbackModal(true)}
+            originName={originName}
+            destinationName={destinationName}
+            serviceDay={serviceDay}
+          />
+        </div>
       </div>
 
-      {/* Bottom Horizontal Saved Journeys Bar */}
+      {/* MOBILE-ONLY ALTERNATE TABS (Copilot & Shortcuts) */}
+      {activeConsoleTab === 'assistant' && (
+        <div className="lg:hidden animate-fade-in">
+          <AssistantPanel />
+        </div>
+      )}
+
+      {/* BOTTOM SECTION: SHORTCUTS / SAVED JOURNEYS (Matching Figma) */}
       <div className="pt-2">
         <SavedJourneysBar
           onReuse={handleReuse}
           refreshTrigger={savedRefresh}
         />
       </div>
+
+      {/* Transit Copilot Modal */}
+      {showCopilotModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
+          <div className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-[#D8C8AA] pb-3">
+              <div className="flex items-center gap-2">
+                <SparklesIcon className="w-5 h-5 text-[#C49A43]" />
+                <h3 className="font-serif text-lg font-bold text-[#243B4A]">Transit Copilot</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCopilotModal(false)}
+                className="rounded-xl p-2 text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6] cursor-pointer"
+                aria-label="Close copilot"
+              >
+                ✕
+              </button>
+            </div>
+            <AssistantPanel />
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <DataProvenanceModal

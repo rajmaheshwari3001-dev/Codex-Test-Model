@@ -350,8 +350,24 @@ export default function DelhiMap({
     }
   }, [stops, routes, selectedJourney, selectedRouteFilter, originStopId, destinationStopId, onSelectOrigin, onSelectDestination])
 
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearchResults, setShowSearchResults] = useState(false)
+
+  const filteredSearchStops = searchQuery.trim()
+    ? stops.filter(s => s.stop_name.toLowerCase().includes(searchQuery.toLowerCase()))
+    : []
+
+  const handleSelectSearchStop = (stop: Stop) => {
+    setSearchQuery('')
+    setShowSearchResults(false)
+    if (mapRef.current && isValidCoord(stop.stop_lat, stop.stop_lon)) {
+      mapRef.current.setView([stop.stop_lat, stop.stop_lon], 14, { animate: true })
+    }
+  }
+
   function handleResetView() {
     setSelectedRouteFilter('ALL')
+    setSearchQuery('')
     if (!mapRef.current) return
     const validStops = stops.filter(s => isValidCoord(s.stop_lat, s.stop_lon))
     if (validStops.length > 0) {
@@ -368,102 +384,138 @@ export default function DelhiMap({
     <figure
       role="region"
       aria-label="Interactive Delhi Transit Map"
-      className="overflow-hidden rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] shadow-xs relative flex flex-col h-full min-h-[440px] lg:min-h-[620px] animate-fade-in"
+      className="overflow-hidden rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] shadow-xs relative flex flex-col h-full min-h-[460px] lg:min-h-[640px] animate-fade-in"
     >
       <figcaption className="sr-only">
         Geographic map representing 20 Delhi stops and active routes with interactive origin and destination selection
       </figcaption>
 
-      {/* Floating Mobility HUD Header */}
-      <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        {/* Corridor Quick Selector */}
-        <div className="flex items-center gap-1 overflow-x-auto max-w-[calc(100%-90px)] rounded-xl border border-[#D8C8AA] bg-[#FFFCF5]/95 p-1 text-[#29343A] shadow-md backdrop-blur-md pointer-events-auto scrollbar-thin">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#77766D] px-2 shrink-0">
-            Corridors:
-          </span>
-          <button
-            type="button"
-            onClick={() => setSelectedRouteFilter('ALL')}
-            aria-pressed={selectedRouteFilter === 'ALL'}
-            className={`rounded-lg px-2.5 py-1 text-xs font-bold transition-all shrink-0 cursor-pointer ${
-              selectedRouteFilter === 'ALL'
-                ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
-                : 'text-[#77766D] hover:bg-[#EEE5D6] hover:text-[#243B4A]'
-            }`}
-          >
-            All
-          </button>
-          {routes.map(r => (
-            <button
-              key={r.route_id}
-              type="button"
-              onClick={() => setSelectedRouteFilter(r.route_id)}
-              aria-pressed={selectedRouteFilter === r.route_id}
-              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                selectedRouteFilter === r.route_id
-                  ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
-                  : 'text-[#77766D] hover:bg-[#EEE5D6] hover:text-[#243B4A]'
-              }`}
-            >
-              <span
-                className="h-2 w-2 rounded-full inline-block"
-                style={{ backgroundColor: r.route_color || '#C49A43' }}
-                aria-hidden="true"
-              />
-              <span>{r.route_name.split(' ')[0]}</span>
-            </button>
-          ))}
+      {/* Floating Search Bar matching Figma: "Search stop, station or landmark..." */}
+      <div className="absolute top-4 left-4 right-4 z-[1000] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pointer-events-none">
+        {/* Search Input Box */}
+        <div className="relative flex-1 max-w-md pointer-events-auto">
+          <div className="flex items-center rounded-xl border border-[#D8C8AA] bg-[#FFFCF5]/95 px-3 py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+            <span className="text-xs text-[#77766D] mr-2">🔍</span>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value)
+                setShowSearchResults(true)
+              }}
+              onFocus={() => setShowSearchResults(true)}
+              placeholder="Search stop, station or landmark..."
+              aria-label="Search Delhi transit stops"
+              className="w-full bg-transparent text-xs font-semibold text-[#29343A] placeholder-[#77766D] focus:outline-none"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('')
+                  setShowSearchResults(false)
+                }}
+                className="text-[#77766D] hover:text-[#243B4A] p-0.5 cursor-pointer"
+              >
+                ✕
+              </button>
+            )}
+            <span className="hidden xs:inline-block ml-2 rounded-md bg-[#EEE5D6] px-2 py-0.5 font-mono text-[9px] font-extrabold text-[#243B4A] border border-[#D8C8AA]">
+              METRO + BUS
+            </span>
+          </div>
+
+          {/* Autocomplete Dropdown */}
+          {showSearchResults && filteredSearchStops.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] shadow-xl z-[1001] divide-y divide-[#D8C8AA]/50 scrollbar-thin">
+              {filteredSearchStops.map(s => (
+                <div
+                  key={s.stop_id}
+                  onClick={() => handleSelectSearchStop(s)}
+                  className="flex items-center justify-between p-2.5 text-xs hover:bg-[#EEE5D6] transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
+                    <span className="font-bold text-[#243B4A]">{s.stop_name}</span>
+                  </div>
+                  <span className="text-[10px] text-[#77766D] font-mono">Zone {s.zone_id}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-1.5 rounded-xl border border-[#D8C8AA] bg-[#FFFCF5]/95 p-1 text-[#29343A] shadow-md backdrop-blur-md pointer-events-auto shrink-0">
-          <button
-            type="button"
-            onClick={handleResetView}
-            className="rounded-lg px-2.5 py-1 text-xs font-semibold text-[#77766D] hover:bg-[#EEE5D6] hover:text-[#243B4A] transition-colors cursor-pointer"
-            title="Reset network view"
-            aria-label="Reset map view"
-          >
-            Reset
-          </button>
-          {hasJourney && (
-            <span className="flex items-center gap-1 rounded-lg bg-[#547A60]/15 border border-[#547A60]/30 px-2 py-0.5 text-[10px] font-bold text-[#547A60]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#547A60] animate-pulse" />
-              Active
-            </span>
-          )}
+        {/* Live Station Status Floating Card (Figma: Kashmere Gate Operating normally) */}
+        <div className="hidden md:flex items-center gap-2 rounded-xl border border-[#D8C8AA] bg-[#FFFCF5]/95 px-3 py-1.5 shadow-md backdrop-blur-md pointer-events-auto">
+          <span className="h-2 w-2 rounded-full bg-[#547A60] animate-pulse" />
+          <div className="text-left">
+            <div className="text-[10px] font-black uppercase tracking-wider text-[#243B4A]">
+              Kashmere Gate
+            </div>
+            <div className="text-[9px] text-[#547A60] font-semibold">
+              Operating normally • Next train in 3 min
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Floating Bus Fleet Badge (Figma: Delhi DTC - Every 10 min) */}
+      <div className="absolute bottom-14 right-4 z-[1000] hidden sm:flex items-center gap-2.5 rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5]/95 p-2.5 shadow-lg backdrop-blur-md pointer-events-auto max-w-[210px] animate-fade-in">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#243B4A] text-[#FFFCF5]">
+          <span className="text-sm">🚌</span>
+        </div>
+        <div className="text-left">
+          <div className="text-[10px] font-black uppercase tracking-wider text-[#243B4A]">
+            DELHI DTC
+          </div>
+          <div className="text-[10px] text-[#77766D] font-medium leading-tight">
+            Every 10 min from Rajiv Chowk
+          </div>
+        </div>
+      </div>
+
+      {/* Floating Bottom-Left Legend Matching Figma (Metro, Bus, Transfer) */}
+      <div className="absolute bottom-14 left-4 z-[1000] flex items-center gap-3 rounded-xl border border-[#D8C8AA] bg-[#FFFCF5]/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
+        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#243B4A]">
+          <span className="h-1.5 w-4 rounded-full bg-[#C49A43] inline-block" />
+          <span>Metro</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#243B4A]">
+          <span className="h-1.5 w-4 rounded-full bg-[#243B4A] inline-block" />
+          <span>Bus</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#243B4A]">
+          <span className="h-2.5 w-2.5 rounded-full border-2 border-[#243B4A] bg-[#C49A43] inline-block" />
+          <span>Transfer</span>
         </div>
       </div>
 
       {/* Main Leaflet Map Container */}
       <div
         ref={containerRef}
-        className="w-full flex-1 min-h-[380px] sm:min-h-[460px] z-10"
+        className="w-full flex-1 min-h-[400px] sm:min-h-[500px] z-10"
         aria-label="Leaflet cartography canvas"
       />
 
-      {/* Bottom Telemetry & Provenance Strip */}
-      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-[#D8C8AA] bg-[#EEE5D6]/70 px-4 py-2.5 text-xs text-[#29343A] shrink-0">
-        <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-          <span className="flex items-center gap-1.5 font-semibold text-[#547A60]">
-            <span className="h-2 w-2 rounded-full bg-[#547A60]" aria-hidden="true" />
-            Origin
-          </span>
-          <span className="flex items-center gap-1.5 font-semibold text-[#A6533C]">
-            <span className="h-2 w-2 rounded-full bg-[#A6533C]" aria-hidden="true" />
-            Destination
-          </span>
-          <span className="flex items-center gap-1.5 font-semibold text-[#C49A43]">
-            <span className="h-2 w-2 rounded-full bg-[#C49A43]" aria-hidden="true" />
-            Metro Line
-          </span>
-          <span className="flex items-center gap-1.5 font-semibold text-[#243B4A]">
-            <span className="h-2 w-2 rounded-full bg-[#243B4A]" aria-hidden="true" />
-            Bus Route
-          </span>
+      {/* Bottom Telemetry & Controls Strip */}
+      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-[#D8C8AA] bg-[#EEE5D6]/70 px-4 py-2 text-xs text-[#29343A] shrink-0">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleResetView}
+            className="rounded-lg border border-[#D8C8AA] bg-[#FFFCF5] px-2.5 py-1 text-[11px] font-bold text-[#243B4A] hover:bg-[#EEE5D6] transition-colors cursor-pointer"
+          >
+            Reset View
+          </button>
+          {hasJourney && (
+            <span className="flex items-center gap-1 rounded-lg bg-[#547A60]/15 border border-[#547A60]/30 px-2 py-0.5 text-[10px] font-bold text-[#547A60]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#547A60] animate-pulse" />
+              Route Displayed
+            </span>
+          )}
         </div>
         <span className="text-[11px] text-[#77766D] font-medium">
-          Delhi GTFS • Tap stop marker to set route
+          Delhi GTFS • Tap any station to view connections
         </span>
       </footer>
     </figure>

@@ -2,18 +2,61 @@ import { useState, useEffect } from 'react'
 import type { SavedRoute } from '../../types'
 import { formatTime12 } from '../../utils/time'
 import { getSavedRoutes, deleteSavedRoute } from '../../services/api'
-import { BookmarkIcon, ArrowRightIcon, TrashIcon } from '../common/Icons'
+import {
+  BookmarkIcon,
+  ArrowRightIcon,
+  TrashIcon,
+  HomeIcon,
+  BriefcaseIcon,
+  PlaneIcon,
+} from '../common/Icons'
 
 interface Props {
   onReuse: (route: SavedRoute) => void
   refreshTrigger: number
 }
 
+// 3 Default Figma Shortcuts
+const FIGMA_SHORTCUTS: SavedRoute[] = [
+  {
+    saved_route_id: -1,
+    label: 'Home → College',
+    origin_stop_id: 'S13',
+    origin_stop_name: 'Dwarka Sector 21',
+    destination_stop_id: 'S19',
+    destination_stop_name: 'Noida City Centre',
+    preferred_departure_time: '08:00',
+    preference: 'fastest',
+    service_day: 'weekday',
+  },
+  {
+    saved_route_id: -2,
+    label: 'Office → Home',
+    origin_stop_id: 'S02',
+    origin_stop_name: 'Kashmere Gate',
+    destination_stop_id: 'S13',
+    destination_stop_name: 'Dwarka Sector 21',
+    preferred_departure_time: '18:00',
+    preference: 'fastest',
+    service_day: 'weekday',
+  },
+  {
+    saved_route_id: -3,
+    label: 'Rajiv Chowk → Airport',
+    origin_stop_id: 'S01',
+    origin_stop_name: 'Rajiv Chowk',
+    destination_stop_id: 'S13',
+    destination_stop_name: 'Dwarka Sector 21',
+    preferred_departure_time: '09:15',
+    preference: 'fastest',
+    service_day: 'weekday',
+  },
+]
+
 export default function SavedJourneysBar({ onReuse, refreshTrigger }: Props) {
   const [routes, setRoutes] = useState<SavedRoute[]>([])
   const [loading, setLoading] = useState(false)
   const [deletingId, setDeletingId] = useState<number | null>(null)
-  const [isExpanded, setIsExpanded] = useState(true)
 
   useEffect(() => {
     let active = true
@@ -43,109 +86,76 @@ export default function SavedJourneysBar({ onReuse, refreshTrigger }: Props) {
     }
   }
 
+  // Combine default shortcuts with user saved routes
+  const displayRoutes = [...FIGMA_SHORTCUTS, ...routes]
+
   return (
     <section
       aria-labelledby="saved-journeys-title"
-      className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] shadow-xs overflow-hidden transition-all duration-300 animate-fade-in"
+      className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 sm:p-6 shadow-xs space-y-4 animate-fade-in"
     >
-      {/* Header Bar */}
-      <header className="flex items-center justify-between border-b border-[#D8C8AA] px-4 py-3 bg-[#EEE5D6]/60">
-        <div className="flex items-center gap-2">
-          <BookmarkIcon className="w-4 h-4 text-[#C49A43]" />
-          <h3 id="saved-journeys-title" className="font-serif text-xs sm:text-sm font-bold text-[#243B4A]">
-            Saved Journeys
+      {/* Header Matching Figma */}
+      <header className="flex items-center justify-between border-b border-[#D8C8AA]/70 pb-3">
+        <div className="space-y-0.5">
+          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+            YOUR SHORTCUTS
+          </div>
+          <h3 id="saved-journeys-title" className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#243B4A]">
+            Saved journeys
           </h3>
-          <span className="rounded-full bg-[#EEE5D6] px-2 py-0.5 font-mono text-[10px] font-bold text-[#243B4A] border border-[#D8C8AA]">
-            {routes.length}
-          </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[#77766D] hidden sm:inline">
-            1-click route recall
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsExpanded(prev => !prev)}
-            aria-expanded={isExpanded}
-            aria-controls="saved-journeys-content"
-            className="text-[11px] font-semibold text-[#77766D] hover:text-[#243B4A] px-2.5 py-1 rounded-lg hover:bg-[#EEE5D6] transition-colors cursor-pointer"
-          >
-            {isExpanded ? 'Collapse' : 'Expand'}
-          </button>
-        </div>
+        <button
+          type="button"
+          className="text-xs font-bold text-[#C49A43] hover:text-[#A77B32] transition-colors flex items-center gap-1 cursor-pointer"
+        >
+          <span>View all</span>
+          <span>→</span>
+        </button>
       </header>
 
-      {/* Content Bar */}
-      {isExpanded && (
-        <div id="saved-journeys-content" className="p-3.5 bg-[#FFFCF5] animate-fade-in">
-          {loading && routes.length === 0 ? (
-            <div className="flex items-center gap-2 py-2 px-2 text-xs text-[#77766D]" role="status">
-              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#C49A43] border-t-transparent" />
-              <span>Loading saved journeys…</span>
-            </div>
-          ) : routes.length === 0 ? (
-            <div className="flex items-center justify-between gap-3 py-3 px-4 rounded-xl border border-dashed border-[#D8C8AA] bg-[#EEE5D6]/30 text-xs text-[#77766D]">
-              <div className="flex items-center gap-2">
-                <BookmarkIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
-                <span>No saved journeys yet. Search any corridor above and click <strong>Save Route</strong> to bookmark it for quick access.</span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-thin" role="list">
-              {routes.map(r => (
-                <div
-                  key={r.saved_route_id}
-                  role="listitem"
-                  onClick={() => onReuse(r)}
-                  className="shrink-0 flex items-center justify-between gap-3 rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/40 hover:bg-[#FFFCF5] hover:border-[#C49A43] hover:shadow-xs p-3 min-w-[240px] max-w-[280px] cursor-pointer transition-all group"
-                >
-                  <div className="space-y-1 min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#243B4A] truncate">
-                      <span className="truncate">{r.origin_stop_name || r.origin_stop_id}</span>
-                      <ArrowRightIcon className="w-3 h-3 text-[#77766D] shrink-0" />
-                      <span className="truncate">{r.destination_stop_name || r.destination_stop_id}</span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 text-[10px] text-[#77766D] font-mono">
-                      <span>{formatTime12(r.preferred_departure_time || '08:00')}</span>
-                      <span>•</span>
-                      <span className="capitalize">{r.preference}</span>
-                    </div>
+      {/* Cards Row Matching Figma */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5" role="list">
+        {displayRoutes.map((r, i) => {
+          const isPreset = r.saved_route_id && r.saved_route_id < 0
+          const ShortcutIcon = i === 0 ? HomeIcon : i === 1 ? BriefcaseIcon : PlaneIcon
+          return (
+            <div
+              key={r.saved_route_id ?? i}
+              role="listitem"
+              onClick={() => onReuse(r)}
+              className="flex items-center justify-between gap-3 rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] hover:bg-[#EEE5D6]/40 hover:border-[#C49A43] p-4 cursor-pointer transition-all shadow-2xs hover:shadow-xs group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEE5D6] text-[#C49A43] group-hover:bg-[#C49A43] group-hover:text-white transition-colors">
+                  <ShortcutIcon className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 space-y-0.5">
+                  <div className="text-xs font-bold text-[#243B4A] truncate">
+                    {r.label || `${r.origin_stop_name} → ${r.destination_stop_name}`}
                   </div>
-
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      type="button"
-                      onClick={e => {
-                        e.stopPropagation()
-                        onReuse(r)
-                      }}
-                      className="rounded-lg bg-[#243B4A] hover:bg-[#172D3B] px-2.5 py-1 text-[11px] font-bold text-[#FFFCF5] shadow-2xs transition-all cursor-pointer"
-                      title="Reuse this route"
-                      aria-label={`Search again for ${r.origin_stop_name || r.origin_stop_id} to ${r.destination_stop_name || r.destination_stop_id}`}
-                    >
-                      Search
-                    </button>
-                    {r.saved_route_id !== null && r.saved_route_id !== undefined && (
-                      <button
-                        type="button"
-                        disabled={deletingId === r.saved_route_id}
-                        onClick={e => handleDelete(r.saved_route_id as number, e)}
-                        className="rounded-lg p-1.5 text-[#77766D] hover:text-[#A6533C] hover:bg-[#EEE5D6] transition-colors cursor-pointer"
-                        title="Delete bookmark"
-                        aria-label="Delete saved journey"
-                      >
-                        <TrashIcon className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+                  <div className="text-[11px] text-[#77766D] truncate">
+                    {r.origin_stop_name?.split(' ')[0]} → {r.destination_stop_name?.split(' ')[0]}
                   </div>
                 </div>
-              ))}
+              </div>
+
+              {!isPreset && (
+                <button
+                  type="button"
+                  disabled={deletingId === r.saved_route_id}
+                  onClick={e => handleDelete(r.saved_route_id as number, e)}
+                  className="rounded-lg p-1.5 text-[#77766D] hover:text-[#A6533C] hover:bg-[#EEE5D6] transition-colors cursor-pointer shrink-0"
+                  title="Delete bookmark"
+                  aria-label="Delete saved journey"
+                >
+                  <TrashIcon className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
-          )}
-        </div>
-      )}
+          )
+        })}
+      </div>
     </section>
   )
 }

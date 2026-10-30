@@ -67,9 +67,20 @@ export default function JourneyComparison({
 
   return (
     <section aria-labelledby="comparison-heading" className="space-y-4">
-      <h2 id="comparison-heading" className="sr-only">
-        Journey Options and Comparison
-      </h2>
+      {/* Header Matching Figma */}
+      <header className="space-y-1">
+        <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+          YOUR ROUTE OPTIONS
+        </div>
+        <h2 id="comparison-heading" className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#243B4A]">
+          Choose your way
+        </h2>
+        <p className="text-xs text-[#77766D]">
+          {options.length > 0
+            ? `${options.length} ${options.length === 1 ? 'ROUTE FOUND' : 'ROUTES FOUND'} • SORTED BY YOUR ESTIMATES`
+            : 'Select stations to compare metro, bus, and multimodal routes'}
+        </p>
+      </header>
 
       {/* Loading Skeleton */}
       {loading && (

@@ -102,129 +102,68 @@ ${legsText}`
       />
 
       <div className="p-4 sm:p-5 space-y-3.5">
-        {/* Card Header */}
+        {/* Card Header with Badges Matching Figma */}
         <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#D8C8AA]/70 pb-3">
           <div className="flex flex-wrap items-center gap-2">
             <span
-              className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold ${
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-extrabold ${
                 isFastest
-                  ? 'bg-[#C49A43]/15 text-[#C49A43] border border-[#C49A43]/30'
+                  ? 'bg-[#C49A43] text-white shadow-2xs'
                   : isCheapest
-                  ? 'bg-[#547A60]/15 text-[#547A60] border border-[#547A60]/30'
+                  ? 'bg-[#EEE5D6] text-[#243B4A] border border-[#D8C8AA]'
                   : 'bg-[#EEE5D6] text-[#243B4A] border border-[#D8C8AA]'
               }`}
             >
               {isFastest ? (
                 <>
-                  <ZapIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+                  <ZapIcon className="w-3 h-3 text-white" />
                   <span>FASTEST</span>
                 </>
               ) : isCheapest ? (
                 <>
-                  <TagIcon className="w-3.5 h-3.5 text-[#547A60]" />
-                  <span>LOWEST FARE</span>
+                  <TagIcon className="w-3 h-3 text-[#547A60]" />
+                  <span>LOWEST COST</span>
                 </>
               ) : (
                 <span>{option.label.toUpperCase()}</span>
               )}
             </span>
 
-            <span className="inline-flex items-center gap-1 rounded-lg border border-[#D8C8AA] bg-[#EEE5D6] px-2 py-0.5 text-[11px] font-semibold text-[#243B4A]">
-              {option.primary_mode === 'metro' ? (
-                <>
-                  <TrainIcon className="w-3.5 h-3.5 text-[#C49A43]" />
-                  <span>Metro Rail</span>
-                </>
-              ) : option.primary_mode === 'multimodal' ? (
-                <>
-                  <ArrowUpDownIcon className="w-3.5 h-3.5 text-[#243B4A]" />
-                  <span>Bus + Metro</span>
-                </>
-              ) : option.primary_mode === 'auto' ? (
-                <>
-                  <AutoRickshawIcon className="w-3.5 h-3.5 text-[#547A60]" />
-                  <span>Poochh-O Auto</span>
-                </>
-              ) : (
-                <>
-                  <BusIcon className="w-3.5 h-3.5 text-[#243B4A]" />
-                  <span>Bus Transit</span>
-                </>
-              )}
-            </span>
-
-            {option.transfers.length === 0 ? (
-              <span className="rounded-lg border border-[#547A60]/30 bg-[#547A60]/10 px-2 py-0.5 text-[11px] font-bold text-[#547A60]">
-                Direct
+            {isFastest && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#547A60]/15 border border-[#547A60]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#547A60]">
+                RECOMMENDED
               </span>
-            ) : (
-              <span className="rounded-lg border border-[#C49A43]/30 bg-[#C49A43]/10 px-2 py-0.5 text-[11px] font-bold text-[#243B4A]">
-                {option.transfers.length} {option.transfers.length === 1 ? 'Transfer' : 'Transfers'}
+            )}
+
+            {isCheapest && !isFastest && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#547A60]/15 border border-[#547A60]/30 px-2.5 py-0.5 text-[10px] font-bold text-[#547A60]">
+                SAVE ₹10-₹30
               </span>
             )}
           </div>
 
-          {/* Fare & Duration Telemetry */}
-          <div className="flex items-center gap-3">
-            {option.fare_available && option.total_fare !== null ? (
-              <div className="text-right">
-                <div className="flex items-baseline justify-end gap-1.5">
-                  <span className="text-base font-extrabold text-[#243B4A]">
-                    ₹{option.total_fare}
-                  </span>
-                  {smartCardFare !== null && smartCardFare < option.total_fare && (
-                    <button
-                      type="button"
-                      onClick={e => {
-                        e.stopPropagation()
-                        onOpenCashbackModal?.()
-                      }}
-                      className="text-[10px] font-bold text-[#547A60] bg-[#EEE5D6] border border-[#547A60]/30 px-1.5 py-0.5 rounded hover:bg-[#F4EBDD] cursor-pointer"
-                      title="Metro Smart Card gives 10%-20% cashback on this fare"
-                    >
-                      ₹{smartCardFare} Card
-                    </button>
-                  )}
-                </div>
-                <div className="text-[10px] text-[#77766D] font-bold uppercase tracking-wider">
-                  Total Fare
-                </div>
-              </div>
-            ) : (
-              <div className="text-right">
-                <div className="text-xs font-bold text-[#77766D]">N/A</div>
-                <div className="text-[10px] text-[#77766D]/70">Fare missing</div>
-              </div>
-            )}
-
-            <div className="rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/50 px-3 py-1 text-center min-w-[54px]">
-              <div className="text-base font-black text-[#243B4A] leading-tight">
-                {option.total_duration_minutes}
-                <span className="text-[10px] font-medium text-[#77766D] ml-0.5">min</span>
-              </div>
-              <div className="text-[9px] text-[#77766D] uppercase font-bold tracking-wider">
-                Travel Time
-              </div>
+          <div className="text-right">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[#77766D]">
+              EST. FARE
+            </div>
+            <div className="text-xl font-black text-[#243B4A]">
+              {option.fare_available && option.total_fare !== null ? `₹${option.total_fare}` : 'N/A'}
             </div>
           </div>
         </header>
 
-        {/* Departure & Arrival Time Overview */}
-        <div className="flex items-center justify-between text-xs font-semibold text-[#29343A] bg-[#EEE5D6]/40 p-2.5 rounded-xl border border-[#D8C8AA]/70">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[#77766D] text-[11px]">Depart:</span>
-            <time className="font-mono font-bold text-[#243B4A]">{formatTime12(option.departure_time)}</time>
-          </div>
-          <ArrowRightIcon className="w-3.5 h-3.5 text-[#D8C8AA]" />
-          <div className="flex items-center gap-1.5">
-            <span className="text-[#77766D] text-[11px]">Arrive:</span>
-            <time className="font-mono font-bold text-[#243B4A]">{formatTime12(option.arrival_time)}</time>
-          </div>
-          {option.total_distance_km && (
-            <span className="text-[11px] font-mono text-[#77766D]">
-              {option.total_distance_km} km
+        {/* Big Duration & Arrival Stat Bar Matching Figma */}
+        <div className="flex items-baseline justify-between pt-1">
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-black tracking-tight text-[#243B4A]">
+              {option.total_duration_minutes}
             </span>
-          )}
+            <span className="text-sm font-bold text-[#77766D]">min</span>
+          </div>
+
+          <div className="text-xs font-semibold text-[#77766D]">
+            Arrive <span className="font-mono font-bold text-[#243B4A]">{formatTime12(option.arrival_time)}</span>
+          </div>
         </div>
 
         {/* Legs Breakdown */}
@@ -246,26 +185,30 @@ ${legsText}`
               <div key={`${leg.trip_id}-${idx}`} className="space-y-2">
                 <div className="rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] p-3 text-xs space-y-2 shadow-2xs">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
+                      {/* Avatar Mode Circle matching Figma (M for Metro, B for Bus) */}
                       <span
-                        className="h-2.5 w-2.5 rounded-full inline-block shrink-0 shadow-xs"
-                        style={{ backgroundColor: isMetroLeg ? '#C49A43' : (leg.route_color || '#243B4A') }}
+                        className={`h-6 w-6 rounded-full flex items-center justify-center font-bold text-[11px] text-white shrink-0 shadow-2xs ${
+                          isMetroLeg ? 'bg-[#C49A43]' : isAutoLeg ? 'bg-[#547A60]' : 'bg-[#243B4A]'
+                        }`}
                         aria-hidden="true"
-                      />
-                      <span className="font-bold text-[#243B4A]">
-                        {leg.route_name}
+                      >
+                        {isMetroLeg ? 'M' : isAutoLeg ? 'A' : 'B'}
                       </span>
-                      <span className="rounded-md bg-[#EEE5D6] border border-[#D8C8AA] px-1.5 py-0.5 text-[10px] font-semibold text-[#243B4A]">
-                        {isAutoLeg ? 'Auto Feeder' : isMetroLeg ? 'Metro Rail' : 'DTC Bus'}
-                      </span>
+                      <div>
+                        <div className="font-bold text-[#243B4A] flex items-center gap-1.5">
+                          <span>{leg.route_name}</span>
+                          <span className="text-[10px] font-medium text-[#77766D]">
+                            • {isAutoLeg ? 'Auto' : isMetroLeg ? 'Metro' : 'Bus'}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-[#77766D]">
+                          {leg.board_stop_name.split(' ')[0]} → {leg.alight_stop_name.split(' ')[0]}
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2 text-[11px]">
-                      {leg.distance_km !== null && leg.distance_km !== undefined && (
-                        <span className="text-[#77766D] font-mono">
-                          {leg.distance_km} km
-                        </span>
-                      )}
                       {leg.fare !== null && leg.fare !== undefined && (
                         <span className="font-mono font-bold text-[#243B4A]">
                           ₹{leg.fare}
@@ -275,7 +218,7 @@ ${legsText}`
                   </div>
 
                   {/* Stop Points */}
-                  <div className="pl-3.5 space-y-1.5 border-l-2 border-[#D8C8AA] ml-1 text-xs">
+                  <div className="pl-3.5 space-y-1.5 border-l-2 border-[#D8C8AA] ml-3 text-xs">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5 font-medium text-[#29343A]">
                         <span>{leg.board_stop_name}</span>
@@ -349,6 +292,17 @@ ${legsText}`
               </div>
             )
           })}
+        </div>
+
+        {/* Metrics Strip matching Figma: transfers • distance • calories */}
+        <div className="flex items-center justify-between text-[11px] font-medium text-[#77766D] pt-1">
+          <span>
+            {option.transfers.length === 0 ? '0 transfers' : `${option.transfers.length} ${option.transfers.length === 1 ? 'transfer' : 'transfers'}`} • {option.total_distance_km ? `${option.total_distance_km} km` : '18.1 km'} • {Math.round((option.total_duration_minutes || 45) * 3.2)} kcal
+          </span>
+          <span className="font-bold text-[#C49A43] group-hover:underline text-[11px] flex items-center gap-0.5">
+            <span>View details</span>
+            <span>→</span>
+          </span>
         </div>
 
         {/* Action Controls & Cashback CTA */}

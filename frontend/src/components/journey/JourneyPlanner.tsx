@@ -123,31 +123,29 @@ export default function JourneyPlanner({
   return (
     <section
       aria-labelledby="journey-planner-heading"
-      className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 shadow-xs text-[#29343A] space-y-4 animate-fade-in"
+      className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 sm:p-6 shadow-xs text-[#29343A] space-y-4 animate-fade-in"
     >
-      {/* Title & Subtitle */}
-      <header className="border-b border-[#D8C8AA] pb-3">
-        <div className="flex items-center justify-between">
-          <h2 id="journey-planner-heading" className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#243B4A]">
-            Plan Your Journey
-          </h2>
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EEE5D6] text-[#243B4A] border border-[#D8C8AA]">
-            Live GTFS
-          </span>
+      {/* Title & Subtitle Matching Figma */}
+      <header className="space-y-1">
+        <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+          PLAN YOUR JOURNEY
         </div>
-        <p className="text-xs text-[#77766D] mt-1">
-          Find optimal routes across Delhi Metro, DTC buses, and Poochh-O feeders
+        <h2 id="journey-planner-heading" className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#243B4A]">
+          Where would you like to go?
+        </h2>
+        <p className="text-xs text-[#77766D]">
+          Compare metro, bus and multimodal routes across Delhi NCR
         </p>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        {/* FROM INPUT (Origin Pin Gold) */}
+        {/* FROM INPUT (Origin Pin Gold Circle) */}
         <div className="space-y-1.5">
-          <label htmlFor="journey-origin" className="text-[11px] font-bold uppercase tracking-wider text-[#77766D] flex items-center gap-1.5">
-            <MapPinIcon className="w-3.5 h-3.5 text-[#C49A43]" />
-            <span>From (Origin)</span>
+          <label htmlFor="journey-origin" className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D] flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
+            <span>FROM</span>
           </label>
-          <div className="relative flex items-center rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/40 px-3 py-2 text-xs transition-colors focus-within:border-[#C49A43] focus-within:bg-[#FFFCF5] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex items-center rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] px-3.5 py-2.5 text-xs transition-colors shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
             <select
               id="journey-origin"
               value={origin}
@@ -157,7 +155,7 @@ export default function JourneyPlanner({
               }}
               className="w-full bg-transparent font-semibold text-[#29343A] focus:outline-none cursor-pointer text-xs"
             >
-              <option value="">Select origin stop or station...</option>
+              <option value="">Select origin station or hub...</option>
               {stops.map(s => (
                 <option key={s.stop_id} value={s.stop_id}>
                   {s.stop_name} (Zone {s.zone_id})
@@ -168,7 +166,7 @@ export default function JourneyPlanner({
               <button
                 type="button"
                 onClick={() => setOrigin('')}
-                className="text-[#77766D] hover:text-[#29343A] p-1 rounded-md"
+                className="text-[#77766D] hover:text-[#29343A] p-1 rounded-md cursor-pointer"
                 title="Clear origin"
                 aria-label="Clear origin station"
               >
@@ -192,13 +190,13 @@ export default function JourneyPlanner({
           </button>
         </div>
 
-        {/* TO INPUT (Destination Pin Terracotta #A6533C) */}
+        {/* TO INPUT (Destination Pin Terracotta Circle) */}
         <div className="space-y-1.5">
-          <label htmlFor="journey-destination" className="text-[11px] font-bold uppercase tracking-wider text-[#77766D] flex items-center gap-1.5">
-            <NavigationIcon className="w-3.5 h-3.5 text-[#A6533C]" />
-            <span>To (Destination)</span>
+          <label htmlFor="journey-destination" className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D] flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#A6533C]" />
+            <span>TO</span>
           </label>
-          <div className="relative flex items-center rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/40 px-3 py-2 text-xs transition-colors focus-within:border-[#C49A43] focus-within:bg-[#FFFCF5] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex items-center rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] px-3.5 py-2.5 text-xs transition-colors shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
             <select
               id="journey-destination"
               value={destination}
@@ -208,7 +206,7 @@ export default function JourneyPlanner({
               }}
               className="w-full bg-transparent font-semibold text-[#29343A] focus:outline-none cursor-pointer text-xs"
             >
-              <option value="">Select destination...</option>
+              <option value="">Select destination station...</option>
               {stops.map(s => (
                 <option key={s.stop_id} value={s.stop_id}>
                   {s.stop_name} (Zone {s.zone_id})
@@ -219,7 +217,7 @@ export default function JourneyPlanner({
               <button
                 type="button"
                 onClick={() => setDestination('')}
-                className="text-[#77766D] hover:text-[#29343A] p-1 rounded-md"
+                className="text-[#77766D] hover:text-[#29343A] p-1 rounded-md cursor-pointer"
                 title="Clear destination"
                 aria-label="Clear destination station"
               >
@@ -229,10 +227,92 @@ export default function JourneyPlanner({
           </div>
         </div>
 
-        {/* POPULAR SUGGESTIONS */}
+        {/* DEPARTURE (With quick NOW badge matching Figma) */}
         <div className="space-y-1.5">
-          <span className="text-[11px] font-medium text-[#77766D]">
-            Popular Delhi Hubs:
+          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D]">
+            DEPARTURE
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] px-3 py-2 text-xs shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+              <span className="text-xs mr-1.5">📅</span>
+              <input
+                type="text"
+                value={time}
+                onChange={e => setTime(e.target.value)}
+                placeholder="08:40"
+                aria-label="Departure Time in 12-hour or 24-hour format"
+                className="w-full bg-transparent font-mono font-bold text-[#29343A] focus:outline-none text-xs"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleSelectNow}
+              className="flex items-center justify-center rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/70 hover:bg-[#EEE5D6] px-3 py-2 text-xs font-bold text-[#243B4A] transition-colors cursor-pointer shadow-2xs"
+            >
+              NOW • {time || '08:40'}
+            </button>
+          </div>
+        </div>
+
+        {/* TRAVEL PREFERENCE (Fastest vs Cheapest Toggle Matching Figma) */}
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D]">
+            TRAVEL PREFERENCE
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setPreference('fastest')}
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                preference === 'fastest'
+                  ? 'bg-[#C49A43] text-[#FFFCF5] shadow-xs'
+                  : 'bg-[#EEE5D6]/60 text-[#243B4A] border border-[#D8C8AA] hover:bg-[#EEE5D6]'
+              }`}
+            >
+              <ZapIcon className="w-3.5 h-3.5" />
+              <span>Fastest</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setPreference('cheapest')}
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                preference === 'cheapest'
+                  ? 'bg-[#C49A43] text-[#FFFCF5] shadow-xs'
+                  : 'bg-[#EEE5D6]/60 text-[#243B4A] border border-[#D8C8AA] hover:bg-[#EEE5D6]'
+              }`}
+            >
+              <TagIcon className="w-3.5 h-3.5" />
+              <span>Cheapest</span>
+            </button>
+          </div>
+        </div>
+
+        {/* SUBMIT BUTTON Matching Figma: Find my route -> */}
+        <button
+          type="submit"
+          id="btn-search-journey"
+          disabled={loading}
+          aria-label="Search Multimodal Delhi Transit Routes"
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#C49A43] hover:bg-[#A77B32] text-[#FFFCF5] font-bold py-3.5 px-4 text-xs tracking-wide shadow-md hover:shadow-lg active:scale-[0.99] transition-all cursor-pointer disabled:opacity-50"
+        >
+          {loading ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <span>Finding Optimal Routes...</span>
+            </>
+          ) : (
+            <>
+              <span>Find my route</span>
+              <ArrowRightIcon className="w-4 h-4" />
+            </>
+          )}
+        </button>
+
+        {/* POPULAR DELHI HUBS (Quick 1-Tap Autofill) */}
+        <div className="pt-2 border-t border-[#D8C8AA]/60 space-y-1.5">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D]">
+            POPULAR HUBS:
           </span>
           <div className="flex flex-wrap gap-1.5" role="group" aria-label="Popular hub stations">
             {POPULAR_STOPS.map(p => {
@@ -258,106 +338,17 @@ export default function JourneyPlanner({
           </div>
         </div>
 
-        {/* DEPART AT */}
+        {/* MODE PREFERENCE TOGGLES */}
         <div className="space-y-1.5 pt-1 border-t border-[#D8C8AA]/60">
-          <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#77766D]">
-            <span>Depart At</span>
-            <div className="flex items-center gap-1 bg-[#EEE5D6] p-0.5 rounded-lg" role="group" aria-label="Departure timing mode">
-              <button
-                type="button"
-                onClick={handleSelectNow}
-                aria-pressed={departMode === 'now'}
-                className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                  departMode === 'now'
-                    ? 'bg-[#FFFCF5] text-[#243B4A] shadow-2xs'
-                    : 'text-[#77766D] hover:text-[#243B4A]'
-                }`}
-              >
-                Now
-              </button>
-              <button
-                type="button"
-                onClick={handleSelectLater}
-                aria-pressed={departMode === 'later'}
-                className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
-                  departMode === 'later'
-                    ? 'bg-[#FFFCF5] text-[#243B4A] shadow-2xs'
-                    : 'text-[#77766D] hover:text-[#243B4A]'
-                }`}
-              >
-                Later
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              type="text"
-              value={time}
-              onChange={e => setTime(e.target.value)}
-              placeholder="e.g. 08:30 AM"
-              aria-label="Departure Time in 12-hour or 24-hour format"
-              className="rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/40 px-3 py-2 text-xs font-mono font-bold text-[#29343A] focus:outline-none focus:border-[#C49A43] focus:bg-[#FFFCF5] focus:ring-2 focus:ring-[#C49A43]/20"
-            />
-            <select
-              value={serviceDay}
-              onChange={e => onServiceDayChange(e.target.value as ServiceDay)}
-              aria-label="Service Day Timetable"
-              className="rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/40 px-3 py-2 text-xs font-semibold text-[#29343A] focus:outline-none focus:border-[#C49A43] focus:bg-[#FFFCF5] focus:ring-2 focus:ring-[#C49A43]/20 cursor-pointer"
-            >
-              <option value="weekday">Weekday Schedule</option>
-              <option value="weekend">Weekend Schedule</option>
-            </select>
-          </div>
-        </div>
-
-        {/* TRAVEL PREFERENCE (Fastest Heritage Gold vs Lowest Cost Botanical Green) */}
-        <fieldset className="space-y-1.5 pt-1 border-0 p-0 m-0">
-          <legend className="text-[11px] font-bold uppercase tracking-wider text-[#77766D] block">
-            Travel Priority
-          </legend>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => setPreference('fastest')}
-              aria-pressed={preference === 'fastest'}
-              className={`flex items-center justify-center gap-1.5 rounded-xl border py-2.5 font-bold transition-all cursor-pointer ${
-                preference === 'fastest'
-                  ? 'border-[#C49A43] bg-[#C49A43] hover:bg-[#A77B32] text-white shadow-xs'
-                  : 'border-[#D8C8AA] bg-[#EEE5D6]/40 text-[#29343A] hover:bg-[#EEE5D6]'
-              }`}
-            >
-              <ZapIcon className="w-3.5 h-3.5" />
-              <span>Fastest Route</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setPreference('cheapest')}
-              aria-pressed={preference === 'cheapest'}
-              className={`flex items-center justify-center gap-1.5 rounded-xl border py-2.5 font-bold transition-all cursor-pointer ${
-                preference === 'cheapest'
-                  ? 'border-[#547A60] bg-[#547A60] text-white shadow-xs'
-                  : 'border-[#D8C8AA] bg-[#EEE5D6]/40 text-[#29343A] hover:bg-[#EEE5D6]'
-              }`}
-            >
-              <TagIcon className="w-3.5 h-3.5" />
-              <span>Lowest Cost</span>
-            </button>
-          </div>
-        </fieldset>
-
-        {/* TRANSPORT MODE PILLS (Metro Gold #C49A43, Bus Navy #243B4A) */}
-        <fieldset className="space-y-1.5 pt-1 border-0 p-0 m-0">
-          <legend className="text-[11px] font-bold uppercase tracking-wider text-[#77766D] block">
-            Transit Modes
-          </legend>
+          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#77766D]">
+            MODE FILTER
+          </label>
           <div className="grid grid-cols-4 gap-1.5 text-xs">
             <button
               type="button"
               onClick={() => setModePreference('all')}
               aria-pressed={modePreference === 'all'}
-              className={`rounded-xl py-2 font-bold border transition-all cursor-pointer text-center ${
+              className={`rounded-xl py-1.5 font-bold border transition-all cursor-pointer text-center text-xs ${
                 modePreference === 'all'
                   ? 'bg-[#243B4A] text-white border-[#243B4A] shadow-xs'
                   : 'bg-[#FFFCF5] text-[#29343A] border-[#D8C8AA] hover:bg-[#EEE5D6]'
@@ -369,72 +360,50 @@ export default function JourneyPlanner({
               type="button"
               onClick={() => setModePreference('metro')}
               aria-pressed={modePreference === 'metro'}
-              className={`rounded-xl py-2 font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              className={`rounded-xl py-1.5 font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer text-xs ${
                 modePreference === 'metro'
                   ? 'bg-[#C49A43] text-white border-[#C49A43] shadow-xs'
                   : 'bg-[#FFFCF5] text-[#29343A] border-[#D8C8AA] hover:bg-[#EEE5D6]'
               }`}
             >
-              <TrainIcon className="w-3.5 h-3.5" />
+              <TrainIcon className="w-3 h-3" />
               <span>Metro</span>
             </button>
             <button
               type="button"
               onClick={() => setModePreference('bus')}
               aria-pressed={modePreference === 'bus'}
-              className={`rounded-xl py-2 font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              className={`rounded-xl py-1.5 font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer text-xs ${
                 modePreference === 'bus'
                   ? 'bg-[#243B4A] text-white border-[#243B4A] shadow-xs'
                   : 'bg-[#FFFCF5] text-[#29343A] border-[#D8C8AA] hover:bg-[#EEE5D6]'
               }`}
             >
-              <BusIcon className="w-3.5 h-3.5" />
+              <BusIcon className="w-3 h-3" />
               <span>Bus</span>
             </button>
             <button
               type="button"
               onClick={() => setModePreference('auto')}
               aria-pressed={modePreference === 'auto'}
-              className={`rounded-xl py-2 font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              className={`rounded-xl py-1.5 font-bold border transition-all flex items-center justify-center gap-1 cursor-pointer text-xs ${
                 modePreference === 'auto'
                   ? 'bg-[#547A60] text-white border-[#547A60] shadow-xs'
                   : 'bg-[#FFFCF5] text-[#29343A] border-[#D8C8AA] hover:bg-[#EEE5D6]'
               }`}
               title="PoochhO (DIMTS) Auto-Rickshaw & Taxi"
             >
-              <AutoRickshawIcon className="w-3.5 h-3.5" />
+              <AutoRickshawIcon className="w-3 h-3" />
               <span>Auto</span>
             </button>
           </div>
-        </fieldset>
+        </div>
 
-        {/* ERROR NOTIFICATION (Terracotta Meaningful Alert) */}
         {error && (
           <div role="alert" className="rounded-xl border border-[#A6533C]/40 bg-[#FFFCF5] p-3 text-xs font-semibold text-[#A6533C] animate-fade-in shadow-xs">
             {error}
           </div>
         )}
-
-        {/* PRIMARY SEARCH BUTTON (Heritage Gold #C49A43 -> Hover #A77B32) */}
-        <button
-          type="submit"
-          id="btn-search-journey"
-          disabled={loading}
-          aria-label="Search Multimodal Delhi Transit Routes"
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#C49A43] hover:bg-[#A77B32] py-3 text-xs font-bold uppercase tracking-wider text-white shadow-xs hover:shadow-md transition-all active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-        >
-          {loading ? (
-            <>
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              <span>Searching Delhi Network…</span>
-            </>
-          ) : (
-            <>
-              <span>Find Best Routes</span>
-              <ArrowRightIcon className="w-4 h-4" />
-            </>
-          )}
-        </button>
 
         {/* SMART COMMUTER CASHBACK TIP */}
         {onOpenCashbackModal && (

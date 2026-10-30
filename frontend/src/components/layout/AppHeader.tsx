@@ -14,6 +14,8 @@ import {
   MapPinIcon,
   MenuIcon,
   XIcon,
+  ShareIcon,
+  CheckIcon,
 } from '../common/Icons'
 
 interface AppHeaderProps {
@@ -29,6 +31,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
   const [selectedCity, setSelectedCity] = useState('Delhi NCR')
   const [backendStatus, setBackendStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [shareToast, setShareToast] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -44,21 +47,29 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
     }
   }, [])
 
+  const handleShareTrip = () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href)
+      setShareToast(true)
+      setTimeout(() => setShareToast(false), 2500)
+    }
+  }
+
   const navItems = [
     {
-      label: 'Plan Journey',
+      label: 'Plan journey',
       Icon: CompassIcon,
       to: '/',
       active: location.pathname === '/' && (!currentTab || currentTab === 'planner'),
     },
     {
-      label: 'Live Map',
+      label: 'Live map',
       Icon: MapIcon,
       to: '/map',
       active: location.pathname === '/map' || (location.pathname === '/' && currentTab === 'map'),
     },
     {
-      label: 'Fleet Operations',
+      label: 'Fleet',
       Icon: BusIcon,
       to: '/fleet',
       active: location.pathname === '/fleet' && (!currentTab || currentTab === 'roster'),
@@ -99,8 +110,8 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               </span>
               <span className="hidden sm:inline-block h-2 w-2 rounded-full bg-[#C49A43] animate-pulse-glow" />
             </div>
-            <span className="text-[11px] font-medium tracking-wide text-[#77766D] -mt-0.5 hidden xs:block">
-              Intelligent Delhi Transit & Fleet Coordination
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[#77766D] -mt-0.5 hidden xs:block">
+              YOUR FLUID TRANSIT IN DELHI
             </span>
           </NavLink>
         </div>
@@ -131,33 +142,14 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
         {/* Right: Quick Action Controls */}
         <div role="toolbar" aria-label="Quick Actions" className="flex items-center gap-2 shrink-0">
-          {/* Cashback & Savings Button */}
-          <button
-            type="button"
-            onClick={() => setShowCashbackModal(true)}
-            className="flex items-center gap-1.5 rounded-xl border border-[#C49A43]/50 bg-[#EEE5D6] hover:bg-[#F4EBDD] px-3 py-1.5 text-xs font-bold text-[#243B4A] transition-all shadow-2xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-            title="Delhi Transit Cashback, Metro Smart Card 10%-20% discount & Concessions"
-            aria-label="Open Transit Cashback and Concessions Calculator"
-          >
-            <SparklesIcon className="w-3.5 h-3.5 text-[#C49A43]" />
-            <span className="hidden sm:inline">Cashback & Savings</span>
-            <span className="sm:hidden text-[11px] font-extrabold">-20%</span>
-          </button>
-
-          {/* Data Sources Button */}
-          <button
-            type="button"
-            onClick={() => setShowProvenanceModal(true)}
-            className="flex items-center gap-1.5 rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] hover:bg-[#EEE5D6] px-2.5 sm:px-3 py-1.5 text-xs font-bold text-[#243B4A] transition-colors shadow-2xs cursor-pointer"
-            title="Inspect GTFS Feeds & Statutory Provenance"
-            aria-label="Inspect Data Sources and Provenance"
-          >
-            <DatabaseIcon className="w-3.5 h-3.5 text-[#C49A43]" />
-            <span className="hidden md:inline text-xs">Data Sources</span>
-          </button>
+          {/* Live Data Badge */}
+          <div className="hidden xl:flex items-center gap-1.5 rounded-full border border-[#D8C8AA] bg-[#EEE5D6]/70 px-3 py-1 text-[10px] font-bold text-[#243B4A]">
+            <span className="h-2 w-2 rounded-full bg-[#547A60] animate-pulse" />
+            <span>DATA UPDATED 2 MIN AGO</span>
+          </div>
 
           {/* Location Selector */}
-          <div className="hidden xs:flex items-center gap-1.5 rounded-xl border border-[#D8C8AA] bg-[#EEE5D6] px-2.5 py-1 text-xs font-semibold text-[#243B4A]">
+          <div className="hidden xs:flex items-center gap-1.5 rounded-full border border-[#D8C8AA] bg-[#EEE5D6]/70 px-3 py-1 text-xs font-semibold text-[#243B4A]">
             <MapPinIcon className="w-3.5 h-3.5 text-[#C49A43]" />
             <select
               value={selectedCity}
@@ -172,7 +164,50 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
             </select>
           </div>
 
-          {/* Backend Status Indicator with botanical green pulse */}
+          {/* Share trip button */}
+          <button
+            type="button"
+            onClick={handleShareTrip}
+            className="flex items-center gap-1.5 rounded-xl bg-[#243B4A] hover:bg-[#1B303C] px-3.5 py-1.5 text-xs font-bold text-[#FFFCF5] shadow-xs transition-all cursor-pointer"
+            aria-label="Share current trip"
+          >
+            {shareToast ? (
+              <>
+                <CheckIcon className="w-3.5 h-3.5 text-[#547A60]" />
+                <span>Link Copied</span>
+              </>
+            ) : (
+              <>
+                <ShareIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+                <span>Share trip</span>
+              </>
+            )}
+          </button>
+
+          {/* Cashback & Concessions Modal Trigger */}
+          <button
+            type="button"
+            onClick={() => setShowCashbackModal(true)}
+            className="hidden md:flex items-center gap-1.5 rounded-xl border border-[#C49A43]/50 bg-[#EEE5D6] hover:bg-[#F4EBDD] px-2.5 py-1.5 text-xs font-bold text-[#243B4A] transition-all cursor-pointer"
+            title="Delhi Transit Cashback & Concessions"
+            aria-label="Open Transit Cashback and Concessions Calculator"
+          >
+            <SparklesIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+            <span className="hidden lg:inline">Perks</span>
+          </button>
+
+          {/* Data Sources Trigger */}
+          <button
+            type="button"
+            onClick={() => setShowProvenanceModal(true)}
+            className="flex items-center justify-center h-8 w-8 rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] hover:bg-[#EEE5D6] text-[#243B4A] transition-colors cursor-pointer"
+            title="Inspect Data Sources & GTFS Provenance"
+            aria-label="Inspect Data Sources and Provenance"
+          >
+            <DatabaseIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+          </button>
+
+          {/* Backend Status Indicator */}
           <div
             className="flex items-center justify-center h-8 w-8 rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]"
             title={`FastAPI Backend: ${backendStatus}`}
