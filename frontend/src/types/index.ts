@@ -99,6 +99,24 @@ export interface BusState {
   status: string
   occupancy_percent: number
   delay_minutes: number
+  vehicle_type?: string
+  battery_level?: number
+  lat?: number
+  lon?: number
+  driver_id?: string
+  speed_kmh?: number
+  heading?: number
+  fuel_co2_saved_kg?: number
+}
+
+export interface AuditLogRecord {
+  disruption_id: string
+  decision: string
+  bus_id: string
+  type: string
+  description: string
+  delay_minutes: number
+  total_options_evaluated: number
 }
 
 export interface ScenarioMetrics {

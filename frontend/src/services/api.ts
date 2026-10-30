@@ -100,6 +100,30 @@ export async function approveResponse(body: {
   })
 }
 
+export async function resetFleetState() {
+  return request<{
+    message: string
+    simulated: boolean
+    fleet_state: { buses: BusState[]; simulated: boolean }
+  }>('/fleet/reset', {
+    method: 'POST',
+  })
+}
+
+export async function getFleetAuditLog() {
+  return request<{
+    audit_log: Array<{
+      disruption_id: string
+      decision: string
+      bus_id: string
+      type: string
+      description: string
+      delay_minutes: number
+      total_options_evaluated: number
+    }>
+  }>('/fleet/audit-log')
+}
+
 export async function setDelay(trip_id: string, delay_minutes: number) {
   return request<{ message: string }>('/delays', {
     method: 'POST',

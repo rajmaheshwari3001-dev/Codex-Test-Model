@@ -55,6 +55,14 @@ def _serialize_fleet_state():
             "status": bus.status,
             "occupancy_percent": bus.occupancy_percent,
             "delay_minutes": bus.delay_minutes,
+            "vehicle_type": getattr(bus, "vehicle_type", "Tata Starbus EV (12m AC)"),
+            "battery_level": getattr(bus, "battery_level", 85),
+            "lat": getattr(bus, "lat", 28.6139),
+            "lon": getattr(bus, "lon", 77.2090),
+            "driver_id": getattr(bus, "driver_id", "DTC-D101"),
+            "speed_kmh": getattr(bus, "speed_kmh", 32),
+            "heading": getattr(bus, "heading", 90),
+            "fuel_co2_saved_kg": getattr(bus, "fuel_co2_saved_kg", 14.5),
         }
         for bus in state.buses
     ]
@@ -142,3 +150,36 @@ def approve_response(req: ApproveRequest):
         "simulated": True,
         "fleet_state": _serialize_fleet_state(),
     }
+
+
+@router.post("/reset")
+def reset_fleet_state():
+    """Reset fleet state to baseline and clear past incidents."""
+    _simulator.reset()
+    _decisions.clear()
+    _last_evaluation.clear()
+    return {
+        "message": "Fleet telemetry and incidents reset to baseline conditions.",
+        "simulated": True,
+        "fleet_state": _serialize_fleet_state(),
+    }
+
+
+@router.get("/audit-log")
+def get_fleet_audit_log():
+    """Return log of operational disruption decisions taken during this session."""
+    records = []
+    for dis_id, decision in _decisions.items():
+        eval_data = _last_evaluation.get(dis_id, {})
+        dis = eval_data.get("disruption", {})
+        resp_list = eval_data.get("responses", [])
+        records.append({
+            "disruption_id": dis_id,
+            "decision": decision,
+            "bus_id": dis.get("affected_bus_id", ""),
+            "type": dis.get("disruption_type", ""),
+            "description": dis.get("description", ""),
+            "delay_minutes": dis.get("delay_minutes", 0),
+            "total_options_evaluated": len(resp_list),
+        })
+    return {"audit_log": records}

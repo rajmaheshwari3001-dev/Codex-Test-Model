@@ -52,6 +52,14 @@ class Bus:
     occupancy_percent: int = 50
     delay_minutes: int = 0
     capacity: int = 50      # max passengers
+    vehicle_type: str = "Tata Starbus EV (12m AC)"
+    battery_level: int = 85
+    lat: float = 28.6139
+    lon: float = 77.2090
+    driver_id: str = "DTC-D101"
+    heading: int = 90
+    speed_kmh: int = 32
+    fuel_co2_saved_kg: float = 14.5
 
 
 @dataclass
@@ -140,13 +148,20 @@ class FleetSimulator:
                 delay_minutes=0,
             ))
 
-        # Add two spare buses.
+        # Add two spare buses at primary DTC Depot hubs.
         buses.append(Bus(
             bus_id="B-SPARE-1",
             route_id="",
             trip_id="",
             status="spare",
             occupancy_percent=0,
+            vehicle_type="Tata Starbus EV (Depot Reserve)",
+            battery_level=98,
+            lat=28.6674,
+            lon=77.2289,
+            driver_id="DTC-D001-RES",
+            speed_kmh=0,
+            fuel_co2_saved_kg=24.2,
         ))
         buses.append(Bus(
             bus_id="B-SPARE-2",
@@ -154,6 +169,13 @@ class FleetSimulator:
             trip_id="",
             status="spare",
             occupancy_percent=0,
+            vehicle_type="JBM Ecolife Reserve EV",
+            battery_level=95,
+            lat=28.5529,
+            lon=77.0583,
+            driver_id="DTC-D002-RES",
+            speed_kmh=0,
+            fuel_co2_saved_kg=21.8,
         ))
 
         self._initial_state = FleetState(buses=buses)
