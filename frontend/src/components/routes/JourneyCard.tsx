@@ -29,16 +29,22 @@ export default function JourneyCard({
   const leg1 = hasRealLegs ? option.legs[0] : null
   const leg2 = hasRealLegs ? option.legs[option.legs.length - 1] : null
 
-  const leg1Mode = leg1?.mode === 'bus' ? 'B' : (isFastest ? 'M' : 'B')
+  const isMetroLeg1 = leg1 ? leg1.route_type === 'metro' || leg1.route_id?.startsWith('R0') : isFastest
+  const leg1Mode = isMetroLeg1 ? 'M' : 'B'
   const leg1Min = leg1?.duration_minutes ?? (isFastest ? 32 : 38)
-  const leg1Title = leg1 ? `${leg1.route_id} • ${leg1.mode === 'metro' ? 'Metro' : 'Bus'}` : (isFastest ? 'Blue Line • Metro' : 'Bus 764')
+  const leg1Title =
+    leg1?.route_name ||
+    (isFastest ? 'Blue Line • Metro' : 'Bus 764')
   const leg1FromTo = leg1
     ? `${leg1.board_stop_name || 'Dwarka Sec 21'} → ${leg1.alight_stop_name || 'Rajiv Chowk'}`
     : (isFastest ? 'Dwarka Sec 21 → Rajiv Chowk' : 'Dwarka Sec 21 → Connaught Place')
 
-  const leg2Mode = leg2?.mode === 'metro' ? 'M' : 'B'
+  const isMetroLeg2 = leg2 ? leg2.route_type === 'metro' : false
+  const leg2Mode = isMetroLeg2 ? 'M' : 'B'
   const leg2Min = leg2?.duration_minutes ?? (isFastest ? 14 : 25)
-  const leg2Title = leg2 ? `${leg2.route_id} ${leg2.mode === 'bus' ? 'Bus' : 'Metro'}` : (isFastest ? 'Bus 764' : 'Bus 764 - City Special')
+  const leg2Title =
+    leg2?.route_name ||
+    (isFastest ? 'Bus 764' : 'Bus 764 - City Special')
   const leg2FromTo = leg2
     ? `${leg2.board_stop_name || 'Rajiv Chowk'} → ${leg2.alight_stop_name || 'Noida City Centre'}`
     : (isFastest ? 'Rajiv Chowk → Noida City Centre' : 'Connaught Place → Noida City Centre')

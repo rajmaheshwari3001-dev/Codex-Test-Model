@@ -340,7 +340,8 @@ textarea {
   background-color: #F4EFE6 !important;
 }
 
-/* Carto Voyager Tile Styling (Clean, soft, light, green-tinted cartography) */
-.map-tiles-voyager .leaflet-tile {
-  filter: saturate(1.05) contrast(1.02);
+/* OpenStreetMap Soft Light Styling (Clean, soft, light, zero watermark) */
+.map-tiles-voyager .leaflet-tile,
+.leaflet-tile {
+  filter: contrast(0.96) brightness(1.02) saturate(0.88);
 }

@@ -123,16 +123,16 @@ export default function DelhiMap({
     }
   }, [onSelectOrigin, onSelectDestination])
 
-  // Change Basemap Tiles dynamically based on mapStyle (Default Carto Voyager matching mockup)
+  // Change Basemap Tiles dynamically based on mapStyle (Clean OpenStreetMap tiles, zero API key watermark)
   const updateTileLayer = useCallback((style: MapStyle, map: L.Map) => {
     if (tileLayerRef.current) {
       map.removeLayer(tileLayerRef.current)
     }
 
-    let url = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
-    let attribution = '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+    let url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    let attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     let maxZoom = 19
-    let subdomains = 'abcd'
+    let subdomains = 'abc'
 
     if (style === 'satellite') {
       // High-resolution aerial satellite imagery (Esri World Imagery)
@@ -141,11 +141,11 @@ export default function DelhiMap({
       maxZoom = 18
       subdomains = 'abc'
     } else if (style === 'dark') {
-      // Clean Carto Dark Matter
-      url = 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png'
-      attribution = '&copy; CARTO &copy; OpenStreetMap'
+      // Clean Dark Map Tiles
+      url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      attribution = '&copy; OpenStreetMap contributors'
       maxZoom = 19
-      subdomains = 'abcd'
+      subdomains = 'abc'
     }
 
     const newLayer = L.tileLayer(url, {
@@ -590,21 +590,6 @@ export default function DelhiMap({
         iconSize: [0, 0],
       })
       L.marker(NOIDA_COORD, { icon: destIcon }).addTo(lg)
-
-      // Poochh-O Auto Badge near AIIMS / South Delhi
-      const autoIcon = L.divIcon({
-        className: 'delhi-pin-auto',
-        html: `
-          <div style="position: absolute; transform: translate(-50%, -50%); pointer-events: auto;">
-            <div style="background: #166534; color: #FFFFFF; padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 800; border: 1.5px solid #FFFFFF; white-space: nowrap; box-shadow: 0 3px 10px rgba(22,101,52,0.4); display: flex; align-items: center; gap: 4px;">
-              <span>🛺</span>
-              <span>POOCHH-O AUTO</span>
-            </div>
-          </div>
-        `,
-        iconSize: [0, 0],
-      })
-      L.marker([28.538, 77.215], { icon: autoIcon }).addTo(lg)
 
       // 4. DYNAMIC MOVING LIVE GPS TELEMETRY VEHICLES
       if (showLiveVehicles) {

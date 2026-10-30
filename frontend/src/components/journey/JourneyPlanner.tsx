@@ -655,7 +655,7 @@ export default function JourneyPlanner({
           )}
         </div>
 
-        {/* TRAVEL PREFERENCE (2x2 Grid Matching Target: Fastest, Cheapest, Fewer Transfers, Eco Friendly) */}
+        {/* TRAVEL PREFERENCE (Fastest & Cheapest) */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-[13px] font-bold text-[#1A2E3B]">
@@ -666,17 +666,17 @@ export default function JourneyPlanner({
               onClick={() => setShowClockCustomizer(prev => !prev)}
               className="text-[12px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] flex items-center gap-1 cursor-pointer"
             >
-              <span>Customize</span>
+              <span>Customize Clock</span>
               <span>↗</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-3">
             {/* 1. Fastest (Deep Forest Green when active) */}
             <button
               type="button"
               onClick={() => setPreference('fastest')}
-              className={`flex items-center justify-center gap-2 py-3 px-3.5 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'fastest'
                   ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
                   : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
@@ -690,7 +690,7 @@ export default function JourneyPlanner({
             <button
               type="button"
               onClick={() => setPreference('cheapest')}
-              className={`flex items-center justify-center gap-2 py-3 px-3.5 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+              className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'cheapest'
                   ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
                   : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
@@ -698,34 +698,6 @@ export default function JourneyPlanner({
             >
               <span>🏷️</span>
               <span>Cheapest</span>
-            </button>
-
-            {/* 3. Fewer Transfers */}
-            <button
-              type="button"
-              onClick={() => setPreference('fewer-transfers')}
-              className={`flex items-center justify-center gap-2 py-3 px-3.5 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
-                preference === 'fewer-transfers'
-                  ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
-                  : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
-              }`}
-            >
-              <span>🔄</span>
-              <span>Fewer Transfers</span>
-            </button>
-
-            {/* 4. Eco Friendly */}
-            <button
-              type="button"
-              onClick={() => setPreference('eco')}
-              className={`flex items-center justify-center gap-2 py-3 px-3.5 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
-                preference === 'eco'
-                  ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
-                  : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
-              }`}
-            >
-              <span>🌱</span>
-              <span>Eco Friendly</span>
             </button>
           </div>
         </div>

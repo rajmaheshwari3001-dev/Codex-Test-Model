@@ -118,19 +118,16 @@ def search_journeys(req: JourneySearchRequest):
 
     Returns a list of JourneyOption objects (fastest, cheapest, etc.)
     """
-    # Validate preference.
-    if req.preference not in ("fastest", "cheapest"):
-        raise HTTPException(
-            status_code=400,
-            detail="preference must be 'fastest' or 'cheapest'.",
-        )
+    # Normalize preference (defaults to 'fastest' or 'cheapest')
+    pref = (req.preference or "fastest").lower()
+    normalized_pref = "cheapest" if pref in ("cheapest", "cost", "cheap") else "fastest"
 
     try:
         options = _routing_service.search(
             origin_id=req.origin_stop_id,
             destination_id=req.destination_stop_id,
             departure_time=req.departure_time,
-            preference=req.preference,
+            preference=normalized_pref,
             delay_minutes=_delay_service.get_all_delays(),
             service_day=req.service_day,
             mode_preference=req.mode_preference,
