@@ -303,6 +303,43 @@ aaroh-saarthi/
   - Candidate response evaluation ranking feasible options and surfacing the recommended action with trade-offs.
   - Operator action buttons: "Approve Recommendation" and "Reject Action" dispatching to `POST /api/fleet/approve`.
 
+### 7.7 `StaticDelhiMap.tsx` (Target Mockup Vector Visualization)
+- **Location:** `frontend/src/components/map/StaticDelhiMap.tsx`
+- **Props:** `stops`, `selectedJourney`, `originStopId`, `destinationStopId`, `onSelectOrigin`, `onSelectDestination`, `onSwitchToLive`.
+- **Features:**
+  - High-fidelity vector SVG reproducing the target Figma cartographic layout with 100% precision.
+  - Soft ivory Delhi topography (`#F4F1EA`), winding Yamuna River (`#93C5FD`), and styled Ring Roads.
+  - Thick cased corridors: Blue Line Metro 3, Royal Blue Bus 764, Yellow Line, Pink Line, Green Line.
+  - Elevated status cards (`KASHMERE GATE Operating normally • Next in 2 min`), transfer badges (`RAJIV CHOWK • 5m transfer`), vehicle telemetry tags (`Line 3 • 54 km/h`), and statutory auto indicators (`POOCHH-O AUTO`).
+  - Top HUD search bar with mode filter chips (`Metro`, `Bus`, `Both`, `EV/Shared`) and station quick jumps.
+  - 1-click toggle to dynamic Leaflet GPS radar map without reloading.
+
+### 7.8 `JourneyComparison.tsx` & `JourneyCard.tsx` (Refined Fare Typography)
+- **Location:** `frontend/src/components/routes/JourneyComparison.tsx` & `JourneyCard.tsx`
+- **Features:**
+  - Proportional typography: Scaled fare numerals (`₹60`, `₹30`) to an elegant `text-xl sm:text-2xl font-bold font-serif text-[#1A2E3B]`.
+  - Visual leg cards: High-contrast (M) Metro and (B) Bus badges, transfer wait steps, and emission savings metrics (`710 g CO2`).
+  - Action triggers: `View details`, `Share trip`, and statutory `Perks` calculator modal.
+
+### 7.9 `AssistantPanel.tsx` (AI Multimodal Progress Bar Animation)
+- **Location:** `frontend/src/components/assistant/AssistantPanel.tsx`
+- **Features:**
+  - Intentional ~1.6s AI reasoning interval providing visual feedback during transit data processing.
+  - Live animated multi-stage progress bar:
+    1. `15%`: Connecting to Delhi Open Transit (OTD) GTFS feeds.
+    2. `45%`: Scanning DMRC Metro & DTC bus real-time corridors.
+    3. `76%`: Applying Smart Card 10%-20% off-peak concession rules.
+    4. `95%`: Synthesizing optimal multimodal journey itinerary.
+  - Interactive 1-click `Plan Route` itinerary cards linking chatbot recommendations directly into the journey planner.
+
+### 7.10 Enterprise SEO & Schema.org Structured Data
+- **Location:** `frontend/index.html`
+- **Features:**
+  - Complete meta suite: Title, description, multimodal keywords, canonical URL, author, and theme colors.
+  - Localized Delhi NCT Geo-Tags: `geo.region` (`IN-DL`), `geo.placename` (`New Delhi`), and coordinates (`28.6139;77.2090`).
+  - Open Graph & Twitter Cards for social link previews.
+  - 4 JSON-LD Schema.org graphs: `TransitService` (DMRC & DTC), `GovernmentService`, `WebApplication`, and `FAQPage`.
+
 ---
 
 ## 8. Backend API Inventory
@@ -324,6 +361,12 @@ aaroh-saarthi/
 | `GET` | `/api/fleet/state` | `fleet.py` | None | `{"buses": List[BusDict], "simulated": True}` | `_simulator.get_state()` | In-memory `FleetSimulator` | `test_fleet_state` | VERIFIED WORKING |
 | `POST` | `/api/fleet/disruption` | `fleet.py` | `DisruptionRequest` | `DisruptionResult` (baseline, responses, metrics) | `_simulator.evaluate_disruption()` | In-memory `FleetSimulator` | `test_fleet_disruption` | VERIFIED WORKING |
 | `POST` | `/api/fleet/approve` | `fleet.py` | `ApproveRequest` (`disruption_id`, `response_id`, `approved`) | `{"message": str, "fleet_state": ...}` | `_simulator.apply_response()` | In-memory `FleetSimulator` | `test_fleet_approval_applies_spare_assignment_and_prevents_second_decision` | VERIFIED WORKING |
+| `POST` | `/api/fleet/reset` | `fleet.py` | None | `{"message": str, "simulated": True}` | `_simulator.reset()` | In-memory `FleetSimulator` | `test_fleet_reset` | VERIFIED WORKING |
+| `GET` | `/api/fleet/audit-log` | `fleet.py` | None | `{"audit_log": List[Dict]}` | `_simulator.get_audit_log()` | In-memory `FleetSimulator` | `test_fleet_audit` | VERIFIED WORKING |
+| `GET` | `/api/transit/provenance` | `routes.py` | None | `Dict` (pipeline & metadata) | `get_data_provenance()` | `metadata.json` + GTFS | `test_data_provenance` | VERIFIED WORKING |
+| `POST` | `/api/transit/refresh` | `routes.py` | `remote: bool` query | `{"message": str, ...}` | `DataImporter.run_pipeline()` | GTFS CSVs / APIs | `test_pipeline_refresh` | VERIFIED WORKING |
+| `GET` | `/api/poochho/estimate` | `routes.py` | `origin_stop_id`, `destination_stop_id`, `departure_time` | `PoochhOEstimate` | `routing_service.get_poochho_estimate()` | Poochh-O DIMTS tariff model | `test_poochho_estimate` | VERIFIED WORKING |
+| `GET` | `/api/poochho/info` | `routes.py` | None | `Dict` (fare rules, app package) | `PoochhOScraper.fetch_app_metadata()` | DIMTS Poochh-O package | `test_poochho_info` | VERIFIED WORKING |
 
 ---
 
