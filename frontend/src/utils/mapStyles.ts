@@ -157,3 +157,4 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     subdomains: 'abc',
   },
 ]
+
