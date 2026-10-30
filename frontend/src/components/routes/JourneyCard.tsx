@@ -1,6 +1,6 @@
 import type { JourneyOption } from '../../types'
 import { formatTime12 } from '../../utils/time'
-import { SparklesIcon, ZapIcon, TagIcon } from '../common/Icons'
+import { SparklesIcon, ZapIcon, TagIcon, InfoIcon, ArrowRightIcon } from '../common/Icons'
 
 interface Props {
   option: JourneyOption
@@ -104,9 +104,9 @@ export default function JourneyCard({
       </div>
 
       {/* Duration, Arrival Time & Fare Row Matching Target */}
-      <div className="flex items-baseline justify-between border-b border-[#F0EAE1] pb-3.5">
+      <div className="flex items-baseline justify-between border-b border-[#F0EAE1] pb-3">
         <div className="flex items-baseline">
-          <span className="font-serif text-[48px] sm:text-[52px] font-bold text-[#1A2E3B] tracking-tight leading-none tabular-nums">
+          <span className="font-serif text-[34px] sm:text-[38px] font-bold text-[#1A2E3B] tracking-tight leading-none tabular-nums">
             {totalMin}
           </span>
           <span className="text-sm font-semibold text-[#6B7280] ml-1.5">min</span>
@@ -117,10 +117,10 @@ export default function JourneyCard({
         </div>
 
         <div className="text-right">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF]">
+          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#7A7269]">
             EST. FARE
           </div>
-          <div className="font-serif text-[28px] sm:text-[32px] font-bold text-[#1A2E3B] tabular-nums tracking-tight leading-none mt-0.5">
+          <div className="font-serif text-lg sm:text-xl font-bold text-[#1A2E3B] tabular-nums tracking-tight leading-none mt-0.5">
             ₹{estFare}
           </div>
         </div>
@@ -192,13 +192,11 @@ export default function JourneyCard({
       <div className="border-t border-[#F0EAE1] pt-3.5 flex items-center justify-between text-[13px] text-[#6B7280]">
         <div className="flex items-center gap-1.5 font-medium truncate mr-2">
           <span>{metricsText}</span>
-          <span className="text-[#9CA3AF] cursor-help inline-flex items-center justify-center w-3.5 h-3.5 rounded-full border border-[#D1D5DB] text-[10px]">
-            ⓘ
-          </span>
+          <InfoIcon className="w-3.5 h-3.5 text-[#9CA3AF] shrink-0" />
         </div>
         <span className="font-semibold text-[#6B7280] group-hover:text-[#111827] transition-colors flex items-center gap-1 cursor-pointer shrink-0">
           <span>View details</span>
-          <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
+          <ArrowRightIcon className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
         </span>
       </div>
     </article>

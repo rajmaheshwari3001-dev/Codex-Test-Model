@@ -69,6 +69,8 @@ export default function AssistantPanel({
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [progressStage, setProgressStage] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<ChipCategory>('routes')
@@ -153,9 +155,34 @@ export default function AssistantPanel({
     setMessages(prev => [...prev, userMsg])
     if (!customPrompt) setInput('')
     setLoading(true)
+    setProgress(15)
+    setProgressStage('Connecting to Delhi Open Transit (OTD) GTFS feeds…')
+
+    // Run progressive AI stages animation over ~1.6s
+    const stageTimer1 = setTimeout(() => {
+      setProgress(45)
+      setProgressStage('Scanning DMRC Metro & DTC bus real-time corridors…')
+    }, 400)
+
+    const stageTimer2 = setTimeout(() => {
+      setProgress(76)
+      setProgressStage('Applying Smart Card 10%-20% off-peak concession rules…')
+    }, 850)
+
+    const stageTimer3 = setTimeout(() => {
+      setProgress(95)
+      setProgressStage('Synthesizing optimal multimodal journey itinerary…')
+    }, 1300)
+
+    // Guarantee minimum animation duration so passenger sees reasoning progress
+    const minDelay = new Promise(resolve => setTimeout(resolve, 1600))
 
     try {
-      const response = await sendChatMessage(question, serviceDay)
+      const [response] = await Promise.all([
+        sendChatMessage(question, serviceDay),
+        minDelay,
+      ])
+      setProgress(100)
       const replyText = response.reply || 'Information retrieved from Delhi Transport Stack.'
       const suggestedRoute = findRouteSuggestion(question + ' ' + replyText)
 
@@ -168,6 +195,8 @@ export default function AssistantPanel({
       }
       setMessages(prev => [...prev, assistantMsg])
     } catch {
+      await minDelay
+      setProgress(100)
       // High-precision local fallback engine for standard Delhi transit queries
       let localReply =
         'Delhi Transit System operates 4 primary multimodal corridors across DMRC Metro lines (Blue, Yellow) and DTC bus routes (764 Special, Red Ring). Timetables run 06:00 AM – 11:35 PM daily.'
@@ -206,7 +235,11 @@ export default function AssistantPanel({
       }
       setMessages(prev => [...prev, assistantMsg])
     } finally {
+      clearTimeout(stageTimer1)
+      clearTimeout(stageTimer2)
+      clearTimeout(stageTimer3)
       setLoading(false)
+      setProgress(0)
     }
   }
 
@@ -504,11 +537,58 @@ export default function AssistantPanel({
         ))}
 
         {loading && (
-          <div className="flex items-center gap-3.5 rounded-2xl bg-white border-2 border-[#E5DDD0] p-4 text-sm text-[#1A202C] shadow-sm max-w-md animate-pulse" role="status">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#C49A43] border-t-transparent shrink-0" />
-            <div className="space-y-0.5 min-w-0">
-              <span className="font-bold text-[#1A2E3B] block text-sm">Consulting Delhi Transport Stack…</span>
-              <span className="text-xs text-[#5A5248] block font-medium">Evaluating GTFS timetables & Poochh-O tariffs</span>
+          <div
+            className="rounded-2xl bg-white border-2 border-[#D8C8AA] p-5 shadow-md max-w-lg animate-fade-in space-y-3.5"
+            role="status"
+            aria-live="polite"
+          >
+            {/* Header with Pulsing Beacon & Percentage Counter */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#10B981]"></span>
+                </span>
+                <span className="text-xs font-extrabold uppercase tracking-widest text-[#1B4D3E]">
+                  Aaroh-Saarthi AI Engine
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-full bg-[#FAF0D9] px-2.5 py-0.5 border border-[#E8D4AE]">
+                <span className="h-2.5 w-2.5 animate-spin rounded-full border-2 border-[#9A721C] border-t-transparent"></span>
+                <span className="font-mono text-xs font-bold text-[#9A721C]">{progress}%</span>
+              </div>
+            </div>
+
+            {/* High-Resolution Animated Progress Bar Track */}
+            <div className="w-full bg-[#F3EFE6] h-2.5 rounded-full overflow-hidden p-0.5 border border-[#E5DDD0]">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#1B4D3E] via-[#C49A43] to-[#10B981] transition-all duration-300 ease-out shadow-xs"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+
+            {/* Dynamic Stage Description */}
+            <div className="flex items-start gap-2 pt-0.5">
+              <SparklesIcon className="w-4 h-4 text-[#C49A43] shrink-0 mt-0.5" />
+              <p className="text-xs sm:text-[13px] font-semibold text-[#1A2E3B] leading-snug">
+                {progressStage || 'Evaluating Delhi multimodal transit network…'}
+              </p>
+            </div>
+
+            {/* Transit Pipeline Badges */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-[#F0EAE1]">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7A7269] bg-[#FAF7F2] px-2 py-0.5 rounded-md border border-[#EDE8E1]">
+                OTD GTFS
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7A7269] bg-[#FAF7F2] px-2 py-0.5 rounded-md border border-[#EDE8E1]">
+                DMRC Metro Slabs
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7A7269] bg-[#FAF7F2] px-2 py-0.5 rounded-md border border-[#EDE8E1]">
+                DTC Fleet
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7A7269] bg-[#FAF7F2] px-2 py-0.5 rounded-md border border-[#EDE8E1]">
+                DIMTS Poochh-O
+              </span>
             </div>
           </div>
         )}

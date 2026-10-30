@@ -233,7 +233,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               </svg>
             </button>
 
-            {/* User Profile Pill ("Hi, Raj ▾") */}
+            {/* User Profile Pill ("Hi, Raj") */}
             <div className="flex items-center gap-2 bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] rounded-full pl-1.5 pr-3 py-1 cursor-pointer transition-colors shadow-2xs">
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#D4A338] to-[#B38728] text-white font-bold text-xs shadow-xs">
                 R

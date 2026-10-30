@@ -12,6 +12,8 @@ import {
   DollarSignIcon,
   SunIcon,
   MoonIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
 } from '../common/Icons'
 
 interface Props {
@@ -340,9 +342,14 @@ export default function JourneyPlanner({
               <button
                 type="button"
                 onClick={() => setShowClockCustomizer(prev => !prev)}
-                className="text-[11px] font-bold text-[#C49A43] hover:text-[#A77B32] transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-[#C49A43] hover:text-[#A77B32] transition-colors cursor-pointer"
               >
-                {showClockCustomizer ? 'Hide Clock ▲' : 'Customize Clock ▼'}
+                <span>{showClockCustomizer ? 'Hide Clock' : 'Customize Clock'}</span>
+                {showClockCustomizer ? (
+                  <ChevronUpIcon className="w-3 h-3 text-[#C49A43]" />
+                ) : (
+                  <ChevronDownIcon className="w-3 h-3 text-[#C49A43]" />
+                )}
               </button>
             </div>
           </div>
@@ -412,10 +419,10 @@ export default function JourneyPlanner({
                   <button
                     type="button"
                     onClick={() => stepHour(1)}
-                    className="h-6 w-12 flex items-center justify-center rounded-t-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] text-xs font-bold transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
+                    className="h-6 w-12 flex items-center justify-center rounded-t-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
                     title="Increment Hour"
                   >
-                    ▲
+                    <ChevronUpIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
                   </button>
                   <div className="w-12 h-11 flex items-center justify-center bg-[#1A2E3B] text-white font-mono text-2xl font-black rounded-none shadow-inner select-none">
                     {String(hour12).padStart(2, '0')}
@@ -423,10 +430,10 @@ export default function JourneyPlanner({
                   <button
                     type="button"
                     onClick={() => stepHour(-1)}
-                    className="h-6 w-12 flex items-center justify-center rounded-b-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] text-xs font-bold transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
+                    className="h-6 w-12 flex items-center justify-center rounded-b-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
                     title="Decrement Hour"
                   >
-                    ▼
+                    <ChevronDownIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
                   </button>
                   <span className="text-[9px] font-bold text-[#7A7269] mt-1 tracking-wider">
                     HOUR
@@ -443,10 +450,10 @@ export default function JourneyPlanner({
                   <button
                     type="button"
                     onClick={() => stepMinute(5)}
-                    className="h-6 w-12 flex items-center justify-center rounded-t-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] text-xs font-bold transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
+                    className="h-6 w-12 flex items-center justify-center rounded-t-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
                     title="Advance +5 Minutes"
                   >
-                    ▲
+                    <ChevronUpIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
                   </button>
                   <div className="w-12 h-11 flex items-center justify-center bg-[#1A2E3B] text-white font-mono text-2xl font-black rounded-none shadow-inner select-none">
                     {String(minute).padStart(2, '0')}
@@ -454,10 +461,10 @@ export default function JourneyPlanner({
                   <button
                     type="button"
                     onClick={() => stepMinute(-5)}
-                    className="h-6 w-12 flex items-center justify-center rounded-b-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] text-xs font-bold transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
+                    className="h-6 w-12 flex items-center justify-center rounded-b-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
                     title="Rewind -5 Minutes"
                   >
-                    ▼
+                    <ChevronDownIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
                   </button>
                   <span className="text-[9px] font-bold text-[#7A7269] mt-1 tracking-wider">
                     MIN (5m)

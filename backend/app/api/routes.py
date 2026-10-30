@@ -191,6 +191,7 @@ def clear_delays():
 
 
 @router.get("/data/provenance")
+@router.get("/transit/provenance")
 def get_data_provenance():
     """
     Return metadata, data provenance, and scraping audit details
@@ -217,6 +218,7 @@ def get_data_provenance():
 
 
 @router.post("/data/refresh")
+@router.post("/transit/refresh")
 def refresh_transit_data(remote: bool = False):
     """
     Trigger the transit data import / refresh pipeline.

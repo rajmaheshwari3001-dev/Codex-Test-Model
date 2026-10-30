@@ -9,6 +9,7 @@ import JourneyPlanner from '../components/journey/JourneyPlanner'
 import AssistantPanel from '../components/assistant/AssistantPanel'
 import MovableCopilotLauncher from '../components/assistant/MovableCopilotLauncher'
 import DelhiMap from '../components/map/DelhiMap'
+import StaticDelhiMap from '../components/map/StaticDelhiMap'
 import JourneyComparison from '../components/routes/JourneyComparison'
 import SavedJourneysBar from '../components/saved/SavedJourneysBar'
 import PopularDestinationsBar from '../components/journey/PopularDestinationsBar'
@@ -109,9 +110,10 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [showCashbackModal, setShowCashbackModal] = useState(false)
   const [poochhoEstimate, setPoochhOEstimate] = useState<PoochhOEstimate | null>(null)
   const [showRouteMap, setShowRouteMap] = useState(false)
+  const [mapMode, setMapMode] = useState<'static' | 'live'>('static')
 
-  // Console active tab: 'plan' | 'assistant' | 'saved'
-  const [activeConsoleTab, setActiveConsoleTab] = useState<'plan' | 'assistant' | 'saved'>('plan')
+  // Console active tab for mobile/tablet: 'plan' | 'map' | 'routes' | 'assistant' | 'saved'
+  const [activeConsoleTab, setActiveConsoleTab] = useState<'plan' | 'map' | 'routes' | 'assistant' | 'saved'>('plan')
 
   const [showCopilotModal, setShowCopilotModal] = useState(false)
   const [copilotPrompt, setCopilotPrompt] = useState('')
@@ -326,22 +328,52 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
       )}
 
       {/* Responsive View Switcher for Mobile / Tablet */}
-      <div className="flex lg:hidden items-center rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-1.5 shadow-xs" role="tablist">
+      <div className="flex lg:hidden items-center rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-1.5 shadow-xs overflow-x-auto" role="tablist">
         <button
           type="button"
           role="tab"
           aria-selected={activeConsoleTab === 'plan'}
           onClick={() => setActiveConsoleTab('plan')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
             activeConsoleTab === 'plan'
               ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
               : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
           }`}
         >
-          <CompassIcon className="w-4 h-4" />
-          <span>Plan & Routes</span>
+          <CompassIcon className="w-3.5 h-3.5" />
+          <span>Planner</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeConsoleTab === 'map'}
+          onClick={() => setActiveConsoleTab('map')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+            activeConsoleTab === 'map'
+              ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+              : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
+          }`}
+        >
+          <MapIcon className="w-3.5 h-3.5" />
+          <span>Map</span>
+        </button>
+
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeConsoleTab === 'routes'}
+          onClick={() => setActiveConsoleTab('routes')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+            activeConsoleTab === 'routes'
+              ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+              : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
+          }`}
+        >
+          <TrainIcon className="w-3.5 h-3.5" />
+          <span>Routes</span>
           {options.length > 0 && (
-            <span className="rounded-full bg-[#C49A43] text-white px-2 py-0.5 text-[10px] font-mono">
+            <span className="rounded-full bg-[#C49A43] text-white px-1.5 py-0.2 text-[9px] font-mono">
               {options.length}
             </span>
           )}
@@ -352,13 +384,13 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           role="tab"
           aria-selected={activeConsoleTab === 'saved'}
           onClick={() => setActiveConsoleTab('saved')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
             activeConsoleTab === 'saved'
               ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
               : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
           }`}
         >
-          <BookmarkIcon className="w-4 h-4" />
+          <BookmarkIcon className="w-3.5 h-3.5" />
           <span>Shortcuts</span>
         </button>
 
@@ -367,21 +399,21 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           role="tab"
           aria-selected={activeConsoleTab === 'assistant'}
           onClick={() => setActiveConsoleTab('assistant')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
             activeConsoleTab === 'assistant'
               ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
               : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
           }`}
         >
-          <SparklesIcon className="w-4 h-4" />
+          <SparklesIcon className="w-3.5 h-3.5" />
           <span>Copilot</span>
         </button>
       </div>
 
-      {/* 2-COLUMN SPACIOUS & LIGHTWEIGHT DESKTOP LAYOUT (Uncongested, Breathable & Fast) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-        {/* COLUMN 1: LEFT (5 of 12) - PLANNER, POPULAR DESTINATIONS & COPILOT PROMPT */}
-        <div className={`lg:col-span-5 space-y-5 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+      {/* 3-COLUMN FIGMA-IDENTICAL DESKTOP LAYOUT (Clean, Lightweight & Uncongested) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-6 items-start">
+        {/* COLUMN 1: LEFT (3 of 12 on xl, 4 of 12 on lg) - JOURNEY PLANNER & COPILOT PROMPT */}
+        <div className={`lg:col-span-4 xl:col-span-3 space-y-4.5 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
           <JourneyPlanner
             stops={stops}
             origin={origin}
@@ -403,26 +435,17 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             onOpenCashbackModal={() => setShowCashbackModal(true)}
           />
 
-          {/* Popular Destinations Photo Strip */}
-          <PopularDestinationsBar
-            currentDestinationStopId={destination}
-            onSelectDestination={(destStopId) => {
-              setDestination(destStopId)
-              handleSearch(origin, destStopId, time, preference, serviceDay, modePreference, maxBudget)
-            }}
-          />
-
           {/* Ask Aaroh-Saarthi Card Matching Figma */}
-          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs space-y-3.5">
+          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 shadow-xs space-y-3.5">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-[#FAF0D9] border border-[#E8D4AE] text-[#9A721C] shadow-2xs shrink-0">
-                <SparklesIcon className="w-6 h-6 text-[#C49A43]" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FAF0D9] border border-[#E8D4AE] text-[#9A721C] shadow-2xs shrink-0">
+                <SparklesIcon className="w-5 h-5 text-[#C49A43]" />
               </div>
               <div>
-                <h3 className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#1A2E3B] leading-tight">
+                <h3 className="font-serif text-lg font-bold tracking-tight text-[#1A2E3B] leading-tight">
                   Ask Aaroh-Saarthi
                 </h3>
-                <p className="text-xs sm:text-[13px] font-medium text-[#7A7269] leading-snug mt-0.5">
+                <p className="text-xs font-medium text-[#7A7269] leading-snug mt-0.5">
                   An easier, AI-guided way to navigate the capital.
                 </p>
               </div>
@@ -434,7 +457,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
                 setCopilotPrompt('What is the best way to India Gate from Janakpuri?')
                 setShowCopilotModal(true)
               }}
-              className="w-full flex items-center justify-between gap-2 rounded-2xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/50 p-3.5 text-left text-[13px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
+              className="w-full flex items-center justify-between gap-2 rounded-2xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/50 p-3.5 text-left text-xs sm:text-[13px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
             >
               <div className="flex items-center gap-2 truncate">
                 <SparklesIcon className="w-3.5 h-3.5 text-[#C49A43]" />
@@ -445,8 +468,59 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           </div>
         </div>
 
-        {/* COLUMN 2: RIGHT (7 of 12) - ROUTE OPTIONS / CHOOSE YOUR WAY & OPTIONAL MAP PREVIEW */}
-        <div className={`lg:col-span-7 space-y-5 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+        {/* COLUMN 2: CENTER (5 of 12) - THE MAP & POPULAR DESTINATIONS BAR */}
+        <div className={`lg:col-span-4 xl:col-span-5 space-y-4.5 ${activeConsoleTab !== 'map' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+          {mapMode === 'live' ? (
+            <div className="rounded-3xl border border-[#EDE8E1] bg-white p-3.5 shadow-sm flex flex-col gap-2.5">
+              <div className="flex items-center justify-between px-2 pt-1">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-xs font-bold text-[#1A2E3B]">Live GPS Radar Map</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMapMode('static')}
+                  className="text-xs font-bold text-[#C49A43] hover:text-[#A77B32] bg-[#FAF0D9] hover:bg-[#F3E2BD] px-3 py-1 rounded-xl transition-all cursor-pointer"
+                >
+                  ← Back to Clean Target Map
+                </button>
+              </div>
+              <div className="min-h-[560px] lg:min-h-[660px] rounded-2xl overflow-hidden border border-[#EDE8E1]">
+                <DelhiMap
+                  stops={stops}
+                  routes={routes}
+                  selectedJourney={selected}
+                  originStopId={origin}
+                  destinationStopId={destination}
+                  onSelectOrigin={handleSelectOriginFromMap}
+                  onSelectDestination={handleSelectDestinationFromMap}
+                />
+              </div>
+            </div>
+          ) : (
+            <StaticDelhiMap
+              stops={stops}
+              selectedJourney={selected}
+              originStopId={origin}
+              destinationStopId={destination}
+              onSelectOrigin={handleSelectOriginFromMap}
+              onSelectDestination={handleSelectDestinationFromMap}
+              onSwitchToLive={() => setMapMode('live')}
+            />
+          )}
+
+          {/* Popular Destinations Photo Strip placed directly below map */}
+          <PopularDestinationsBar
+            currentDestinationStopId={destination}
+            onSelectDestination={(destStopId) => {
+              setDestination(destStopId)
+              handleSearch(origin, destStopId, time, preference, serviceDay, modePreference, maxBudget)
+            }}
+          />
+        </div>
+
+        {/* COLUMN 3: RIGHT (4 of 12) - CHOOSE YOUR WAY & ROUTE OPTIONS */}
+        <div className={`lg:col-span-4 xl:col-span-4 space-y-4.5 ${activeConsoleTab !== 'routes' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
           <JourneyComparison
             options={options}
             selected={selected}
@@ -462,46 +536,9 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             originName={originName}
             destinationName={destinationName}
             serviceDay={serviceDay}
-            showMap={showRouteMap}
-            onToggleMap={() => setShowRouteMap(prev => !prev)}
+            showMap={mapMode === 'live'}
+            onToggleMap={() => setMapMode(prev => (prev === 'static' ? 'live' : 'static'))}
           />
-
-          {/* Optional Expandable Route Map Preview (Lightweight, uncrowded, shown only when user toggles) */}
-          {showRouteMap && (
-            <div className="rounded-3xl border border-[#EDE8E1] bg-white p-4 sm:p-5 shadow-lg animate-fade-in space-y-3">
-              <div className="flex items-center justify-between border-b border-[#F2ECE1] pb-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FAF0D9] text-[#9A721C]">
-                    <MapIcon className="w-4 h-4 text-[#C49A43]" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[#1A2E3B]">Interactive Route Map</h3>
-                    <p className="text-[11px] text-[#7A7269]">Live visual corridor for {originName} to {destinationName}</p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowRouteMap(false)}
-                  className="flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold text-[#7A7269] hover:text-[#1A2E3B] bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] transition-all cursor-pointer"
-                >
-                  <XIcon className="w-3.5 h-3.5" />
-                  <span>Hide Map</span>
-                </button>
-              </div>
-
-              <div className="min-h-[480px] rounded-2xl overflow-hidden border border-[#EDE8E1]">
-                <DelhiMap
-                  stops={stops}
-                  routes={routes}
-                  selectedJourney={selected}
-                  originStopId={origin}
-                  destinationStopId={destination}
-                  onSelectOrigin={handleSelectOriginFromMap}
-                  onSelectDestination={handleSelectDestinationFromMap}
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
@@ -517,6 +554,16 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
               setActiveConsoleTab('plan')
               handleSearch(orig, dest, time, preference, serviceDay, modePreference, maxBudget)
             }}
+          />
+        </div>
+      )}
+
+      {activeConsoleTab === 'saved' && (
+        <div className="lg:hidden animate-fade-in p-2 bg-white rounded-2xl border border-[#EDE8E1]">
+          <SavedJourneysBar
+            onReuse={handleReuse}
+            refreshTrigger={savedRefresh}
+            stops={stops}
           />
         </div>
       )}
