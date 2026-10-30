@@ -6,13 +6,9 @@ import {
   XIcon,
   TrainIcon,
   BusIcon,
-  ZapIcon,
   CheckIcon,
-  ChevronDownIcon,
   NavigationIcon,
   LayersIcon,
-  PlaneIcon,
-  HospitalIcon,
 } from '../common/Icons'
 
 interface Props {
@@ -65,30 +61,6 @@ const AEROCITY_COORD: [number, number] = [28.5480, 77.1220]
 const AIRPORT_T3_COORD: [number, number] = [28.5560, 77.0850]
 const BOTANICAL_COORD: [number, number] = [28.5645, 77.3340]
 
-// Helper to linearly interpolate between two points
-function lerpPoint(
-  p1: [number, number],
-  p2: [number, number],
-  t: number
-): [number, number] {
-  return [p1[0] + (p2[0] - p1[0]) * t, p1[1] + (p2[1] - p1[1]) * t]
-}
-
-// Polyline interpolation along an array of waypoints
-function interpolateRoute(
-  waypoints: [number, number][],
-  progress: number
-): [number, number] {
-  if (waypoints.length === 0) return [28.615, 77.215]
-  if (waypoints.length === 1) return waypoints[0]
-
-  const totalSegments = waypoints.length - 1
-  const scaled = progress * totalSegments
-  const index = Math.min(Math.floor(scaled), totalSegments - 1)
-  const t = scaled - index
-
-  return lerpPoint(waypoints[index], waypoints[index + 1], t)
-}
 
 type MapStyle = 'sandstone' | 'dark' | 'satellite'
 
@@ -113,7 +85,6 @@ export default function DelhiMap({
   // Map Filter Toggles
   const [showMetro, setShowMetro] = useState(true)
   const [showBus, setShowBus] = useState(true)
-  const [showLiveVehicles, setShowLiveVehicles] = useState(true)
 
   // Listen to Night / Day mode changes from Header
   useEffect(() => {
@@ -125,23 +96,12 @@ export default function DelhiMap({
         setMapStyle('sandstone')
       }
     }
-    // Initial check from localStorage
     try {
       const savedTheme = localStorage.getItem('aaroh_theme')
       if (savedTheme === 'dark') setMapStyle('dark')
     } catch {}
     window.addEventListener('aaroh_theme_change', handleTheme)
     return () => window.removeEventListener('aaroh_theme_change', handleTheme)
-  }, [])
-
-  // Real-Time GPS Simulation Ticker (Advances every 1.5s)
-  const [simTick, setSimTick] = useState(0)
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSimTick(prev => (prev + 1) % 100)
-    }, 1500)
-    return () => clearInterval(timer)
   }, [])
 
   // Expose origin & destination select to window for Leaflet HTML popups
@@ -615,147 +575,6 @@ export default function DelhiMap({
         iconSize: [0, 0],
       })
       L.marker(NOIDA_COORD, { icon: destIcon }).addTo(lg)
-
-      // Kashmere Gate Live Status Box (Attached cleanly in North Delhi matching target mockup)
-      const kashmereStatusIcon = L.divIcon({
-        className: 'delhi-pin-kashmere-status',
-        html: `
-          <div style="position: absolute; transform: translate(12px, -50%); pointer-events: auto; white-space: nowrap;">
-            <div style="background: rgba(255,255,255,0.96); backdrop-filter: blur(8px); padding: 5px 11px; border-radius: 14px; border: 1.5px solid #EDE8E1; box-shadow: 0 4px 14px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 7px;">
-              <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #166534;"></span>
-              <div style="text-align: left;">
-                <div style="font-size: 10px; font-weight: 800; color: #1A2E3B; letter-spacing: 0.5px; text-transform: uppercase;">KASHMERE GATE</div>
-                <div style="font-size: 9.5px; font-weight: 600; color: #166534; line-height: 1.2;">Operating normally • Next in 2 min</div>
-              </div>
-            </div>
-          </div>
-        `,
-        iconSize: [0, 0],
-      })
-      L.marker(KASHMERE_COORD, { icon: kashmereStatusIcon }).addTo(lg)
-
-      // 4. CLEAN & LIGHTWEIGHT LIVE GPS VEHICLE TELEMETRY
-      if (showLiveVehicles) {
-        // Train 302 along Blue Line
-        const trainRouteWaypoints: [number, number][] = [
-          JANAKPURI_COORD,
-          RAJOURI_COORD,
-          RAJIV_COORD,
-          MANDI_COORD,
-          RAJIV_COORD,
-          RAJOURI_COORD,
-        ]
-        // Train 302 fixed at Rajiv Chowk Hub (Stable & Non-moving)
-        const currentTrainPos = RAJIV_COORD
-        const trainSpeed = 50 + (simTick % 8)
-
-        const trainIcon = L.divIcon({
-          className: 'delhi-vehicle-metro',
-          html: `
-            <div style="position: absolute; transform: translate(-50%, -50%); cursor: pointer;">
-              <div style="width: 24px; height: 24px; border-radius: 50%; background: #C49A43; color: #FFFFFF; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF; box-shadow: 0 2px 10px rgba(196,154,67,0.6);">
-                M
-              </div>
-            </div>
-          `,
-          iconSize: [0, 0],
-        })
-        const trainMarker = L.marker(currentTrainPos, { icon: trainIcon }).addTo(lg)
-        trainMarker.bindPopup(`
-          <div style="font-family: 'Manrope', sans-serif; min-width: 210px;">
-            <div style="font-size: 10px; font-weight: 800; color: #C49A43; text-transform: uppercase;">
-              Delhi Metro • Blue Line 3
-            </div>
-            <div style="font-size: 14px; font-weight: 800; color: #1A2E3B; margin-top: 2px;">
-              Train #DMRC-302 (Live ${trainSpeed} km/h)
-            </div>
-            <div style="font-size: 11px; color: #7A7269; margin-top: 6px; line-height: 1.5;">
-              Next Stop: <strong>Rajiv Chowk in 1m 40s</strong><br />
-              Crowd Density: <strong>42% (Normal)</strong><br />
-              Traction: <strong>25kV AC Electric</strong>
-            </div>
-          </div>
-        `)
-
-        // City Bus 764 along Mandi House to Noida
-        const busRouteWaypoints: [number, number][] = [
-          RAJIV_COORD,
-          MANDI_COORD,
-          MAYUR_COORD,
-          NOIDA_COORD,
-          MAYUR_COORD,
-          MANDI_COORD,
-        ]
-        // City Bus 764 fixed at Mayur Vihar Link (Stable & Non-moving)
-        const currentBusPos = MAYUR_COORD
-        const busSpeed = 26 + (simTick % 6)
-
-        const busIcon = L.divIcon({
-          className: 'delhi-vehicle-bus',
-          html: `
-            <div style="position: absolute; transform: translate(-50%, -50%); cursor: pointer;">
-              <div style="width: 24px; height: 24px; border-radius: 50%; background: #1D4ED8; color: #FFFFFF; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF; box-shadow: 0 2px 10px rgba(29,78,216,0.6);">
-                B
-              </div>
-            </div>
-          `,
-          iconSize: [0, 0],
-        })
-        const busMarker = L.marker(currentBusPos, { icon: busIcon }).addTo(lg)
-        busMarker.bindPopup(`
-          <div style="font-family: 'Manrope', sans-serif; min-width: 210px;">
-            <div style="font-size: 10px; font-weight: 800; color: #1D4ED8; text-transform: uppercase;">
-              Delhi Transport Corp • Electric
-            </div>
-            <div style="font-size: 14px; font-weight: 800; color: #1A2E3B; margin-top: 2px;">
-              Bus #DL-1PC-7640 (${busSpeed} km/h)
-            </div>
-            <div style="font-size: 11px; color: #7A7269; margin-top: 6px; line-height: 1.5;">
-              Route: <strong>764 Special Express</strong><br />
-              Next Stop: <strong>Mayur Vihar in 2 min</strong><br />
-              Seating: <strong>32/50 Available</strong>
-            </div>
-          </div>
-        `)
-
-        // Vehicle 3: Poochh-O Auto Rickshaw feeder near AIIMS
-        const autoRouteWaypoints: [number, number][] = [
-          AIIMS_COORD,
-          INA_COORD,
-          HAUZ_KHAS_COORD,
-          AIIMS_COORD,
-        ]
-        // Poochh-O Auto fixed at AIIMS Feeder (Stable & Non-moving)
-        const currentAutoPos = AIIMS_COORD
-
-        const autoIcon = L.divIcon({
-          className: 'delhi-vehicle-auto',
-          html: `
-            <div style="position: absolute; transform: translate(-50%, -50%); cursor: pointer;">
-              <div style="width: 24px; height: 24px; border-radius: 50%; background: #2E7D32; color: #FFFFFF; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF; box-shadow: 0 2px 10px rgba(46,125,50,0.6);">
-                A
-              </div>
-            </div>
-          `,
-          iconSize: [0, 0],
-        })
-        const autoMarker = L.marker(currentAutoPos, { icon: autoIcon }).addTo(lg)
-        autoMarker.bindPopup(`
-          <div style="font-family: 'Manrope', sans-serif; min-width: 190px;">
-            <div style="font-size: 10px; font-weight: 800; color: #2E7D32; text-transform: uppercase;">
-              Delhi Poochh-O • DIMTS Auto
-            </div>
-            <div style="font-size: 13px; font-weight: 800; color: #1A2E3B; margin-top: 2px;">
-              Statutory Meter Auto #DL-1R-8821
-            </div>
-            <div style="font-size: 11px; color: #7A7269; margin-top: 4px; line-height: 1.4;">
-              Statutory Tariff: <strong>₹30 (1st 1.5 km) + ₹11/km</strong><br />
-              Status: <strong>Available at AIIMS Gate 2</strong><br />
-              Verification: <strong>Delhi Transport Dept Approved</strong>
-            </div>
-          </div>
-        `)
-      }
     }
   }, [
     stops,
@@ -764,8 +583,6 @@ export default function DelhiMap({
     destinationStopId,
     showMetro,
     showBus,
-    showLiveVehicles,
-    simTick,
   ])
 
   // Fit active journey bounds
@@ -923,57 +740,12 @@ export default function DelhiMap({
 
             <button
               type="button"
-              onClick={() => setShowLiveVehicles(prev => !prev)}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border bg-[#F3E8FF] text-[#7E22CE] border-[#E9D5FF] hover:bg-[#E9D5FF] transition-all cursor-pointer shadow-xs shrink-0"
-            >
-              <ZapIcon className="w-3.5 h-3.5" />
-              <span>EV/Shared</span>
-            </button>
-
-            <button
-              type="button"
               onClick={handleFitRoute}
               className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2] transition-colors cursor-pointer shadow-xs shrink-0"
             >
-              <span>More</span>
-              <ChevronDownIcon className="w-3.5 h-3.5" />
+              <span>Fit Route</span>
             </button>
           </div>
-        </div>
-
-        {/* Row 2: Secondary Station Quick Pills Strip matching Target */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 pointer-events-auto max-w-full">
-          {[
-            { name: 'Rajiv Chowk', coord: RAJIV_COORD, color: '#EA580C', type: 'dot' },
-            { name: 'New Delhi', coord: NDLS_COORD, color: '#EA580C', type: 'dot' },
-            { name: 'IGI Airport', coord: AIRPORT_T3_COORD, color: '#0284C7', type: 'plane' },
-            { name: 'Kashmere Gate', coord: KASHMERE_COORD, color: '#166534', type: 'dot' },
-            { name: 'AIIMS', coord: AIIMS_COORD, color: '#0284C7', type: 'hospital' },
-            { name: 'Noida City Centre', coord: NOIDA_COORD, color: '#0284C7', type: 'dot' },
-          ].map(hub => (
-            <button
-              key={hub.name}
-              type="button"
-              onClick={() => handleFlyToCoord(hub.coord, 14)}
-              className="flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-[11px] sm:text-xs font-bold text-[#1A2E3B] shadow-2xs transition-all cursor-pointer shrink-0 active:scale-95"
-            >
-              {hub.type === 'plane' ? (
-                <PlaneIcon className="w-3 h-3 text-[#0284C7]" />
-              ) : hub.type === 'hospital' ? (
-                <HospitalIcon className="w-3 h-3 text-[#0284C7]" />
-              ) : (
-                <span style={{ color: hub.color }}>•</span>
-              )}
-              <span>{hub.name}</span>
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={handleCenterDelhi}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-[11px] sm:text-xs font-bold text-[#7A7269] shadow-2xs transition-all cursor-pointer shrink-0"
-          >
-            + More
-          </button>
         </div>
       </div>
 
