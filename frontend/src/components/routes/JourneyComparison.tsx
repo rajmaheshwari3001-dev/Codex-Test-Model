@@ -72,16 +72,16 @@ export default function JourneyComparison({
     <section aria-labelledby="comparison-heading" className="space-y-4">
       {/* Header Matching Figma */}
       <header className="space-y-1">
-        <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+        <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#C49A43] select-none">
           YOUR ROUTE OPTIONS
         </div>
         <h2
           id="comparison-heading"
-          className="font-serif text-2xl font-bold tracking-tight text-[#1A2E3B]"
+          className="font-serif text-2xl font-normal tracking-tight text-[#1A2E3B]"
         >
           Choose your way
         </h2>
-        <p className="text-xs text-[#7A7269]">
+        <p className="text-xs font-normal text-[#7A7269] leading-relaxed">
           {displayOptions.length} routes found for 08:40 departure
         </p>
       </header>

@@ -127,13 +127,13 @@ export default function JourneyPlanner({
     >
       {/* Title & Subtitle Matching Figma: PLAN FOR A DELHI DAY */}
       <header className="space-y-1">
-        <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+        <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#C49A43] select-none">
           PLAN FOR A DELHI DAY
         </div>
-        <h2 id="journey-planner-heading" className="font-serif text-2xl font-bold tracking-tight text-[#1A2E3B]">
+        <h2 id="journey-planner-heading" className="font-serif text-2xl font-normal tracking-tight text-[#1A2E3B]">
           Where would you like to go?
         </h2>
-        <p className="text-xs text-[#7A7269]">
+        <p className="text-xs font-normal text-[#7A7269] leading-relaxed">
           Compare metro, bus and multimodal routes
         </p>
       </header>
@@ -141,11 +141,11 @@ export default function JourneyPlanner({
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {/* FROM INPUT (Origin Pin Gold Circle) */}
         <div className="space-y-1.5">
-          <label htmlFor="journey-origin" className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A7269] flex items-center gap-1.5">
+          <label htmlFor="journey-origin" className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269] flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
             <span>FROM</span>
           </label>
-          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 text-xs transition-colors shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 text-xs transition-all shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
             <select
               id="journey-origin"
               value={origin}
@@ -166,7 +166,7 @@ export default function JourneyPlanner({
               <button
                 type="button"
                 onClick={() => setOrigin('')}
-                className="text-[#7A7269] hover:text-[#1A202C] p-1 rounded-md cursor-pointer"
+                className="text-[#7A7269] hover:text-[#1A202C] p-1 rounded-md cursor-pointer transition-colors"
                 title="Clear origin"
                 aria-label="Clear origin station"
               >
@@ -182,7 +182,7 @@ export default function JourneyPlanner({
             type="button"
             onClick={handleSwap}
             aria-label="Swap origin and destination endpoints"
-            className="group flex h-8 w-8 items-center justify-center rounded-full border border-[#EBE5DC] bg-white hover:bg-[#FAF7F2] hover:border-[#C49A43] shadow-xs transition-all duration-300 text-[#1A2E3B] hover:text-[#C49A43] cursor-pointer"
+            className="group flex h-8 w-8 items-center justify-center rounded-full border border-[#EBE5DC] bg-white hover:bg-[#FAF7F2] hover:border-[#C49A43] shadow-xs hover:shadow-sm active:scale-90 transition-all duration-200 text-[#7A7269] hover:text-[#C49A43] cursor-pointer"
           >
             <span className={`inline-block transition-transform duration-300 ${isSwapping ? 'rotate-180' : ''}`}>
               <ArrowUpDownIcon className="w-3.5 h-3.5" />
@@ -192,11 +192,11 @@ export default function JourneyPlanner({
 
         {/* TO INPUT (Destination Pin Terracotta Circle) */}
         <div className="space-y-1.5">
-          <label htmlFor="journey-destination" className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A7269] flex items-center gap-1.5">
+          <label htmlFor="journey-destination" className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269] flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#A6533C]" />
             <span>TO</span>
           </label>
-          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 text-xs transition-colors shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 text-xs transition-all shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
             <select
               id="journey-destination"
               value={destination}
@@ -217,7 +217,7 @@ export default function JourneyPlanner({
               <button
                 type="button"
                 onClick={() => setDestination('')}
-                className="text-[#7A7269] hover:text-[#1A202C] p-1 rounded-md cursor-pointer"
+                className="text-[#7A7269] hover:text-[#1A202C] p-1 rounded-md cursor-pointer transition-colors"
                 title="Clear destination"
                 aria-label="Clear destination station"
               >
@@ -229,11 +229,11 @@ export default function JourneyPlanner({
 
         {/* DEPARTURE (With quick NOW badge matching Figma: Today, 08:40 AM) */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A7269]">
+          <label className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269]">
             DEPARTURE
           </label>
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3 py-2 text-xs shadow-2xs focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+            <div className="flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3 py-2 text-xs shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20 transition-all">
               <span className="text-xs mr-1.5">📅</span>
               <input
                 type="text"
@@ -244,32 +244,33 @@ export default function JourneyPlanner({
                 }}
                 placeholder="Today, 08:40 AM"
                 aria-label="Departure Time"
-                className="w-full bg-transparent font-medium text-[#1A202C] focus:outline-none text-xs"
+                className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none text-xs"
               />
             </div>
             <button
               type="button"
               onClick={handleSelectNow}
-              className="flex items-center justify-center rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] px-3 py-2 text-xs font-bold text-[#1A2E3B] transition-colors cursor-pointer shadow-2xs"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 px-3 py-2 text-xs font-bold text-[#1A2E3B] transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
             >
-              NOW • {time || '08:40'}
+              <span className="h-1.5 w-1.5 rounded-full bg-[#C49A43] animate-pulse" />
+              <span>NOW • {time || '08:40'}</span>
             </button>
           </div>
         </div>
 
         {/* TRAVEL PREFERENCE (Fastest vs Cheapest Toggle Matching Figma) */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-extrabold uppercase tracking-wider text-[#7A7269]">
+          <label className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269]">
             TRAVEL PREFERENCE
           </label>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => setPreference('fastest')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'fastest'
-                  ? 'bg-[#C49A43] text-white shadow-xs'
-                  : 'bg-[#FAF7F2] text-[#7A7269] border border-[#EBE5DC] hover:bg-[#F2ECE1]'
+                  ? 'bg-[#C49A43] text-white shadow-[0_2px_8px_rgba(196,154,67,0.3)] ring-1 ring-[#C49A43]'
+                  : 'bg-[#FAF7F2] text-[#6E665D] border border-[#EBE5DC] hover:bg-[#F4EFE6] hover:text-[#1A2E3B] hover:border-[#D8CFBF]'
               }`}
             >
               <ZapIcon className="w-3.5 h-3.5" />
@@ -279,10 +280,10 @@ export default function JourneyPlanner({
             <button
               type="button"
               onClick={() => setPreference('cheapest')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'cheapest'
-                  ? 'bg-[#C49A43] text-white shadow-xs'
-                  : 'bg-[#FAF7F2] text-[#7A7269] border border-[#EBE5DC] hover:bg-[#F2ECE1]'
+                  ? 'bg-[#C49A43] text-white shadow-[0_2px_8px_rgba(196,154,67,0.3)] ring-1 ring-[#C49A43]'
+                  : 'bg-[#FAF7F2] text-[#6E665D] border border-[#EBE5DC] hover:bg-[#F4EFE6] hover:text-[#1A2E3B] hover:border-[#D8CFBF]'
               }`}
             >
               <TagIcon className="w-3.5 h-3.5" />
@@ -297,17 +298,17 @@ export default function JourneyPlanner({
           id="btn-search-journey"
           disabled={loading}
           aria-label="Find my route"
-          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#C49A43] hover:bg-[#A77B32] text-white font-bold py-3.5 px-4 text-xs tracking-wide shadow-xs transition-all cursor-pointer disabled:opacity-50"
+          className="group w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#C49A43] via-[#BA8F39] to-[#AF842F] hover:from-[#B88E3B] hover:via-[#AF842F] hover:to-[#A17528] text-white font-bold py-3.5 px-4 text-xs tracking-wide shadow-[0_4px_14px_rgba(196,154,67,0.32)] hover:shadow-[0_6px_20px_rgba(196,154,67,0.42)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <>
               <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              <span>Finding Routes...</span>
+              <span className="font-semibold">Finding Routes...</span>
             </>
           ) : (
             <>
-              <span>Find my route</span>
-              <ArrowRightIcon className="w-4 h-4" />
+              <span className="font-bold tracking-wide">Find my route</span>
+              <ArrowRightIcon className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
             </>
           )}
         </button>

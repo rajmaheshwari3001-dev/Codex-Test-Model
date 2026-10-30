@@ -97,23 +97,23 @@ export default function SavedJourneysBar({ onReuse, refreshTrigger }: Props) {
       {/* Header Matching Figma */}
       <header className="flex items-center justify-between border-b border-[#EBE5DC] pb-3">
         <div className="space-y-0.5">
-          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+          <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#C49A43] select-none">
             YOUR SHORTCUTS
           </div>
-          <h3 id="saved-journeys-title" className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#1A2E3B]">
+          <h3 id="saved-journeys-title" className="font-serif text-xl sm:text-2xl font-normal tracking-tight text-[#1A2E3B]">
             Saved journeys
           </h3>
-          <p className="text-xs text-[#7A7269]">
+          <p className="text-xs font-normal text-[#7A7269] leading-relaxed">
             1-tap routes with live data and alerts
           </p>
         </div>
 
         <button
           type="button"
-          className="text-xs font-bold text-[#C49A43] hover:text-[#A77B32] transition-colors flex items-center gap-1 cursor-pointer"
+          className="text-xs font-bold text-[#C49A43] hover:text-[#A77B32] transition-colors flex items-center gap-1.5 cursor-pointer group"
         >
           <span>View all</span>
-          <span>→</span>
+          <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
         </button>
       </header>
 
@@ -128,17 +128,17 @@ export default function SavedJourneysBar({ onReuse, refreshTrigger }: Props) {
               key={r.saved_route_id ?? i}
               role="listitem"
               onClick={() => onReuse(r)}
-              className="flex items-center justify-between gap-3 rounded-2xl border border-[#EBE5DC] bg-white hover:bg-[#FAF7F2] hover:border-[#C49A43] p-4 cursor-pointer transition-all shadow-2xs hover:shadow-xs group"
+              className="flex items-center justify-between gap-3 rounded-2xl border border-[#EBE5DC] bg-white hover:bg-[#FFFCF8] hover:border-[#C49A43]/60 hover:shadow-md p-4 cursor-pointer transition-all duration-200 shadow-2xs group active:scale-[0.99]"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg} transition-colors`}>
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg} transition-colors shadow-2xs`}>
                   <ShortcutIcon className="w-5 h-5" />
                 </div>
                 <div className="min-w-0 space-y-0.5">
-                  <div className="text-xs font-bold text-[#1A2E3B] truncate">
+                  <div className="text-xs font-bold text-[#1A2E3B] group-hover:text-[#C49A43] transition-colors truncate">
                     {r.label || `${r.origin_stop_name} → ${r.destination_stop_name}`}
                   </div>
-                  <div className="text-[11px] text-[#7A7269] truncate">
+                  <div className="text-[11px] font-normal text-[#7A7269] truncate">
                     {r.origin_stop_name} → {r.destination_stop_name}
                   </div>
                 </div>

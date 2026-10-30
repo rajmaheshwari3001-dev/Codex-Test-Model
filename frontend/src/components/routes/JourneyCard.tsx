@@ -56,38 +56,38 @@ export default function JourneyCard({
       {/* Top Badges Row Matching Figma */}
       <div className="flex items-center justify-between">
         <span
-          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wider uppercase ${
             isFastest
-              ? 'bg-[#FAF0D9] text-[#A67C1E]'
-              : 'bg-[#E8EDF1] text-[#1A2E3B]'
+              ? 'bg-[#FAF0D9] text-[#9A721C] border border-[#F3E2BD]'
+              : 'bg-[#E8EDF1] text-[#1A2E3B] border border-[#D3DEE6]'
           }`}
         >
           {isFastest ? '⚡ FASTEST' : '₹ LOWEST COST'}
         </span>
 
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#EAF5EC] text-[#2E7D32]">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wider uppercase bg-[#EAF5EC] text-[#22702E] border border-[#CCE7D2]">
           {isFastest ? 'RECOMMENDED' : 'SAVE ₹30'}
         </span>
       </div>
 
       {/* Duration, Arrival Time & Fare Row Matching Figma */}
       <div className="flex items-baseline justify-between border-b border-[#F0EAE1] pb-3.5">
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-4xl font-extrabold text-[#1A2E3B] tracking-tight">
+        <div className="flex items-baseline gap-1">
+          <span className="text-4xl sm:text-[42px] font-extrabold text-[#1A2E3B] tracking-tight tabular-nums leading-none">
             {totalMin}
           </span>
-          <span className="text-sm font-semibold text-[#7A7269]">min</span>
+          <span className="text-xs font-semibold text-[#7A7269]">min</span>
         </div>
 
-        <div className="text-xs font-medium text-[#7A7269]">
+        <div className="text-xs font-semibold text-[#7A7269]">
           Arrive {arrivalTime}
         </div>
 
         <div className="text-right">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[#7A7269]">
+          <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#7A7269]">
             EST. FARE
           </div>
-          <div className="text-2xl font-black text-[#1A2E3B]">
+          <div className="text-2xl font-black text-[#1A2E3B] tabular-nums tracking-tight leading-none mt-1">
             ₹{estFare}
           </div>
         </div>
@@ -98,22 +98,22 @@ export default function JourneyCard({
         {/* Leg 1 */}
         <div className="flex items-start gap-3">
           <div
-            className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
+            className={`w-6 h-6 rounded-full flex items-center justify-center font-extrabold text-[11px] shrink-0 mt-0.5 shadow-2xs ${
               leg1Mode === 'M'
-                ? 'bg-[#F2E6CE] text-[#8C6826]'
+                ? 'bg-[#FAF0D9] text-[#9A721C] border border-[#F3E2BD]'
                 : 'bg-[#1A2E3B] text-white'
             }`}
           >
             {leg1Mode}
           </div>
-          <div className="text-xs font-bold text-[#7A7269] w-12 shrink-0 pt-0.5">
+          <div className="text-xs font-bold text-[#6E665D] w-12 shrink-0 pt-0.5 tabular-nums">
             {leg1Min} min
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-bold text-xs text-[#1A2E3B]">
+            <div className="font-bold text-xs text-[#1A2E3B] tracking-tight">
               {leg1Title}
             </div>
-            <div className="text-[11px] text-[#7A7269] truncate">
+            <div className="text-[11px] font-normal text-[#7A7269] truncate">
               {leg1FromTo}
             </div>
           </div>
@@ -121,28 +121,28 @@ export default function JourneyCard({
 
         {/* Transfer Step */}
         <div className="flex items-center gap-3 pl-2">
-          <div className="w-2 h-2 rounded-full bg-[#CBD5E1] shrink-0 ml-1" />
-          <div className="text-xs font-semibold text-[#7A7269] w-12 shrink-0">
+          <div className="w-2.5 h-2.5 rounded-full border border-[#CBD5E1] bg-[#F1F5F9] shrink-0 ml-0.5" />
+          <div className="text-xs font-medium text-[#7A7269] w-12 shrink-0 tabular-nums">
             5 min
           </div>
-          <div className="text-[11px] text-[#7A7269]">
+          <div className="text-[11px] font-medium text-[#7A7269]">
             Transfer at Rajiv Chowk
           </div>
         </div>
 
         {/* Leg 2 */}
         <div className="flex items-start gap-3">
-          <div className="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 bg-[#1A2E3B] text-white">
+          <div className="w-6 h-6 rounded-full flex items-center justify-center font-extrabold text-[11px] shrink-0 mt-0.5 bg-[#1A2E3B] text-white shadow-2xs">
             {leg2Mode}
           </div>
-          <div className="text-xs font-bold text-[#7A7269] w-12 shrink-0 pt-0.5">
+          <div className="text-xs font-bold text-[#6E665D] w-12 shrink-0 pt-0.5 tabular-nums">
             {leg2Min} min
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-bold text-xs text-[#1A2E3B]">
+            <div className="font-bold text-xs text-[#1A2E3B] tracking-tight">
               {leg2Title}
             </div>
-            <div className="text-[11px] text-[#7A7269] truncate">
+            <div className="text-[11px] font-normal text-[#7A7269] truncate">
               {leg2FromTo}
             </div>
           </div>
@@ -150,10 +150,11 @@ export default function JourneyCard({
       </div>
 
       {/* Footer Metrics Strip Matching Figma */}
-      <div className="border-t border-[#F0EAE1] pt-3 flex items-center justify-between text-xs text-[#7A7269]">
-        <span>{metricsText}</span>
-        <span className="font-bold text-[#C49A43] group-hover:underline flex items-center gap-1">
-          View details →
+      <div className="border-t border-[#F0EAE1] pt-3.5 flex items-center justify-between text-xs text-[#7A7269]">
+        <span className="font-medium">{metricsText}</span>
+        <span className="font-bold text-[#C49A43] group-hover:text-[#A77B32] transition-colors flex items-center gap-1.5 cursor-pointer">
+          <span>View details</span>
+          <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
         </span>
       </div>
     </article>

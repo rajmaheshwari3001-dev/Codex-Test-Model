@@ -445,9 +445,19 @@ export default function FleetDashboard() {
           type="button"
           onClick={handleDisrupt}
           disabled={simulating || !selectedBus}
-          className="rounded-xl bg-[#C49A43] hover:bg-[#A77B32] px-5 py-2.5 text-xs font-bold text-white disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
+          className="group rounded-xl bg-gradient-to-r from-[#C49A43] via-[#BA8F39] to-[#AF842F] hover:from-[#B88E3B] hover:via-[#AF842F] hover:to-[#A17528] px-5 py-2.5 text-xs font-bold text-white disabled:opacity-50 transition-all duration-200 shadow-[0_4px_14px_rgba(196,154,67,0.3)] hover:shadow-[0_6px_20px_rgba(196,154,67,0.4)] active:scale-[0.98] cursor-pointer flex items-center gap-2"
         >
-          {simulating ? 'Evaluating Algorithmic Responses…' : 'Simulate Disruption & Compare Responses →'}
+          {simulating ? (
+            <>
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <span>Evaluating Algorithmic Responses…</span>
+            </>
+          ) : (
+            <>
+              <span>Simulate Disruption & Compare Responses</span>
+              <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>
+            </>
+          )}
         </button>
       </div>
 

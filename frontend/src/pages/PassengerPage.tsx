@@ -387,20 +387,20 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
           <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 shadow-xs space-y-2.5">
             <div className="flex items-center gap-2">
               <SparklesIcon className="w-4 h-4 text-[#C49A43]" />
-              <h3 className="font-serif text-base font-bold text-[#1A2E3B]">
+              <h3 className="font-serif text-base font-normal text-[#1A2E3B]">
                 Ask Aaroh-Saarthi
               </h3>
             </div>
-            <p className="text-xs text-[#7A7269] leading-relaxed">
+            <p className="text-xs font-normal text-[#7A7269] leading-relaxed">
               An easier way to navigate the city.
             </p>
             <button
               type="button"
               onClick={() => setShowCopilotModal(true)}
-              className="w-full flex items-center justify-between rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] p-2.5 text-left text-xs font-medium text-[#7A7269] transition-colors cursor-pointer group"
+              className="w-full flex items-center justify-between rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 p-3 text-left text-xs font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
             >
               <span className="truncate text-xs">Try: "Which line is faster from Janakpuri to..."</span>
-              <ArrowRightIcon className="w-3.5 h-3.5 text-[#C49A43] group-hover:translate-x-0.5 transition-transform shrink-0" />
+              <ArrowRightIcon className="w-3.5 h-3.5 text-[#C49A43] group-hover:translate-x-1 transition-transform shrink-0" />
             </button>
           </div>
         </div>

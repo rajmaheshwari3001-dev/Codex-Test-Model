@@ -334,10 +334,10 @@ export default function DelhiMap({
         <div className="hidden md:flex items-center gap-2.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
           <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
           <div className="text-left">
-            <div className="text-[10px] font-black uppercase tracking-wider text-[#1A2E3B]">
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#1A2E3B]">
               KASHMERE GATE
             </div>
-            <div className="text-[10px] text-[#2E7D32] font-semibold">
+            <div className="text-[10px] text-[#22702E] font-bold">
               Operating normally • Next train in 2 min
             </div>
           </div>
@@ -363,7 +363,7 @@ export default function DelhiMap({
           </svg>
         </div>
         <div className="text-left">
-          <div className="text-[10px] font-black uppercase tracking-wider text-[#1A2E3B]">
+          <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#1A2E3B]">
             CITY BUS 764
           </div>
           <div className="text-[10px] text-[#7A7269] font-medium leading-tight">
@@ -390,7 +390,7 @@ export default function DelhiMap({
 
       {/* Centered Serif Watermark: DELHI Matching Figma */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[400]">
-        <span className="font-serif text-5xl sm:text-7xl md:text-8xl tracking-[0.35em] text-[#1A2E3B]/10 font-bold select-none uppercase pl-6">
+        <span className="font-serif text-5xl sm:text-7xl md:text-8xl tracking-[0.35em] text-[#1A2E3B]/8 font-normal select-none uppercase pl-6">
           DELHI
         </span>
       </div>

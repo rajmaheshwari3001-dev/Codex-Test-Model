@@ -125,12 +125,12 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                 className={`relative flex items-center h-full text-xs transition-colors duration-200 cursor-pointer ${
                   item.active
                     ? 'text-[#1A2E3B] font-extrabold'
-                    : 'text-[#7A7269] hover:text-[#1A2E3B] font-medium'
+                    : 'text-[#7A7269] hover:text-[#1A2E3B] font-semibold'
                 }`}
               >
                 <span>{item.label}</span>
                 {item.active && (
-                  <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#C49A43] rounded-full animate-fade-in" />
+                  <span className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-[#C49A43] rounded-full animate-fade-in" />
                 )}
               </NavLink>
             )
@@ -138,20 +138,20 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
         </nav>
 
         {/* Right: Quick Action Controls */}
-        <div role="toolbar" aria-label="Quick Actions" className="flex items-center gap-3 shrink-0">
+        <div role="toolbar" aria-label="Quick Actions" className="flex items-center gap-2.5 shrink-0">
           {/* Live Data Badge */}
-          <div className="hidden xl:flex items-center gap-1.5 rounded-full bg-[#EAF5EC] border border-[#D1E7D5] px-3 py-1 text-[11px] font-semibold text-[#2E7D32]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#2E7D32] animate-pulse" />
+          <div className="hidden xl:flex items-center gap-1.5 rounded-full bg-[#EAF5EC] border border-[#D1E7D5] px-3 py-1 text-[10px] font-extrabold tracking-wider uppercase text-[#22702E]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#22702E] animate-pulse" />
             <span>DATA UPDATED 2 MIN AGO</span>
           </div>
 
           {/* Location Selector */}
-          <div className="hidden xs:flex items-center gap-1.5 rounded-full bg-[#FAF7F2] border border-[#EBE5DC] px-3 py-1 text-xs font-medium text-[#1A2E3B]">
+          <div className="hidden xs:flex items-center gap-1.5 rounded-xl bg-[#FAF7F2] border border-[#EBE5DC] px-3 py-1.5 text-xs font-semibold text-[#1A2E3B] shadow-2xs">
             <span className="text-xs text-[#C49A43]">📍</span>
             <select
               value={selectedCity}
               onChange={e => setSelectedCity(e.target.value)}
-              className="bg-transparent text-xs font-semibold text-[#1A2E3B] focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs font-bold text-[#1A2E3B] focus:outline-none cursor-pointer"
               aria-label="Select Transit Region"
             >
               <option value="Delhi NCR">Delhi NCR</option>
@@ -165,7 +165,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
           <button
             type="button"
             onClick={handleShareTrip}
-            className="flex items-center gap-1.5 rounded-lg bg-[#1A2E3B] hover:bg-[#243B4A] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl bg-[#1A2E3B] hover:bg-[#253D4E] active:scale-[0.97] px-3.5 py-1.5 text-xs font-bold text-white shadow-[0_2px_8px_rgba(26,46,59,0.2)] hover:shadow-[0_4px_12px_rgba(26,46,59,0.3)] transition-all cursor-pointer"
             aria-label="Share current trip"
           >
             {shareToast ? (
@@ -185,11 +185,11 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
           <button
             type="button"
             onClick={() => setShowCashbackModal(true)}
-            className="hidden md:flex items-center gap-1.5 rounded-xl border border-[#C49A43]/50 bg-[#EEE5D6] hover:bg-[#F4EBDD] px-2.5 py-1.5 text-xs font-bold text-[#243B4A] transition-all cursor-pointer"
+            className="hidden md:flex items-center gap-1.5 rounded-xl border border-[#E8D4AE] bg-[#FAF0D9] hover:bg-[#F5E6C7] active:scale-[0.97] px-3 py-1.5 text-xs font-bold text-[#9A721C] transition-all cursor-pointer shadow-2xs"
             title="Delhi Transit Cashback & Concessions"
             aria-label="Open Transit Cashback and Concessions Calculator"
           >
-            <SparklesIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+            <SparklesIcon className="w-3.5 h-3.5 text-[#9A721C]" />
             <span className="hidden lg:inline">Perks</span>
           </button>
 
@@ -197,7 +197,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
           <button
             type="button"
             onClick={() => setShowProvenanceModal(true)}
-            className="flex items-center justify-center h-8 w-8 rounded-xl border border-[#D8C8AA] bg-[#FFFCF5] hover:bg-[#EEE5D6] text-[#243B4A] transition-colors cursor-pointer"
+            className="flex items-center justify-center h-8 w-8 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] transition-colors cursor-pointer shadow-2xs active:scale-95"
             title="Inspect Data Sources & GTFS Provenance"
             aria-label="Inspect Data Sources and Provenance"
           >
@@ -206,14 +206,14 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
           {/* Backend Status Indicator */}
           <div
-            className="flex items-center justify-center h-8 w-8 rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]"
+            className="flex items-center justify-center h-8 w-8 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] shadow-2xs"
             title={`FastAPI Backend: ${backendStatus}`}
             aria-label={`System Status: ${backendStatus}`}
           >
             <span
               className={`h-2.5 w-2.5 rounded-full ${
                 backendStatus === 'connected'
-                  ? 'bg-[#547A60] animate-pulse'
+                  ? 'bg-[#2E7D32] animate-pulse'
                   : backendStatus === 'checking'
                   ? 'bg-[#C49A43]'
                   : 'bg-[#A6533C]'

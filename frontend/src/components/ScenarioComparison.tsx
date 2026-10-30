@@ -303,7 +303,7 @@ export default function ScenarioComparison({
                         type="button"
                         onClick={() => onApprove(resp.response_id, true)}
                         disabled={decisionMade || decisionPending}
-                        className="bg-[#C49A43] hover:bg-[#A77B32] text-white px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs cursor-pointer"
+                        className="bg-[#2E7D32] hover:bg-[#256828] text-white px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_2px_8px_rgba(46,125,50,0.25)] hover:shadow-[0_4px_12px_rgba(46,125,50,0.35)] active:scale-[0.98] cursor-pointer"
                       >
                         {decisionPending ? 'Processing…' : 'Approve Intervention'}
                       </button>
@@ -311,7 +311,7 @@ export default function ScenarioComparison({
                         type="button"
                         onClick={() => onApprove(resp.response_id, false)}
                         disabled={decisionMade || decisionPending}
-                        className="bg-[#FAF7F2] text-[#1A2E3B] px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#EBE5DC] disabled:opacity-40 disabled:cursor-not-allowed transition-colors border border-[#EBE5DC] cursor-pointer"
+                        className="bg-[#FAF7F2] text-[#1A2E3B] px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#F2ECE1] disabled:opacity-40 disabled:cursor-not-allowed transition-all border border-[#EBE5DC] active:scale-[0.98] cursor-pointer"
                       >
                         Reject
                       </button>
