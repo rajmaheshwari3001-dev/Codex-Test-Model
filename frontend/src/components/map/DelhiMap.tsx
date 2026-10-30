@@ -165,7 +165,9 @@ export default function DelhiMap({
     const map = L.map(containerRef.current, {
       zoomControl: false,
       scrollWheelZoom: true,
-    }).setView([28.615, 77.215], 11)
+      minZoom: 10.5,
+      maxZoom: 18,
+    }).setView([28.618, 77.205], 11.8)
 
     L.control.zoom({ position: 'bottomright' }).addTo(map)
 
@@ -173,6 +175,19 @@ export default function DelhiMap({
 
     mapRef.current = map
     layerGroupRef.current = L.layerGroup().addTo(map)
+
+    // Invalidate size after layout settles and frame Delhi core transit corridor
+    requestAnimationFrame(() => {
+      if (!mapRef.current) return
+      map.invalidateSize()
+      map.fitBounds(
+        L.latLngBounds([
+          [28.535, 77.05], // Dwarka Sec 21 (SW)
+          [28.675, 77.34], // Noida City Centre (NE)
+        ]),
+        { padding: [50, 40], maxZoom: 12.2 }
+      )
+    })
 
     return () => {
       map.remove()
@@ -591,6 +606,24 @@ export default function DelhiMap({
       })
       L.marker(NOIDA_COORD, { icon: destIcon }).addTo(lg)
 
+      // Kashmere Gate Live Status Box (Attached cleanly in North Delhi matching target mockup)
+      const kashmereStatusIcon = L.divIcon({
+        className: 'delhi-pin-kashmere-status',
+        html: `
+          <div style="position: absolute; transform: translate(12px, -50%); pointer-events: auto; white-space: nowrap;">
+            <div style="background: rgba(255,255,255,0.96); backdrop-filter: blur(8px); padding: 5px 11px; border-radius: 14px; border: 1.5px solid #EDE8E1; box-shadow: 0 4px 14px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 7px;">
+              <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #166534;"></span>
+              <div style="text-align: left;">
+                <div style="font-size: 10px; font-weight: 800; color: #1A2E3B; letter-spacing: 0.5px; text-transform: uppercase;">KASHMERE GATE</div>
+                <div style="font-size: 9.5px; font-weight: 600; color: #166534; line-height: 1.2;">Operating normally • Next in 2 min</div>
+              </div>
+            </div>
+          </div>
+        `,
+        iconSize: [0, 0],
+      })
+      L.marker(KASHMERE_COORD, { icon: kashmereStatusIcon }).addTo(lg)
+
       // 4. DYNAMIC MOVING LIVE GPS TELEMETRY VEHICLES
       if (showLiveVehicles) {
         // Train 302 Simulation along Blue Line
@@ -926,23 +959,6 @@ export default function DelhiMap({
           >
             + More
           </button>
-        </div>
-      </div>
-
-      {/* Floating Station Status Card: Kashmere Gate Operating normally */}
-      <div
-        onClick={() => handleFlyToCoord(KASHMERE_COORD)}
-        className="absolute top-28 right-3.5 z-[500] hidden md:flex items-center gap-2.5 rounded-2xl border border-[#EDE8E1] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto cursor-pointer hover:border-[#C49A43] transition-all"
-        title="Click to view Kashmere Gate on map"
-      >
-        <span className="h-2 w-2 rounded-full bg-[#166534] animate-pulse" />
-        <div className="text-left">
-          <div className="text-[11px] font-extrabold uppercase tracking-wider text-[#1A2E3B]">
-            KASHMERE GATE
-          </div>
-          <div className="text-[11px] text-[#166534] font-semibold leading-tight">
-            Operating normally • Next in 2 min
-          </div>
         </div>
       </div>
 

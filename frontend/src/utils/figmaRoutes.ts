@@ -1,4 +1,30 @@
-import type { JourneyOption } from '../types'
+import type { JourneyOption, Stop } from '../types'
+
+/**
+ * Canonical Delhi Stations & Hubs Directory for instant resilience
+ */
+export const CANONICAL_DELHI_STOPS: Stop[] = [
+  { stop_id: 'S01', stop_name: 'Rajiv Chowk', stop_lat: 28.6328, stop_lon: 77.2197, zone_id: '1' },
+  { stop_id: 'S02', stop_name: 'Kashmere Gate', stop_lat: 28.6674, stop_lon: 77.2289, zone_id: '1' },
+  { stop_id: 'S03', stop_name: 'Chandni Chowk', stop_lat: 28.6560, stop_lon: 77.2300, zone_id: '1' },
+  { stop_id: 'S04', stop_name: 'New Delhi Station', stop_lat: 28.6425, stop_lon: 77.2193, zone_id: '1' },
+  { stop_id: 'S05', stop_name: 'Connaught Place', stop_lat: 28.6315, stop_lon: 77.2167, zone_id: '1' },
+  { stop_id: 'S06', stop_name: 'India Gate', stop_lat: 28.6129, stop_lon: 77.2295, zone_id: '1' },
+  { stop_id: 'S07', stop_name: 'Lajpat Nagar', stop_lat: 28.5700, stop_lon: 77.2400, zone_id: '2' },
+  { stop_id: 'S08', stop_name: 'Saket', stop_lat: 28.5224, stop_lon: 77.2015, zone_id: '2' },
+  { stop_id: 'S09', stop_name: 'Hauz Khas', stop_lat: 28.5494, stop_lon: 77.2001, zone_id: '2' },
+  { stop_id: 'S10', stop_name: 'AIIMS', stop_lat: 28.5672, stop_lon: 77.2100, zone_id: '2' },
+  { stop_id: 'S11', stop_name: 'ITO', stop_lat: 28.6275, stop_lon: 77.2455, zone_id: '1' },
+  { stop_id: 'S12', stop_name: 'Nehru Place', stop_lat: 28.5489, stop_lon: 77.2533, zone_id: '2' },
+  { stop_id: 'S13', stop_name: 'Dwarka Sec-21', stop_lat: 28.5529, stop_lon: 77.0583, zone_id: '3' },
+  { stop_id: 'S14', stop_name: 'Janakpuri West', stop_lat: 28.6296, stop_lon: 77.0815, zone_id: '3' },
+  { stop_id: 'S15', stop_name: 'Rajouri Garden', stop_lat: 28.6491, stop_lon: 77.1221, zone_id: '3' },
+  { stop_id: 'S16', stop_name: 'Dilli Haat - INA', stop_lat: 28.5744, stop_lon: 77.2105, zone_id: '2' },
+  { stop_id: 'S17', stop_name: 'Mandi House', stop_lat: 28.6258, stop_lon: 77.2342, zone_id: '1' },
+  { stop_id: 'S18', stop_name: 'Anand Vihar ISBT', stop_lat: 28.6469, stop_lon: 77.3160, zone_id: '3' },
+  { stop_id: 'S19', stop_name: 'Botanical Garden', stop_lat: 28.5641, stop_lon: 77.3341, zone_id: '3' },
+  { stop_id: 'S20', stop_name: 'Sarai Kale Khan ISBT', stop_lat: 28.5888, stop_lon: 77.2544, zone_id: '2' },
+]
 
 /**
  * Canonical Figma template route options for Aaroh-Saarthi

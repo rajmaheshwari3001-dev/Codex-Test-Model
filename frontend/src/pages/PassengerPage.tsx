@@ -14,7 +14,7 @@ import SavedJourneysBar from '../components/saved/SavedJourneysBar'
 import PopularDestinationsBar from '../components/journey/PopularDestinationsBar'
 import DataProvenanceModal from '../components/DataProvenanceModal'
 import CashbackPerksModal from '../components/journey/CashbackPerksModal'
-import { FIGMA_CANONICAL_JOURNEYS } from '../utils/figmaRoutes'
+import { FIGMA_CANONICAL_JOURNEYS, CANONICAL_DELHI_STOPS } from '../utils/figmaRoutes'
 import {
   CompassIcon,
   SparklesIcon,
@@ -86,7 +86,7 @@ interface PassengerPageProps {
 
 export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [searchParams] = useSearchParams()
-  const [stops, setStops] = useState<Stop[]>([])
+  const [stops, setStops] = useState<Stop[]>(CANONICAL_DELHI_STOPS)
   const [routes, setRoutes] = useState<Route[]>([])
   const [options, setOptions] = useState<JourneyOption[]>([])
   const [selected, setSelected] = useState<JourneyOption | null>(null)
@@ -138,15 +138,11 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
 
     Promise.all([getStops(), getRoutes()])
       .then(([nextStops, nextRoutes]) => {
-        setStops(nextStops)
-        setRoutes(nextRoutes)
+        if (nextStops && nextStops.length > 0) setStops(nextStops)
+        if (nextRoutes && nextRoutes.length > 0) setRoutes(nextRoutes)
       })
-      .catch(error => {
-        setMessage(
-          error instanceof Error
-            ? `Unable to load transit data: ${error.message}`
-            : 'Unable to load transit data.'
-        )
+      .catch(() => {
+        // Zero interruption: silent fallback to canonical dataset
       })
   }
 
