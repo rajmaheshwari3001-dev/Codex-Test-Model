@@ -475,16 +475,16 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         />
       </div>
 
-      {/* Transit Copilot Modal / Drawer */}
+      {/* Transit Copilot Slide-Over Drawer */}
       {showCopilotModal && (
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1A2E3B]/60 backdrop-blur-xs animate-fade-in"
+          className="fixed inset-0 z-50 flex items-stretch justify-end p-0 sm:p-4 bg-[#1A2E3B]/40 backdrop-blur-xs animate-fade-in"
           onClick={() => setShowCopilotModal(false)}
         >
           <div
-            className="relative w-full max-w-xl max-h-[92vh] flex flex-col rounded-3xl shadow-2xl overflow-hidden"
+            className="relative w-full sm:w-[520px] md:w-[560px] h-full sm:h-[94vh] flex flex-col rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden my-auto"
             onClick={e => e.stopPropagation()}
           >
             <AssistantPanel
