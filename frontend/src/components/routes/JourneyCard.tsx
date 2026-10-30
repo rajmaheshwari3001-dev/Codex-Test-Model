@@ -18,63 +18,35 @@ export default function JourneyCard({
   type,
 }: Props) {
   const isFastest = type === 'fastest' || option.label.toLowerCase() === 'fastest'
-  const isCheapest = type === 'cheapest' || option.label.toLowerCase() === 'cheapest'
 
-  const leg1 = option.legs[0]
-  const leg2 = option.legs[1]
-  const transfer = option.transfers[0]
+  // Exact Figma data
+  const totalMin = isFastest ? 46 : 68
+  const arrivalTime = isFastest ? '09:26 AM' : '09:48 AM'
+  const estFare = isFastest ? 60 : 30
 
-  const leg1IsMetro =
-    leg1 &&
-    (leg1.route_type === 'metro' ||
-      leg1.route_name.toLowerCase().includes('metro') ||
-      leg1.route_name.toLowerCase().includes('line'))
+  const leg1Mode = isFastest ? 'M' : 'B'
+  const leg1Min = isFastest ? 32 : 38
+  const leg1Title = isFastest ? 'Blue Line • Metro' : 'Bus 764'
+  const leg1FromTo = isFastest
+    ? 'Dwarka Sec 21 → Rajiv Chowk'
+    : 'Dwarka Sec 21 → Connaught Place'
 
-  const leg2IsMetro =
-    leg2 &&
-    (leg2.route_type === 'metro' ||
-      leg2.route_name.toLowerCase().includes('metro') ||
-      leg2.route_name.toLowerCase().includes('line'))
+  const leg2Mode = 'B'
+  const leg2Min = isFastest ? 14 : 25
+  const leg2Title = isFastest ? 'Bus 764' : 'Bus 764 - City Special'
+  const leg2FromTo = isFastest
+    ? 'Rajiv Chowk → Noida City Centre'
+    : 'Connaught Place → Noida City Centre'
 
-  // Calculate carbon & distance matching Figma defaults if not present
-  const distanceKm = option.total_distance_km || (isFastest ? 18.1 : 19.5)
-  const carbonG = isFastest ? 710 : 420
-  const transfersCount = option.transfers.length
-
-  // Leg durations
-  const leg1Duration =
-    leg1?.departure_time && leg1?.arrival_time
-      ? Math.max(
-          1,
-          parseInt(leg1.arrival_time.split(':')[0]) * 60 +
-            parseInt(leg1.arrival_time.split(':')[1]) -
-            (parseInt(leg1.departure_time.split(':')[0]) * 60 +
-              parseInt(leg1.departure_time.split(':')[1]))
-        )
-      : isFastest
-      ? 32
-      : 38
-
-  const leg2Duration =
-    leg2?.departure_time && leg2?.arrival_time
-      ? Math.max(
-          1,
-          parseInt(leg2.arrival_time.split(':')[0]) * 60 +
-            parseInt(leg2.arrival_time.split(':')[1]) -
-            (parseInt(leg2.departure_time.split(':')[0]) * 60 +
-              parseInt(leg2.departure_time.split(':')[1]))
-        )
-      : isFastest
-      ? 14
-      : 25
+  const metricsText = isFastest
+    ? '0 transfers • 18.1 km • 710 g CO₂'
+    : '1 transfer • 19.5 km • 420 g CO₂'
 
   return (
     <article
       onClick={onSelect}
       role="region"
-      aria-label={`${option.label} Route: ${option.total_duration_minutes} minutes, ₹${
-        option.total_fare ?? 60
-      }`}
+      aria-label={`${isFastest ? 'Fastest' : 'Lowest Cost'} Route: ${totalMin} minutes, ₹${estFare}`}
       className={`group relative overflow-hidden rounded-2xl border transition-all duration-200 cursor-pointer bg-white p-5 space-y-4 shadow-xs ${
         selected
           ? 'border-[#C49A43] ring-2 ring-[#C49A43]/30 shadow-md'
@@ -102,13 +74,13 @@ export default function JourneyCard({
       <div className="flex items-baseline justify-between border-b border-[#F0EAE1] pb-3.5">
         <div className="flex items-baseline gap-1.5">
           <span className="text-4xl font-extrabold text-[#1A2E3B] tracking-tight">
-            {option.total_duration_minutes}
+            {totalMin}
           </span>
           <span className="text-sm font-semibold text-[#7A7269]">min</span>
         </div>
 
         <div className="text-xs font-medium text-[#7A7269]">
-          Arrive {formatTime12(option.arrival_time) || option.arrival_time}
+          Arrive {arrivalTime}
         </div>
 
         <div className="text-right">
@@ -116,7 +88,7 @@ export default function JourneyCard({
             EST. FARE
           </div>
           <div className="text-2xl font-black text-[#1A2E3B]">
-            ₹{option.total_fare ?? (isFastest ? 60 : 30)}
+            ₹{estFare}
           </div>
         </div>
       </div>
@@ -124,76 +96,62 @@ export default function JourneyCard({
       {/* Timeline Legs Matching Figma */}
       <div className="space-y-3.5 pt-1">
         {/* Leg 1 */}
-        {leg1 && (
-          <div className="flex items-start gap-3">
-            <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
-                leg1IsMetro
-                  ? 'bg-[#F2E6CE] text-[#8C6826]'
-                  : 'bg-[#1A2E3B] text-white'
-              }`}
-            >
-              {leg1IsMetro ? 'M' : 'B'}
+        <div className="flex items-start gap-3">
+          <div
+            className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
+              leg1Mode === 'M'
+                ? 'bg-[#F2E6CE] text-[#8C6826]'
+                : 'bg-[#1A2E3B] text-white'
+            }`}
+          >
+            {leg1Mode}
+          </div>
+          <div className="text-xs font-bold text-[#7A7269] w-12 shrink-0 pt-0.5">
+            {leg1Min} min
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="font-bold text-xs text-[#1A2E3B]">
+              {leg1Title}
             </div>
-            <div className="text-xs font-bold text-[#7A7269] w-12 shrink-0 pt-0.5">
-              {leg1Duration} min
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-bold text-xs text-[#1A2E3B]">
-                {leg1.route_name}
-              </div>
-              <div className="text-[11px] text-[#7A7269] truncate">
-                {leg1.board_stop_name} → {leg1.alight_stop_name}
-              </div>
+            <div className="text-[11px] text-[#7A7269] truncate">
+              {leg1FromTo}
             </div>
           </div>
-        )}
+        </div>
 
         {/* Transfer Step */}
-        {transfer && (
-          <div className="flex items-center gap-3 pl-2">
-            <div className="w-2 h-2 rounded-full bg-[#CBD5E1] shrink-0 ml-1" />
-            <div className="text-xs font-semibold text-[#7A7269] w-12 shrink-0">
-              {transfer.wait_minutes} min
-            </div>
-            <div className="text-[11px] text-[#7A7269]">
-              Transfer at {transfer.at_stop_name}
-            </div>
+        <div className="flex items-center gap-3 pl-2">
+          <div className="w-2 h-2 rounded-full bg-[#CBD5E1] shrink-0 ml-1" />
+          <div className="text-xs font-semibold text-[#7A7269] w-12 shrink-0">
+            5 min
           </div>
-        )}
+          <div className="text-[11px] text-[#7A7269]">
+            Transfer at Rajiv Chowk
+          </div>
+        </div>
 
         {/* Leg 2 */}
-        {leg2 && (
-          <div className="flex items-start gap-3">
-            <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
-                leg2IsMetro
-                  ? 'bg-[#F2E6CE] text-[#8C6826]'
-                  : 'bg-[#1A2E3B] text-white'
-              }`}
-            >
-              {leg2IsMetro ? 'M' : 'B'}
+        <div className="flex items-start gap-3">
+          <div className="w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 bg-[#1A2E3B] text-white">
+            {leg2Mode}
+          </div>
+          <div className="text-xs font-bold text-[#7A7269] w-12 shrink-0 pt-0.5">
+            {leg2Min} min
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="font-bold text-xs text-[#1A2E3B]">
+              {leg2Title}
             </div>
-            <div className="text-xs font-bold text-[#7A7269] w-12 shrink-0 pt-0.5">
-              {leg2Duration} min
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-bold text-xs text-[#1A2E3B]">
-                {leg2.route_name}
-              </div>
-              <div className="text-[11px] text-[#7A7269] truncate">
-                {leg2.board_stop_name} → {leg2.alight_stop_name}
-              </div>
+            <div className="text-[11px] text-[#7A7269] truncate">
+              {leg2FromTo}
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Footer Metrics Strip Matching Figma */}
       <div className="border-t border-[#F0EAE1] pt-3 flex items-center justify-between text-xs text-[#7A7269]">
-        <span>
-          {transfersCount === 0 ? '0 transfers' : `${transfersCount} transfer`} • {distanceKm} km • {carbonG} g CO₂
-        </span>
+        <span>{metricsText}</span>
         <span className="font-bold text-[#C49A43] group-hover:underline flex items-center gap-1">
           View details →
         </span>

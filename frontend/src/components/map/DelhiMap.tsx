@@ -31,17 +31,14 @@ export default function DelhiMap({
   selectedJourney,
   originStopId = 'S13',
   destinationStopId = 'S19',
-  onSelectOrigin,
-  onSelectDestination,
 }: Props) {
   const mapRef = useRef<L.Map | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const layerGroupRef = useRef<L.LayerGroup | null>(null)
-  const [hasJourney, setHasJourney] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
 
-  // Initialize Leaflet Map with CartoDB Voyager tiles (warm, editorial aesthetic)
+  // Initialize Leaflet Map with OpenStreetMap (Clean, 100% free, NO API key required)
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return
 
@@ -52,16 +49,13 @@ export default function DelhiMap({
 
     L.control.zoom({ position: 'bottomright' }).addTo(map)
 
-    // Warm, elegant CartoDB Voyager tiles matching Figma design tone
-    L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-      {
-        attribution:
-          '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 18,
-        minZoom: 9,
-      }
-    ).addTo(map)
+    // Standard OpenStreetMap tiles styled via CSS filter to match Figma's warm ivory cartography
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+      minZoom: 9,
+    }).addTo(map)
 
     mapRef.current = map
     layerGroupRef.current = L.layerGroup().addTo(map)
@@ -78,9 +72,6 @@ export default function DelhiMap({
     const lg = layerGroupRef.current
     lg.clearLayers()
 
-    const validStops = stops.filter(s => isValidCoord(s.stop_lat, s.stop_lon))
-    const stopsById = new Map(validStops.map(s => [s.stop_id, s]))
-
     // 1. Draw Network Transit Routes (Background Context)
     routes.forEach(route => {
       if (!route.stops || route.stops.length < 2) return
@@ -89,13 +80,17 @@ export default function DelhiMap({
         .map(s => [s.stop_lat, s.stop_lon] as [number, number])
 
       if (validRoutePoints.length >= 2) {
-        const isMetro = route.route_type === 'metro' || route.route_id.startsWith('M') || route.route_id === 'R01' || route.route_id === 'R02'
+        const isMetro =
+          route.route_type === 'metro' ||
+          route.route_id.startsWith('M') ||
+          route.route_id === 'R01' ||
+          route.route_id === 'R02'
         const routeColor = isMetro ? '#C49A43' : '#1A2E3B'
 
         L.polyline(validRoutePoints, {
           color: routeColor,
-          weight: 3,
-          opacity: 0.25,
+          weight: 2.5,
+          opacity: 0.2,
           dashArray: isMetro ? undefined : '5, 5',
         }).addTo(lg)
       }
@@ -109,26 +104,30 @@ export default function DelhiMap({
         activeJourney.legs[activeJourney.legs.length - 1]?.alight_stop_id === 'S19')
 
     if (isFigmaRoute || (activeJourney && activeJourney.legs.length > 0)) {
-      setHasJourney(true)
-
       // Waypoints for Dwarka Sec 21 -> Rajiv Chowk -> Noida City Centre
       const dwarkaCoord: [number, number] = [28.5529, 77.0583]
       const janakpuriCoord: [number, number] = [28.6296, 77.0815]
       const rajouriCoord: [number, number] = [28.6491, 77.1221]
       const rajivCoord: [number, number] = [28.6328, 77.2197]
-      const noidaCoord: [number, number] = [28.5641, 77.3341]
+      const noidaCoord: [number, number] = [28.5747, 77.3560]
 
-      const isFastestActive = !activeJourney || activeJourney.label.toLowerCase() === 'fastest'
+      const isFastestActive =
+        !activeJourney || activeJourney.label.toLowerCase() === 'fastest'
 
       if (isFastestActive) {
         // Metro Leg: Dwarka Sec 21 -> Janakpuri -> Rajouri -> Rajiv Chowk (Gold #C49A43)
-        const metroCoords: [number, number][] = [dwarkaCoord, janakpuriCoord, rajouriCoord, rajivCoord]
+        const metroCoords: [number, number][] = [
+          dwarkaCoord,
+          janakpuriCoord,
+          rajouriCoord,
+          rajivCoord,
+        ]
 
         // Metro glow & path
         L.polyline(metroCoords, {
           color: '#C49A43',
           weight: 10,
-          opacity: 0.22,
+          opacity: 0.25,
         }).addTo(lg)
 
         L.polyline(metroCoords, {
@@ -140,7 +139,7 @@ export default function DelhiMap({
         // Intermediate station dots along metro leg
         ;[janakpuriCoord, rajouriCoord].forEach(pt => {
           L.circleMarker(pt, {
-            radius: 4,
+            radius: 4.5,
             color: '#FFFFFF',
             fillColor: '#C49A43',
             fillOpacity: 1,
@@ -152,7 +151,7 @@ export default function DelhiMap({
         const busCoords: [number, number][] = [
           rajivCoord,
           [28.6258, 77.2342], // Mandi House
-          [28.6129, 77.2750], // Mayur Vihar Link
+          [28.6129, 77.275], // Mayur Vihar Link
           noidaCoord,
         ]
 
@@ -173,7 +172,7 @@ export default function DelhiMap({
         const cpCoord: [number, number] = [28.6315, 77.2167]
         const busWholeCoords: [number, number][] = [
           dwarkaCoord,
-          [28.5900, 77.1000], // Dhaula Kuan
+          [28.59, 77.1], // Dhaula Kuan
           cpCoord,
           [28.6275, 77.2455], // ITO
           noidaCoord,
@@ -198,8 +197,8 @@ export default function DelhiMap({
       const originIcon = L.divIcon({
         className: 'delhi-pin-origin',
         html: `
-          <div style="transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto; cursor: pointer;">
-            <div style="background-color: #C49A43; color: #FFFFFF; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(196,154,67,0.4); white-space: nowrap; border: 1.5px solid #FFFFFF;">
+          <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
+            <div style="background-color: #C49A43; color: #FFFFFF; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 14px rgba(196,154,67,0.45); white-space: nowrap; border: 1.5px solid #FFFFFF;">
               DWARKA SEC 21
             </div>
             <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #C49A43; margin: 0 auto;"></div>
@@ -213,9 +212,9 @@ export default function DelhiMap({
       const transferIcon = L.divIcon({
         className: 'delhi-pin-transfer',
         html: `
-          <div style="transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; pointer-events: auto; cursor: pointer;">
+          <div style="position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; pointer-events: auto;">
             <div style="width: 18px; height: 18px; border-radius: 50%; border: 3px solid #1A2E3B; background: #C49A43; box-shadow: 0 2px 8px rgba(0,0,0,0.25);"></div>
-            <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; color: #1A2E3B; border: 1px solid #EBE5DC; white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.12);">
+            <div style="background: rgba(255,255,255,0.96); backdrop-filter: blur(4px); padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; color: #1A2E3B; border: 1px solid #EBE5DC; white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.12);">
               RAJIV CHOWK • TRANSFER
             </div>
           </div>
@@ -228,8 +227,8 @@ export default function DelhiMap({
       const destIcon = L.divIcon({
         className: 'delhi-pin-dest',
         html: `
-          <div style="transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto; cursor: pointer;">
-            <div style="background-color: #1A2E3B; color: #FFFFFF; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(26,46,59,0.4); white-space: nowrap; border: 1.5px solid #FFFFFF;">
+          <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
+            <div style="background-color: #1A2E3B; color: #FFFFFF; padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 14px rgba(26,46,59,0.45); white-space: nowrap; border: 1.5px solid #FFFFFF;">
               NOIDA CITY CENTRE
             </div>
             <div style="width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid #1A2E3B; margin: 0 auto;"></div>
@@ -243,48 +242,26 @@ export default function DelhiMap({
       if (mapRef.current) {
         mapRef.current.fitBounds(
           L.latLngBounds([dwarkaCoord, rajivCoord, noidaCoord]),
-          { padding: [60, 60], maxZoom: 13 }
-        )
-      }
-    } else {
-      setHasJourney(false)
-      // Standard network view
-      validStops.forEach(s => {
-        L.circleMarker([s.stop_lat, s.stop_lon], {
-          radius: 5,
-          color: '#7A7269',
-          fillColor: '#FFFFFF',
-          fillOpacity: 1,
-          weight: 2,
-        })
-          .bindTooltip(s.stop_name)
-          .addTo(lg)
-      })
-      if (validStops.length > 0 && mapRef.current) {
-        mapRef.current.fitBounds(
-          L.latLngBounds(validStops.map(s => L.latLng(s.stop_lat, s.stop_lon))),
-          { padding: [40, 40] }
+          { padding: [55, 55], maxZoom: 13 }
         )
       }
     }
-  }, [stops, routes, selectedJourney, originStopId, destinationStopId, onSelectOrigin, onSelectDestination])
+  }, [stops, routes, selectedJourney, originStopId, destinationStopId])
 
   const filteredSearchStops = searchQuery.trim()
-    ? stops.filter(s => s.stop_name.toLowerCase().includes(searchQuery.toLowerCase()))
+    ? stops.filter(s =>
+        s.stop_name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
     : []
 
   const handleSelectSearchStop = (stop: Stop) => {
     setSearchQuery('')
     setShowSearchResults(false)
     if (mapRef.current && isValidCoord(stop.stop_lat, stop.stop_lon)) {
-      mapRef.current.setView([stop.stop_lat, stop.stop_lon], 14, { animate: true })
+      mapRef.current.setView([stop.stop_lat, stop.stop_lon], 14, {
+        animate: true,
+      })
     }
-  }
-
-  function handleResetView() {
-    setSearchQuery('')
-    if (!mapRef.current) return
-    mapRef.current.setView([28.61, 77.20], 11, { animate: true })
   }
 
   return (
@@ -344,7 +321,9 @@ export default function DelhiMap({
                     <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
                     <span className="font-bold text-[#1A202C]">{s.stop_name}</span>
                   </div>
-                  <span className="text-[10px] text-[#7A7269] font-mono">Zone {s.zone_id}</span>
+                  <span className="text-[10px] text-[#7A7269] font-mono">
+                    Zone {s.zone_id}
+                  </span>
                 </div>
               ))}
             </div>
@@ -366,9 +345,17 @@ export default function DelhiMap({
       </div>
 
       {/* Floating Bus Fleet Card Matching Figma: CITY BUS 764 with Delhi Bus Graphic */}
-      <div className="absolute bottom-14 right-4 z-[500] hidden sm:flex items-center gap-3 rounded-2xl border border-[#EBE5DC] bg-white/95 p-3 shadow-lg backdrop-blur-md pointer-events-auto max-w-[230px] animate-fade-in">
+      <div className="absolute bottom-4 right-4 z-[500] hidden sm:flex items-center gap-3 rounded-2xl border border-[#EBE5DC] bg-white/95 p-3 shadow-lg backdrop-blur-md pointer-events-auto max-w-[240px] animate-fade-in">
         <div className="flex h-11 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1A2E3B] text-white shadow-xs">
-          <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            className="w-7 h-7"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <rect x="3" y="4" width="18" height="15" rx="3" />
             <path d="M3 11h18" />
             <circle cx="7.5" cy="15.5" r="1.5" />
@@ -386,7 +373,7 @@ export default function DelhiMap({
       </div>
 
       {/* Floating Bottom-Left Legend Matching Figma: — Metro, — Bus, ○ Transfer */}
-      <div className="absolute bottom-14 left-4 z-[500] flex items-center gap-3.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
+      <div className="absolute bottom-4 left-4 z-[500] flex items-center gap-3.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
         <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1A2E3B]">
           <span className="h-1.5 w-4 rounded-full bg-[#C49A43] inline-block" />
           <span>Metro</span>
@@ -411,31 +398,9 @@ export default function DelhiMap({
       {/* Main Leaflet Map Canvas */}
       <div
         ref={containerRef}
-        className="w-full flex-1 min-h-[440px] sm:min-h-[520px] z-10"
+        className="w-full h-full flex-1 min-h-[480px] sm:min-h-[580px] z-10"
         aria-label="Leaflet cartography canvas"
       />
-
-      {/* Bottom Telemetry & Controls Strip */}
-      <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-[#EBE5DC] bg-[#FAF7F2] px-4 py-2.5 text-xs text-[#1A202C] shrink-0 z-20">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleResetView}
-            className="rounded-lg border border-[#EBE5DC] bg-white px-2.5 py-1 text-[11px] font-bold text-[#1A2E3B] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
-          >
-            Reset View
-          </button>
-          {hasJourney && (
-            <span className="flex items-center gap-1 rounded-lg bg-[#2E7D32]/10 border border-[#2E7D32]/30 px-2 py-0.5 text-[10px] font-bold text-[#2E7D32]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#2E7D32] animate-pulse" />
-              Route Displayed
-            </span>
-          )}
-        </div>
-        <span className="text-[11px] text-[#7A7269] font-medium">
-          Delhi GTFS • Tap any station to view connections
-        </span>
-      </footer>
     </figure>
   )
 }

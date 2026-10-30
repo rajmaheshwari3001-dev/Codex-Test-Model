@@ -22,7 +22,7 @@ function MetricCard({
   lowerIsBetter?: boolean
 }) {
   let deltaNode = null
-  let cardBg = 'bg-slate-50 border-slate-200'
+  let cardBg = 'bg-[#FAF7F2] border-[#EBE5DC] text-[#1A2E3B]'
 
   if (typeof value === 'number' && typeof baselineValue === 'number') {
     const diff = Number((value - baselineValue).toFixed(1))
@@ -32,12 +32,12 @@ function MetricCard({
     if (diff !== 0) {
       deltaNode = (
         <span
-          className={`text-xs font-bold px-2 py-0.5 rounded-full inline-block mt-1 ${
+          className={`text-[11px] font-bold px-2 py-0.5 rounded-full inline-block mt-1 ${
             improved
-              ? 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+              ? 'bg-[#EAF5EC] text-[#2E7D32] border border-[#D1E7D5]'
               : worsened
-              ? 'bg-rose-100 text-rose-900 border border-rose-200'
-              : 'bg-slate-200 text-slate-700'
+              ? 'bg-[#FDE8E8] text-[#9B1C1C] border border-[#F8B4B4]'
+              : 'bg-[#FAF7F2] text-[#7A7269]'
           }`}
         >
           {diff > 0 ? `+${diff}` : diff}
@@ -46,8 +46,8 @@ function MetricCard({
       )
     }
 
-    if (improved) cardBg = 'bg-emerald-50/70 border-emerald-200 text-emerald-950'
-    else if (worsened) cardBg = 'bg-rose-50/70 border-rose-200 text-rose-950'
+    if (improved) cardBg = 'bg-[#EAF5EC]/60 border-[#D1E7D5] text-[#2E7D32]'
+    else if (worsened) cardBg = 'bg-[#FDE8E8]/60 border-[#F8B4B4] text-[#9B1C1C]'
   }
 
   return (
@@ -56,7 +56,9 @@ function MetricCard({
         {value}
         {unit}
       </div>
-      <div className="text-xs sm:text-sm font-semibold text-slate-600 mt-0.5 leading-snug">{label}</div>
+      <div className="text-xs font-semibold text-[#7A7269] mt-0.5 leading-snug">
+        {label}
+      </div>
       {deltaNode}
     </div>
   )
@@ -116,25 +118,25 @@ function VisualImpactBar({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs sm:text-sm">
-        <span className="font-bold text-slate-800">{label}</span>
-        <span className="font-mono text-xs font-bold text-emerald-800">
+        <span className="font-bold text-[#1A2E3B]">{label}</span>
+        <span className="font-mono text-xs font-bold text-[#2E7D32]">
           {diff < 0 ? `${diff}${unit} (Improved)` : diff === 0 ? 'No Change' : `+${diff}${unit}`}
         </span>
       </div>
       <div className="space-y-1.5">
-        <div className="flex items-center gap-3 text-xs text-slate-500 font-medium">
+        <div className="flex items-center gap-3 text-xs text-[#7A7269] font-medium">
           <span className="w-18 shrink-0">Baseline:</span>
-          <div className="flex-1 bg-slate-200 rounded-full h-2.5 overflow-hidden">
-            <div className="bg-rose-500 h-2.5 rounded-full" style={{ width: `${basePct}%` }} />
+          <div className="flex-1 bg-[#EBE5DC] rounded-full h-2 overflow-hidden">
+            <div className="bg-[#9B1C1C] h-2 rounded-full" style={{ width: `${basePct}%` }} />
           </div>
-          <span className="w-14 text-right font-mono font-bold text-slate-800">{baselineVal}{unit}</span>
+          <span className="w-14 text-right font-mono font-bold text-[#1A2E3B]">{baselineVal}{unit}</span>
         </div>
-        <div className="flex items-center gap-3 text-xs text-slate-500 font-medium">
-          <span className="w-18 shrink-0 font-bold text-emerald-800">Mitigated:</span>
-          <div className="flex-1 bg-slate-200 rounded-full h-2.5 overflow-hidden">
-            <div className="bg-emerald-600 h-2.5 rounded-full" style={{ width: `${counterPct}%` }} />
+        <div className="flex items-center gap-3 text-xs text-[#7A7269] font-medium">
+          <span className="w-18 shrink-0 font-bold text-[#2E7D32]">Mitigated:</span>
+          <div className="flex-1 bg-[#EBE5DC] rounded-full h-2 overflow-hidden">
+            <div className="bg-[#2E7D32] h-2 rounded-full" style={{ width: `${counterPct}%` }} />
           </div>
-          <span className="w-14 text-right font-mono font-bold text-emerald-900">{counterVal}{unit}</span>
+          <span className="w-14 text-right font-mono font-bold text-[#2E7D32]">{counterVal}{unit}</span>
         </div>
       </div>
     </div>
@@ -150,24 +152,24 @@ export default function ScenarioComparison({
   const recommendedId = result.recommended_response_id
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 animate-fade-in">
       {/* Disruption Incident Summary Callout */}
-      <div className="bg-rose-50 border border-rose-200 rounded-2xl p-5 shadow-xs">
+      <div className="bg-[#FDE8E8] border border-[#F8B4B4] rounded-2xl p-5 shadow-xs">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <AlertTriangleIcon className="w-5 h-5 text-rose-600" />
-            <div className="text-xs sm:text-sm font-bold text-rose-900 uppercase tracking-wide">
+            <AlertTriangleIcon className="w-5 h-5 text-[#9B1C1C]" />
+            <div className="text-xs sm:text-sm font-bold text-[#9B1C1C] uppercase tracking-wide">
               Simulated Disruption Profile
             </div>
           </div>
-          <span className="text-xs font-mono font-bold text-rose-800 bg-rose-100 px-2.5 py-0.5 rounded-md">
+          <span className="text-xs font-mono font-bold text-[#9B1C1C] bg-white/70 px-2.5 py-0.5 rounded-full border border-[#F8B4B4]">
             ID: {result.disruption.disruption_id}
           </span>
         </div>
-        <div className="mt-2 text-base font-bold text-rose-950">
+        <div className="mt-2 text-base font-bold text-[#9B1C1C]">
           {result.disruption.description}
         </div>
-        <div className="text-xs sm:text-sm text-rose-900/90 mt-2 flex flex-wrap gap-x-5 gap-y-1.5 font-medium">
+        <div className="text-xs sm:text-sm text-[#9B1C1C]/90 mt-2 flex flex-wrap gap-x-5 gap-y-1.5 font-medium">
           <span>Incident Type: <strong className="font-bold">{result.disruption.disruption_type}</strong></span>
           <span>Target Vehicle: <strong className="font-mono font-bold">{result.disruption.affected_bus_id}</strong></span>
           {result.disruption.delay_minutes > 0 && (
@@ -178,24 +180,24 @@ export default function ScenarioComparison({
 
       {/* Model Interpretation Note */}
       {result.metric_notes && result.metric_notes.length > 0 && (
-        <div role="note" className="rounded-xl border border-amber-200 bg-amber-50/80 p-3.5 text-xs sm:text-sm text-amber-950">
+        <div role="note" className="rounded-xl border border-[#F0E2C2] bg-[#FAF0D9]/80 p-3.5 text-xs text-[#A67C1E]">
           <span className="font-bold">Metric Estimation Methodology: </span>
           <span>{result.metric_notes.join(' ')}</span>
         </div>
       )}
 
       {/* Unmitigated Baseline (No Action) Card */}
-      <div className="bg-white rounded-2xl shadow-xs border border-slate-200 p-5 sm:p-6">
-        <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+      <div className="bg-white rounded-2xl shadow-xs border border-[#EBE5DC] p-5 sm:p-6">
+        <div className="flex items-center justify-between mb-4 border-b border-[#EBE5DC] pb-3">
           <div>
-            <h3 className="font-bold text-base sm:text-lg text-slate-950">
+            <h3 className="font-serif font-bold text-lg text-[#1A2E3B]">
               Unmitigated Baseline (No Action Taken)
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            <p className="text-xs text-[#7A7269] mt-0.5">
               Expected operational outcome if no corrective dispatch intervention is approved
             </p>
           </div>
-          <span className="text-xs font-mono uppercase bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-bold">
+          <span className="text-xs font-mono uppercase bg-[#FAF7F2] text-[#7A7269] border border-[#EBE5DC] px-2.5 py-1 rounded-full font-bold">
             Status Quo
           </span>
         </div>
@@ -204,7 +206,7 @@ export default function ScenarioComparison({
 
       {/* Evaluated Alternative Responses */}
       <div className="space-y-4">
-        <div className="text-sm font-bold text-slate-800 px-1">
+        <div className="text-sm font-bold text-[#1A2E3B] px-1">
           Evaluated Operational Countermeasures ({result.responses.length} Candidates)
         </div>
 
@@ -216,38 +218,38 @@ export default function ScenarioComparison({
               key={resp.response_id}
               className={`bg-white rounded-2xl shadow-xs p-5 sm:p-6 border-2 transition-all ${
                 isRecommended
-                  ? 'border-emerald-600 ring-4 ring-emerald-500/10'
-                  : 'border-slate-200'
+                  ? 'border-[#C49A43] ring-4 ring-[#C49A43]/15'
+                  : 'border-[#EBE5DC]'
               }`}
             >
               <div className="flex items-center justify-between mb-2.5">
                 <div className="flex items-center gap-2.5">
-                  <h4 className="font-bold text-base sm:text-lg text-slate-950">{resp.label}</h4>
+                  <h4 className="font-serif font-bold text-lg text-[#1A2E3B]">{resp.label}</h4>
                   {isRecommended && (
-                    <span className="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-200 px-3 py-0.5 rounded-full flex items-center gap-1">
-                      <CheckCircleIcon className="w-3.5 h-3.5 text-emerald-700" />
+                    <span className="text-xs font-bold uppercase tracking-wider bg-[#FAF0D9] text-[#A67C1E] border border-[#F0E2C2] px-3 py-0.5 rounded-full flex items-center gap-1">
+                      <CheckCircleIcon className="w-3.5 h-3.5 text-[#A67C1E]" />
                       <span>Recommended Option</span>
                     </span>
                   )}
                 </div>
                 {!resp.feasible ? (
-                  <span className="text-xs font-bold uppercase bg-slate-100 text-slate-600 border border-slate-300 px-2.5 py-0.5 rounded-md">
+                  <span className="text-xs font-bold uppercase bg-[#FAF7F2] text-[#7A7269] border border-[#EBE5DC] px-2.5 py-0.5 rounded-full">
                     Not Feasible
                   </span>
                 ) : (
-                  <span className="text-xs font-bold uppercase bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-md">
+                  <span className="text-xs font-bold uppercase bg-[#EAF5EC] text-[#2E7D32] border border-[#D1E7D5] px-2.5 py-0.5 rounded-full">
                     Feasible Action
                   </span>
                 )}
               </div>
 
-              <p className="text-xs sm:text-sm text-slate-600 mb-4 leading-relaxed">{resp.description}</p>
+              <p className="text-xs sm:text-sm text-[#7A7269] mb-4 leading-relaxed">{resp.description}</p>
 
               {resp.feasible && resp.metrics ? (
                 <>
                   {/* Visual Impact Comparison Bars */}
-                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 mb-4 space-y-3">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <div className="bg-[#FAF7F2] rounded-xl p-4 border border-[#EBE5DC] mb-4 space-y-3">
+                    <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
                       Visual Comparative Impact:
                     </div>
                     <VisualImpactBar
@@ -265,23 +267,23 @@ export default function ScenarioComparison({
                   </div>
 
                   <div className="mb-4">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    <div className="text-xs font-bold text-[#7A7269] uppercase tracking-wider mb-2">
                       Predicted Metric Comparison vs. Baseline
                     </div>
                     <MetricsGrid metrics={resp.metrics} baseline={result.baseline} />
                   </div>
 
                   {resp.explanation && (
-                    <div className="mt-3.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs sm:text-sm">
-                      <div className="font-bold text-slate-900 mb-1">Evaluation Analysis:</div>
-                      <p className="text-slate-600 leading-relaxed">{resp.explanation}</p>
+                    <div className="mt-3.5 bg-[#FAF7F2] p-3.5 rounded-xl border border-[#EBE5DC] text-xs">
+                      <div className="font-bold text-[#1A2E3B] mb-1">Evaluation Analysis:</div>
+                      <p className="text-[#7A7269] leading-relaxed">{resp.explanation}</p>
                     </div>
                   )}
 
                   {resp.trade_offs && resp.trade_offs.length > 0 && (
                     <div className="mt-3">
-                      <div className="text-xs sm:text-sm font-bold text-slate-800">Operational Trade-offs:</div>
-                      <ul className="text-xs sm:text-sm text-slate-600 list-disc ml-5 mt-1 space-y-1">
+                      <div className="text-xs font-bold text-[#1A2E3B]">Operational Trade-offs:</div>
+                      <ul className="text-xs text-[#7A7269] list-disc ml-5 mt-1 space-y-1">
                         {resp.trade_offs.map((t, i) => (
                           <li key={i}>{t}</li>
                         ))}
@@ -290,8 +292,8 @@ export default function ScenarioComparison({
                   )}
 
                   {/* Dispatcher Decision Controls */}
-                  <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-                    <span className="text-xs sm:text-sm font-medium text-slate-500">
+                  <div className="mt-5 pt-4 border-t border-[#EBE5DC] flex items-center justify-between gap-3">
+                    <span className="text-xs font-medium text-[#7A7269]">
                       {decisionMade
                         ? 'Operational action has been logged in audit record.'
                         : 'Review and approve dispatch order:'}
@@ -301,7 +303,7 @@ export default function ScenarioComparison({
                         type="button"
                         onClick={() => onApprove(resp.response_id, true)}
                         disabled={decisionMade || decisionPending}
-                        className="bg-emerald-800 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-bold hover:bg-emerald-900 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-2xs"
+                        className="bg-[#C49A43] hover:bg-[#A77B32] text-white px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs cursor-pointer"
                       >
                         {decisionPending ? 'Processing…' : 'Approve Intervention'}
                       </button>
@@ -309,7 +311,7 @@ export default function ScenarioComparison({
                         type="button"
                         onClick={() => onApprove(resp.response_id, false)}
                         disabled={decisionMade || decisionPending}
-                        className="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors border border-slate-200"
+                        className="bg-[#FAF7F2] text-[#1A2E3B] px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#EBE5DC] disabled:opacity-40 disabled:cursor-not-allowed transition-colors border border-[#EBE5DC] cursor-pointer"
                       >
                         Reject
                       </button>
@@ -317,7 +319,7 @@ export default function ScenarioComparison({
                   </div>
                 </>
               ) : (
-                <div className="mt-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-500 italic">
+                <div className="mt-3 p-3.5 rounded-xl bg-[#FAF7F2] border border-[#EBE5DC] text-xs text-[#7A7269] italic">
                   <strong>Infeasibility Constraint: </strong>
                   {resp.reason_if_infeasible ||
                     'Action cannot be executed under current vehicle availability constraints.'}
