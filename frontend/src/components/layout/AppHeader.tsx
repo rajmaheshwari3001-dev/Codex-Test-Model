@@ -238,7 +238,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                 <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#1A2E3B] group-hover:text-[#C49A43] transition-colors leading-none">
                   AAROH<span className="text-[#C49A43] mx-1">•</span>SAARTHI
                 </span>
-                <span className="text-[11px] sm:text-[12px] font-medium text-[#7A7269] mt-1 hidden xs:block leading-none">
+                <span className="text-[11px] sm:text-[12px] font-ubuntu font-medium text-[#7A7269] mt-1 hidden xs:block leading-none">
                   Move Smarter. A Greener Delhi.
                 </span>
               </div>

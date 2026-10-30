@@ -103,24 +103,24 @@ export default function JourneyCard({
         )}
       </div>
 
-      {/* Duration, Arrival Time & Fare Row Matching Target */}
+      {/* Duration, Arrival Time & Fare Row with Ubuntu Font Typography */}
       <div className="flex items-baseline justify-between border-b border-[#F0EAE1] pb-3">
         <div className="flex items-baseline">
-          <span className="font-serif text-[34px] sm:text-[38px] font-bold text-[#1A2E3B] tracking-tight leading-none tabular-nums">
+          <span className="font-ubuntu text-[34px] sm:text-[38px] font-bold text-[#1A2E3B] tracking-tight leading-none tabular-nums">
             {totalMin}
           </span>
-          <span className="text-sm font-semibold text-[#6B7280] ml-1.5">min</span>
+          <span className="text-sm font-bold text-[#6B7280] ml-1.5 font-ubuntu">min</span>
         </div>
 
-        <div className="text-xs sm:text-[13px] font-medium text-[#6B7280]">
+        <div className="text-xs sm:text-[13px] font-medium text-[#6B7280] font-ubuntu">
           Arrive {arrivalTime}
         </div>
 
         <div className="text-right">
-          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#7A7269]">
+          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#7A7269] font-ubuntu">
             EST. FARE
           </div>
-          <div className="font-serif text-lg sm:text-xl font-bold text-[#1A2E3B] tabular-nums tracking-tight leading-none mt-0.5">
+          <div className="font-ubuntu text-xl sm:text-2xl font-bold text-[#1A2E3B] tabular-nums tracking-tight leading-none mt-0.5">
             ₹{estFare}
           </div>
         </div>

@@ -723,7 +723,7 @@ export default function JourneyPlanner({
           id="btn-search-journey"
           disabled={loading}
           aria-label="Find My Route"
-          className="group w-full flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#D4A338] via-[#C49A43] to-[#B38728] hover:from-[#C49A43] hover:to-[#A77B32] text-white font-bold py-4 px-5 text-[15px] tracking-normal shadow-[0_4px_16px_rgba(196,154,67,0.35)] hover:shadow-[0_6px_22px_rgba(196,154,67,0.45)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
+          className="group w-full flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#D4A338] via-[#C49A43] to-[#B38728] hover:from-[#C49A43] hover:to-[#A77B32] text-white font-ubuntu font-bold py-4 px-5 text-[15px] tracking-normal shadow-[0_4px_16px_rgba(196,154,67,0.35)] hover:shadow-[0_6px_22px_rgba(196,154,67,0.45)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <>
