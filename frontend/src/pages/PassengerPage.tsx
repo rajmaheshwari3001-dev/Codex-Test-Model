@@ -414,8 +414,8 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
 
       {/* 3-COLUMN FIGMA-IDENTICAL DESKTOP LAYOUT (Clean, Lightweight & Uncongested) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-6 items-start">
-        {/* COLUMN 1: LEFT (3 of 12 on xl, 4 of 12 on lg) - JOURNEY PLANNER & COPILOT PROMPT */}
-        <div className={`lg:col-span-4 xl:col-span-3 space-y-4.5 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+        {/* COLUMN 1: LEFT (3 of 12 on xl, 4 of 12 on lg) - JOURNEY PLANNER */}
+        <div className={`lg:col-span-4 xl:col-span-3 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
           <JourneyPlanner
             stops={stops}
             origin={origin}
@@ -436,44 +436,12 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             loading={loading}
             onOpenCashbackModal={() => setShowCashbackModal(true)}
           />
-
-          {/* Ask Aaroh-Saarthi Card Matching Figma */}
-          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 shadow-xs space-y-3.5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FAF0D9] border border-[#E8D4AE] text-[#9A721C] shadow-2xs shrink-0">
-                <SparklesIcon className="w-5 h-5 text-[#C49A43]" />
-              </div>
-              <div>
-                <h3 className="font-serif text-lg font-bold tracking-tight text-[#1A2E3B] leading-tight">
-                  Ask Aaroh-Saarthi
-                </h3>
-                <p className="text-xs font-medium text-[#7A7269] leading-snug mt-0.5">
-                  An easier, AI-guided way to navigate the capital.
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                setCopilotPrompt('What is the best way to India Gate from Janakpuri?')
-                setShowCopilotModal(true)
-              }}
-              className="w-full flex items-center justify-between gap-2 rounded-2xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/50 p-3.5 text-left text-xs sm:text-[13px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
-            >
-              <div className="flex items-center gap-2 truncate">
-                <SparklesIcon className="w-3.5 h-3.5 text-[#C49A43]" />
-                <span className="truncate">Try "Best way to India Gate from Janakpuri?"</span>
-              </div>
-              <ArrowRightIcon className="w-4 h-4 text-[#C49A43] group-hover:translate-x-1 transition-transform shrink-0" />
-            </button>
-          </div>
         </div>
 
         {/* COLUMN 2: CENTER (5 of 12) - THE MAP & POPULAR DESTINATIONS BAR */}
-        <div className={`lg:col-span-4 xl:col-span-5 space-y-4.5 ${activeConsoleTab !== 'map' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
-          <div className="rounded-3xl border border-[#EDE8E1] bg-white p-3.5 shadow-sm">
-            <div className="min-h-[560px] lg:min-h-[660px] rounded-2xl overflow-hidden border border-[#EDE8E1] relative">
+        <div className={`lg:col-span-4 xl:col-span-5 flex flex-col justify-between space-y-3 ${activeConsoleTab !== 'map' && activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+          <div className="rounded-3xl border border-[#EDE8E1] bg-white p-2.5 sm:p-3 shadow-sm flex-1 flex flex-col">
+            <div className="flex-1 min-h-[580px] lg:min-h-[660px] xl:min-h-[700px] rounded-2xl overflow-hidden border border-[#EDE8E1] relative">
               <DelhiMap
                 stops={stops}
                 routes={routes}

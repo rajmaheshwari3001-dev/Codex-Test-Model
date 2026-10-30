@@ -59,7 +59,7 @@ export default function PopularDestinationsBar({
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
 
   return (
-    <section aria-label="Popular Delhi Destinations" className="space-y-2 mt-3">
+    <section aria-label="Popular Delhi Destinations" className="space-y-1.5 mt-1">
       {/* Header */}
       <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-bold text-[#C49A43] tracking-wide">
         <SparklesIcon className="w-3.5 h-3.5 text-[#C49A43]" />
@@ -67,7 +67,7 @@ export default function PopularDestinationsBar({
       </div>
 
       {/* Horizontal Strip of 5 Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
         {POPULAR_DESTINATIONS.map(dest => {
           const isSelected = currentDestinationStopId === dest.stopId
           const hasError = imageErrors[dest.id]
@@ -77,14 +77,14 @@ export default function PopularDestinationsBar({
               key={dest.id}
               type="button"
               onClick={() => onSelectDestination(dest.stopId, dest.name)}
-              className={`flex items-center gap-2.5 p-2 rounded-2xl bg-white border text-left transition-all duration-200 cursor-pointer shadow-2xs group hover:shadow-sm ${
+              className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-xl bg-white border text-left transition-all duration-200 cursor-pointer shadow-2xs group hover:shadow-sm ${
                 isSelected
                   ? 'border-[#C49A43] ring-2 ring-[#C49A43]/30 bg-[#FAF7F2]'
                   : 'border-[#EDE8E1] hover:border-[#C49A43]/50 hover:bg-[#FAF9F6]'
               }`}
             >
               {/* Thumbnail */}
-              <div className="w-11 h-11 rounded-xl overflow-hidden bg-[#FAF0D9] shrink-0 border border-[#EDE8E1] flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg overflow-hidden bg-[#FAF0D9] shrink-0 border border-[#EDE8E1] flex items-center justify-center">
                 {!hasError ? (
                   <img
                     src={dest.imageUrl}
@@ -96,16 +96,16 @@ export default function PopularDestinationsBar({
                     loading="lazy"
                   />
                 ) : (
-                  <MapPinIcon className="w-5 h-5 text-[#C49A43]" />
+                  <MapPinIcon className="w-4 h-4 text-[#C49A43]" />
                 )}
               </div>
 
               {/* Text Info */}
               <div className="min-w-0 flex-1 leading-tight">
-                <div className="text-[13px] font-bold text-[#1A2E3B] truncate group-hover:text-[#C49A43] transition-colors">
+                <div className="text-xs sm:text-[12.5px] font-bold text-[#1A2E3B] truncate group-hover:text-[#C49A43] transition-colors">
                   {dest.name}
                 </div>
-                <div className="text-[11px] font-medium text-[#7A7269] mt-0.5">
+                <div className="text-[10px] sm:text-[11px] font-medium text-[#7A7269] mt-0.5">
                   {dest.durationText}
                 </div>
               </div>
