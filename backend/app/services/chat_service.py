@@ -98,6 +98,8 @@ def detect_intent(message: str) -> str:
     # Route and comparison queries
     if re.search(r"\b(cheap|cheapest|cheaper|compare|alternative|vs|versus)\b", lower):
         return "compare"
+    if re.search(r"\b(next|when|departure|depart|bus from|leave)\b", lower) and not re.search(r"\b(from\s+\w+\s+to\s+\w+)\b", lower):
+        return "next_departure"
     if re.search(r"\b(from|to|get|go|route|travel|journey|reach|line|faster)\b", lower) and \
        (re.search(r"\bto\b", lower) or re.search(r"\bfrom\b", lower) or "dwarka" in lower or "noida" in lower):
         return "find_route"
@@ -298,13 +300,23 @@ def _handle_with_rules(
                 "data": None,
             }
 
-        departure_time = _extract_requested_time(message) or "08:40"
+        departure_time = _extract_requested_time(message)
+        if departure_time is None:
+            return {
+                "intent": intent,
+                "reply": (
+                    "What time will you leave? Include a time such as "
+                    "'10:00 am' or '14:30'. I won't assume a departure time, "
+                    "because route availability changes with the timetable."
+                ),
+                "data": None,
+            }
 
         # Canonical Corridor Dwarka (S13) <-> Noida (S19)
         if (origin_id == "S13" and dest_id == "S19") or (origin_id == "S19" and dest_id == "S13"):
             reply = (
                 f"⚡ Route options for {td.stops_by_id[origin_id].stop_name} ➔ "
-                f"{td.stops_by_id[dest_id].stop_name} (Departure at {departure_time}):\n\n"
+                f"{td.stops_by_id[dest_id].stop_name} at or after {departure_time} on the {service_day} schedule:\n\n"
                 f"1. 🚆 FASTEST MULTI-MODAL (46 min • ₹60):\n"
                 f"   • Blue Line Metro: Dwarka Sec 21 ➔ Rajiv Chowk (32 min)\n"
                 f"   • Transfer: Rajiv Chowk (5 min wait)\n"
@@ -338,8 +350,8 @@ def _handle_with_rules(
             return {
                 "intent": intent,
                 "reply": (
-                    f"No scheduled journey found from {td.stops_by_id[origin_id].stop_name} to "
-                    f"{td.stops_by_id[dest_id].stop_name} around {departure_time} on the {service_day} timetable."
+                    f"No scheduled journey is available from {td.stops_by_id[origin_id].stop_name} to "
+                    f"{td.stops_by_id[dest_id].stop_name} at or after {departure_time} on the {service_day} schedule."
                 ),
                 "data": None,
             }
@@ -351,12 +363,10 @@ def _handle_with_rules(
         legs_text += f" ➔ {opt.legs[-1].alight_stop_name} ({opt.legs[-1].arrival_time})"
 
         reply = (
-            f"🚆 {opt.label} Route: {td.stops_by_id[origin_id].stop_name} ➔ {td.stops_by_id[dest_id].stop_name}\n\n"
-            f"• Departure: {opt.departure_time} | Arrival: {opt.arrival_time}\n"
-            f"• Duration: {opt.total_duration_minutes} minutes\n"
-            f"• Fare: ₹{opt.total_fare if opt.total_fare is not None else 30} (Smart Card: ₹{int((opt.total_fare or 30)*0.9)})\n"
-            f"• Transfers: {len(opt.transfers)} transfer(s)\n"
-            f"• Path: {legs_text}"
+            f"For a {service_day} departure search at or after {departure_time}, "
+            f"the {opt.label.lower()} journey departs at {opt.departure_time} "
+            f"and arrives at {opt.arrival_time}. It takes {opt.total_duration_minutes} minutes from departure. "
+            f"Fare: ₹{opt.total_fare if opt.total_fare is not None else 30} (Smart Card: ₹{int((opt.total_fare or 30)*0.9)}). Path: {legs_text}."
         )
 
         data_payload = {
@@ -386,7 +396,19 @@ def _handle_with_rules(
         except ValueError as e:
             return {"intent": intent, "reply": str(e), "data": None}
 
-        if (origin_id == "S13" and dest_id == "S19") or not options:
+        if not options:
+            return {
+                "intent": intent,
+                "reply": (
+                    f"No scheduled journey is available from "
+                    f"{td.stops_by_id[origin_id].stop_name} to "
+                    f"{td.stops_by_id[dest_id].stop_name} at or after "
+                    f"{departure_time} on the {service_day} schedule."
+                ),
+                "data": None,
+            }
+
+        if (origin_id == "S13" and dest_id == "S19"):
             reply = (
                 f"⚖️ Transit Comparison: Dwarka Sector 21 ➔ Noida City Centre ({departure_time}):\n\n"
                 f"• Fastest Option (Metro + Bus 764): 46 min, ₹60 (₹54 with SmartCard)\n"

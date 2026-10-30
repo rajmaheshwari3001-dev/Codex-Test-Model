@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { ModePreference, ServiceDay, Stop } from '../../types'
 import { parseToTime24, formatTime12, toTime24 } from '../../utils/time'
+import StationCombobox from './StationCombobox'
 import {
   ArrowUpDownIcon,
   XIcon,
@@ -168,45 +169,23 @@ export default function JourneyPlanner({
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        {/* FROM INPUT (Origin Pin Gold Circle) */}
-        <div className="space-y-1.5">
-          <label htmlFor="journey-origin" className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269] flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
-            <span>FROM</span>
-          </label>
-          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 sm:py-3 transition-all shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
-            <select
-              id="journey-origin"
-              value={origin}
-              onChange={e => {
-                setOrigin(e.target.value)
-                if (error) setError('')
-              }}
-              className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none cursor-pointer text-xs sm:text-sm"
-            >
-              <option value="">Select origin station or hub...</option>
-              {stops.map(s => (
-                <option key={s.stop_id} value={s.stop_id}>
-                  {getFigmaStationName(s)}
-                </option>
-              ))}
-            </select>
-            {origin && (
-              <button
-                type="button"
-                onClick={() => setOrigin('')}
-                className="text-[#7A7269] hover:text-[#1A202C] p-1 rounded-md cursor-pointer transition-colors"
-                title="Clear origin"
-                aria-label="Clear origin station"
-              >
-                <XIcon className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
+        {/* FROM INPUT (Interactive Station Combobox) */}
+        <StationCombobox
+          id="journey-origin"
+          label="FROM"
+          pinColor="#C49A43"
+          value={origin}
+          onChange={newId => {
+            setOrigin(newId)
+            if (error) setError('')
+          }}
+          stops={stops}
+          placeholder="Select origin station or hub..."
+          otherSelectedId={destination}
+        />
 
         {/* SWAP BUTTON */}
-        <div className="flex items-center justify-center -my-2 relative z-10">
+        <div className="flex items-center justify-center -my-1 relative z-10">
           <button
             type="button"
             onClick={handleSwap}
@@ -219,42 +198,20 @@ export default function JourneyPlanner({
           </button>
         </div>
 
-        {/* TO INPUT (Destination Pin Terracotta Circle) */}
-        <div className="space-y-1.5">
-          <label htmlFor="journey-destination" className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269] flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#A6533C]" />
-            <span>TO</span>
-          </label>
-          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 sm:py-3 transition-all shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
-            <select
-              id="journey-destination"
-              value={destination}
-              onChange={e => {
-                setDestination(e.target.value)
-                if (error) setError('')
-              }}
-              className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none cursor-pointer text-xs sm:text-sm"
-            >
-              <option value="">Select destination station...</option>
-              {stops.map(s => (
-                <option key={s.stop_id} value={s.stop_id}>
-                  {getFigmaStationName(s)}
-                </option>
-              ))}
-            </select>
-            {destination && (
-              <button
-                type="button"
-                onClick={() => setDestination('')}
-                className="text-[#7A7269] hover:text-[#1A202C] p-1 rounded-md cursor-pointer transition-colors"
-                title="Clear destination"
-                aria-label="Clear destination station"
-              >
-                <XIcon className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
+        {/* TO INPUT (Interactive Station Combobox) */}
+        <StationCombobox
+          id="journey-destination"
+          label="TO"
+          pinColor="#A6533C"
+          value={destination}
+          onChange={newId => {
+            setDestination(newId)
+            if (error) setError('')
+          }}
+          stops={stops}
+          placeholder="Select destination station..."
+          otherSelectedId={origin}
+        />
 
         {/* DEPARTURE (With interactive Customize Time & Clock Option) */}
         <div className="space-y-1.5">

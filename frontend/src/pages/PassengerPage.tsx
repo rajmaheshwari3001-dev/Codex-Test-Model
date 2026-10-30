@@ -393,23 +393,28 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           />
 
           {/* Ask Aaroh-Saarthi Card Matching Figma */}
-          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs space-y-2.5">
-            <div className="flex items-center gap-2">
-              <SparklesIcon className="w-4 h-4 text-[#C49A43]" />
-              <h3 className="font-serif text-base sm:text-lg font-normal text-[#1A2E3B]">
-                Ask Aaroh-Saarthi
-              </h3>
+          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs space-y-3.5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-[#FAF0D9] border border-[#E8D4AE] text-[#9A721C] shadow-2xs shrink-0">
+                <SparklesIcon className="w-6 h-6 text-[#C49A43]" />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#1A2E3B] leading-tight">
+                  Ask Aaroh-Saarthi
+                </h3>
+                <p className="text-xs sm:text-[13px] font-medium text-[#7A7269] leading-snug mt-0.5">
+                  An easier, AI-guided way to navigate the capital.
+                </p>
+              </div>
             </div>
-            <p className="text-xs sm:text-sm font-normal text-[#7A7269] leading-relaxed">
-              An easier way to navigate the city.
-            </p>
+
             <button
               type="button"
               onClick={() => {
                 setCopilotPrompt('Which line is faster from Janakpuri to Rajiv Chowk?')
                 setShowCopilotModal(true)
               }}
-              className="w-full flex items-center justify-between rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 p-3 sm:p-3.5 text-left text-xs sm:text-sm font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
+              className="w-full flex items-center justify-between gap-2 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/50 p-3 sm:p-3.5 text-left text-xs sm:text-sm font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
             >
               <span className="truncate text-xs sm:text-sm">Try: "Which line is faster from Janakpuri to..."</span>
               <ArrowRightIcon className="w-4 h-4 text-[#C49A43] group-hover:translate-x-1 transition-transform shrink-0" />
@@ -476,17 +481,19 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         />
       </div>
 
-      {/* Transit Copilot Slide-Over Drawer (Rendered via React Portal onto document.body to strictly overlay everything including navbar) */}
+      {/* Transit Copilot Slide-Over Drawer (Enforced strict zIndex: 9999999 so navbar can NEVER cover the top header) */}
       {showCopilotModal &&
         createPortal(
           <div
             role="dialog"
             aria-modal="true"
-            className="fixed inset-0 z-[999999] flex items-stretch justify-end bg-black/70 backdrop-blur-sm animate-fade-in"
+            style={{ zIndex: 9999999, position: 'fixed', inset: 0 }}
+            className="flex items-stretch justify-end bg-black/75 backdrop-blur-sm animate-fade-in"
             onClick={() => setShowCopilotModal(false)}
           >
             <div
-              className="relative w-full sm:w-[580px] md:w-[640px] lg:w-[680px] h-full flex flex-col bg-white shadow-2xl border-l-2 border-[#C49A43] overflow-hidden"
+              style={{ zIndex: 10000000 }}
+              className="relative w-full sm:w-[580px] md:w-[640px] lg:w-[700px] h-full flex flex-col bg-white shadow-2xl border-l-2 border-[#C49A43] overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
               <AssistantPanel
@@ -507,25 +514,49 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           document.body
         )}
 
-      {/* Floating AI Transit Copilot Quick Launcher Button */}
-      <aside className="fixed bottom-6 right-6 z-40 hidden md:block">
+      {/* Floating AI Transit Copilot Quick Launcher (Dimensionally Responsive for Mobile, Tablet & Desktop) */}
+      <aside style={{ zIndex: 9999 }} className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6">
+        {/* Mobile View: Circular Tactile FAB with Glowing Badge */}
         <button
           type="button"
           onClick={() => {
             setCopilotPrompt('')
             setShowCopilotModal(true)
           }}
-          className="flex items-center gap-2.5 rounded-full border border-[#EBE5DC] bg-[#1A2E3B] hover:bg-[#243B4A] text-white px-4 py-2.5 shadow-xl hover:shadow-2xl transition-all cursor-pointer group active:scale-95"
+          className="flex md:hidden h-14 w-14 items-center justify-center rounded-full border-2 border-[#C49A43] bg-[#1A2E3B] text-white shadow-[0_8px_24px_rgba(26,46,59,0.4)] active:scale-90 transition-transform cursor-pointer relative"
           title="Open Aaroh-Saarthi AI Transit Copilot"
           aria-label="Open Aaroh-Saarthi AI Transit Copilot"
         >
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#C49A43] text-white shadow-2xs group-hover:rotate-12 transition-transform">
-            <SparklesIcon className="w-4 h-4" />
+          <SparklesIcon className="w-7 h-7 text-[#C49A43]" />
+          <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-[#2E7D32] border-2 border-[#1A2E3B] animate-pulse" />
+        </button>
+
+        {/* Tablet & Desktop View: Dimensionally Responsive Pill Launcher with Subtitle */}
+        <button
+          type="button"
+          onClick={() => {
+            setCopilotPrompt('')
+            setShowCopilotModal(true)
+          }}
+          className="hidden md:flex h-14 sm:h-15 px-5 sm:px-6 rounded-full border-2 border-[#C49A43]/50 bg-[#1A2E3B] hover:bg-[#243B4A] text-white shadow-[0_10px_30px_rgba(26,46,59,0.35)] hover:shadow-[0_14px_36px_rgba(196,154,67,0.45)] hover:scale-105 active:scale-95 transition-all duration-300 items-center gap-3.5 cursor-pointer group"
+          title="Open Aaroh-Saarthi AI Transit Copilot"
+          aria-label="Open Aaroh-Saarthi AI Transit Copilot"
+        >
+          <span className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#C49A43] to-[#A77B32] text-white shadow-md group-hover:rotate-12 transition-transform shrink-0">
+            <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6" />
           </span>
-          <span className="text-xs font-bold tracking-wide">
-            Ask Copilot
+          <div className="flex flex-col text-left">
+            <span className="text-xs sm:text-sm font-extrabold tracking-wide leading-tight text-white">
+              Ask Copilot
+            </span>
+            <span className="text-[10px] sm:text-[11px] font-semibold text-[#EBE5DC] leading-tight">
+              Multimodal Transit AI
+            </span>
+          </div>
+          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#2E7D32]/20 border border-[#2E7D32]/50 text-[#79D48A] text-[10px] font-mono font-extrabold shrink-0">
+            <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
+            <span>LIVE</span>
           </span>
-          <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
         </button>
       </aside>
 
