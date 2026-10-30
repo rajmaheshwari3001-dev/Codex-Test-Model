@@ -67,7 +67,7 @@ export default function PopularDestinationsBar({
       </div>
 
       {/* Horizontal Strip of 5 Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+      <div className="flex items-stretch gap-2 overflow-x-auto scrollbar-none pb-0.5 xl:grid xl:grid-cols-5">
         {POPULAR_DESTINATIONS.map(dest => {
           const isSelected = currentDestinationStopId === dest.stopId
           const hasError = imageErrors[dest.id]
@@ -77,7 +77,7 @@ export default function PopularDestinationsBar({
               key={dest.id}
               type="button"
               onClick={() => onSelectDestination(dest.stopId, dest.name)}
-              className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-xl bg-white border text-left transition-all duration-200 cursor-pointer shadow-2xs group hover:shadow-sm ${
+              className={`flex items-center gap-2 p-1.5 sm:p-2 rounded-xl bg-white border text-left transition-all duration-200 cursor-pointer shadow-2xs group hover:shadow-sm shrink-0 min-w-[125px] xl:min-w-0 flex-1 ${
                 isSelected
                   ? 'border-[#C49A43] ring-2 ring-[#C49A43]/30 bg-[#FAF7F2]'
                   : 'border-[#EDE8E1] hover:border-[#C49A43]/50 hover:bg-[#FAF9F6]'

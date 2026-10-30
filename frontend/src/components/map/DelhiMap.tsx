@@ -797,12 +797,12 @@ export default function DelhiMap({
       </figcaption>
 
       {/* Floating Top HUD Bar (Search + Mode Filter Chips + Quick Station Pills matching Target) */}
-      <div className="absolute top-3.5 left-3.5 right-3.5 z-[500] flex flex-col gap-2 pointer-events-none">
+      <div className="absolute top-3 left-3 right-3 z-[500] flex flex-col gap-2 pointer-events-none">
         {/* Row 1: Search Bar & Mode Filter Chips */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
           {/* Search Bar */}
-          <div className="relative flex-1 max-w-sm pointer-events-auto">
-            <div className="flex items-center rounded-2xl border border-[#EDE8E1] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex-1 min-w-[140px] max-w-sm pointer-events-auto">
+            <div className="flex items-center rounded-2xl border border-[#EDE8E1] bg-white/95 px-3 py-1.5 sm:py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
               <SearchIcon className="w-4 h-4 text-[#7A7269] mr-2 shrink-0" />
               <input
                 type="text"
@@ -853,14 +853,14 @@ export default function DelhiMap({
           </div>
 
           {/* Mode Filter Chips matching Target (Metro pink, Bus blue, Both green, EV purple) */}
-          <div className="flex items-center gap-1.5 pointer-events-auto flex-wrap">
+          <div className="flex items-center gap-1 sm:gap-1.5 pointer-events-auto overflow-x-auto scrollbar-none py-0.5 shrink-0 max-w-full">
             <button
               type="button"
               onClick={() => {
                 setShowMetro(true)
                 setShowBus(false)
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-xs ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border transition-all cursor-pointer shadow-xs shrink-0 ${
                 showMetro && !showBus
                   ? 'bg-[#E11D48] text-white border-[#E11D48]'
                   : 'bg-[#FCE7F3] text-[#BE185D] border-[#FBCFE8] hover:bg-[#FBCFE8]'
@@ -876,7 +876,7 @@ export default function DelhiMap({
                 setShowBus(true)
                 setShowMetro(false)
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-xs ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border transition-all cursor-pointer shadow-xs shrink-0 ${
                 showBus && !showMetro
                   ? 'bg-[#0284C7] text-white border-[#0284C7]'
                   : 'bg-[#E0F2FE] text-[#0369A1] border-[#BAE6FD] hover:bg-[#BAE6FD]'
@@ -892,7 +892,7 @@ export default function DelhiMap({
                 setShowMetro(true)
                 setShowBus(true)
               }}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-xs ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border transition-all cursor-pointer shadow-xs shrink-0 ${
                 showMetro && showBus
                   ? 'bg-[#1E4D2B] text-white border-[#1E4D2B] shadow-sm'
                   : 'bg-[#DCFCE7] text-[#15803D] border-[#BBF7D0]'
@@ -905,7 +905,7 @@ export default function DelhiMap({
             <button
               type="button"
               onClick={() => setShowLiveVehicles(prev => !prev)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border bg-[#F3E8FF] text-[#7E22CE] border-[#E9D5FF] hover:bg-[#E9D5FF] transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border bg-[#F3E8FF] text-[#7E22CE] border-[#E9D5FF] hover:bg-[#E9D5FF] transition-all cursor-pointer shadow-xs shrink-0"
             >
               <ZapIcon className="w-3.5 h-3.5" />
               <span>EV/Shared</span>
@@ -914,7 +914,7 @@ export default function DelhiMap({
             <button
               type="button"
               onClick={handleFitRoute}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2] transition-colors cursor-pointer shadow-xs"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2] transition-colors cursor-pointer shadow-xs shrink-0"
             >
               <span>More</span>
               <ChevronDownIcon className="w-3.5 h-3.5" />
@@ -923,7 +923,7 @@ export default function DelhiMap({
         </div>
 
         {/* Row 2: Secondary Station Quick Pills Strip matching Target */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 pointer-events-auto">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 pointer-events-auto max-w-full">
           {[
             { name: 'Rajiv Chowk', coord: RAJIV_COORD, color: '#EA580C', type: 'dot' },
             { name: 'New Delhi', coord: NDLS_COORD, color: '#EA580C', type: 'dot' },
@@ -936,7 +936,7 @@ export default function DelhiMap({
               key={hub.name}
               type="button"
               onClick={() => handleFlyToCoord(hub.coord, 14)}
-              className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-xs font-bold text-[#1A2E3B] shadow-2xs transition-all cursor-pointer shrink-0 active:scale-95"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-[11px] sm:text-xs font-bold text-[#1A2E3B] shadow-2xs transition-all cursor-pointer shrink-0 active:scale-95"
             >
               {hub.type === 'plane' ? (
                 <PlaneIcon className="w-3 h-3 text-[#0284C7]" />
@@ -951,97 +951,96 @@ export default function DelhiMap({
           <button
             type="button"
             onClick={handleCenterDelhi}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-xs font-bold text-[#7A7269] shadow-2xs transition-all cursor-pointer shrink-0"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-[11px] sm:text-xs font-bold text-[#7A7269] shadow-2xs transition-all cursor-pointer shrink-0"
           >
             + More
           </button>
         </div>
       </div>
 
-      {/* Floating Bottom-Left Official Single-Row Legend (Matching Target Exactly) */}
-      <div className="absolute bottom-4 left-4 z-[500] flex items-center gap-3.5 rounded-full border border-[#EDE8E1] bg-white/95 px-4 py-2 shadow-md backdrop-blur-md pointer-events-auto text-xs font-bold text-[#1A2E3B]">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#8B5CF6] inline-block" />
-          <span>Metro Line</span>
+      {/* Floating Bottom HUD Controls (Legend & Layer Switchers - Responsive, Non-Overlapping) */}
+      <div className="absolute bottom-3.5 left-3.5 right-3.5 z-[500] flex items-center justify-between gap-2 pointer-events-none flex-wrap">
+        {/* Legend */}
+        <div className="flex items-center gap-2.5 sm:gap-3 rounded-full border border-[#EDE8E1] bg-white/95 px-3 sm:px-4 py-1.5 shadow-md backdrop-blur-md pointer-events-auto text-[11px] sm:text-xs font-bold text-[#1A2E3B] overflow-x-auto scrollbar-none max-w-full">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#8B5CF6] inline-block" />
+            <span>Metro Line</span>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#0284C7] inline-block" />
+            <span>Bus Route</span>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0 hidden sm:flex">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#1E293B] inline-block" />
+            <span>Airport</span>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#C49A43] inline-block" />
+            <span>Your Route</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#0284C7] inline-block" />
-          <span>Bus Route</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#1E293B] inline-block" />
-          <span>Airport</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#E11D48] inline-block" />
-          <span>Key Station</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#C49A43] inline-block" />
-          <span>Your Route</span>
-        </div>
-      </div>
 
-      {/* Floating Bottom-Right Map Controls matching Target */}
-      <div className="absolute bottom-4 right-4 z-[500] flex items-center gap-2 pointer-events-auto">
-        {/* Map / Satellite Toggle Pill */}
-        <div className="flex rounded-full bg-white border border-[#EDE8E1] p-1 shadow-md">
+        {/* Map / Satellite & Zoom Controls */}
+        <div className="flex items-center gap-1.5 pointer-events-auto shrink-0 ml-auto">
+          {/* Map / Satellite Toggle Pill */}
+          <div className="flex rounded-full bg-white border border-[#EDE8E1] p-0.5 sm:p-1 shadow-md">
+            <button
+              type="button"
+              onClick={() => setMapStyle('sandstone')}
+              className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                mapStyle === 'sandstone'
+                  ? 'bg-[#1A2E3B] text-white shadow-2xs'
+                  : 'text-[#6E665D] hover:text-[#1A2E3B]'
+              }`}
+            >
+              Map
+            </button>
+            <button
+              type="button"
+              onClick={() => setMapStyle('satellite')}
+              className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
+                mapStyle === 'satellite'
+                  ? 'bg-[#1A2E3B] text-white shadow-2xs'
+                  : 'text-[#6E665D] hover:text-[#1A2E3B]'
+              }`}
+            >
+              Satellite
+            </button>
+          </div>
+
+          {/* Locate / Recenter button */}
           <button
             type="button"
-            onClick={() => setMapStyle('sandstone')}
-            className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              mapStyle === 'sandstone'
-                ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                : 'text-[#6E665D] hover:text-[#1A2E3B]'
-            }`}
+            onClick={handleFitRoute}
+            title="Locate Route"
+            aria-label="Locate active route"
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
           >
-            Map
+            <NavigationIcon className="w-4 h-4 text-[#1A2E3B]" />
           </button>
+
+          {/* Zoom Out (-) Button */}
           <button
             type="button"
-            onClick={() => setMapStyle('satellite')}
-            className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              mapStyle === 'satellite'
-                ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                : 'text-[#6E665D] hover:text-[#1A2E3B]'
-            }`}
+            onClick={() => mapRef.current?.zoomOut()}
+            title="Zoom Out"
+            aria-label="Zoom Out"
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] font-bold text-base hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
           >
-            Satellite
+            <span>—</span>
+          </button>
+
+          {/* Layers Thumbnail Button */}
+          <button
+            type="button"
+            onClick={() => setMapStyle(prev => (prev === 'satellite' ? 'sandstone' : 'satellite'))}
+            title="Toggle Satellite Imagery"
+            aria-label="Toggle Satellite Imagery"
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white overflow-hidden shadow-md transition-all cursor-pointer hover:border-[#C49A43] active:scale-95"
+          >
+            <LayersIcon className="w-4 h-4 text-[#1A2E3B]" />
           </button>
         </div>
-
-        {/* Locate / Recenter button */}
-        <button
-          type="button"
-          onClick={handleFitRoute}
-          title="Locate Route"
-          aria-label="Locate active route"
-          className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
-        >
-          <NavigationIcon className="w-4 h-4 text-[#1A2E3B]" />
-        </button>
-
-        {/* Zoom Out (-) Button */}
-        <button
-          type="button"
-          onClick={() => mapRef.current?.zoomOut()}
-          title="Zoom Out"
-          aria-label="Zoom Out"
-          className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] font-bold text-base hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
-        >
-          <span>—</span>
-        </button>
-
-        {/* Layers Thumbnail Button */}
-        <button
-          type="button"
-          onClick={() => setMapStyle(prev => (prev === 'satellite' ? 'sandstone' : 'satellite'))}
-          title="Toggle Satellite Imagery"
-          aria-label="Toggle Satellite Imagery"
-          className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white overflow-hidden shadow-md transition-all cursor-pointer hover:border-[#C49A43] active:scale-95"
-        >
-          <LayersIcon className="w-4 h-4 text-[#1A2E3B]" />
-        </button>
       </div>
 
       {/* Main Leaflet Map Canvas */}

@@ -105,27 +105,12 @@ export default function JourneyComparison({
           <span>Data updated 2 min ago</span>
         </div>
 
-        {/* Action pills: Share trip & Perks & Optional Map Toggle */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {onToggleMap && (
-            <button
-              type="button"
-              onClick={onToggleMap}
-              className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 border ${
-                showMap
-                  ? 'bg-[#166534] text-white border-[#166534]'
-                  : 'bg-white hover:bg-[#FAF7F2] text-[#1A2E3B] border-[#EDE8E1]'
-              }`}
-            >
-              <MapIcon className="w-3.5 h-3.5" />
-              <span>{showMap ? 'Hide Route Map' : 'Show Route Map'}</span>
-            </button>
-          )}
-
+        {/* Action pills: Share trip & Perks */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
             onClick={handleShare}
-            className="flex items-center gap-1.5 rounded-full bg-[#1A2E3B] hover:bg-[#243B4A] text-white px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 rounded-full bg-[#1A2E3B] hover:bg-[#243B4A] text-white px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
             title="Copy trip share link to clipboard"
           >
             {copied ? (
@@ -144,12 +129,11 @@ export default function JourneyComparison({
           <button
             type="button"
             onClick={onOpenCashbackModal}
-            className="flex items-center gap-1.5 rounded-full bg-[#FAF0D9] hover:bg-[#F5E6C7] text-[#9A721C] border border-[#E8D4AE] px-3 py-1.5 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 rounded-full bg-[#FAF0D9] hover:bg-[#F5E6C7] text-[#9A721C] border border-[#E8D4AE] px-2.5 sm:px-3 py-1.5 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0"
           >
             <SparklesIcon className="w-3.5 h-3.5 text-[#9A721C]" />
             <span>Perks</span>
           </button>
-
           <button
             type="button"
             aria-label="More route actions"

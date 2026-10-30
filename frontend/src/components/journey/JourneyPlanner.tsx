@@ -359,21 +359,16 @@ export default function JourneyPlanner({
             <button
               type="button"
               onClick={() => setShowClockCustomizer(prev => !prev)}
-              className={`flex items-center justify-between rounded-xl border px-3 py-2 sm:py-2.5 transition-all shadow-2xs cursor-pointer group active:scale-[0.99] ${
+              className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 sm:py-2.5 transition-all shadow-2xs cursor-pointer group active:scale-[0.99] ${
                 showClockCustomizer
                   ? 'border-[#C49A43] bg-[#FAF0D9]/70 text-[#1A2E3B] ring-2 ring-[#C49A43]/20'
                   : 'border-[#EBE5DC] bg-white hover:border-[#D8CFBF] text-[#1A2E3B]'
               }`}
               title="Click to customize departure time & clock"
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <ClockIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
-                <span className="font-bold text-xs sm:text-sm truncate">
-                  Today, {formattedDisplay}
-                </span>
-              </div>
-              <span className="text-[10px] uppercase font-extrabold text-[#C49A43] bg-white/90 px-1.5 py-0.5 rounded-md border border-[#EBE5DC] shrink-0">
-                Clock
+              <ClockIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
+              <span className="font-bold text-xs sm:text-sm whitespace-nowrap">
+                Today, {formattedDisplay}
               </span>
             </button>
 
