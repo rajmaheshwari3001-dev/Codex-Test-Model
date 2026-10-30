@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { NavLink, useLocation } from 'react-router-dom'
 import { getHealth } from '../../services/api'
 import DataProvenanceModal from '../DataProvenanceModal'
@@ -74,6 +75,16 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
   const regionMenuRef = useRef<HTMLDivElement>(null)
   const userMenuRef = useRef<HTMLDivElement>(null)
+
+  // Close login modal on Escape key press
+  useEffect(() => {
+    if (!showLoginModal) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowLoginModal(false)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showLoginModal])
 
   // Save user changes to localStorage
   useEffect(() => {
@@ -421,6 +432,17 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                       <span>Transit Data Sources & GTFS</span>
                       <span className="text-[#7A7269]">ℹ</span>
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUserMenuOpen(false)
+                        setShowLoginModal(true)
+                      }}
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold text-[#9A721C] hover:bg-[#FAF0D9] transition-colors cursor-pointer"
+                    >
+                      <span>Switch Account / Sign In</span>
+                      <span>🔑</span>
+                    </button>
                   </div>
 
                   {/* Sign Out Button */}
@@ -522,102 +544,124 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
       />
 
       {/* Login Modal */}
-      {showLoginModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in"
-          onClick={() => setShowLoginModal(false)}
-        >
+      {showLoginModal && typeof document !== 'undefined' &&
+        createPortal(
           <div
-            className="w-full max-w-sm rounded-3xl border border-[#EDE8E1] bg-white p-6 shadow-2xl space-y-4"
-            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="commuter-signin-title"
+            style={{ zIndex: 9999999, position: 'fixed', inset: 0 }}
+            className="flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in pointer-events-auto"
+            onClick={() => setShowLoginModal(false)}
           >
-            <div className="flex items-center justify-between border-b border-[#F0EAE1] pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0D9] text-[#9A721C] font-bold">
-                  <TrainIcon className="w-5 h-5 text-[#C49A43]" />
+            <div
+              className="w-full max-w-sm rounded-3xl border border-[#EDE8E1] bg-white p-6 shadow-2xl space-y-4 pointer-events-auto"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b border-[#F0EAE1] pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0D9] text-[#9A721C] font-bold">
+                    <TrainIcon className="w-5 h-5 text-[#C49A43]" />
+                  </div>
+                  <div>
+                    <h3 id="commuter-signin-title" className="font-serif text-lg font-bold text-[#1A2E3B] leading-tight">
+                      Commuter Sign In
+                    </h3>
+                    <p className="text-xs text-[#7A7269]">Aaroh-Saarthi Delhi Transit</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-serif text-lg font-bold text-[#1A2E3B] leading-tight">
-                    Commuter Sign In
-                  </h3>
-                  <p className="text-xs text-[#7A7269]">Aaroh-Saarthi Delhi Transit</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowLoginModal(false)}
-                className="rounded-lg p-1 text-[#7A7269] hover:bg-[#FAF7F2] cursor-pointer"
-              >
-                <XIcon className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-bold text-[#1A2E3B] mb-1">
-                  Commuter Name
-                </label>
-                <input
-                  type="text"
-                  value={loginName}
-                  onChange={e => setLoginName(e.target.value)}
-                  placeholder="e.g. Raj"
-                  className="w-full rounded-xl border border-[#EDE8E1] px-3.5 py-2 text-sm font-semibold text-[#1A2E3B] focus:border-[#C49A43] focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#1A2E3B] mb-1">
-                  DMRC SmartCard or Mobile No.
-                </label>
-                <input
-                  type="tel"
-                  value={loginPhone}
-                  onChange={e => setLoginPhone(e.target.value)}
-                  placeholder="e.g. 9876543210"
-                  className="w-full rounded-xl border border-[#EDE8E1] px-3.5 py-2 text-sm font-semibold text-[#1A2E3B] focus:border-[#C49A43] focus:outline-none"
-                />
-              </div>
-
-              <div className="pt-1 space-y-2">
-                <button
-                  type="submit"
-                  className="w-full rounded-xl bg-gradient-to-r from-[#D4A338] to-[#B38728] hover:from-[#C49A43] hover:to-[#A77B32] text-white font-bold py-2.5 text-sm transition-all shadow-md cursor-pointer active:scale-98"
-                >
-                  Sign In as {loginName || 'Commuter'}
-                </button>
-
                 <button
                   type="button"
-                  onClick={() => {
-                    setLoginName('Raj')
-                    setLoginPhone('9876543210')
-                    handleLogin()
-                  }}
-                  className="w-full rounded-xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] font-bold py-2 text-xs transition-colors cursor-pointer"
+                  onClick={() => setShowLoginModal(false)}
+                  className="rounded-lg p-1 text-[#7A7269] hover:bg-[#FAF7F2] hover:text-[#1A2E3B] cursor-pointer transition-colors"
+                  aria-label="Close sign in modal"
                 >
-                  Quick 1-Click Demo Login (Raj)
+                  <XIcon className="w-4 h-4" />
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+
+              <form onSubmit={handleLogin} className="space-y-3.5">
+                <div>
+                  <label htmlFor="commuter-name-input" className="block text-xs font-bold text-[#1A2E3B] mb-1">
+                    Commuter Name
+                  </label>
+                  <input
+                    id="commuter-name-input"
+                    type="text"
+                    value={loginName}
+                    onChange={e => setLoginName(e.target.value)}
+                    placeholder="e.g. Raj"
+                    autoFocus
+                    className="w-full rounded-xl border border-[#EDE8E1] px-3.5 py-2 text-sm font-semibold text-[#1A2E3B] focus:border-[#C49A43] focus:outline-none transition-colors"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="commuter-card-input" className="block text-xs font-bold text-[#1A2E3B] mb-1">
+                    DMRC SmartCard or Mobile No.
+                  </label>
+                  <input
+                    id="commuter-card-input"
+                    type="tel"
+                    value={loginPhone}
+                    onChange={e => setLoginPhone(e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    className="w-full rounded-xl border border-[#EDE8E1] px-3.5 py-2 text-sm font-semibold text-[#1A2E3B] focus:border-[#C49A43] focus:outline-none transition-colors"
+                  />
+                </div>
+
+                <div className="pt-1 space-y-2">
+                  <button
+                    type="submit"
+                    className="w-full rounded-xl bg-gradient-to-r from-[#D4A338] to-[#B38728] hover:from-[#C49A43] hover:to-[#A77B32] text-white font-bold py-2.5 text-sm transition-all shadow-md cursor-pointer active:scale-98"
+                  >
+                    Sign In as {loginName.trim() || 'Commuter'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLoginName('Raj')
+                      setLoginPhone('9876543210')
+                      setUser({
+                        name: 'Raj',
+                        email: 'raj.commuter@delhitransit.gov.in',
+                        cardBalance: 240,
+                        isLoggedIn: true,
+                      })
+                      setShowLoginModal(false)
+                      setUserMenuOpen(false)
+                      setAuthToast('Welcome back, Raj! Your DMRC SmartCard & Passes are active.')
+                      setTimeout(() => setAuthToast(''), 3500)
+                    }}
+                    className="w-full rounded-xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] font-bold py-2 text-xs transition-colors cursor-pointer active:scale-98"
+                  >
+                    Quick 1-Click Demo Login (Raj)
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body
+        )
+      }
 
       {/* Auth Notification Toast */}
-      {authToast && (
-        <aside
-          role="status"
-          aria-live="polite"
-          className="fixed bottom-6 right-6 z-[9999999] flex items-center gap-2.5 rounded-2xl border border-[#E8D4AE] bg-[#FAF0D9] text-[#9A721C] px-4 py-3 text-xs font-bold shadow-xl animate-fade-in"
-        >
-          <CheckIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
-          <span>{authToast}</span>
-        </aside>
-      )}
+      {authToast && typeof document !== 'undefined' &&
+        createPortal(
+          <aside
+            role="status"
+            aria-live="polite"
+            style={{ zIndex: 9999999, position: 'fixed' }}
+            className="bottom-6 right-6 flex items-center gap-2.5 rounded-2xl border border-[#E8D4AE] bg-[#FAF0D9] text-[#9A721C] px-4 py-3 text-xs font-bold shadow-xl animate-fade-in pointer-events-auto"
+          >
+            <CheckIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
+            <span>{authToast}</span>
+          </aside>,
+          document.body
+        )
+      }
     </header>
   )
 }
