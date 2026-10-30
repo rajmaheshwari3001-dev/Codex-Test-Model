@@ -48,7 +48,85 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
   const [syncing, setSyncing] = useState(false)
   const [syncLabel, setSyncLabel] = useState('DATA UPDATED 2 MIN AGO')
 
+  // User Authentication & Profile State
+  const [user, setUser] = useState<{
+    name: string
+    email: string
+    cardBalance: number
+    isLoggedIn: boolean
+  }>(() => {
+    try {
+      const saved = localStorage.getItem('aaroh_user')
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    return {
+      name: 'Raj',
+      email: 'raj.commuter@delhitransit.gov.in',
+      cardBalance: 240,
+      isLoggedIn: true,
+    }
+  })
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [loginName, setLoginName] = useState('Raj')
+  const [loginPhone, setLoginPhone] = useState('9876543210')
+  const [authToast, setAuthToast] = useState('')
+
   const regionMenuRef = useRef<HTMLDivElement>(null)
+  const userMenuRef = useRef<HTMLDivElement>(null)
+
+  // Save user changes to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('aaroh_user', JSON.stringify(user))
+    } catch {}
+  }, [user])
+
+  // Close user menu on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false)
+      }
+    }
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [userMenuOpen])
+
+  const handleLogout = () => {
+    setUser({
+      name: 'Guest',
+      email: '',
+      cardBalance: 0,
+      isLoggedIn: false,
+    })
+    setUserMenuOpen(false)
+    setAuthToast('Signed out. You are now browsing as a Guest commuter.')
+    setTimeout(() => setAuthToast(''), 3500)
+  }
+
+  const handleLogin = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    const name = loginName.trim() || 'Raj'
+    setUser({
+      name,
+      email: `${name.toLowerCase()}.commuter@delhitransit.gov.in`,
+      cardBalance: 240,
+      isLoggedIn: true,
+    })
+    setShowLoginModal(false)
+    setUserMenuOpen(false)
+    setAuthToast(`Welcome back, ${name}! Your DMRC SmartCard & Passes are active.`)
+    setTimeout(() => setAuthToast(''), 3500)
+  }
+
+  const handleTopupCard = () => {
+    setUser(prev => ({ ...prev, cardBalance: prev.cardBalance + 100 }))
+    setAuthToast('₹100 topped up to DMRC SmartCard! New balance: ₹' + (user.cardBalance + 100))
+    setTimeout(() => setAuthToast(''), 3500)
+  }
 
   useEffect(() => {
     let mounted = true
@@ -233,13 +311,130 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               </svg>
             </button>
 
-            {/* User Profile Pill ("Hi, Raj") */}
-            <div className="flex items-center gap-2 bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] rounded-full pl-1.5 pr-3 py-1 cursor-pointer transition-colors shadow-2xs">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#D4A338] to-[#B38728] text-white font-bold text-xs shadow-xs">
-                R
-              </div>
-              <span className="text-xs sm:text-[13px] font-bold text-[#1A2E3B]">Hi, Raj</span>
-              <ChevronDownIcon className="w-3.5 h-3.5 text-[#7A7269]" />
+            {/* User Profile Pill & Interactive Auth Dropdown */}
+            <div ref={userMenuRef} className="relative">
+              {user.isLoggedIn ? (
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen(prev => !prev)}
+                  className="flex items-center gap-2 bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] hover:border-[#C49A43] rounded-full pl-1.5 pr-3 py-1 cursor-pointer transition-colors shadow-2xs"
+                  aria-expanded={userMenuOpen}
+                  aria-label="User profile and transit account menu"
+                >
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#D4A338] to-[#B38728] text-white font-bold text-xs shadow-xs">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-xs sm:text-[13px] font-bold text-[#1A2E3B]">Hi, {user.name}</span>
+                  <ChevronDownIcon className={`w-3.5 h-3.5 text-[#7A7269] transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowLoginModal(true)}
+                  className="flex items-center gap-1.5 bg-[#FAF0D9] hover:bg-[#F2E5C9] border border-[#E8D4AE] text-[#9A721C] rounded-full px-3 py-1.5 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+                  aria-label="Sign in to your Delhi Transit account"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#C49A43]" />
+                  <span>Sign In</span>
+                </button>
+              )}
+
+              {/* User Profile Dropdown Menu */}
+              {userMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 rounded-2xl border border-[#EBE5DC] bg-white p-4 shadow-xl z-[600] animate-fade-in space-y-3.5">
+                  {/* Commuter Header */}
+                  <div className="flex items-center gap-3 border-b border-[#F0EAE1] pb-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D4A338] to-[#B38728] text-white font-bold text-base shadow-xs shrink-0">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-sm text-[#1A2E3B] truncate">{user.name} Maheshwari</span>
+                        <span className="w-2 h-2 rounded-full bg-emerald-500" title="Active Commuter" />
+                      </div>
+                      <div className="text-[11px] text-[#7A7269] truncate">{user.email}</div>
+                      <div className="inline-block text-[9px] font-extrabold uppercase tracking-wider text-[#C49A43] bg-[#FAF0D9] px-1.5 py-0.5 rounded mt-1">
+                        Verified Commuter • #DL-8821
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* DMRC SmartCard Balance Card */}
+                  <div className="rounded-xl border border-[#EDE8E1] bg-[#FAF7F2] p-3 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-[#7A7269]">DMRC Metro SmartCard</span>
+                      <span className="font-mono text-[11px] text-[#9A721C] font-extrabold">20% Off-Peak Active</span>
+                    </div>
+                    <div className="flex items-baseline justify-between">
+                      <span className="font-serif text-2xl font-bold text-[#1A2E3B] tabular-nums">
+                        ₹{user.cardBalance}.00
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleTopupCard}
+                        className="text-xs font-bold text-white bg-[#C49A43] hover:bg-[#B38728] px-2.5 py-1 rounded-lg transition-colors shadow-2xs cursor-pointer active:scale-95"
+                      >
+                        + ₹100 Top-up
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Quick Concessions */}
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-[#FAF7F2] text-[#1A2E3B]">
+                      <span className="flex items-center gap-2 font-medium">
+                        <CheckIcon className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>DTC Pink Pass Scheme</span>
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">Eligible</span>
+                    </div>
+                    <div className="flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-[#FAF7F2] text-[#1A2E3B]">
+                      <span className="flex items-center gap-2 font-medium">
+                        <CheckIcon className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Green Carbon Saver</span>
+                      </span>
+                      <span className="text-[10px] font-bold text-[#C49A43]">1.4 kg CO₂ saved</span>
+                    </div>
+                  </div>
+
+                  {/* Links & Actions */}
+                  <div className="border-t border-[#F0EAE1] pt-2 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCashbackModal(true)
+                        setUserMenuOpen(false)
+                      }}
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold text-[#1A2E3B] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                    >
+                      <span>Fare Concessions & Cashback</span>
+                      <span className="text-[#C49A43]">→</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowProvenanceModal(true)
+                        setUserMenuOpen(false)
+                      }}
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold text-[#1A2E3B] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                    >
+                      <span>Transit Data Sources & GTFS</span>
+                      <span className="text-[#7A7269]">ℹ</span>
+                    </button>
+                  </div>
+
+                  {/* Sign Out Button */}
+                  <div className="border-t border-[#F0EAE1] pt-2">
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold text-[#B91C1C] hover:bg-[#FEF2F2] border border-[#FEE2E2] transition-colors cursor-pointer active:scale-95"
+                    >
+                      <span>Sign Out (Logout)</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Quick Action Perks Trigger (Mobile/Tablet) */}
@@ -325,6 +520,104 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
         isOpen={showCashbackModal}
         onClose={() => setShowCashbackModal(false)}
       />
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in"
+          onClick={() => setShowLoginModal(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-3xl border border-[#EDE8E1] bg-white p-6 shadow-2xl space-y-4"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-[#F0EAE1] pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0D9] text-[#9A721C] font-bold">
+                  <TrainIcon className="w-5 h-5 text-[#C49A43]" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-[#1A2E3B] leading-tight">
+                    Commuter Sign In
+                  </h3>
+                  <p className="text-xs text-[#7A7269]">Aaroh-Saarthi Delhi Transit</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowLoginModal(false)}
+                className="rounded-lg p-1 text-[#7A7269] hover:bg-[#FAF7F2] cursor-pointer"
+              >
+                <XIcon className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-bold text-[#1A2E3B] mb-1">
+                  Commuter Name
+                </label>
+                <input
+                  type="text"
+                  value={loginName}
+                  onChange={e => setLoginName(e.target.value)}
+                  placeholder="e.g. Raj"
+                  className="w-full rounded-xl border border-[#EDE8E1] px-3.5 py-2 text-sm font-semibold text-[#1A2E3B] focus:border-[#C49A43] focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#1A2E3B] mb-1">
+                  DMRC SmartCard or Mobile No.
+                </label>
+                <input
+                  type="tel"
+                  value={loginPhone}
+                  onChange={e => setLoginPhone(e.target.value)}
+                  placeholder="e.g. 9876543210"
+                  className="w-full rounded-xl border border-[#EDE8E1] px-3.5 py-2 text-sm font-semibold text-[#1A2E3B] focus:border-[#C49A43] focus:outline-none"
+                />
+              </div>
+
+              <div className="pt-1 space-y-2">
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-gradient-to-r from-[#D4A338] to-[#B38728] hover:from-[#C49A43] hover:to-[#A77B32] text-white font-bold py-2.5 text-sm transition-all shadow-md cursor-pointer active:scale-98"
+                >
+                  Sign In as {loginName || 'Commuter'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginName('Raj')
+                    setLoginPhone('9876543210')
+                    handleLogin()
+                  }}
+                  className="w-full rounded-xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] font-bold py-2 text-xs transition-colors cursor-pointer"
+                >
+                  Quick 1-Click Demo Login (Raj)
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Auth Notification Toast */}
+      {authToast && (
+        <aside
+          role="status"
+          aria-live="polite"
+          className="fixed bottom-6 right-6 z-[9999999] flex items-center gap-2.5 rounded-2xl border border-[#E8D4AE] bg-[#FAF0D9] text-[#9A721C] px-4 py-3 text-xs font-bold shadow-xl animate-fade-in"
+        >
+          <CheckIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
+          <span>{authToast}</span>
+        </aside>
+      )}
     </header>
   )
 }

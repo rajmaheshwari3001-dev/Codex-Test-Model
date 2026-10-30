@@ -178,9 +178,9 @@ export default function DelhiMap({
     const map = L.map(containerRef.current, {
       zoomControl: false,
       scrollWheelZoom: true,
-      minZoom: 10.5,
+      minZoom: 11,
       maxZoom: 18,
-    }).setView([28.618, 77.205], 11.8)
+    }).setView([28.625, 77.215], 12)
 
     L.control.zoom({ position: 'bottomright' }).addTo(map)
 
@@ -193,13 +193,7 @@ export default function DelhiMap({
     requestAnimationFrame(() => {
       if (!mapRef.current) return
       map.invalidateSize()
-      map.fitBounds(
-        L.latLngBounds([
-          [28.535, 77.05], // Dwarka Sec 21 (SW)
-          [28.675, 77.34], // Noida City Centre (NE)
-        ]),
-        { padding: [50, 40], maxZoom: 12.2 }
-      )
+      map.setView([28.625, 77.215], 12)
     })
 
     return () => {
@@ -221,9 +215,7 @@ export default function DelhiMap({
     const lg = layerGroupRef.current
     lg.clearLayers()
 
-    // 1. OFFICIAL DELHI TRANSIT NETWORK CORRIDORS
-
-    // A. Blue Line (DMRC Line 3/4) - Dwarka Sec-21 to Anand Vihar & Noida
+    // 1. CLEAN & ELEGANT DELHI TRANSIT NETWORK CORRIDORS (Subtle background paths)
     if (showMetro) {
       const blueLineWest: [number, number][] = [
         DWARKA_COORD,
@@ -245,15 +237,13 @@ export default function DelhiMap({
 
       ;[blueLineWest, blueLineNoidaBranch, blueLineAnandBranch].forEach(pts => {
         L.polyline(pts, {
-          color: '#0072CE', // Official Blue Line
-          weight: 4.5,
-          opacity: 0.85,
+          color: '#0072CE',
+          weight: 2.5,
+          opacity: 0.4,
         }).addTo(lg)
       })
-    }
 
-    // B. Yellow Line Spine (DMRC Line 2) - Kashmere Gate to Saket / Gurugram
-    if (showMetro) {
+      // Yellow Line Spine
       const yellowSpine: [number, number][] = [
         KASHMERE_COORD,
         CHANDNI_COORD,
@@ -266,31 +256,27 @@ export default function DelhiMap({
         SAKET_COORD,
       ]
       L.polyline(yellowSpine, {
-        color: '#E5A800', // Official Yellow Line
-        weight: 4.5,
-        opacity: 0.85,
+        color: '#E5A800',
+        weight: 2.5,
+        opacity: 0.4,
       }).addTo(lg)
-    }
 
-    // C. Airport Express Line (Orange Line) - New Delhi to IGI Airport & Dwarka
-    if (showMetro) {
+      // Airport Express Line
       const orangeAirport: [number, number][] = [
         NDLS_COORD,
-        [28.6290, 77.2130], // Shivaji Stadium
+        [28.6290, 77.2130],
         DHAULA_KUAN_COORD,
         AEROCITY_COORD,
         AIRPORT_T3_COORD,
         DWARKA_COORD,
       ]
       L.polyline(orangeAirport, {
-        color: '#FF6F00', // High-Speed Airport Express Orange
-        weight: 4.5,
-        opacity: 0.9,
+        color: '#FF6F00',
+        weight: 2.5,
+        opacity: 0.45,
       }).addTo(lg)
-    }
 
-    // D. Magenta Line (DMRC Line 8) - Janakpuri West to Hauz Khas to Botanical Garden
-    if (showMetro) {
+      // Magenta Line
       const magentaLine: [number, number][] = [
         JANAKPURI_COORD,
         HAUZ_KHAS_COORD,
@@ -298,14 +284,12 @@ export default function DelhiMap({
         BOTANICAL_COORD,
       ]
       L.polyline(magentaLine, {
-        color: '#C2185B', // Magenta Line
-        weight: 4,
-        opacity: 0.8,
+        color: '#C2185B',
+        weight: 2.5,
+        opacity: 0.35,
       }).addTo(lg)
-    }
 
-    // E. Pink Line (DMRC Line 7) - Rajouri Garden to Dhaula Kuan to Mayur Vihar
-    if (showMetro) {
+      // Pink Line
       const pinkLine: [number, number][] = [
         RAJOURI_COORD,
         DHAULA_KUAN_COORD,
@@ -314,28 +298,24 @@ export default function DelhiMap({
         MAYUR_COORD,
       ]
       L.polyline(pinkLine, {
-        color: '#E91E63', // Pink Line
-        weight: 4,
-        opacity: 0.75,
+        color: '#E91E63',
+        weight: 2.5,
+        opacity: 0.35,
       }).addTo(lg)
-    }
 
-    // F. Green Line (DMRC Line 5) - Kashmere Gate to Rajouri Garden
-    if (showMetro) {
+      // Green Line
       const greenLine: [number, number][] = [
         KASHMERE_COORD,
         [28.674, 77.165],
         RAJOURI_COORD,
       ]
       L.polyline(greenLine, {
-        color: '#00A651', // Green Line
-        weight: 4,
-        opacity: 0.75,
+        color: '#00A651',
+        weight: 2.5,
+        opacity: 0.35,
       }).addTo(lg)
-    }
 
-    // G. Violet Line (DMRC Line 6) - Kashmere Gate to Nehru Place
-    if (showMetro) {
+      // Violet Line
       const violetLine: [number, number][] = [
         KASHMERE_COORD,
         ITO_COORD,
@@ -345,14 +325,14 @@ export default function DelhiMap({
         NEHRU_COORD,
       ]
       L.polyline(violetLine, {
-        color: '#8A2BE2', // Violet Line
-        weight: 4,
-        opacity: 0.75,
+        color: '#8A2BE2',
+        weight: 2.5,
+        opacity: 0.35,
       }).addTo(lg)
     }
 
-    // H. DTC Ring Road Feeder (Bus Mudrika Express)
     if (showBus) {
+      // Ring Road Bus
       const ringRoadBus: [number, number][] = [
         CP_COORD,
         INDIA_GATE_COORD,
@@ -363,15 +343,13 @@ export default function DelhiMap({
         JANAKPURI_COORD,
       ]
       L.polyline(ringRoadBus, {
-        color: '#E31B23', // Red Ring
-        weight: 3,
-        opacity: 0.7,
-        dashArray: '6, 6',
+        color: '#E31B23',
+        weight: 2,
+        opacity: 0.35,
+        dashArray: '5, 5',
       }).addTo(lg)
-    }
 
-    // I. DTC City Bus 764 Special (Rajiv Chowk to Noida)
-    if (showBus) {
+      // Bus 764
       const bus764Whole: [number, number][] = [
         DWARKA_COORD,
         [28.59, 77.10],
@@ -382,9 +360,9 @@ export default function DelhiMap({
       ]
       L.polyline(bus764Whole, {
         color: '#1A2E3B',
-        weight: 3.5,
-        opacity: 0.8,
-        dashArray: '8, 6',
+        weight: 2,
+        opacity: 0.35,
+        dashArray: '5, 5',
       }).addTo(lg)
     }
 
@@ -637,9 +615,9 @@ export default function DelhiMap({
       })
       L.marker(KASHMERE_COORD, { icon: kashmereStatusIcon }).addTo(lg)
 
-      // 4. DYNAMIC MOVING LIVE GPS TELEMETRY VEHICLES
+      // 4. CLEAN & LIGHTWEIGHT LIVE GPS VEHICLE TELEMETRY
       if (showLiveVehicles) {
-        // Train 302 Simulation along Blue Line
+        // Train 302 along Blue Line
         const trainRouteWaypoints: [number, number][] = [
           JANAKPURI_COORD,
           RAJOURI_COORD,
@@ -648,7 +626,6 @@ export default function DelhiMap({
           RAJIV_COORD,
           RAJOURI_COORD,
         ]
-        // Calculate train current progress (cycles smoothly between 0 and 1)
         const trainProgress = (simTick % 50) / 50
         const currentTrainPos = interpolateRoute(trainRouteWaypoints, trainProgress)
         const trainSpeed = 50 + (simTick % 8)
@@ -656,9 +633,10 @@ export default function DelhiMap({
         const trainIcon = L.divIcon({
           className: 'delhi-vehicle-metro',
           html: `
-            <div class="delhi-vehicle-live" style="position: absolute; transform: translate(-50%, -50%); background: #C49A43; color: #FFFFFF; padding: 4px 9px; border-radius: 20px; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 4px; border: 2px solid #FFFFFF; box-shadow: 0 4px 14px rgba(196,154,67,0.6); cursor: pointer; white-space: nowrap;">
-              <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 4px;">M</span>
-              <span>LINE 3 • ${trainSpeed} km/h</span>
+            <div style="position: absolute; transform: translate(-50%, -50%); cursor: pointer;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: #C49A43; color: #FFFFFF; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF; box-shadow: 0 2px 10px rgba(196,154,67,0.6);">
+                M
+              </div>
             </div>
           `,
           iconSize: [0, 0],
@@ -670,18 +648,17 @@ export default function DelhiMap({
               Delhi Metro • Blue Line 3
             </div>
             <div style="font-size: 14px; font-weight: 800; color: #1A2E3B; margin-top: 2px;">
-              Train #DMRC-302 (8-Coach)
+              Train #DMRC-302 (Live ${trainSpeed} km/h)
             </div>
             <div style="font-size: 11px; color: #7A7269; margin-top: 6px; line-height: 1.5;">
-              Status: <strong style="color: #2E7D32;">Live GPS (${trainSpeed} km/h)</strong><br />
               Next Stop: <strong>Rajiv Chowk in 1m 40s</strong><br />
               Crowd Density: <strong>42% (Normal)</strong><br />
-              Overhead Traction: <strong>25kV AC Electric</strong>
+              Traction: <strong>25kV AC Electric</strong>
             </div>
           </div>
         `)
 
-        // City Bus 764 Simulation along Mandi House to Noida
+        // City Bus 764 along Mandi House to Noida
         const busRouteWaypoints: [number, number][] = [
           RAJIV_COORD,
           MANDI_COORD,
@@ -697,9 +674,10 @@ export default function DelhiMap({
         const busIcon = L.divIcon({
           className: 'delhi-vehicle-bus',
           html: `
-            <div class="delhi-vehicle-live" style="position: absolute; transform: translate(-50%, -50%); background: #1A2E3B; color: #FFFFFF; padding: 4px 9px; border-radius: 20px; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 4px; border: 2px solid #FFFFFF; box-shadow: 0 4px 14px rgba(26,46,59,0.6); cursor: pointer; white-space: nowrap;">
-              <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 4px;">B</span>
-              <span>BUS 764 (EV) • ${busSpeed} km/h</span>
+            <div style="position: absolute; transform: translate(-50%, -50%); cursor: pointer;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: #1D4ED8; color: #FFFFFF; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF; box-shadow: 0 2px 10px rgba(29,78,216,0.6);">
+                B
+              </div>
             </div>
           `,
           iconSize: [0, 0],
@@ -707,18 +685,16 @@ export default function DelhiMap({
         const busMarker = L.marker(currentBusPos, { icon: busIcon }).addTo(lg)
         busMarker.bindPopup(`
           <div style="font-family: 'Manrope', sans-serif; min-width: 210px;">
-            <div style="font-size: 10px; font-weight: 800; color: #1A2E3B; text-transform: uppercase;">
+            <div style="font-size: 10px; font-weight: 800; color: #1D4ED8; text-transform: uppercase;">
               Delhi Transport Corp • Electric
             </div>
             <div style="font-size: 14px; font-weight: 800; color: #1A2E3B; margin-top: 2px;">
-              Bus #DL-1PC-7640
+              Bus #DL-1PC-7640 (${busSpeed} km/h)
             </div>
             <div style="font-size: 11px; color: #7A7269; margin-top: 6px; line-height: 1.5;">
               Route: <strong>764 Special Express</strong><br />
-              Status: <strong style="color: #2E7D32;">Active Telemetry (${busSpeed} km/h)</strong><br />
               Next Stop: <strong>Mayur Vihar in 2 min</strong><br />
-              Seating: <strong>32/50 Available</strong><br />
-              Battery Level: <strong>81% Charged</strong>
+              Seating: <strong>32/50 Available</strong>
             </div>
           </div>
         `)
@@ -736,9 +712,10 @@ export default function DelhiMap({
         const autoIcon = L.divIcon({
           className: 'delhi-vehicle-auto',
           html: `
-            <div class="delhi-vehicle-live" style="position: absolute; transform: translate(-50%, -50%); background: #2E7D32; color: #FFFFFF; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 3px; border: 2px solid #FFFFFF; box-shadow: 0 4px 12px rgba(46,125,50,0.6); cursor: pointer; white-space: nowrap;">
-              <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 4px;">A</span>
-              <span>POOCHH-O AUTO</span>
+            <div style="position: absolute; transform: translate(-50%, -50%); cursor: pointer;">
+              <div style="width: 24px; height: 24px; border-radius: 50%; background: #2E7D32; color: #FFFFFF; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF; box-shadow: 0 2px 10px rgba(46,125,50,0.6);">
+                A
+              </div>
             </div>
           `,
           iconSize: [0, 0],
@@ -1065,13 +1042,6 @@ export default function DelhiMap({
         >
           <LayersIcon className="w-4 h-4 text-[#1A2E3B]" />
         </button>
-      </div>
-
-      {/* Centered Serif Watermark: DELHI */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[400]">
-        <span className="font-serif text-5xl sm:text-7xl md:text-8xl tracking-[0.35em] text-[#1A2E3B]/8 font-normal select-none uppercase pl-6">
-          DELHI
-        </span>
       </div>
 
       {/* Main Leaflet Map Canvas */}
