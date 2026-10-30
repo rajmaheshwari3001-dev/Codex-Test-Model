@@ -144,24 +144,21 @@ export default function StationCombobox({
   }
 
   return (
-    <div ref={containerRef} className="space-y-1.5 relative select-none">
+    <div ref={containerRef} className="space-y-1 relative select-none">
       {/* Label with colored pin indicator */}
       <label
         htmlFor={id}
-        className="text-xs font-bold uppercase tracking-[0.12em] text-[#7A7269] flex items-center justify-between"
+        className="text-[13px] font-bold text-[#1A2E3B] flex items-center justify-between"
       >
         <span className="flex items-center gap-1.5">
           <span
-            className="h-2.5 w-2.5 rounded-full ring-2 ring-white shadow-2xs"
-            style={{ backgroundColor: pinColor }}
-          />
-          <span className="text-[#1A2E3B]">{label}</span>
-        </span>
-        {selectedStop && (
-          <span className="text-[10px] font-extrabold text-[#7A7269] tracking-wider uppercase">
-            Zone {selectedStop.zone_id}
+            className="flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold"
+            style={{ color: pinColor }}
+          >
+            📍
           </span>
-        )}
+          <span className="font-bold text-[13px] text-[#1A2E3B] capitalize">{label.toLowerCase()}</span>
+        </span>
       </label>
 
       {/* Interactive Trigger Button */}
@@ -174,15 +171,15 @@ export default function StationCombobox({
         aria-controls={`${id}-listbox`}
         onClick={() => setIsOpen(prev => !prev)}
         onKeyDown={handleKeyDown}
-        className={`w-full flex items-center justify-between gap-2.5 rounded-xl border bg-white px-3.5 py-2.5 sm:py-3 transition-all duration-200 cursor-pointer shadow-2xs text-left group ${
+        className={`w-full flex items-center justify-between gap-3 rounded-2xl border bg-white px-4 py-3 transition-all duration-200 cursor-pointer shadow-xs text-left group ${
           isOpen
             ? 'border-[#C49A43] ring-2 ring-[#C49A43]/20 shadow-sm'
-            : 'border-[#EBE5DC] hover:border-[#C49A43]/60 hover:bg-[#FFFCF8]'
+            : 'border-[#EDE8E1] hover:border-[#C49A43]/60 hover:bg-[#FFFCF8]'
         }`}
       >
-        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <span
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold shrink-0 transition-transform group-hover:scale-105"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-sm font-bold shrink-0 transition-transform group-hover:scale-105"
             style={{
               backgroundColor: `${pinColor}15`,
               color: pinColor,
@@ -194,21 +191,16 @@ export default function StationCombobox({
           {selectedStop ? (
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm font-bold text-[#1A2E3B] truncate tracking-tight">
+                <span className="text-[15px] font-bold text-[#1A2E3B] truncate tracking-normal">
                   {getFigmaStationName(selectedStop)}
                 </span>
-                {selectedMeta && (
-                  <span className="hidden xs:inline-flex text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-[#FAF7F2] border border-[#EBE5DC] text-[#7A7269] uppercase tracking-wider shrink-0">
-                    {selectedMeta.badgeText}
-                  </span>
-                )}
               </div>
-              <p className="text-[11px] text-[#7A7269] font-medium truncate mt-0.5">
+              <p className="text-[13px] text-[#7A7269] font-normal truncate mt-0.5">
                 {selectedMeta?.landmark || `Delhi Transport Stack Station #${selectedStop.stop_id}`}
               </p>
             </div>
           ) : (
-            <span className="text-xs sm:text-sm font-medium text-[#7A7269] truncate">
+            <span className="text-sm font-medium text-[#7A7269] truncate">
               {placeholder}
             </span>
           )}

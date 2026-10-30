@@ -2,8 +2,8 @@
 @import "leaflet/dist/leaflet.css";
 
 @theme {
-  --font-serif: "DM Serif Display", Georgia, serif;
-  --font-sans: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Playfair Display", "DM Serif Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   --color-sandstone: #FAF7F2;
   --color-ivory: #FFFFFF;
@@ -13,37 +13,43 @@
   --color-primary-hover: #A77B32;
 
   --color-navy: #1A2E3B;
-  --color-green: #263F38;
+  --color-forest: #166534;
+  --color-green: #1E4D2B;
   --color-success: #2E7D32;
   --color-terracotta: #A6533C;
 
   --color-text-primary: #1A202C;
-  --color-text-secondary: #7A7269;
+  --color-text-secondary: #6E665D;
 
-  --color-border: #EBE5DC;
+  --color-border: #EDE8E1;
 }
 
 :root {
   --background: #FAF7F2;
   --surface: #FFFFFF;
-  --surface-secondary: #F7F3EC;
+  --surface-secondary: #F8F5F0;
 
   --primary: #C49A43;
   --primary-hover: #A77B32;
 
   --navy: #1A2E3B;
-  --green: #263F38;
+  --forest: #166534;
+  --green: #1E4D2B;
   --success: #2E7D32;
   --terracotta: #A6533C;
 
   --text-primary: #1A202C;
-  --text-secondary: #7A7269;
+  --text-secondary: #6E665D;
 
-  --border: #EBE5DC;
+  --border: #EDE8E1;
 
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light;
   text-rendering: optimizeLegibility;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 body {
@@ -51,24 +57,19 @@ body {
   background-color: var(--background);
   color: var(--text-primary);
   overflow-x: hidden;
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Warm muted cartography tiles matching Figma ivory aesthetic */
-.leaflet-tile {
-  filter: brightness(0.98) contrast(0.92) saturate(0.72) sepia(0.1);
-}
-
-.leaflet-container {
-  background-color: #FAF7F2 !important;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .font-serif {
-  font-family: 'DM Serif Display', Georgia, serif;
+  font-family: 'Playfair Display', 'DM Serif Display', Georgia, serif;
 }
 
 .font-sans {
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .tabular-nums {
@@ -306,25 +307,40 @@ textarea {
   filter: none !important;
 }
 
-/* Responsive Delhi Transit Ambient Background (Mobile vs PC) */
+/* Soft Pastel Delhi Gradient with Faint Monument Skyline */
 .app-transit-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url('/images/delhi_transit_mobile.jpg');
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
+  background: 
+    radial-gradient(ellipse at 90% 8%, rgba(215, 205, 245, 0.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 10% 12%, rgba(255, 232, 214, 0.65) 0%, transparent 60%),
+    linear-gradient(145deg, #FFF7F0 0%, #FAF4ED 38%, #F2EDF9 100%);
   background-attachment: fixed;
-  opacity: 0.22;
-  transition: opacity 0.3s ease;
 }
 
-@media (min-width: 768px) {
-  .app-transit-backdrop {
-    background-image: url('/images/delhi_transit_pc.jpg');
-    background-position: center top;
-    opacity: 0.18;
-  }
+.delhi-monument-skyline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 96px;
+  pointer-events: none;
+  opacity: 0.12;
+  background-repeat: repeat-x;
+  background-position: bottom center;
+  background-size: 720px 88px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 720 88' fill='%231A2E3B'%3E%3Cpath d='M0 88h720V76h-24V52h-6v24h-14V42h-8V26h-4V12h-4v14h-4v16h-8v34h-12V60h-16v16h-20V48h-8V32h-4V18h-4v14h-4v16h-8v28h-26V54h-18v22h-16V36h-8V20h-4V8h-4v12h-4v16h-8v40h-24V64h-12v12h-28V46h-6V30h-4v-8h-4v8h-4v16h-6v30h-22V58h-14v18h-18V44h-8V28h-4V14h-4v14h-4v16h-8v32h-26V60h-14v16h-22V50h-8V34h-4V22h-4v12h-4v16h-8v26h-24V62h-14v14h-28V42h-8V26h-4V10h-4v16h-4v16h-8v34h-24V60h-16v16h-22V48h-8V32h-4V18h-4v14h-4v16h-8v28h-22V56h-16v20H0v12z'/%3E%3C/svg%3E");
+}
+
+/* Leaflet Container Styling */
+.leaflet-container {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #F4EFE6 !important;
+}
+
+/* Carto Voyager Tile Styling (Clean, soft, light, green-tinted cartography) */
+.map-tiles-voyager .leaflet-tile {
+  filter: saturate(1.05) contrast(1.02);
 }

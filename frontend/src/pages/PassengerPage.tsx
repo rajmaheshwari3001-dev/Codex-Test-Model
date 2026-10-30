@@ -11,6 +11,7 @@ import MovableCopilotLauncher from '../components/assistant/MovableCopilotLaunch
 import DelhiMap from '../components/map/DelhiMap'
 import JourneyComparison from '../components/routes/JourneyComparison'
 import SavedJourneysBar from '../components/saved/SavedJourneysBar'
+import PopularDestinationsBar from '../components/journey/PopularDestinationsBar'
 import DataProvenanceModal from '../components/DataProvenanceModal'
 import CashbackPerksModal from '../components/journey/CashbackPerksModal'
 import { FIGMA_CANONICAL_JOURNEYS } from '../utils/figmaRoutes'
@@ -422,12 +423,15 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             <button
               type="button"
               onClick={() => {
-                setCopilotPrompt('Which line is faster from Janakpuri to Rajiv Chowk?')
+                setCopilotPrompt('What is the best way to India Gate from Janakpuri?')
                 setShowCopilotModal(true)
               }}
-              className="w-full flex items-center justify-between gap-2 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/50 p-3 sm:p-3.5 text-left text-xs sm:text-sm font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
+              className="w-full flex items-center justify-between gap-2 rounded-2xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/50 p-3.5 text-left text-[13px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
             >
-              <span className="truncate text-xs sm:text-sm">Try: "Which line is faster from Janakpuri to..."</span>
+              <div className="flex items-center gap-2 truncate">
+                <span className="text-amber-500 text-xs">✨</span>
+                <span className="truncate">Try "Best way to India Gate from Janakpuri?"</span>
+              </div>
               <ArrowRightIcon className="w-4 h-4 text-[#C49A43] group-hover:translate-x-1 transition-transform shrink-0" />
             </button>
           </div>
@@ -443,6 +447,14 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             destinationStopId={destination}
             onSelectOrigin={handleSelectOriginFromMap}
             onSelectDestination={handleSelectDestinationFromMap}
+          />
+
+          <PopularDestinationsBar
+            currentDestinationStopId={destination}
+            onSelectDestination={(destStopId) => {
+              setDestination(destStopId)
+              handleSearch(origin, destStopId, time, preference, serviceDay, modePreference, maxBudget)
+            }}
           />
         </div>
 

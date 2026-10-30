@@ -96,17 +96,16 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
   const navItems = [
     {
-      label: 'Plan journey',
+      label: 'Plan Journey',
       Icon: CompassIcon,
       to: '/',
       active: location.pathname === '/' && (!currentTab || currentTab === 'planner'),
     },
     {
-      label: 'Live map',
+      label: 'Live Map',
       Icon: MapIcon,
       to: '/map',
       active: location.pathname === '/map' || (location.pathname === '/' && currentTab === 'map'),
-      badge: 'live',
     },
     {
       label: 'Fleet',
@@ -115,58 +114,61 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
       active: location.pathname === '/fleet' && (!currentTab || currentTab === 'roster'),
     },
     {
+      label: 'Insights',
+      Icon: BarChartIcon,
+      to: '/reports',
+      active: location.pathname === '/reports',
+    },
+    {
       label: 'Disruptions',
       Icon: AlertTriangleIcon,
       to: '/fleet?tab=disruptions',
       active: location.pathname === '/fleet' && currentTab === 'disruptions',
-    },
-    {
-      label: 'Analytics',
-      Icon: BarChartIcon,
-      to: '/reports',
-      active: location.pathname === '/reports',
+      badgeCount: 1,
     },
   ]
 
   return (
     <header
       role="banner"
-      className="sticky top-2 sm:top-3.5 z-30 w-full px-3 sm:px-6 lg:px-8 pointer-events-none transition-all duration-300"
+      className="sticky top-2 sm:top-3 z-30 w-full px-3 sm:px-6 lg:px-8 pointer-events-none transition-all duration-300"
     >
       {/* Floating Island / Capsule Bar matching Figma prototype styling */}
-      <div className="pointer-events-auto max-w-[1720px] mx-auto rounded-2xl sm:rounded-full border border-[#EBE5DC]/90 bg-white/92 backdrop-blur-xl shadow-[0_8px_30px_rgba(26,46,59,0.08),0_2px_8px_rgba(26,46,59,0.03)] px-3.5 sm:px-5 lg:px-6 py-2 sm:py-2.5 transition-all hover:border-[#C49A43]/40">
-        <div className="flex h-11 sm:h-12 items-center justify-between gap-3">
-          {/* Left: Mobile Toggle & Brand Mark */}
+      <div className="pointer-events-auto max-w-[1720px] mx-auto rounded-2xl sm:rounded-full border border-[#EDE8E1] bg-white/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(26,46,59,0.06),0_2px_6px_rgba(26,46,59,0.02)] px-4 sm:px-6 py-2.5 transition-all hover:border-[#C49A43]/40">
+        <div className="flex h-12 sm:h-13 items-center justify-between gap-3">
+          {/* Left: Brand Mark with Emblem & Tagline */}
           <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
               onClick={onOpenMobileMenu || (() => setMobileNavOpen(prev => !prev))}
               aria-label="Toggle navigation menu"
               aria-expanded={mobileNavOpen}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EBE5DC] bg-[#FAF7F2] text-[#1A2E3B] hover:bg-[#F2ECE1] lg:hidden transition-colors cursor-pointer active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#EDE8E1] bg-[#FAF7F2] text-[#1A2E3B] hover:bg-[#F2ECE1] lg:hidden transition-colors cursor-pointer active:scale-95"
             >
               {mobileNavOpen ? <XIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
             </button>
 
-            <NavLink to="/" className="flex items-center gap-2.5 group focus:outline-none" aria-label="AAROH-SAARTHI Home">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0D9] border border-[#E8D4AE] text-[#9A721C] shadow-2xs group-hover:scale-105 transition-transform shrink-0">
-                <span className="text-base">🚆</span>
+            <NavLink to="/" className="flex items-center gap-3 group focus:outline-none" aria-label="AAROH-SAARTHI Home">
+              {/* Target Emblem: Circular Transit Icon */}
+              <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#FFF9EE] via-[#FAF0D9] to-[#EBD5A8] border-2 border-[#C49A43]/70 text-[#1A2E3B] shadow-sm group-hover:scale-105 transition-transform shrink-0 relative">
+                <span className="text-lg">🚎</span>
+                <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-[#166534] border-2 border-white" />
               </div>
               <div className="flex flex-col">
-                <span className="font-serif text-lg sm:text-xl lg:text-[22px] font-bold tracking-tight text-[#1A2E3B] group-hover:text-[#C49A43] transition-colors leading-none">
+                <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#1A2E3B] group-hover:text-[#C49A43] transition-colors leading-none">
                   AAROH<span className="text-[#C49A43] mx-1">•</span>SAARTHI
                 </span>
-                <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269] mt-0.5 hidden xs:block leading-none">
-                  YOUR JOURNEY, RE-IMAGINED IN DELHI
+                <span className="text-[11px] sm:text-[12px] font-medium text-[#7A7269] mt-1 hidden xs:block leading-none">
+                  Move Smarter. A Greener Delhi.
                 </span>
               </div>
             </NavLink>
           </div>
 
-          {/* Center: Segmented Floating Navigation Capsule (Iconic Figma Pattern) */}
+          {/* Center: Segmented Navigation Capsule matching target */}
           <nav
             aria-label="Main Navigation"
-            className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#FAF7F2] border border-[#EBE5DC]/80 shadow-2xs"
+            className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#FAF7F2] border border-[#EDE8E1] shadow-2xs"
           >
             {navItems.map(item => {
               const { Icon } = item
@@ -174,161 +176,77 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                 <NavLink
                   key={item.label}
                   to={item.to}
-                  className={`relative flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold transition-all duration-200 cursor-pointer ${
                     item.active
                       ? 'bg-[#1A2E3B] text-white shadow-xs'
                       : 'text-[#6E665D] hover:text-[#1A2E3B] hover:bg-white/80'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${item.active ? 'text-[#C49A43]' : 'text-[#7A7269]'}`} />
+                  <Icon className={`w-4 h-4 ${item.active ? 'text-[#C49A43]' : 'text-[#7A7269]'}`} />
                   <span>{item.label}</span>
-                  {item.badge === 'live' && (
-                    <span className="flex h-2 w-2 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2E7D32] opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2E7D32]" />
+                  {item.badgeCount ? (
+                    <span className="flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#E11D48] text-white text-[10px] font-mono font-bold leading-none">
+                      {item.badgeCount}
                     </span>
-                  )}
+                  ) : null}
                 </NavLink>
               )
             })}
-          </nav>
 
-          {/* Right: Quick Action Controls as Rounded Floating Pills */}
-          <div role="toolbar" aria-label="Quick Actions" className="flex items-center gap-2 shrink-0">
-            {/* Interactive Live Data Sync Button */}
-            <button
-              type="button"
-              onClick={handleRefreshData}
-              title="Click to check latest GTFS real-time transit updates"
-              aria-label="Refresh GTFS Transit Data"
-              className="hidden xl:flex items-center gap-2 rounded-full bg-[#EAF5EC] hover:bg-[#DDF0E0] active:scale-95 border border-[#D1E7D5] px-3.5 py-1 text-[11px] font-extrabold tracking-wider uppercase text-[#22702E] transition-all cursor-pointer shadow-2xs"
-            >
-              <RotateCcwIcon className={`w-3.5 h-3.5 text-[#22702E] ${syncing ? 'animate-spin' : ''}`} />
-              <span>{syncLabel}</span>
-            </button>
-
-            {/* Interactive Region Selector Popover */}
-            <div ref={regionMenuRef} className="relative hidden xs:block">
-              <button
-                type="button"
-                onClick={() => setRegionDropdownOpen(prev => !prev)}
-                aria-haspopup="true"
-                aria-expanded={regionDropdownOpen}
-                className="flex items-center gap-1.5 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EBE5DC] hover:border-[#C49A43]/50 px-3 py-1.5 text-xs font-bold text-[#1A2E3B] shadow-2xs transition-all cursor-pointer active:scale-95"
-              >
-                <span className="text-xs text-[#C49A43]">📍</span>
-                <span>{selectedCity}</span>
-                <ChevronDownIcon
-                  className={`w-3.5 h-3.5 text-[#7A7269] transition-transform duration-200 ${
-                    regionDropdownOpen ? 'rotate-180 text-[#C49A43]' : ''
-                  }`}
-                />
-              </button>
-
-              {regionDropdownOpen && (
-                <div
-                  style={{ zIndex: 60 }}
-                  className="absolute right-0 top-full mt-2 w-64 rounded-2xl border-2 border-[#C49A43]/40 bg-white shadow-2xl p-1.5 animate-fade-in divide-y divide-[#F5EFE6]"
-                >
-                  <div className="px-3 py-2 text-[10px] font-extrabold uppercase tracking-wider text-[#A1988B]">
-                    Delhi Transit Regions
-                  </div>
-                  <div className="py-1 space-y-0.5">
-                    {DELHI_REGIONS.map(reg => {
-                      const isSelected = selectedCity === reg.id
-                      return (
-                        <button
-                          key={reg.id}
-                          type="button"
-                          onClick={() => {
-                            setSelectedCity(reg.id)
-                            setRegionDropdownOpen(false)
-                          }}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left transition-colors cursor-pointer ${
-                            isSelected
-                              ? 'bg-[#FAF0D9] text-[#1A2E3B] font-bold'
-                              : 'hover:bg-[#FAF7F2] text-[#1A202C]'
-                          }`}
-                        >
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold">
-                              <span>{reg.icon}</span>
-                              <span className="truncate">{reg.label}</span>
-                            </div>
-                            <p className="text-[11px] text-[#7A7269] font-medium truncate mt-0.5">
-                              {reg.subtitle}
-                            </p>
-                          </div>
-                          {isSelected && (
-                            <CheckIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
-                          )}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Share trip button */}
-            <button
-              type="button"
-              onClick={handleShareTrip}
-              className="flex items-center gap-1.5 rounded-full bg-[#1A2E3B] hover:bg-[#253D4E] active:scale-[0.97] px-3.5 py-1.5 text-xs font-bold text-white shadow-[0_2px_8px_rgba(26,46,59,0.2)] hover:shadow-[0_4px_12px_rgba(26,46,59,0.3)] transition-all cursor-pointer"
-              aria-label="Share current trip"
-            >
-              {shareToast ? (
-                <>
-                  <CheckIcon className="w-3.5 h-3.5 text-[#547A60]" />
-                  <span>Copied</span>
-                </>
-              ) : (
-                <>
-                  <ShareIcon className="w-3.5 h-3.5 text-[#C49A43]" />
-                  <span>Share trip</span>
-                </>
-              )}
-            </button>
-
-            {/* Cashback & Concessions Modal Trigger */}
-            <button
-              type="button"
-              onClick={() => setShowCashbackModal(true)}
-              className="hidden md:flex items-center gap-1.5 rounded-full border border-[#E8D4AE] bg-[#FAF0D9] hover:bg-[#F5E6C7] active:scale-[0.97] px-3 py-1.5 text-xs font-bold text-[#9A721C] transition-all cursor-pointer shadow-2xs"
-              title="Delhi Transit Cashback & Concessions"
-              aria-label="Open Transit Cashback and Concessions Calculator"
-            >
-              <SparklesIcon className="w-3.5 h-3.5 text-[#9A721C]" />
-              <span className="hidden lg:inline">Perks</span>
-            </button>
-
-            {/* Data Sources Trigger */}
+            {/* More dropdown */}
             <button
               type="button"
               onClick={() => setShowProvenanceModal(true)}
-              className="flex items-center justify-center h-8 w-8 rounded-full border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] transition-colors cursor-pointer shadow-2xs active:scale-95"
-              title="Inspect Data Sources & GTFS Provenance"
-              aria-label="Inspect Data Sources and Provenance"
+              className="flex items-center gap-1 px-3 py-2 rounded-full text-[13px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] hover:bg-white/80 transition-colors cursor-pointer"
             >
-              <DatabaseIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+              <span>More</span>
+              <ChevronDownIcon className="w-3.5 h-3.5 text-[#7A7269]" />
+            </button>
+          </nav>
+
+          {/* Right: Search Box, Dark Toggle, and User Profile (Matching Target) */}
+          <div role="toolbar" aria-label="User Controls" className="flex items-center gap-2.5 shrink-0">
+            {/* Search stations/routes input box */}
+            <div className="hidden xl:flex items-center gap-2 bg-[#FAF7F2] border border-[#EDE8E1] rounded-full px-3.5 py-1.5 focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20 shadow-2xs">
+              <span className="text-[#7A7269] text-xs">🔍</span>
+              <input
+                type="text"
+                placeholder="Search stations, routes..."
+                className="bg-transparent text-xs sm:text-[13px] text-[#1A2E3B] placeholder-[#9C9488] focus:outline-none w-36 lg:w-44 font-medium"
+              />
+              <span className="text-[10px] font-mono font-bold text-[#A8A196] bg-white border border-[#EDE8E1] rounded px-1.5 py-0.5">
+                ⌘K
+              </span>
+            </div>
+
+            {/* Dark Mode Toggle Button */}
+            <button
+              type="button"
+              title="Toggle Dark / Light Theme"
+              aria-label="Toggle Theme"
+              className="flex items-center justify-center h-9 w-9 rounded-full border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] transition-colors cursor-pointer shadow-2xs active:scale-95"
+            >
+              <span className="text-sm">🌙</span>
             </button>
 
-            {/* Backend Status Indicator */}
-            <div
-              className="flex items-center justify-center h-8 w-8 rounded-full border border-[#EBE5DC] bg-[#FAF7F2] shadow-2xs"
-              title={`FastAPI Backend: ${backendStatus}`}
-              aria-label={`System Status: ${backendStatus}`}
-            >
-              <span
-                className={`h-2.5 w-2.5 rounded-full ${
-                  backendStatus === 'connected'
-                    ? 'bg-[#2E7D32] animate-pulse'
-                    : backendStatus === 'checking'
-                    ? 'bg-[#C49A43]'
-                    : 'bg-[#A6533C]'
-                }`}
-              />
+            {/* User Profile Pill ("Hi, Raj ▾") */}
+            <div className="flex items-center gap-2 bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] rounded-full pl-1.5 pr-3 py-1 cursor-pointer transition-colors shadow-2xs">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#D4A338] to-[#B38728] text-white font-bold text-xs shadow-xs">
+                R
+              </div>
+              <span className="text-xs sm:text-[13px] font-bold text-[#1A2E3B]">Hi, Raj</span>
+              <ChevronDownIcon className="w-3.5 h-3.5 text-[#7A7269]" />
             </div>
+
+            {/* Quick Action Perks Trigger (Mobile/Tablet) */}
+            <button
+              type="button"
+              onClick={() => setShowCashbackModal(true)}
+              className="flex md:hidden items-center justify-center h-9 w-9 rounded-full border border-[#EDE8E1] bg-[#FAF0D9] text-[#9A721C] transition-colors cursor-pointer shadow-2xs"
+              title="Perks"
+            >
+              <SparklesIcon className="w-4 h-4 text-[#9A721C]" />
+            </button>
           </div>
         </div>
 

@@ -123,37 +123,36 @@ export default function DelhiMap({
     }
   }, [onSelectOrigin, onSelectDestination])
 
-  // Change Basemap Tiles dynamically based on mapStyle
+  // Change Basemap Tiles dynamically based on mapStyle (Default Carto Voyager matching mockup)
   const updateTileLayer = useCallback((style: MapStyle, map: L.Map) => {
     if (tileLayerRef.current) {
       map.removeLayer(tileLayerRef.current)
     }
 
-    let url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    let attribution = '&copy; OpenStreetMap contributors'
-    let maxZoom = 18
+    let url = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+    let attribution = '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+    let maxZoom = 19
+    let subdomains = 'abcd'
 
-    if (style === 'dark') {
-      // High-contrast clean dark tile via standard OpenStreetMap with midnight filter
-      url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-      attribution = '&copy; OpenStreetMap contributors'
-      maxZoom = 19
-    } else if (style === 'satellite') {
+    if (style === 'satellite') {
       // High-resolution aerial satellite imagery (Esri World Imagery)
       url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
       attribution = '&copy; Esri, Maxar, Earthstar Geographics'
       maxZoom = 18
-    } else {
-      // Classic Sandstone / Warm OSM
-      url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-      attribution = '&copy; OpenStreetMap contributors'
-      maxZoom = 18
+      subdomains = 'abc'
+    } else if (style === 'dark') {
+      // Clean Carto Dark Matter
+      url = 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png'
+      attribution = '&copy; CARTO &copy; OpenStreetMap'
+      maxZoom = 19
+      subdomains = 'abcd'
     }
 
     const newLayer = L.tileLayer(url, {
       attribution,
       maxZoom,
       minZoom: 9,
+      subdomains,
     }).addTo(map)
 
     tileLayerRef.current = newLayer
@@ -448,7 +447,7 @@ export default function DelhiMap({
         !activeJourney || activeJourney.label.toLowerCase() === 'fastest'
 
       if (isFastestActive) {
-        // Leg 1: Metro Dwarka to Rajiv Chowk (Gold Neon)
+        // Leg 1: Blue Line Metro from Dwarka to Rajiv Chowk (Vibrant Blue with White Casing)
         const metroCoords: [number, number][] = [
           DWARKA_COORD,
           JANAKPURI_COORD,
@@ -457,28 +456,31 @@ export default function DelhiMap({
         ]
 
         if (showMetro) {
+          // White outer casing
           L.polyline(metroCoords, {
-            color: '#C49A43',
-            weight: 14,
-            opacity: 0.3,
+            color: '#FFFFFF',
+            weight: 9,
+            opacity: 0.95,
           }).addTo(lg)
 
+          // Inner vibrant Blue line
           L.polyline(metroCoords, {
-            color: '#C49A43',
-            weight: 6,
+            color: '#0070BA',
+            weight: 5.5,
             opacity: 1.0,
           }).addTo(lg)
 
+          // Subtle animated dashed inner pulse
           L.polyline(metroCoords, {
-            color: '#FFFFFF',
-            weight: 2.5,
-            opacity: 0.9,
-            dashArray: '10, 10',
+            color: '#BAE6FD',
+            weight: 2,
+            opacity: 0.8,
+            dashArray: '8, 12',
             className: 'delhi-path-flow',
           }).addTo(lg)
         }
 
-        // Leg 2: City Bus Rajiv Chowk to Noida City Centre (Navy Neon)
+        // Leg 2: Bus 764 from Rajiv Chowk to Noida City Centre (Royal Navy with White Casing)
         const busCoords: [number, number][] = [
           RAJIV_COORD,
           MANDI_COORD,
@@ -487,23 +489,26 @@ export default function DelhiMap({
         ]
 
         if (showBus) {
+          // White outer casing
           L.polyline(busCoords, {
-            color: '#1A2E3B',
-            weight: 14,
-            opacity: 0.28,
+            color: '#FFFFFF',
+            weight: 9,
+            opacity: 0.95,
           }).addTo(lg)
 
+          // Inner Royal Blue line
           L.polyline(busCoords, {
-            color: '#1A2E3B',
-            weight: 6,
+            color: '#1D4ED8',
+            weight: 5.5,
             opacity: 1.0,
           }).addTo(lg)
 
+          // Subtle animated dashed inner pulse
           L.polyline(busCoords, {
-            color: '#C49A43',
-            weight: 2.5,
-            opacity: 0.9,
-            dashArray: '10, 10',
+            color: '#BFDBFE',
+            weight: 2,
+            opacity: 0.8,
+            dashArray: '8, 12',
             className: 'delhi-path-flow',
           }).addTo(lg)
         }
@@ -520,51 +525,50 @@ export default function DelhiMap({
 
         if (showBus) {
           L.polyline(busWholeCoords, {
-            color: '#1A2E3B',
-            weight: 14,
-            opacity: 0.28,
+            color: '#FFFFFF',
+            weight: 9,
+            opacity: 0.95,
           }).addTo(lg)
 
           L.polyline(busWholeCoords, {
-            color: '#1A2E3B',
-            weight: 6,
+            color: '#1D4ED8',
+            weight: 5.5,
             opacity: 1.0,
           }).addTo(lg)
 
           L.polyline(busWholeCoords, {
-            color: '#C49A43',
-            weight: 2.5,
-            opacity: 0.9,
-            dashArray: '10, 10',
+            color: '#BFDBFE',
+            weight: 2,
+            opacity: 0.8,
+            dashArray: '8, 12',
             className: 'delhi-path-flow',
           }).addTo(lg)
         }
       }
 
-      // Origin Hero Pin Marker (Dwarka Sec 21)
+      // Origin Hero Pin Marker (Dwarka Sec 21) - Warm Gold Pill
       const originIcon = L.divIcon({
         className: 'delhi-pin-origin',
         html: `
           <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
-            <div style="background-color: #C49A43; color: #FFFFFF; padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(196,154,67,0.5); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 5px;">
-              <span style="font-size: 12px;">📍</span>
+            <div style="background-color: #B45309; color: #FFFFFF; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(180,83,9,0.45); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 10px; background: rgba(255,255,255,0.25); border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">●</span>
               <span>DWARKA SEC 21</span>
             </div>
-            <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 7px solid #C49A43; margin: 0 auto;"></div>
           </div>
         `,
         iconSize: [0, 0],
       })
       L.marker(DWARKA_COORD, { icon: originIcon }).addTo(lg)
 
-      // Transfer Hero Marker (Rajiv Chowk)
+      // Transfer Hero Marker (Rajiv Chowk) - Target Blue Pill
       const transferIcon = L.divIcon({
         className: 'delhi-pin-transfer',
         html: `
           <div style="position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; pointer-events: auto;">
-            <div style="width: 22px; height: 22px; border-radius: 50%; border: 3px solid #1A2E3B; background: #C49A43; box-shadow: 0 2px 10px rgba(0,0,0,0.3);" class="delhi-station-halo"></div>
-            <div style="background: rgba(255,255,255,0.96); backdrop-filter: blur(6px); padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 800; color: #1A2E3B; border: 1.5px solid #C49A43; white-space: nowrap; box-shadow: 0 3px 10px rgba(0,0,0,0.15);">
-              🔄 RAJIV CHOWK • 5m TRANSFER
+            <div style="background: #0284C7; color: #FFFFFF; padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 2px solid #FFFFFF; white-space: nowrap; box-shadow: 0 4px 14px rgba(2,132,199,0.45); display: flex; align-items: center; gap: 5px;">
+              <span>🔄</span>
+              <span>RAJIV CHOWK • 5m transfer</span>
             </div>
           </div>
         `,
@@ -572,21 +576,35 @@ export default function DelhiMap({
       })
       L.marker(RAJIV_COORD, { icon: transferIcon }).addTo(lg)
 
-      // Destination Hero Pin Marker (Noida City Centre)
+      // Destination Hero Pin Marker (Noida City Centre) - Target Dark Navy Pill
       const destIcon = L.divIcon({
         className: 'delhi-pin-dest',
         html: `
           <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
-            <div style="background-color: #1A2E3B; color: #FFFFFF; padding: 4px 10px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(26,46,59,0.5); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 5px;">
-              <span style="font-size: 12px;">🎯</span>
+            <div style="background-color: #1A2E3B; color: #FFFFFF; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(26,46,59,0.5); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
+              <span style="color: #E11D48; font-size: 12px;">●</span>
               <span>NOIDA CITY CENTRE</span>
             </div>
-            <div style="width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 7px solid #1A2E3B; margin: 0 auto;"></div>
           </div>
         `,
         iconSize: [0, 0],
       })
       L.marker(NOIDA_COORD, { icon: destIcon }).addTo(lg)
+
+      // Poochh-O Auto Badge near AIIMS / South Delhi
+      const autoIcon = L.divIcon({
+        className: 'delhi-pin-auto',
+        html: `
+          <div style="position: absolute; transform: translate(-50%, -50%); pointer-events: auto;">
+            <div style="background: #166534; color: #FFFFFF; padding: 3px 9px; border-radius: 20px; font-size: 10px; font-weight: 800; border: 1.5px solid #FFFFFF; white-space: nowrap; box-shadow: 0 3px 10px rgba(22,101,52,0.4); display: flex; align-items: center; gap: 4px;">
+              <span>🛺</span>
+              <span>POOCHH-O AUTO</span>
+            </div>
+          </div>
+        `,
+        iconSize: [0, 0],
+      })
+      L.marker([28.538, 77.215], { icon: autoIcon }).addTo(lg)
 
       // 4. DYNAMIC MOVING LIVE GPS TELEMETRY VEHICLES
       if (showLiveVehicles) {
@@ -770,13 +788,14 @@ export default function DelhiMap({
         Geographic map representing Delhi transit multimodal network
       </figcaption>
 
-      {/* Floating Top HUD Bar (Search + Basemap Switcher + Layer Toggles) */}
-      <div className="absolute top-3 left-3 right-3 z-[500] flex flex-col gap-2 pointer-events-none">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+      {/* Floating Top HUD Bar (Search + Mode Filter Chips + Quick Station Pills matching Target) */}
+      <div className="absolute top-3.5 left-3.5 right-3.5 z-[500] flex flex-col gap-2 pointer-events-none">
+        {/* Row 1: Search Bar & Mode Filter Chips */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
           {/* Search Bar */}
           <div className="relative flex-1 max-w-sm pointer-events-auto">
-            <div className="flex items-center rounded-xl border border-[#EBE5DC] bg-white/95 px-3 py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
-              <span className="text-xs text-[#7A7269] mr-2">🔍</span>
+            <div className="flex items-center rounded-2xl border border-[#EDE8E1] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+              <span className="text-sm text-[#7A7269] mr-2">🔍</span>
               <input
                 type="text"
                 value={searchQuery}
@@ -787,7 +806,7 @@ export default function DelhiMap({
                 onFocus={() => setShowSearchResults(true)}
                 placeholder="Search station or landmark..."
                 aria-label="Search Delhi transit stops"
-                className="w-full bg-transparent text-xs sm:text-sm font-semibold text-[#1A202C] placeholder-[#7A7269] focus:outline-none"
+                className="w-full bg-transparent text-xs sm:text-[13px] font-semibold text-[#1A202C] placeholder-[#7A7269] focus:outline-none"
               />
               {searchQuery && (
                 <button
@@ -805,12 +824,12 @@ export default function DelhiMap({
 
             {/* Autocomplete Dropdown */}
             {showSearchResults && filteredSearchStops.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-xl border border-[#EBE5DC] bg-white shadow-xl z-[501] divide-y divide-[#EBE5DC]/50 scrollbar-thin">
+              <div className="absolute top-full left-0 right-0 mt-1 max-h-56 overflow-y-auto rounded-2xl border border-[#EDE8E1] bg-white shadow-xl z-[501] divide-y divide-[#EDE8E1]/60 scrollbar-thin">
                 {filteredSearchStops.map(s => (
                   <div
                     key={s.stop_id}
                     onClick={() => handleSelectSearchStop(s)}
-                    className="flex items-center justify-between p-2.5 text-xs sm:text-sm hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-2.5 text-xs sm:text-[13px] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
                       <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
@@ -825,214 +844,207 @@ export default function DelhiMap({
             )}
           </div>
 
-          {/* Quick Map Controls HUD: Basemap Switcher + Layer Toggles */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-[#EBE5DC] bg-white/95 p-1 shadow-md backdrop-blur-md pointer-events-auto flex-wrap">
-            {/* Basemap Style Switcher */}
-            <div className="flex rounded-lg bg-[#FAF7F2] p-0.5 border border-[#EBE5DC]">
-              <button
-                type="button"
-                onClick={() => setMapStyle('sandstone')}
-                title="Classic Carto Sandstone"
-                className={`px-2 py-0.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                  mapStyle === 'sandstone'
-                    ? 'bg-white text-[#1A2E3B] shadow-2xs'
-                    : 'text-[#7A7269] hover:text-[#1A2E3B]'
-                }`}
-              >
-                🗺️ Classic
-              </button>
-              <button
-                type="button"
-                onClick={() => setMapStyle('dark')}
-                title="Midnight Metro Mode"
-                className={`px-2 py-0.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                  mapStyle === 'dark'
-                    ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                    : 'text-[#7A7269] hover:text-[#1A2E3B]'
-                }`}
-              >
-                🌙 Dark
-              </button>
-              <button
-                type="button"
-                onClick={() => setMapStyle('satellite')}
-                title="Aerial Satellite Imagery"
-                className={`px-2 py-0.5 rounded-md text-[11px] font-bold transition-all cursor-pointer ${
-                  mapStyle === 'satellite'
-                    ? 'bg-[#2E7D32] text-white shadow-2xs'
-                    : 'text-[#7A7269] hover:text-[#1A2E3B]'
-                }`}
-              >
-                🛰️ Aerial
-              </button>
-            </div>
-
-            {/* Layer Toggles */}
+          {/* Mode Filter Chips matching Target (Metro pink, Bus blue, Both green, EV purple) */}
+          <div className="flex items-center gap-1.5 pointer-events-auto flex-wrap">
             <button
               type="button"
-              onClick={() => setShowMetro(prev => !prev)}
-              title="Toggle Metro Lines"
-              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                showMetro
-                  ? 'bg-[#FAF0D9] text-[#9A721C] border border-[#F3E2BD]'
-                  : 'text-[#7A7269] hover:bg-[#FAF7F2]'
+              onClick={() => {
+                setShowMetro(true)
+                setShowBus(false)
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-xs ${
+                showMetro && !showBus
+                  ? 'bg-[#E11D48] text-white border-[#E11D48]'
+                  : 'bg-[#FCE7F3] text-[#BE185D] border-[#FBCFE8] hover:bg-[#FBCFE8]'
               }`}
             >
-              Metro
+              <span>🚆</span>
+              <span>Metro</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setShowBus(prev => !prev)}
-              title="Toggle Bus Lines"
-              className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                showBus
-                  ? 'bg-[#E8EDF1] text-[#1A2E3B] border border-[#D3DEE6]'
-                  : 'text-[#7A7269] hover:bg-[#FAF7F2]'
+              onClick={() => {
+                setShowBus(true)
+                setShowMetro(false)
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-xs ${
+                showBus && !showMetro
+                  ? 'bg-[#0284C7] text-white border-[#0284C7]'
+                  : 'bg-[#E0F2FE] text-[#0369A1] border-[#BAE6FD] hover:bg-[#BAE6FD]'
               }`}
             >
-              Bus
+              <span>🚌</span>
+              <span>Bus</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowMetro(true)
+                setShowBus(true)
+              }}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all cursor-pointer shadow-xs ${
+                showMetro && showBus
+                  ? 'bg-[#1E4D2B] text-white border-[#1E4D2B] shadow-sm'
+                  : 'bg-[#DCFCE7] text-[#15803D] border-[#BBF7D0]'
+              }`}
+            >
+              <span>✓</span>
+              <span>Both</span>
             </button>
 
             <button
               type="button"
               onClick={() => setShowLiveVehicles(prev => !prev)}
-              title="Toggle Live GPS Transit Vehicles"
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                showLiveVehicles
-                  ? 'bg-[#EAF5EC] text-[#2E7D32] border border-[#D1E7D5]'
-                  : 'text-[#7A7269] hover:bg-[#FAF7F2]'
-              }`}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border bg-[#F3E8FF] text-[#7E22CE] border-[#E9D5FF] hover:bg-[#E9D5FF] transition-all cursor-pointer shadow-xs"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#2E7D32] animate-pulse" />
-              <span>GPS</span>
+              <span>⚡</span>
+              <span>EV/Shared</span>
             </button>
 
-            {/* Fit & Center Controls */}
             <button
               type="button"
               onClick={handleFitRoute}
-              title="Fit Active Route to Viewport"
-              className="px-2 py-1 rounded-lg text-[11px] font-bold text-[#1A2E3B] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2] transition-colors cursor-pointer shadow-xs"
             >
-              Fit
-            </button>
-            <button
-              type="button"
-              onClick={handleCenterDelhi}
-              title="Re-Center Delhi NCR"
-              className="px-2 py-1 rounded-lg text-[11px] font-bold text-[#1A2E3B] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
-            >
-              Delhi
+              <span>More</span>
+              <span>▾</span>
             </button>
           </div>
         </div>
 
-        {/* Landmark Speed-Dial HUD: 1-Click Pan & Zoom to iconic transit hubs */}
-        <div className="hidden lg:flex items-center gap-1.5 pointer-events-auto">
-          <div className="flex items-center gap-1 rounded-xl border border-[#EBE5DC] bg-white/95 px-2.5 py-1 shadow-xs backdrop-blur-md text-[11px] font-bold text-[#1A2E3B]">
-            <span className="text-[#C49A43] mr-1">⚡ Hubs:</span>
+        {/* Row 2: Secondary Station Quick Pills Strip matching Target */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 pointer-events-auto">
+          {[
+            { name: 'Rajiv Chowk', coord: RAJIV_COORD, color: '#EA580C', icon: '•' },
+            { name: 'New Delhi', coord: NDLS_COORD, color: '#EA580C', icon: '•' },
+            { name: 'IGI Airport', coord: AIRPORT_T3_COORD, color: '#0284C7', icon: '✈️' },
+            { name: 'Kashmere Gate', coord: KASHMERE_COORD, color: '#166534', icon: '•' },
+            { name: 'AIIMS', coord: AIIMS_COORD, color: '#0284C7', icon: '🏥' },
+            { name: 'Noida City Centre', coord: NOIDA_COORD, color: '#0284C7', icon: '•' },
+          ].map(hub => (
             <button
+              key={hub.name}
               type="button"
-              onClick={() => handleFlyToCoord(RAJIV_COORD, 14)}
-              className="px-2 py-0.5 rounded-md hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer"
+              onClick={() => handleFlyToCoord(hub.coord, 14)}
+              className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-xs font-bold text-[#1A2E3B] shadow-2xs transition-all cursor-pointer shrink-0 active:scale-95"
             >
-              🏛️ Rajiv Chowk
+              <span style={{ color: hub.color }}>{hub.icon}</span>
+              <span>{hub.name}</span>
             </button>
-            <button
-              type="button"
-              onClick={() => handleFlyToCoord(AIRPORT_T3_COORD, 14)}
-              className="px-2 py-0.5 rounded-md hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer"
-            >
-              ✈️ IGI Airport
-            </button>
-            <button
-              type="button"
-              onClick={() => handleFlyToCoord(KASHMERE_COORD, 14)}
-              className="px-2 py-0.5 rounded-md hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer"
-            >
-              🏰 Kashmere Gate
-            </button>
-            <button
-              type="button"
-              onClick={() => handleFlyToCoord(AIIMS_COORD, 14)}
-              className="px-2 py-0.5 rounded-md hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer"
-            >
-              🏥 AIIMS
-            </button>
-            <button
-              type="button"
-              onClick={() => handleFlyToCoord(NOIDA_COORD, 14)}
-              className="px-2 py-0.5 rounded-md hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer"
-            >
-              🏢 Noida Hub
-            </button>
-          </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleCenterDelhi}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-xs font-bold text-[#7A7269] shadow-2xs transition-all cursor-pointer shrink-0"
+          >
+            + More
+          </button>
         </div>
       </div>
 
       {/* Floating Station Status Card: Kashmere Gate Operating normally */}
       <div
         onClick={() => handleFlyToCoord(KASHMERE_COORD)}
-        className="absolute top-26 right-3.5 z-[500] hidden md:flex items-center gap-2.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3 py-2 shadow-md backdrop-blur-md pointer-events-auto cursor-pointer hover:border-[#C49A43] transition-all"
+        className="absolute top-28 right-3.5 z-[500] hidden md:flex items-center gap-2.5 rounded-2xl border border-[#EDE8E1] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto cursor-pointer hover:border-[#C49A43] transition-all"
         title="Click to view Kashmere Gate on map"
       >
-        <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
+        <span className="h-2 w-2 rounded-full bg-[#166534] animate-pulse" />
         <div className="text-left">
           <div className="text-[11px] font-extrabold uppercase tracking-wider text-[#1A2E3B]">
             KASHMERE GATE
           </div>
-          <div className="text-[11px] text-[#22702E] font-semibold leading-tight">
+          <div className="text-[11px] text-[#166534] font-semibold leading-tight">
             Operating normally • Next in 2 min
           </div>
         </div>
       </div>
 
-      {/* Floating Bus Fleet Card: CITY BUS 764 */}
-      <div
-        onClick={() => handleFlyToCoord(MANDI_COORD)}
-        className="absolute bottom-3.5 right-3.5 z-[500] hidden sm:flex items-center gap-2.5 rounded-xl border border-[#EBE5DC] bg-white/95 p-2.5 shadow-md backdrop-blur-md pointer-events-auto max-w-[240px] animate-fade-in cursor-pointer hover:border-[#C49A43] transition-all"
-        title="Click to inspect City Bus 764 on map"
-      >
-        <div className="flex h-9 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1A2E3B] text-white shadow-2xs">
-          <span>🚌</span>
+      {/* Floating Bottom-Left Official Single-Row Legend (Matching Target Exactly) */}
+      <div className="absolute bottom-4 left-4 z-[500] flex items-center gap-3.5 rounded-full border border-[#EDE8E1] bg-white/95 px-4 py-2 shadow-md backdrop-blur-md pointer-events-auto text-xs font-bold text-[#1A2E3B]">
+        <div className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#8B5CF6] inline-block" />
+          <span>Metro Line</span>
         </div>
-        <div className="text-left">
-          <div className="text-[11px] font-extrabold uppercase tracking-wider text-[#1A2E3B]">
-            CITY BUS 764
-          </div>
-          <div className="text-[10px] text-[#7A7269] font-medium leading-tight">
-            Every 10 min from Rajiv Chowk
-          </div>
+        <div className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#0284C7] inline-block" />
+          <span>Bus Route</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#1E293B] inline-block" />
+          <span>Airport</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#E11D48] inline-block" />
+          <span>Key Station</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#C49A43] inline-block" />
+          <span>Your Route</span>
         </div>
       </div>
 
-      {/* Floating Bottom-Left Official Metro & Bus Legend */}
-      <div className="absolute bottom-3.5 left-3.5 z-[500] flex items-center gap-2.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-md pointer-events-auto text-xs font-bold text-[#1A2E3B] flex-wrap max-w-sm">
-        <div className="flex items-center gap-1">
-          <span className="h-2 w-3 rounded-full bg-[#0072CE] inline-block" />
-          <span>Blue</span>
+      {/* Floating Bottom-Right Map Controls matching Target */}
+      <div className="absolute bottom-4 right-4 z-[500] flex items-center gap-2 pointer-events-auto">
+        {/* Map / Satellite Toggle Pill */}
+        <div className="flex rounded-full bg-white border border-[#EDE8E1] p-1 shadow-md">
+          <button
+            type="button"
+            onClick={() => setMapStyle('sandstone')}
+            className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              mapStyle === 'sandstone'
+                ? 'bg-[#1A2E3B] text-white shadow-2xs'
+                : 'text-[#6E665D] hover:text-[#1A2E3B]'
+            }`}
+          >
+            Map
+          </button>
+          <button
+            type="button"
+            onClick={() => setMapStyle('satellite')}
+            className={`px-3 py-1 rounded-full text-xs font-bold transition-all cursor-pointer ${
+              mapStyle === 'satellite'
+                ? 'bg-[#1A2E3B] text-white shadow-2xs'
+                : 'text-[#6E665D] hover:text-[#1A2E3B]'
+            }`}
+          >
+            Satellite
+          </button>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="h-2 w-3 rounded-full bg-[#E5A800] inline-block" />
-          <span>Yellow</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="h-2 w-3 rounded-full bg-[#FF6F00] inline-block" />
-          <span>Airport</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="h-2 w-3 rounded-full bg-[#C2185B] inline-block" />
-          <span>Magenta</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="h-2 w-3 rounded-full bg-[#1A2E3B] inline-block" />
-          <span>Bus 764</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="h-2.5 w-2.5 rounded-full border-2 border-[#1A2E3B] bg-[#C49A43] inline-block" />
-          <span>Transfer</span>
-        </div>
+
+        {/* Locate / Recenter button */}
+        <button
+          type="button"
+          onClick={handleFitRoute}
+          title="Locate Route"
+          aria-label="Locate active route"
+          className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
+        >
+          <span>🎯</span>
+        </button>
+
+        {/* Zoom Out (-) Button */}
+        <button
+          type="button"
+          onClick={() => mapRef.current?.zoomOut()}
+          title="Zoom Out"
+          aria-label="Zoom Out"
+          className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] font-bold text-base hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
+        >
+          <span>—</span>
+        </button>
+
+        {/* Layers Thumbnail Button */}
+        <button
+          type="button"
+          onClick={() => setMapStyle(prev => (prev === 'satellite' ? 'sandstone' : 'satellite'))}
+          title="Toggle Satellite Imagery"
+          aria-label="Toggle Satellite Imagery"
+          className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white overflow-hidden shadow-md transition-all cursor-pointer hover:border-[#C49A43] active:scale-95"
+        >
+          <span className="text-base">🗺️</span>
+        </button>
       </div>
 
       {/* Centered Serif Watermark: DELHI */}

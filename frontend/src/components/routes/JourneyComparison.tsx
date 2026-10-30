@@ -70,19 +70,74 @@ export default function JourneyComparison({
 
   return (
     <section aria-labelledby="comparison-heading" className="space-y-4">
-      {/* Header Matching Figma */}
-      <header className="space-y-1 sm:space-y-1.5">
-        <div className="text-xs sm:text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#C49A43] select-none">
+      {/* Top Banner Matching Target Screenshot */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        {/* Data updated pill */}
+        <div className="flex items-center gap-2 rounded-full bg-[#EAF5EC] border border-[#C5E5CC] px-3.5 py-1.5 text-xs font-bold text-[#166534] shadow-2xs">
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#166534] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#166534]" />
+          </span>
+          <span>Data updated 2 min ago</span>
+        </div>
+
+        {/* Action pills: Share trip & Perks */}
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => {
+              if (navigator.clipboard) navigator.clipboard.writeText(window.location.href)
+            }}
+            className="flex items-center gap-1.5 rounded-full bg-[#1A2E3B] hover:bg-[#243B4A] text-white px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+          >
+            <span>🔗</span>
+            <span>Share trip</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onOpenCashbackModal}
+            className="flex items-center gap-1.5 rounded-full bg-[#FAF0D9] hover:bg-[#F5E6C7] text-[#9A721C] border border-[#E8D4AE] px-3 py-1.5 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
+          >
+            <span>✨</span>
+            <span>Perks</span>
+          </button>
+
+          <button
+            type="button"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] text-[#7A7269] text-xs font-bold transition-all cursor-pointer"
+          >
+            ⋮
+          </button>
+        </div>
+      </div>
+
+      {/* Header Matching Target */}
+      <header className="space-y-1">
+        <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#C49A43] select-none">
           YOUR ROUTE OPTIONS
         </div>
-        <h2
-          id="comparison-heading"
-          className="font-serif text-2xl sm:text-2xl lg:text-[26px] font-normal tracking-tight text-[#1A2E3B] leading-tight"
-        >
-          Choose your way
-        </h2>
-        <p className="text-xs sm:text-sm font-normal text-[#7A7269] leading-relaxed">
-          {displayOptions.length} routes found for 08:40 departure
+        <div className="flex items-baseline justify-between gap-3 flex-wrap">
+          <h2
+            id="comparison-heading"
+            className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#1A2E3B] leading-tight"
+          >
+            Choose your way
+          </h2>
+
+          <div className="flex items-center gap-1.5 text-xs font-bold text-[#6E665D]">
+            <span>Sort by</span>
+            <button
+              type="button"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#EDE8E1] text-[#1A2E3B] font-bold shadow-2xs cursor-pointer hover:border-[#C49A43]"
+            >
+              <span>Recommended</span>
+              <span>▾</span>
+            </button>
+          </div>
+        </div>
+        <p className="text-[14px] font-medium text-[#6E665D] leading-relaxed">
+          {displayOptions.length} routes found for 08:40 AM departure
         </p>
       </header>
 

@@ -98,6 +98,7 @@ export default function JourneyPlanner({
 }: Props) {
   const [error, setError] = useState('')
   const [, setDepartMode] = useState<'now' | 'later'>('now')
+  const [tripType, setTripType] = useState<'oneway' | 'round' | 'explore'>('oneway')
   const [showClockCustomizer, setShowClockCustomizer] = useState(false)
   const [isSwapping, setIsSwapping] = useState(false)
 
@@ -206,65 +207,112 @@ export default function JourneyPlanner({
   return (
     <section
       aria-labelledby="journey-planner-heading"
-      className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs text-[#1A202C] space-y-4 animate-fade-in"
+      className="rounded-3xl border border-[#EDE8E1] bg-white p-5 sm:p-6 shadow-[0_8px_30px_rgba(26,46,59,0.05)] text-[#1A202C] space-y-5 animate-fade-in"
     >
-      {/* Title & Subtitle Matching Figma: PLAN FOR A DELHI DAY */}
-      <header className="space-y-1 sm:space-y-1.5">
-        <div className="text-xs sm:text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#C49A43] select-none">
-          PLAN FOR A DELHI DAY
+      {/* Title & Subtitle Matching Target: PLAN FOR A DELHI DAY */}
+      <header className="space-y-1.5">
+        <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-[#C49A43] select-none">
+          <span>📍</span>
+          <span>PLAN FOR A DELHI DAY</span>
         </div>
-        <h2 id="journey-planner-heading" className="font-serif text-2xl sm:text-2xl lg:text-[26px] font-normal tracking-tight text-[#1A2E3B] leading-tight">
-          Where would you like to go?
+        <h2 id="journey-planner-heading" className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#1A2E3B] leading-tight">
+          Where would you <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4A338] via-[#C49A43] to-[#B38728]">like to go?</span>
         </h2>
-        <p className="text-xs sm:text-sm font-normal text-[#7A7269] leading-relaxed">
-          Compare metro, bus and multimodal routes
+        <p className="text-[14px] font-medium text-[#6E665D] leading-relaxed">
+          Compare metro, bus and multimodal routes across Delhi
         </p>
       </header>
 
+      {/* Trip Type Segmented Bar (One Way / Round Trip / Explore) */}
+      <div className="flex items-center bg-[#FAF7F2] p-1 rounded-full border border-[#EDE8E1] w-full" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tripType === 'oneway'}
+          onClick={() => setTripType('oneway')}
+          className={`flex-1 py-1.5 px-3 rounded-full text-[13px] font-bold transition-all cursor-pointer ${
+            tripType === 'oneway'
+              ? 'bg-[#1A2E3B] text-white shadow-xs'
+              : 'text-[#7A7269] hover:text-[#1A2E3B]'
+          }`}
+        >
+          One Way
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tripType === 'round'}
+          onClick={() => setTripType('round')}
+          className={`flex-1 py-1.5 px-3 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
+            tripType === 'round'
+              ? 'bg-[#1A2E3B] text-white shadow-xs font-bold'
+              : 'text-[#7A7269] hover:text-[#1A2E3B]'
+          }`}
+        >
+          Round Trip
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tripType === 'explore'}
+          onClick={() => setTripType('explore')}
+          className={`flex-1 py-1.5 px-3 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
+            tripType === 'explore'
+              ? 'bg-[#1A2E3B] text-white shadow-xs font-bold'
+              : 'text-[#7A7269] hover:text-[#1A2E3B]'
+          }`}
+        >
+          Explore
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        {/* FROM INPUT (Interactive Station Combobox) */}
-        <StationCombobox
-          id="journey-origin"
-          label="FROM"
-          pinColor="#C49A43"
-          value={origin}
-          onChange={newId => {
-            setOrigin(newId)
-            if (error) setError('')
-          }}
-          stops={stops}
-          placeholder="Select origin station or hub..."
-          otherSelectedId={destination}
-        />
+        {/* FROM & TO CONTAINER WITH FLOATING SWAP BUTTON */}
+        <div className="relative space-y-3">
+          {/* FROM INPUT (Interactive Station Combobox) */}
+          <StationCombobox
+            id="journey-origin"
+            label="From"
+            pinColor="#C49A43"
+            value={origin}
+            onChange={newId => {
+              setOrigin(newId)
+              if (error) setError('')
+            }}
+            stops={stops}
+            placeholder="Select origin station..."
+            otherSelectedId={destination}
+          />
 
-        {/* SWAP BUTTON */}
-        <div className="flex items-center justify-center -my-1 relative z-10">
-          <button
-            type="button"
-            onClick={handleSwap}
-            aria-label="Swap origin and destination endpoints"
-            className="group flex h-8 w-8 items-center justify-center rounded-full border border-[#EBE5DC] bg-white hover:bg-[#FAF7F2] hover:border-[#C49A43] shadow-xs hover:shadow-sm active:scale-90 transition-all duration-200 text-[#7A7269] hover:text-[#C49A43] cursor-pointer"
-          >
-            <span className={`inline-block transition-transform duration-300 ${isSwapping ? 'rotate-180' : ''}`}>
-              <ArrowUpDownIcon className="w-3.5 h-3.5" />
-            </span>
-          </button>
+          {/* Floating Swap Button on the right connecting the fields */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
+            <button
+              type="button"
+              onClick={handleSwap}
+              aria-label="Swap origin and destination endpoints"
+              className="group flex h-9 w-9 items-center justify-center rounded-full border border-[#EDE8E1] bg-white hover:bg-[#FAF7F2] hover:border-[#C49A43] shadow-md hover:shadow-lg active:scale-90 transition-all duration-200 text-[#1A2E3B] hover:text-[#C49A43] cursor-pointer"
+            >
+              <span className={`inline-block transition-transform duration-300 ${isSwapping ? 'rotate-180' : ''}`}>
+                <ArrowUpDownIcon className="w-4 h-4" />
+              </span>
+            </button>
+          </div>
+
+          {/* TO INPUT (Interactive Station Combobox) */}
+          <StationCombobox
+            id="journey-destination"
+            label="To"
+            pinColor="#A6533C"
+            value={destination}
+            onChange={newId => {
+              setDestination(newId)
+              if (error) setError('')
+            }}
+            stops={stops}
+            placeholder="Select destination station..."
+            otherSelectedId={origin}
+          />
         </div>
-
-        {/* TO INPUT (Interactive Station Combobox) */}
-        <StationCombobox
-          id="journey-destination"
-          label="TO"
-          pinColor="#A6533C"
-          value={destination}
-          onChange={newId => {
-            setDestination(newId)
-            if (error) setError('')
-          }}
-          stops={stops}
-          placeholder="Select destination station..."
-          otherSelectedId={origin}
-        />
 
         {/* DEPARTURE (With interactive Customize Time & Clock Option) */}
         <div className="space-y-1.5">
@@ -607,47 +655,88 @@ export default function JourneyPlanner({
           )}
         </div>
 
-        {/* TRAVEL PREFERENCE (Fastest vs Cheapest Toggle Matching Figma) */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269]">
-            TRAVEL PREFERENCE
-          </label>
-          <div className="grid grid-cols-2 gap-2">
+        {/* TRAVEL PREFERENCE (2x2 Grid Matching Target: Fastest, Cheapest, Fewer Transfers, Eco Friendly) */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="text-[13px] font-bold text-[#1A2E3B]">
+              Travel Preference
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowClockCustomizer(prev => !prev)}
+              className="text-[12px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] flex items-center gap-1 cursor-pointer"
+            >
+              <span>Customize</span>
+              <span>↗</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5">
+            {/* 1. Fastest (Deep Forest Green when active) */}
             <button
               type="button"
               onClick={() => setPreference('fastest')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+              className={`flex items-center justify-center gap-2 py-3 px-3.5 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'fastest'
-                  ? 'bg-[#C49A43] text-white shadow-[0_2px_8px_rgba(196,154,67,0.3)] ring-1 ring-[#C49A43]'
-                  : 'bg-[#FAF7F2] text-[#6E665D] border border-[#EBE5DC] hover:bg-[#F4EFE6] hover:text-[#1A2E3B] hover:border-[#D8CFBF]'
+                  ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
+                  : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
               }`}
             >
-              <ZapIcon className="w-3.5 h-3.5" />
+              <span>⚡</span>
               <span>Fastest</span>
             </button>
 
+            {/* 2. Cheapest */}
             <button
               type="button"
               onClick={() => setPreference('cheapest')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+              className={`flex items-center justify-center gap-2 py-3 px-3.5 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'cheapest'
-                  ? 'bg-[#C49A43] text-white shadow-[0_2px_8px_rgba(196,154,67,0.3)] ring-1 ring-[#C49A43]'
-                  : 'bg-[#FAF7F2] text-[#6E665D] border border-[#EBE5DC] hover:bg-[#F4EFE6] hover:text-[#1A2E3B] hover:border-[#D8CFBF]'
+                  ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
+                  : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
               }`}
             >
-              <TagIcon className="w-3.5 h-3.5" />
+              <span>🏷️</span>
               <span>Cheapest</span>
+            </button>
+
+            {/* 3. Fewer Transfers */}
+            <button
+              type="button"
+              onClick={() => setPreference('fewer-transfers')}
+              className={`flex items-center justify-center gap-2 py-3 px-3.5 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+                preference === 'fewer-transfers'
+                  ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
+                  : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
+              }`}
+            >
+              <span>🔄</span>
+              <span>Fewer Transfers</span>
+            </button>
+
+            {/* 4. Eco Friendly */}
+            <button
+              type="button"
+              onClick={() => setPreference('eco')}
+              className={`flex items-center justify-center gap-2 py-3 px-3.5 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+                preference === 'eco'
+                  ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
+                  : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
+              }`}
+            >
+              <span>🌱</span>
+              <span>Eco Friendly</span>
             </button>
           </div>
         </div>
 
-        {/* SUBMIT BUTTON Matching Figma: Find my route -> */}
+        {/* SUBMIT BUTTON Matching Target: Find My Route -> */}
         <button
           type="submit"
           id="btn-search-journey"
           disabled={loading}
-          aria-label="Find my route"
-          className="group w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#C49A43] via-[#BA8F39] to-[#AF842F] hover:from-[#B88E3B] hover:via-[#AF842F] hover:to-[#A17528] text-white font-bold py-3.5 sm:py-4 px-4 text-xs sm:text-sm tracking-wide shadow-[0_4px_14px_rgba(196,154,67,0.32)] hover:shadow-[0_6px_20px_rgba(196,154,67,0.42)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
+          aria-label="Find My Route"
+          className="group w-full flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#D4A338] via-[#C49A43] to-[#B38728] hover:from-[#C49A43] hover:to-[#A77B32] text-white font-bold py-4 px-5 text-[15px] tracking-normal shadow-[0_4px_16px_rgba(196,154,67,0.35)] hover:shadow-[0_6px_22px_rgba(196,154,67,0.45)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <>
@@ -656,7 +745,7 @@ export default function JourneyPlanner({
             </>
           ) : (
             <>
-              <span className="font-bold tracking-wide">Find my route</span>
+              <span>Find My Route</span>
               <ArrowRightIcon className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
             </>
           )}
