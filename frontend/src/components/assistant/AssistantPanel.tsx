@@ -119,20 +119,20 @@ export default function AssistantPanel({ onRouteRecommendation: _onRouteRecommen
   return (
     <aside
       aria-labelledby="assistant-panel-heading"
-      className="flex flex-col rounded-2xl border border-slate-200 bg-white shadow-sm text-slate-800 overflow-hidden animate-fade-in"
+      className="flex flex-col rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] shadow-xs text-[#29343A] overflow-hidden animate-fade-in"
     >
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-slate-100 px-4 py-3 bg-slate-50/80">
+      <header className="flex items-center justify-between border-b border-[#D8C8AA] px-4 py-3 bg-[#EEE5D6]/60">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-            <SparklesIcon className="w-4 h-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#243B4A] text-[#FFFCF5] shadow-xs">
+            <SparklesIcon className="w-4 h-4 text-[#C49A43]" />
           </div>
           <div>
-            <h3 id="assistant-panel-heading" className="text-sm font-bold text-slate-900">
-              Transit Copilot
+            <h3 id="assistant-panel-heading" className="font-serif text-sm font-bold text-[#243B4A]">
+              Transit Intelligence Copilot
             </h3>
-            <p className="text-[11px] text-slate-500">
-              Instant AI answers on Delhi routes, fares, and delays
+            <p className="text-[11px] text-[#77766D]">
+              Verified answers on Delhi routes, fares, and delays
             </p>
           </div>
         </div>
@@ -141,7 +141,7 @@ export default function AssistantPanel({ onRouteRecommendation: _onRouteRecommen
           type="button"
           onClick={handleClear}
           aria-label="Clear chat conversation"
-          className="flex items-center gap-1 text-[11px] font-semibold text-slate-500 hover:text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer"
+          className="flex items-center gap-1 text-[11px] font-semibold text-[#77766D] hover:text-[#243B4A] px-2.5 py-1 rounded-lg border border-[#D8C8AA] hover:bg-[#EEE5D6] transition-colors cursor-pointer"
         >
           <RotateCcwIcon className="w-3 h-3" />
           <span>Clear</span>
@@ -153,7 +153,7 @@ export default function AssistantPanel({ onRouteRecommendation: _onRouteRecommen
         role="log"
         aria-live="polite"
         aria-label="Transit conversation history"
-        className="h-64 sm:h-72 overflow-y-auto p-4 space-y-3 bg-slate-50/40"
+        className="h-64 sm:h-72 overflow-y-auto p-4 space-y-3 bg-[#F4EBDD]/40"
       >
         {messages.map(m => (
           <div
@@ -163,21 +163,21 @@ export default function AssistantPanel({ onRouteRecommendation: _onRouteRecommen
             <div
               className={`max-w-[88%] rounded-2xl p-3 text-xs leading-relaxed ${
                 m.role === 'user'
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-white text-slate-800 border border-slate-200 shadow-xs'
+                  ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+                  : 'bg-[#FFFCF5] text-[#29343A] border border-[#D8C8AA] shadow-xs'
               }`}
             >
               <div className="whitespace-pre-line">{m.text}</div>
             </div>
-            <time className="mt-1 px-1 text-[10px] text-slate-400 font-mono">
+            <time className="mt-1 px-1 text-[10px] text-[#77766D] font-mono">
               {m.timestamp}
             </time>
           </div>
         ))}
 
         {loading && (
-          <div className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 p-2.5 text-xs text-slate-500 shadow-xs" role="status">
-            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <div className="flex items-center gap-2 rounded-xl bg-[#FFFCF5] border border-[#D8C8AA] p-2.5 text-xs text-[#77766D] shadow-xs" role="status">
+            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#C49A43] border-t-transparent" />
             <span>Consulting Delhi transit database…</span>
           </div>
         )}
@@ -186,7 +186,7 @@ export default function AssistantPanel({ onRouteRecommendation: _onRouteRecommen
       </div>
 
       {/* Suggested Questions */}
-      <div className="border-t border-slate-100 bg-slate-50 px-3 py-2">
+      <div className="border-t border-[#D8C8AA] bg-[#EEE5D6]/40 px-3 py-2">
         <div className="flex flex-wrap gap-1.5" role="group" aria-label="Suggested transit questions">
           {SUGGESTED_QUESTIONS.map(q => (
             <button
@@ -194,7 +194,7 @@ export default function AssistantPanel({ onRouteRecommendation: _onRouteRecommen
               type="button"
               disabled={loading}
               onClick={() => handleSend(q)}
-              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:border-blue-400 hover:text-blue-600 transition-colors disabled:opacity-50 cursor-pointer shadow-2xs"
+              className="rounded-lg border border-[#D8C8AA] bg-[#FFFCF5] px-2.5 py-1 text-[11px] font-medium text-[#29343A] hover:border-[#C49A43] hover:text-[#C49A43] transition-colors disabled:opacity-50 cursor-pointer shadow-2xs"
             >
               {q}
             </button>
@@ -203,9 +203,9 @@ export default function AssistantPanel({ onRouteRecommendation: _onRouteRecommen
       </div>
 
       {/* Message Input */}
-      <footer className="border-t border-slate-100 bg-white p-3">
+      <footer className="border-t border-[#D8C8AA] bg-[#FFFCF5] p-3">
         {errorMsg && (
-          <div role="alert" className="mb-1.5 text-[11px] text-rose-600 font-semibold">{errorMsg}</div>
+          <div role="alert" className="mb-1.5 text-[11px] text-[#A6533C] font-semibold">{errorMsg}</div>
         )}
         <form
           onSubmit={e => {
@@ -224,13 +224,13 @@ export default function AssistantPanel({ onRouteRecommendation: _onRouteRecommen
             value={input}
             onChange={e => setInput(e.target.value)}
             disabled={loading}
-            className="flex-1 rounded-xl border border-slate-200 bg-slate-50/70 px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:border-blue-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="flex-1 rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/50 px-3.5 py-2 text-xs text-[#29343A] placeholder-[#77766D] focus:border-[#C49A43] focus:bg-[#FFFCF5] focus:outline-none focus:ring-2 focus:ring-[#C49A43]/20"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
             aria-label="Send message to transit assistant"
-            className="flex items-center justify-center rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2 text-xs font-bold text-white transition-all disabled:opacity-40 shadow-xs cursor-pointer"
+            className="flex items-center justify-center rounded-xl bg-[#C49A43] hover:bg-[#A77B32] px-4 py-2 text-xs font-bold text-white transition-all disabled:opacity-40 shadow-xs cursor-pointer"
           >
             <SendIcon className="w-3.5 h-3.5 mr-1.5" />
             <span>Send</span>

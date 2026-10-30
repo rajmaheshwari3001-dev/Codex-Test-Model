@@ -18,9 +18,7 @@ import {
   CheckIcon,
   AlertTriangleIcon,
   ArrowRightIcon,
-  DatabaseIcon,
   TrainIcon,
-  BusIcon,
 } from '../components/common/Icons'
 
 interface NoResultContext {
@@ -30,12 +28,12 @@ interface NoResultContext {
   isOutOfHours: boolean
 }
 
-// 4 Primary Delhi Bus & Metro Corridors for 1-Tap Search
+// 4 Primary Delhi Bus & Metro Corridors for 1-Tap Search (Metro Gold #C49A43, Bus Navy #243B4A)
 const FEATURED_CORRIDORS = [
   {
     routeId: 'R01',
     lineName: 'Blue Line',
-    color: '#2563EB',
+    color: '#C49A43',
     originId: 'S13',
     originName: 'Dwarka Sec-21',
     destId: 'S18',
@@ -46,7 +44,7 @@ const FEATURED_CORRIDORS = [
   {
     routeId: 'R02',
     lineName: 'Green Line',
-    color: '#16A34A',
+    color: '#C49A43',
     originId: 'S02',
     originName: 'Kashmere Gate',
     destId: 'S16',
@@ -57,7 +55,7 @@ const FEATURED_CORRIDORS = [
   {
     routeId: 'R03',
     lineName: 'Red Ring',
-    color: '#DC2626',
+    color: '#243B4A',
     originId: 'S05',
     originName: 'Connaught Place',
     destId: 'S20',
@@ -68,7 +66,7 @@ const FEATURED_CORRIDORS = [
   {
     routeId: 'R04',
     lineName: 'Yellow Express',
-    color: '#D97706',
+    color: '#243B4A',
     originId: 'S04',
     originName: 'New Delhi Stn',
     destId: 'S17',
@@ -272,9 +270,9 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
         <aside
           role="status"
           aria-live="polite"
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-2xl border border-emerald-300 bg-white px-5 py-3 text-xs font-bold text-emerald-800 shadow-xl animate-fade-in"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] px-5 py-3 text-xs font-bold text-[#547A60] shadow-xl animate-fade-in"
         >
-          <CheckIcon className="w-4 h-4 text-emerald-600" />
+          <CheckIcon className="w-4 h-4 text-[#547A60]" />
           <span>{saveToast}</span>
         </aside>
       )}
@@ -282,17 +280,17 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
       {message && (
         <aside
           role="alert"
-          className="flex items-center gap-2.5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs font-semibold text-rose-800 animate-fade-in"
+          className="flex items-center gap-2.5 rounded-2xl border border-[#A6533C]/40 bg-[#FFFCF5] p-4 text-xs font-semibold text-[#A6533C] animate-fade-in shadow-xs"
         >
-          <AlertTriangleIcon className="w-4 h-4 text-rose-600 shrink-0" />
+          <AlertTriangleIcon className="w-4 h-4 text-[#A6533C] shrink-0" />
           <span>{message}</span>
         </aside>
       )}
 
-      {/* HERO BANNER SECTION */}
-      <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 text-white shadow-lg">
-        {/* Background artwork with responsive PC vs Mobile switching */}
-        <picture className="absolute inset-0 z-0 opacity-35">
+      {/* HERO BANNER SECTION (Integrated Delhi Transit Illustration with Subtle Overlay) */}
+      <section className="relative overflow-hidden rounded-3xl border border-[#D8C8AA] bg-[#243B4A] text-[#FFFCF5] shadow-md">
+        {/* Responsive background illustration switching (Mobile vs PC) */}
+        <picture className="absolute inset-0 z-0 opacity-40">
           <source media="(min-width: 768px)" srcSet="/images/delhi_transit_pc.jpg" />
           <img
             src="/images/delhi_transit_mobile.jpg"
@@ -300,49 +298,50 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
             className="w-full h-full object-cover object-center"
           />
         </picture>
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-slate-950/95 via-slate-900/85 to-slate-900/50" />
+        {/* Restrained architectural gradient overlay preserving text readability */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#243B4A]/95 via-[#243B4A]/80 to-[#243B4A]/40" />
 
         <div className="relative z-10 p-6 sm:p-8 space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="space-y-1.5 max-w-2xl">
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 px-3 py-0.5 text-xs font-semibold text-blue-300">
-                  <TrainIcon className="w-3.5 h-3.5 text-blue-400" />
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#C49A43]/20 border border-[#C49A43]/40 px-3 py-0.5 text-xs font-semibold text-[#FFFCF5]">
+                  <TrainIcon className="w-3.5 h-3.5 text-[#C49A43]" />
                   <span>Delhi Multimodal Transit Network</span>
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#547A60]/25 border border-[#547A60]/40 px-2.5 py-0.5 text-[11px] font-bold text-[#EEE5D6]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#547A60] animate-pulse" />
                   <span>Live GTFS</span>
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
+              <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#FFFCF5]">
                 Plan Seamless Journeys Across Delhi
               </h1>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#EEE5D6] leading-relaxed">
                 Unified route optimization linking DMRC Metro lines, DTC bus networks, and DIMTS Poochh-O feeder tariffs with zero fabricated data.
               </p>
             </div>
 
             {/* Quick Metrics Badge Group */}
             <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
-                <div className="text-xl sm:text-2xl font-black text-white">20</div>
-                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">NCR Hubs</div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-black text-[#FFFCF5]">20</div>
+                <div className="text-[10px] text-[#EEE5D6]/80 font-bold uppercase tracking-wider">NCR Hubs</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
-                <div className="text-xl sm:text-2xl font-black text-blue-400">120</div>
-                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Daily Trips</div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-black text-[#C49A43]">120</div>
+                <div className="text-[10px] text-[#EEE5D6]/80 font-bold uppercase tracking-wider">Daily Trips</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
-                <div className="text-xl sm:text-2xl font-black text-emerald-400">100%</div>
-                <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">GTFS Verified</div>
+              <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-black text-[#547A60]">100%</div>
+                <div className="text-[10px] text-[#EEE5D6]/80 font-bold uppercase tracking-wider">GTFS Verified</div>
               </div>
             </div>
           </div>
 
           {/* 1-Tap Corridor Quick Links Strip */}
-          <div className="pt-2 border-t border-white/10 flex items-center gap-2 overflow-x-auto scrollbar-thin">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
+          <div className="pt-2 border-t border-white/15 flex items-center gap-2 overflow-x-auto scrollbar-thin">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#EEE5D6] shrink-0">
               Popular Corridors:
             </span>
             <div className="flex items-center gap-2 flex-wrap">
@@ -355,8 +354,8 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
                     onClick={() => handleCorridorClick(corridor)}
                     className={`inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
                       isMatch
-                        ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-400'
-                        : 'bg-white/10 hover:bg-white/20 text-slate-200 border border-white/10'
+                        ? 'bg-[#C49A43] text-white shadow-xs ring-2 ring-[#C49A43]/50'
+                        : 'bg-white/10 hover:bg-white/20 text-[#EEE5D6] border border-white/10'
                     }`}
                   >
                     <span
@@ -364,7 +363,7 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
                       style={{ backgroundColor: corridor.color }}
                     />
                     <span>{corridor.originName.split(' ')[0]}</span>
-                    <ArrowRightIcon className="w-3 h-3 text-slate-400" />
+                    <ArrowRightIcon className="w-3 h-3 text-[#D8C8AA]" />
                     <span>{corridor.destName.split(' ')[0]}</span>
                   </button>
                 )
@@ -374,12 +373,12 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
         </div>
       </section>
 
-      {/* 2-COLUMN UNIFIED SPLIT LAYOUT (No Empty 3rd Column!) */}
+      {/* 2-COLUMN UNIFIED SPLIT LAYOUT (Ivory Surfaces & Sandstone Architecture) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* LEFT COLUMN: Interactive Console (Tabs for Plan Route, Copilot, Saved) */}
         <div className="lg:col-span-5 xl:col-span-5 space-y-4">
           {/* Console Mode Switcher */}
-          <div className="flex items-center rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xs" role="tablist">
+          <div className="flex items-center rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-1.5 shadow-xs" role="tablist">
             <button
               type="button"
               role="tab"
@@ -387,8 +386,8 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
               onClick={() => setActiveConsoleTab('plan')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeConsoleTab === 'plan'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+                  : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
               }`}
             >
               <CompassIcon className="w-4 h-4" />
@@ -407,8 +406,8 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
               onClick={() => setActiveConsoleTab('assistant')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeConsoleTab === 'assistant'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+                  : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
               }`}
             >
               <SparklesIcon className="w-4 h-4" />
@@ -422,8 +421,8 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
               onClick={() => setActiveConsoleTab('saved')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeConsoleTab === 'saved'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
+                  : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
               }`}
             >
               <BookmarkIcon className="w-4 h-4" />
@@ -458,11 +457,11 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
               {/* ROUTE COMPARISON & RANKED RESULTS */}
               <div className="space-y-3">
                 <header className="flex items-center justify-between px-1">
-                  <h2 className="text-sm font-bold text-slate-900">
+                  <h2 className="font-serif text-sm font-bold text-[#243B4A]">
                     Route Recommendations
                   </h2>
                   {options.length > 0 && (
-                    <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                    <span className="text-[11px] font-semibold text-[#243B4A] bg-[#EEE5D6] px-2.5 py-0.5 rounded-full border border-[#D8C8AA]">
                       {options.length} {options.length === 1 ? 'Option' : 'Options'} Ranked
                     </span>
                   )}

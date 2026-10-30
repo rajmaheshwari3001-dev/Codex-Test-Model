@@ -98,30 +98,30 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           aria-label="Close menu backdrop"
           onClick={onCloseMobile}
           onKeyDown={e => e.key === 'Escape' && onCloseMobile()}
-          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+          className="fixed inset-0 z-50 bg-[#243B4A]/70 backdrop-blur-xs transition-opacity"
         />
       )}
 
       {/* Slide-over Drawer */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between border-r border-slate-800 bg-slate-900 text-slate-100 transition-transform duration-200 ease-in-out shadow-2xl ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between border-r border-[#D8C8AA]/30 bg-[#243B4A] text-[#FFFCF5] transition-transform duration-200 ease-in-out shadow-2xl ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col">
           {/* Brand Header */}
-          <div className="flex items-center justify-between border-b border-slate-800 px-5 py-5">
+          <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white font-mono text-base font-extrabold shadow-md">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#C49A43] text-white font-mono text-base font-extrabold shadow-md">
                 AS
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-base font-bold tracking-tight text-white">
-                    AAROH<span className="text-blue-400">—</span>SAARTHI
+                  <span className="font-serif text-base font-bold tracking-tight text-[#FFFCF5]">
+                    AAROH<span className="text-[#C49A43]">—</span>SAARTHI
                   </span>
                 </div>
-                <p className="text-[11px] font-medium text-slate-400">
+                <p className="text-[11px] font-medium text-[#EEE5D6]/80">
                   Delhi Transit & Fleet Engine
                 </p>
               </div>
@@ -131,7 +131,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
             <button
               type="button"
               onClick={onCloseMobile}
-              className="rounded-xl p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="rounded-xl p-2 text-[#EEE5D6] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               aria-label="Close sidebar"
             >
               <XIcon className="w-5 h-5" />
@@ -142,7 +142,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5 text-xs">
             {navGroups.map(group => (
               <div key={group.title} className="space-y-1">
-                <div className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                <div className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-[#D8C8AA]">
                   {group.title}
                 </div>
                 <div className="space-y-1 pt-1">
@@ -155,12 +155,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
                         onClick={() => onCloseMobile()}
                         className={`group flex items-center justify-between rounded-xl px-3 py-2.5 font-medium transition-all cursor-pointer ${
                           item.active
-                            ? 'bg-blue-600 text-white font-bold shadow-xs'
-                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                            ? 'bg-[#C49A43] text-white font-bold shadow-xs'
+                            : 'text-[#EEE5D6] hover:bg-white/10 hover:text-white'
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <IconComponent className={`w-4 h-4 ${item.active ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+                          <IconComponent className={`w-4 h-4 ${item.active ? 'text-white' : 'text-[#D8C8AA] group-hover:text-white'}`} />
                           <span>{item.name}</span>
                         </div>
                         {item.active && (
@@ -176,14 +176,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
         </div>
 
         {/* Bottom System Environment Footer */}
-        <div className="border-t border-slate-800 p-4 text-[11px] text-slate-400 space-y-2">
+        <div className="border-t border-white/10 p-4 text-[11px] text-[#EEE5D6]/80 space-y-2">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-white">Delhi GTFS</span>
-            <span className="rounded-full bg-slate-800 px-2.5 py-0.5 font-mono text-[10px] text-blue-400 border border-slate-700">
+            <span className="rounded-full bg-white/10 px-2.5 py-0.5 font-mono text-[10px] text-[#C49A43] border border-white/15">
               20 Stations
             </span>
           </div>
-          <p className="leading-relaxed text-slate-400 text-[10px]">
+          <p className="leading-relaxed text-[#EEE5D6]/70 text-[10px]">
             Delhi Transport Stack GTFS, DMRC Metro slabs, DTC bus tariffs & PoochhO feeder integration.
           </p>
         </div>

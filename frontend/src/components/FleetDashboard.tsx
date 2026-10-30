@@ -129,17 +129,17 @@ export default function FleetDashboard() {
   const uniqueRoutes = Array.from(new Set(buses.map(b => b.route_id).filter(Boolean))).sort()
 
   const statusColor: Record<string, string> = {
-    active: 'bg-[#EBF4F0] text-[#236B56] border border-[#236B56]/30',
-    spare: 'bg-[#F4EBD9] text-[#B88A43] border border-[#B88A43]/40',
-    broken_down: 'bg-[#F8ECE9] text-[#A44735] border border-[#A44735]/40',
-    reassigned: 'bg-[#FAF7F2] text-[#25312D] border border-[#E8DFCE]',
+    active: 'bg-[#547A60]/15 text-[#547A60] border border-[#547A60]/30',
+    spare: 'bg-[#EEE5D6] text-[#C49A43] border border-[#D8C8AA]',
+    broken_down: 'bg-[#A6533C]/15 text-[#A6533C] border border-[#A6533C]/30',
+    reassigned: 'bg-[#EEE5D6] text-[#243B4A] border border-[#D8C8AA]',
   }
 
   const corridorHealth = [
-    { id: 'R01', name: 'Blue Line (Dwarka ↔ Anand Vihar)', color: '#2196F3' },
-    { id: 'R02', name: 'Green Line (Kashmere ↔ Hauz Khas)', color: '#16A34A' },
-    { id: 'R03', name: 'Red Ring (CP ↔ Sarai Kale Khan)', color: '#DC2626' },
-    { id: 'R04', name: 'Yellow Express (New Delhi ↔ Saket)', color: '#D97706' },
+    { id: 'R01', name: 'Blue Line (Dwarka ↔ Anand Vihar)', color: '#C49A43' },
+    { id: 'R02', name: 'Green Line (Kashmere ↔ Hauz Khas)', color: '#C49A43' },
+    { id: 'R03', name: 'Red Ring (CP ↔ Sarai Kale Khan)', color: '#243B4A' },
+    { id: 'R04', name: 'Yellow Express (New Delhi ↔ Saket)', color: '#243B4A' },
   ].map(corridor => {
     const routeBuses = buses.filter(b => b.route_id === corridor.id)
     const delayedCount = routeBuses.filter(b => b.delay_minutes > 0).length
@@ -160,8 +160,8 @@ export default function FleetDashboard() {
 
   if (loading) {
     return (
-      <div className="py-16 text-center text-xs font-semibold text-[#53645F] flex items-center justify-center gap-3">
-        <span className="w-5 h-5 border-2 border-[#173B32] border-t-transparent rounded-full animate-spin" />
+      <div className="py-16 text-center text-xs font-semibold text-[#77766D] flex items-center justify-center gap-3">
+        <span className="w-5 h-5 border-2 border-[#263F38] border-t-transparent rounded-full animate-spin" />
         <span>Loading simulated fleet telemetry…</span>
       </div>
     )
@@ -169,13 +169,13 @@ export default function FleetDashboard() {
 
   if (loadError) {
     return (
-      <section role="alert" className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-5 text-[#A44735]">
+      <section role="alert" className="rounded-2xl border border-[#A6533C]/40 bg-[#FFFCF5] p-5 text-[#A6533C]">
         <h2 className="text-sm font-bold">Fleet telemetry unavailable</h2>
         <p className="mt-1 text-xs">{loadError}</p>
         <button
           type="button"
           onClick={() => void loadFleet()}
-          className="mt-3 rounded-lg bg-[#173B32] px-3 py-1.5 text-xs font-bold text-white hover:bg-[#1f4d42]"
+          className="mt-3 rounded-xl bg-[#243B4A] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[#172D3B] cursor-pointer"
         >
           Retry loading fleet
         </button>
@@ -186,25 +186,25 @@ export default function FleetDashboard() {
   return (
     <div className="space-y-6">
       {/* Simulation Transparency Banner */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-4 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-4 shadow-xs">
         <div className="flex items-center gap-3">
-          <InfoIcon className="w-4 h-4 text-[#173B32] shrink-0" />
+          <InfoIcon className="w-4 h-4 text-[#263F38] shrink-0" />
           <div>
-            <div className="text-xs font-bold text-[#25312D]">Simulated Fleet Telemetry</div>
-            <div className="text-[11px] text-[#53645F]">
+            <div className="text-xs font-bold text-[#29343A]">Simulated Fleet Telemetry</div>
+            <div className="text-[11px] text-[#77766D]">
               Vehicles, incidents, and operational responses are generated deterministically by the backend simulator.
             </div>
           </div>
         </div>
-        <span className="rounded-md border border-[#E8DFCE] bg-[#FAF7F2] px-2.5 py-1 text-xs font-semibold text-[#173B32]">
+        <span className="rounded-xl border border-[#D8C8AA] bg-[#EEE5D6] px-2.5 py-1 text-xs font-semibold text-[#243B4A]">
           {simulated === true ? 'Simulated Model' : 'Local Telemetry'}
         </span>
       </div>
 
       {/* Disruption Alert Banner if any failures exist */}
       {(brokenBuses.length > 0 || delayedBuses.length > 0) && (
-        <div className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-4 flex items-center gap-3 text-xs text-[#A44735] shadow-xs">
-          <AlertTriangleIcon className="w-5 h-5 shrink-0" />
+        <div className="rounded-2xl border border-[#A6533C]/40 bg-[#FFFCF5] p-4 flex items-center gap-3 text-xs text-[#A6533C] shadow-xs">
+          <AlertTriangleIcon className="w-5 h-5 shrink-0 text-[#A6533C]" />
           <div>
             <span className="font-bold">Active Fleet Disruption Alerts: </span>
             <span>
@@ -218,31 +218,31 @@ export default function FleetDashboard() {
       {/* Corridor Health Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {corridorHealth.map(c => (
-          <div key={c.id} className="rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-4 shadow-xs space-y-2">
+          <div key={c.id} className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-4 shadow-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold flex items-center gap-2 text-[#25312D]">
+              <span className="text-xs font-bold flex items-center gap-2 text-[#243B4A]">
                 <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: c.color }} />
                 {c.id} Corridor
               </span>
               <span
                 className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
                   c.brokenCount > 0
-                    ? 'bg-[#F8ECE9] text-[#A44735] border border-[#A44735]/40'
+                    ? 'bg-[#A6533C]/15 text-[#A6533C] border border-[#A6533C]/30'
                     : c.delayedCount > 0
-                    ? 'bg-[#F4EBD9] text-[#B88A43] border border-[#B88A43]/40'
-                    : 'bg-[#EBF4F0] text-[#236B56] border border-[#236B56]/30'
+                    ? 'bg-[#EEE5D6] text-[#C49A43] border border-[#D8C8AA]'
+                    : 'bg-[#547A60]/15 text-[#547A60] border border-[#547A60]/30'
                 }`}
               >
                 {c.onTimePercent === null ? 'No data' : `${c.onTimePercent}% on time`}
               </span>
             </div>
-            <div className="text-[11px] text-[#53645F] truncate">{c.name}</div>
-            <div className="flex items-center justify-between text-[11px] text-[#53645F] pt-2 border-t border-[#E8DFCE]">
+            <div className="text-[11px] text-[#77766D] truncate">{c.name}</div>
+            <div className="flex items-center justify-between text-[11px] text-[#77766D] pt-2 border-t border-[#D8C8AA]">
               <span>{c.busesCount} assigned</span>
-              {c.delayedCount > 0 && <span className="text-[#B88A43] font-bold">+{c.delayedCount} delayed</span>}
-              {c.brokenCount > 0 && <span className="text-[#A44735] font-bold">+{c.brokenCount} failed</span>}
+              {c.delayedCount > 0 && <span className="text-[#C49A43] font-bold">+{c.delayedCount} delayed</span>}
+              {c.brokenCount > 0 && <span className="text-[#A6533C] font-bold">+{c.brokenCount} failed</span>}
               {c.busesCount > 0 && c.delayedCount === 0 && c.brokenCount === 0 && (
-                <span className="text-[#236B56] font-bold">Nominal</span>
+                <span className="text-[#547A60] font-bold">Nominal</span>
               )}
             </div>
           </div>
@@ -250,53 +250,53 @@ export default function FleetDashboard() {
       </div>
 
       {/* Fleet Overview & Table */}
-      <div className="rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E8DFCE] gap-2">
+      <div className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#D8C8AA] gap-2">
           <div>
-            <h2 className="text-base font-bold text-[#25312D]">Fleet Telemetry Roster</h2>
-            <p className="text-xs text-[#53645F]">Status and passenger load across simulated bus vehicles</p>
+            <h2 className="font-serif text-base font-bold text-[#243B4A]">Fleet Telemetry Roster</h2>
+            <p className="text-xs text-[#77766D]">Status and passenger load across simulated bus vehicles</p>
           </div>
-          <div className="text-xs text-[#53645F] font-mono">
+          <div className="text-xs text-[#77766D] font-mono">
             {buses.length} vehicles registered
           </div>
         </div>
 
         {/* Metric Summary Counters */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="rounded-lg border border-[#E8DFCE] bg-[#FAF7F2] p-3 text-center">
-            <div className="text-2xl font-black text-[#25312D]">{buses.length}</div>
-            <div className="text-xs font-semibold text-[#53645F]">Total Fleet</div>
+          <div className="rounded-xl border border-[#D8C8AA] bg-[#EEE5D6]/50 p-3 text-center">
+            <div className="text-2xl font-black text-[#243B4A]">{buses.length}</div>
+            <div className="text-xs font-semibold text-[#77766D]">Total Fleet</div>
           </div>
-          <div className="rounded-lg border border-[#236B56]/30 bg-[#EBF4F0] p-3 text-center">
-            <div className="text-2xl font-black text-[#236B56]">{activeBuses.length}</div>
-            <div className="text-xs font-semibold text-[#236B56]">Active Service</div>
+          <div className="rounded-xl border border-[#547A60]/30 bg-[#547A60]/10 p-3 text-center">
+            <div className="text-2xl font-black text-[#547A60]">{activeBuses.length}</div>
+            <div className="text-xs font-semibold text-[#547A60]">Active Service</div>
           </div>
-          <div className="rounded-lg border border-[#B88A43]/40 bg-[#F4EBD9] p-3 text-center">
-            <div className="text-2xl font-black text-[#B88A43]">{spareBuses.length}</div>
-            <div className="text-xs font-semibold text-[#B88A43]">Depot Spares</div>
+          <div className="rounded-xl border border-[#D8C8AA] bg-[#EEE5D6] p-3 text-center">
+            <div className="text-2xl font-black text-[#C49A43]">{spareBuses.length}</div>
+            <div className="text-xs font-semibold text-[#C49A43]">Depot Spares</div>
           </div>
-          <div className="rounded-lg border border-[#A44735]/40 bg-[#F8ECE9] p-3 text-center">
-            <div className="text-2xl font-black text-[#A44735]">{brokenBuses.length}</div>
-            <div className="text-xs font-semibold text-[#A44735]">Disrupted</div>
+          <div className="rounded-xl border border-[#A6533C]/30 bg-[#A6533C]/10 p-3 text-center">
+            <div className="text-2xl font-black text-[#A6533C]">{brokenBuses.length}</div>
+            <div className="text-xs font-semibold text-[#A6533C]">Disrupted</div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 bg-[#FAF7F2] p-3 rounded-lg border border-[#E8DFCE]">
+        <div className="flex flex-col sm:flex-row items-center gap-3 bg-[#EEE5D6]/40 p-3 rounded-xl border border-[#D8C8AA]">
           <div className="flex-1 w-full sm:w-auto">
             <input
               type="text"
               placeholder="Search by Bus ID (e.g. B-T01)…"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none focus:border-[#173B32]"
+              className="w-full text-xs border border-[#D8C8AA] rounded-xl px-3 py-2 bg-[#FFFCF5] text-[#29343A] placeholder-[#77766D] focus:outline-none focus:border-[#C49A43]"
             />
           </div>
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <select
               value={routeFilter}
               onChange={e => setRouteFilter(e.target.value)}
-              className="text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none"
+              className="text-xs border border-[#D8C8AA] rounded-xl px-3 py-2 bg-[#FFFCF5] text-[#29343A] focus:outline-none"
             >
               <option value="ALL">All Routes</option>
               {uniqueRoutes.map(r => (
@@ -308,7 +308,7 @@ export default function FleetDashboard() {
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className="text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none"
+              className="text-xs border border-[#D8C8AA] rounded-xl px-3 py-2 bg-[#FFFCF5] text-[#29343A] focus:outline-none"
             >
               <option value="ALL">All Statuses</option>
               <option value="active">Active Only</option>
@@ -319,9 +319,9 @@ export default function FleetDashboard() {
         </div>
 
         {/* Bus Table */}
-        <div className="overflow-x-auto rounded-lg border border-[#E8DFCE]">
+        <div className="overflow-x-auto rounded-xl border border-[#D8C8AA]">
           <table className="w-full text-xs text-left">
-            <thead className="bg-[#FAF7F2] border-b border-[#E8DFCE] text-[#53645F] font-bold">
+            <thead className="bg-[#EEE5D6] border-b border-[#D8C8AA] text-[#77766D] font-bold">
               <tr>
                 <th className="py-2.5 px-3">Vehicle ID</th>
                 <th className="py-2.5 px-3">Route</th>
@@ -331,19 +331,19 @@ export default function FleetDashboard() {
                 <th className="py-2.5 px-3">Schedule Adherence</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E8DFCE]">
+            <tbody className="divide-y divide-[#D8C8AA]">
               {filteredBuses.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-6 text-center text-[#53645F]">
+                  <td colSpan={6} className="py-6 text-center text-[#77766D]">
                     No vehicles match the selected criteria.
                   </td>
                 </tr>
               ) : (
                 filteredBuses.map(b => (
-                  <tr key={b.bus_id} className="hover:bg-[#FAF7F2]/50">
-                    <td className="py-2.5 px-3 font-mono font-bold text-[#25312D]">{b.bus_id}</td>
-                    <td className="py-2.5 px-3 font-bold text-[#25312D]">{b.route_id || '—'}</td>
-                    <td className="py-2.5 px-3 font-mono text-[#53645F]">{b.trip_id || '—'}</td>
+                  <tr key={b.bus_id} className="hover:bg-[#EEE5D6]/30">
+                    <td className="py-2.5 px-3 font-mono font-bold text-[#243B4A]">{b.bus_id}</td>
+                    <td className="py-2.5 px-3 font-bold text-[#243B4A]">{b.route_id || '—'}</td>
+                    <td className="py-2.5 px-3 font-mono text-[#77766D]">{b.trip_id || '—'}</td>
                     <td className="py-2.5 px-3">
                       <span className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded-md ${statusColor[b.status] || ''}`}>
                         {b.status.replace('_', ' ')}
@@ -351,26 +351,26 @@ export default function FleetDashboard() {
                     </td>
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-16 bg-[#E8DFCE] rounded-full h-1.5 overflow-hidden">
+                        <div className="w-16 bg-[#EEE5D6] rounded-full h-1.5 overflow-hidden">
                           <div
                             className={`h-1.5 rounded-full ${
                               b.occupancy_percent > 80
-                                ? 'bg-[#A44735]'
+                                ? 'bg-[#A6533C]'
                                 : b.occupancy_percent > 50
-                                ? 'bg-[#B88A43]'
-                                : 'bg-[#236B56]'
+                                ? 'bg-[#C49A43]'
+                                : 'bg-[#547A60]'
                             }`}
                             style={{ width: `${Math.min(b.occupancy_percent, 100)}%` }}
                           />
                         </div>
-                        <span className="font-mono text-[11px] text-[#53645F]">{b.occupancy_percent}%</span>
+                        <span className="font-mono text-[11px] text-[#77766D]">{b.occupancy_percent}%</span>
                       </div>
                     </td>
                     <td className="py-2.5 px-3 font-mono">
                       {b.delay_minutes > 0 ? (
-                        <span className="text-[#A44735] font-bold">+{b.delay_minutes} min delay</span>
+                        <span className="text-[#A6533C] font-bold">+{b.delay_minutes} min delay</span>
                       ) : (
-                        <span className="text-[#236B56] font-semibold">On Schedule</span>
+                        <span className="text-[#547A60] font-semibold">On Schedule</span>
                       )}
                     </td>
                   </tr>
@@ -382,21 +382,21 @@ export default function FleetDashboard() {
       </div>
 
       {/* Disruption Simulation Trigger Panel */}
-      <div ref={disruptionRef} className="rounded-xl border border-[#E8DFCE] bg-[#FFFFFF] p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="pb-3 border-b border-[#E8DFCE]">
-          <h2 className="text-base font-bold text-[#25312D]">Simulate Operational Disruption</h2>
-          <p className="text-xs text-[#53645F]">
+      <div ref={disruptionRef} className="rounded-2xl border border-[#D8C8AA] bg-[#FFFCF5] p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="pb-3 border-b border-[#D8C8AA]">
+          <h2 className="font-serif text-base font-bold text-[#243B4A]">Simulate Operational Disruption</h2>
+          <p className="text-xs text-[#77766D]">
             Inject operational incidents to evaluate algorithm recommendations and alternative responses
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[#53645F] mb-1">Incident Type</label>
+            <label className="block text-xs font-semibold text-[#77766D] mb-1">Incident Type</label>
             <select
               value={disruptionType}
               onChange={e => setDisruptionType(e.target.value)}
-              className="w-full text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none focus:border-[#173B32]"
+              className="w-full text-xs border border-[#D8C8AA] rounded-xl px-3 py-2 bg-[#FFFCF5] text-[#29343A] focus:outline-none focus:border-[#C49A43]"
             >
               <option value="breakdown">Mechanical Breakdown (Bus Failure)</option>
               <option value="delay">Corridor Delay (Congestion)</option>
@@ -404,12 +404,12 @@ export default function FleetDashboard() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[#53645F] mb-1">Target Active Vehicle</label>
+            <label className="block text-xs font-semibold text-[#77766D] mb-1">Target Active Vehicle</label>
             <select
               value={selectedBus}
               onChange={e => setSelectedBus(e.target.value)}
               disabled={activeBuses.length === 0}
-              className="w-full text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 bg-[#FFFFFF] focus:outline-none focus:border-[#173B32]"
+              className="w-full text-xs border border-[#D8C8AA] rounded-xl px-3 py-2 bg-[#FFFCF5] text-[#29343A] focus:outline-none focus:border-[#C49A43]"
             >
               {activeBuses.length === 0 && <option value="">No active vehicle available</option>}
               {activeBuses.map(b => (
@@ -422,14 +422,14 @@ export default function FleetDashboard() {
 
           {disruptionType === 'delay' && (
             <div>
-              <label className="block text-xs font-semibold text-[#53645F] mb-1">Delay Duration (minutes)</label>
+              <label className="block text-xs font-semibold text-[#77766D] mb-1">Delay Duration (minutes)</label>
               <input
                 type="number"
                 value={delayMinutes}
                 onChange={e => setDelayMinutes(Math.max(1, Math.min(120, Number(e.target.value))))}
                 min={1}
                 max={120}
-                className="w-full text-xs border border-[#E8DFCE] rounded-lg px-3 py-2 font-mono bg-[#FFFFFF] focus:outline-none focus:border-[#173B32]"
+                className="w-full text-xs border border-[#D8C8AA] rounded-xl px-3 py-2 font-mono bg-[#FFFCF5] text-[#29343A] focus:outline-none focus:border-[#C49A43]"
               />
             </div>
           )}
@@ -439,7 +439,7 @@ export default function FleetDashboard() {
           type="button"
           onClick={handleDisrupt}
           disabled={simulating || !selectedBus}
-          className="rounded-lg bg-[#A44735] px-4 py-2 text-xs font-bold text-white hover:bg-[#883626] disabled:opacity-50 transition-colors shadow-xs"
+          className="rounded-xl bg-[#A6533C] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#8d4430] disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
         >
           {simulating ? 'Evaluating Responses…' : 'Simulate Disruption & Compare Responses'}
         </button>
@@ -458,20 +458,20 @@ export default function FleetDashboard() {
       </div>
 
       {result?.error && (
-        <div role="alert" className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-4 text-xs font-semibold text-[#A44735]">
+        <div role="alert" className="rounded-2xl border border-[#A6533C]/40 bg-[#FFFCF5] p-4 text-xs font-semibold text-[#A6533C]">
           <div className="font-bold">Simulation Notice</div>
           <div>{result.error}</div>
         </div>
       )}
 
       {actionError && (
-        <div role="alert" className="rounded-xl border border-[#A44735]/30 bg-[#F8ECE9] p-4 text-xs font-semibold text-[#A44735]">
+        <div role="alert" className="rounded-2xl border border-[#A6533C]/40 bg-[#FFFCF5] p-4 text-xs font-semibold text-[#A6533C]">
           {actionError}
         </div>
       )}
 
       {actionMsg && (
-        <div role="status" className="rounded-xl border border-[#236B56]/30 bg-[#EBF4F0] p-4 text-xs font-semibold text-[#236B56]">
+        <div role="status" className="rounded-2xl border border-[#547A60]/40 bg-[#FFFCF5] p-4 text-xs font-semibold text-[#547A60]">
           {actionMsg}
         </div>
       )}
