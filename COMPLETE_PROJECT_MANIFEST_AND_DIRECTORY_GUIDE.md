@@ -390,6 +390,7 @@ aaroh-saarthi/
 | `frontend/src/types/index.ts` | 4,000 | Central TypeScript interfaces: `Stop`, `Route`, `JourneyOption`, `JourneyLeg`, `Transfer`, `SavedRoute`, `FleetVehicle`, `DisruptionScenario`, `PoochhOEstimate`. |
 | `frontend/src/utils/time.ts` | 2,615 | Time utilities: 24h to 12h formatting (`08:00` -> `08:00 AM`), minute duration arithmetic, and time string normalizers. |
 | `frontend/src/utils/transitData.ts` | 5,047 | Station helper utilities: metro vs bus station icon mapping, station subtitles (e.g. Major Interchange), and corridor badges. |
+| `frontend/src/utils/figmaRoutes.ts` | 4,280 | Canonical Figma template journey models: defines dual comparison options (Option 1: Fastest / Recommended 46 min ₹60, Option 2: Lowest Cost 68 min ₹30) matching Figma specifications. |
 
 ---
 
