@@ -1,9 +1,19 @@
+import { useState } from 'react'
 import type { JourneyOption, PoochhOEstimate } from '../../types'
 import { formatTime12 } from '../../utils/time'
 import { FIGMA_CANONICAL_JOURNEYS } from '../../utils/figmaRoutes'
 import JourneyCard from './JourneyCard'
 import PoochhOEstimateCard from '../PoochhOEstimateCard'
-import { ClockIcon, CompassIcon } from '../common/Icons'
+import {
+  ClockIcon,
+  CompassIcon,
+  ShareIcon,
+  SparklesIcon,
+  MapIcon,
+  CheckIcon,
+  MoreHorizontalIcon,
+  ChevronDownIcon,
+} from '../common/Icons'
 
 interface NoResultContext {
   origin: string
@@ -27,6 +37,8 @@ interface Props {
   originName?: string
   destinationName?: string
   serviceDay?: string
+  showMap?: boolean
+  onToggleMap?: () => void
 }
 
 const ACTIVE_SERVICE_HOURS = ['08:00', '13:30', '17:30', '20:30', '22:00']
@@ -46,7 +58,11 @@ export default function JourneyComparison({
   originName = 'Dwarka Sector 21',
   destinationName = 'Noida City Centre',
   serviceDay = 'weekday',
+  showMap,
+  onToggleMap,
 }: Props) {
+  const [copied, setCopied] = useState(false)
+
   // Ensure dual route comparison matching Figma template:
   // If options array has only 1 route (e.g. Blue Line direct), merge in or use FIGMA_CANONICAL_JOURNEYS
   const displayOptions =
@@ -68,6 +84,14 @@ export default function JourneyComparison({
     o => o.option_id !== fastestOption?.option_id && o.option_id !== cheapestOption?.option_id
   )
 
+  const handleShare = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(window.location.href)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    }
+  }
+
   return (
     <section aria-labelledby="comparison-heading" className="space-y-4">
       {/* Top Banner Matching Target Screenshot */}
@@ -81,17 +105,40 @@ export default function JourneyComparison({
           <span>Data updated 2 min ago</span>
         </div>
 
-        {/* Action pills: Share trip & Perks */}
-        <div className="flex items-center gap-1.5">
+        {/* Action pills: Share trip & Perks & Optional Map Toggle */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {onToggleMap && (
+            <button
+              type="button"
+              onClick={onToggleMap}
+              className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 border ${
+                showMap
+                  ? 'bg-[#166534] text-white border-[#166534]'
+                  : 'bg-white hover:bg-[#FAF7F2] text-[#1A2E3B] border-[#EDE8E1]'
+              }`}
+            >
+              <MapIcon className="w-3.5 h-3.5" />
+              <span>{showMap ? 'Hide Route Map' : 'Show Route Map'}</span>
+            </button>
+          )}
+
           <button
             type="button"
-            onClick={() => {
-              if (navigator.clipboard) navigator.clipboard.writeText(window.location.href)
-            }}
+            onClick={handleShare}
             className="flex items-center gap-1.5 rounded-full bg-[#1A2E3B] hover:bg-[#243B4A] text-white px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+            title="Copy trip share link to clipboard"
           >
-            <span>🔗</span>
-            <span>Share trip</span>
+            {copied ? (
+              <>
+                <CheckIcon className="w-3.5 h-3.5 text-[#86EFAC]" />
+                <span className="text-[#86EFAC]">Link Copied!</span>
+              </>
+            ) : (
+              <>
+                <ShareIcon className="w-3.5 h-3.5" />
+                <span>Share trip</span>
+              </>
+            )}
           </button>
 
           <button
@@ -99,15 +146,16 @@ export default function JourneyComparison({
             onClick={onOpenCashbackModal}
             className="flex items-center gap-1.5 rounded-full bg-[#FAF0D9] hover:bg-[#F5E6C7] text-[#9A721C] border border-[#E8D4AE] px-3 py-1.5 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
           >
-            <span>✨</span>
+            <SparklesIcon className="w-3.5 h-3.5 text-[#9A721C]" />
             <span>Perks</span>
           </button>
 
           <button
             type="button"
+            aria-label="More route actions"
             className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] text-[#7A7269] text-xs font-bold transition-all cursor-pointer"
           >
-            ⋮
+            <MoreHorizontalIcon className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -129,10 +177,10 @@ export default function JourneyComparison({
             <span>Sort by</span>
             <button
               type="button"
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-[#EDE8E1] text-[#1A2E3B] font-bold shadow-2xs cursor-pointer hover:border-[#C49A43]"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#EDE8E1] text-[#1A2E3B] font-bold shadow-2xs cursor-pointer hover:border-[#C49A43]"
             >
               <span>Recommended</span>
-              <span>▾</span>
+              <ChevronDownIcon className="w-3.5 h-3.5 text-[#6E665D]" />
             </button>
           </div>
         </div>

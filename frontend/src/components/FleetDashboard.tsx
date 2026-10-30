@@ -4,7 +4,20 @@ import type { BusState, DisruptionResult, AuditLogRecord } from '../types'
 import { getFleetState, triggerDisruption, approveResponse, resetFleetState, getFleetAuditLog } from '../services/api'
 import ScenarioComparison from './ScenarioComparison'
 import FleetMap from './fleet/FleetMap'
-import { AlertTriangleIcon, InfoIcon, ShieldCheckIcon } from './common/Icons'
+import {
+  AlertTriangleIcon,
+  InfoIcon,
+  ShieldCheckIcon,
+  RefreshIcon,
+  FileTextIcon,
+  BusIcon,
+  ActivityIcon,
+  ParkingIcon,
+  BatteryIcon,
+  MapIcon,
+  BarChartIcon,
+  ZapIcon,
+} from './common/Icons'
 
 export default function FleetDashboard() {
   const [searchParams] = useSearchParams()
@@ -175,7 +188,7 @@ export default function FleetDashboard() {
       updateFleetState(res.fleet_state.buses)
       setResult(null)
       setDecisionMade(false)
-      setActionMsg('✓ Fleet reset to initial baseline conditions.')
+      setActionMsg('Fleet reset to initial baseline conditions.')
       loadAuditLog()
       setTimeout(() => setActionMsg(''), 5000)
     } catch (error) {
@@ -329,10 +342,10 @@ export default function FleetDashboard() {
             type="button"
             onClick={handleResetFleet}
             disabled={isResetting}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-[#1A2E3B] bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EBE5DC] transition-all cursor-pointer disabled:opacity-50 active:scale-95 shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#1A2E3B] bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EBE5DC] transition-all cursor-pointer disabled:opacity-50 active:scale-95 shadow-2xs"
             title="Reset fleet status and clear incidents back to baseline"
           >
-            <span>🔄</span>
+            <RefreshIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
             <span>{isResetting ? 'Resetting…' : 'Reset Baseline'}</span>
           </button>
 
@@ -340,10 +353,10 @@ export default function FleetDashboard() {
           <button
             type="button"
             onClick={handleExportManifestCSV}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#1A2E3B] hover:bg-[#253E4E] transition-all cursor-pointer active:scale-95 shadow-xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#1A2E3B] hover:bg-[#253E4E] transition-all cursor-pointer active:scale-95 shadow-xs"
             title="Download CSV manifest of all vehicles"
           >
-            <span>📥</span>
+            <FileTextIcon className="w-3.5 h-3.5 text-white" />
             <span>Export Manifest</span>
           </button>
         </div>
@@ -377,7 +390,7 @@ export default function FleetDashboard() {
         <div className="rounded-2xl border border-[#EBE5DC] bg-white p-4 shadow-xs">
           <div className="flex items-center justify-between text-[#7A7269] text-xs font-semibold">
             <span>Total Fleet</span>
-            <span className="text-base">🚌</span>
+            <BusIcon className="w-4 h-4 text-[#7A7269]" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-[#1A2E3B] mt-1">{buses.length}</div>
           <div className="text-[11px] text-[#7A7269] mt-1 font-medium">100% Instrument Telemetry</div>
@@ -386,7 +399,7 @@ export default function FleetDashboard() {
         <div className="rounded-2xl border border-[#D1E7D5] bg-[#EAF5EC]/60 p-4 shadow-xs">
           <div className="flex items-center justify-between text-[#2E7D32] text-xs font-bold">
             <span>Active on Grid</span>
-            <span className="text-base">🟢</span>
+            <ActivityIcon className="w-4 h-4 text-[#2E7D32]" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-[#2E7D32] mt-1">{activeBuses.length}</div>
           <div className="text-[11px] text-[#2E7D32] mt-1 font-semibold">
@@ -397,7 +410,7 @@ export default function FleetDashboard() {
         <div className="rounded-2xl border border-[#F0E2C2] bg-[#FAF0D9]/60 p-4 shadow-xs">
           <div className="flex items-center justify-between text-[#A67C1E] text-xs font-bold">
             <span>Depot Spares</span>
-            <span className="text-base">🅿️</span>
+            <ParkingIcon className="w-4 h-4 text-[#A67C1E]" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-[#A67C1E] mt-1">{spareBuses.length}</div>
           <div className="text-[11px] text-[#A67C1E] mt-1 font-semibold">
@@ -408,7 +421,7 @@ export default function FleetDashboard() {
         <div className="rounded-2xl border border-[#F8B4B4] bg-[#FDE8E8]/60 p-4 shadow-xs">
           <div className="flex items-center justify-between text-[#9B1C1C] text-xs font-bold">
             <span>Disrupted</span>
-            <span className="text-base">⚠️</span>
+            <AlertTriangleIcon className="w-4 h-4 text-[#9B1C1C]" />
           </div>
           <div className="text-2xl sm:text-3xl font-black text-[#9B1C1C] mt-1">
             {brokenBuses.length + delayedBuses.length}
@@ -459,46 +472,50 @@ export default function FleetDashboard() {
           <button
             type="button"
             onClick={() => setActiveView('radar')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeView === 'radar'
                 ? 'bg-[#1A2E3B] text-white shadow-2xs'
                 : 'text-[#7A7269] hover:text-[#1A2E3B]'
             }`}
           >
-            🗺️ Live Fleet Radar
+            <MapIcon className="w-3.5 h-3.5" />
+            <span>Live Fleet Radar</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveView('roster')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeView === 'roster'
                 ? 'bg-[#1A2E3B] text-white shadow-2xs'
                 : 'text-[#7A7269] hover:text-[#1A2E3B]'
             }`}
           >
-            📋 Roster & Table
+            <BarChartIcon className="w-3.5 h-3.5" />
+            <span>Roster & Table</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveView('green')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeView === 'green'
                 ? 'bg-[#1A2E3B] text-white shadow-2xs'
                 : 'text-[#7A7269] hover:text-[#1A2E3B]'
             }`}
           >
-            🔋 EV & Green Telemetry
+            <BatteryIcon className="w-3.5 h-3.5" />
+            <span>EV & Green Telemetry</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveView('audit')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeView === 'audit'
                 ? 'bg-[#1A2E3B] text-white shadow-2xs'
                 : 'text-[#7A7269] hover:text-[#1A2E3B]'
             }`}
           >
-            📜 Dispatch Audit Log ({auditLogs.length})
+            <FileTextIcon className="w-3.5 h-3.5" />
+            <span>Dispatch Audit Log ({auditLogs.length})</span>
           </button>
         </div>
 
@@ -634,7 +651,7 @@ export default function FleetDashboard() {
                       </td>
                       <td className="py-2.5 px-3">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[10px]">🔋</span>
+                          <BatteryIcon className="w-3.5 h-3.5 text-[#2E7D32]" />
                           <span className="font-mono font-bold text-[#2E7D32]">{b.battery_level || 85}%</span>
                         </div>
                       </td>
@@ -728,14 +745,20 @@ export default function FleetDashboard() {
                   <div className="font-bold text-[#1A2E3B]">Kashmere Gate ISBT Superchargers</div>
                   <div className="text-[11px]">8 / 10 Bays Available • 120kW DC Fast Charge</div>
                 </div>
-                <span className="text-[#2E7D32] font-bold">🟢 Operational</span>
+                <span className="flex items-center gap-1.5 text-[#2E7D32] font-bold">
+                  <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
+                  <span>Operational</span>
+                </span>
               </div>
               <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#EBE5DC] flex items-center justify-between">
                 <div>
                   <div className="font-bold text-[#1A2E3B]">Dwarka Sector 21 Terminal Depot</div>
                   <div className="text-[11px]">6 / 8 Bays Available • Overnight CCS2 Feeders</div>
                 </div>
-                <span className="text-[#2E7D32] font-bold">🟢 Operational</span>
+                <span className="flex items-center gap-1.5 text-[#2E7D32] font-bold">
+                  <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
+                  <span>Operational</span>
+                </span>
               </div>
             </div>
           </div>
@@ -821,10 +844,10 @@ export default function FleetDashboard() {
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
-              { label: '🚨 B-T01 Breakdown (Rajiv Chowk)', bus: 'B-T01', type: 'breakdown', delay: 0 },
-              { label: '⚠️ B-T03 Traffic Jam (+25m)', bus: 'B-T03', type: 'delay', delay: 25 },
-              { label: '⚡ B-T05 Mechanical Stall', bus: 'B-T05', type: 'breakdown', delay: 0 },
-              { label: '🚗 B-T07 Ring Road Jam (+15m)', bus: 'B-T07', type: 'delay', delay: 15 },
+              { label: 'B-T01 Breakdown (Rajiv Chowk)', bus: 'B-T01', type: 'breakdown', delay: 0 },
+              { label: 'B-T03 Traffic Jam (+25m)', bus: 'B-T03', type: 'delay', delay: 25 },
+              { label: 'B-T05 Mechanical Stall', bus: 'B-T05', type: 'breakdown', delay: 0 },
+              { label: 'B-T07 Ring Road Jam (+15m)', bus: 'B-T07', type: 'delay', delay: 15 },
             ].map(preset => (
               <button
                 key={preset.label}

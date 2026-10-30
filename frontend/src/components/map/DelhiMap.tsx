@@ -1,6 +1,19 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import L from 'leaflet'
 import type { JourneyOption, Stop, Route as TRoute } from '../../types'
+import {
+  SearchIcon,
+  XIcon,
+  TrainIcon,
+  BusIcon,
+  ZapIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  NavigationIcon,
+  LayersIcon,
+  PlaneIcon,
+  HospitalIcon,
+} from '../common/Icons'
 
 interface Props {
   stops: Stop[]
@@ -439,10 +452,10 @@ export default function DelhiMap({
           </div>
           <div style="display: flex; gap: 6px; margin-top: 10px; border-top: 1px solid #EBE5DC; padding-top: 8px;">
             <button onclick="window.__selectOrigin && window.__selectOrigin('${stop.stop_id}')" style="flex: 1; padding: 6px 8px; font-size: 11px; font-weight: 800; background: #FAF0D9; color: #9A721C; border: 1px solid #E8D4AE; border-radius: 8px; cursor: pointer;">
-              📍 Set Origin
+              Set Origin
             </button>
             <button onclick="window.__selectDest && window.__selectDest('${stop.stop_id}')" style="flex: 1; padding: 6px 8px; font-size: 11px; font-weight: 800; background: #1A2E3B; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer;">
-              🎯 Set Dest
+              Set Destination
             </button>
           </div>
         </div>
@@ -582,7 +595,7 @@ export default function DelhiMap({
         html: `
           <div style="position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; pointer-events: auto;">
             <div style="background: #0284C7; color: #FFFFFF; padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 2px solid #FFFFFF; white-space: nowrap; box-shadow: 0 4px 14px rgba(2,132,199,0.45); display: flex; align-items: center; gap: 5px;">
-              <span>🔄</span>
+              <span style="font-size: 11px;">⇄</span>
               <span>RAJIV CHOWK • 5m transfer</span>
             </div>
           </div>
@@ -644,7 +657,7 @@ export default function DelhiMap({
           className: 'delhi-vehicle-metro',
           html: `
             <div class="delhi-vehicle-live" style="position: absolute; transform: translate(-50%, -50%); background: #C49A43; color: #FFFFFF; padding: 4px 9px; border-radius: 20px; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 4px; border: 2px solid #FFFFFF; box-shadow: 0 4px 14px rgba(196,154,67,0.6); cursor: pointer; white-space: nowrap;">
-              <span>🚆</span>
+              <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 4px;">M</span>
               <span>LINE 3 • ${trainSpeed} km/h</span>
             </div>
           `,
@@ -685,7 +698,7 @@ export default function DelhiMap({
           className: 'delhi-vehicle-bus',
           html: `
             <div class="delhi-vehicle-live" style="position: absolute; transform: translate(-50%, -50%); background: #1A2E3B; color: #FFFFFF; padding: 4px 9px; border-radius: 20px; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 4px; border: 2px solid #FFFFFF; box-shadow: 0 4px 14px rgba(26,46,59,0.6); cursor: pointer; white-space: nowrap;">
-              <span>🚌</span>
+              <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 4px;">B</span>
               <span>BUS 764 (EV) • ${busSpeed} km/h</span>
             </div>
           `,
@@ -724,7 +737,7 @@ export default function DelhiMap({
           className: 'delhi-vehicle-auto',
           html: `
             <div class="delhi-vehicle-live" style="position: absolute; transform: translate(-50%, -50%); background: #2E7D32; color: #FFFFFF; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 3px; border: 2px solid #FFFFFF; box-shadow: 0 4px 12px rgba(46,125,50,0.6); cursor: pointer; white-space: nowrap;">
-              <span>🛺</span>
+              <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 4px;">A</span>
               <span>POOCHH-O AUTO</span>
             </div>
           `,
@@ -813,7 +826,7 @@ export default function DelhiMap({
           {/* Search Bar */}
           <div className="relative flex-1 max-w-sm pointer-events-auto">
             <div className="flex items-center rounded-2xl border border-[#EDE8E1] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
-              <span className="text-sm text-[#7A7269] mr-2">🔍</span>
+              <SearchIcon className="w-4 h-4 text-[#7A7269] mr-2 shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
@@ -835,7 +848,7 @@ export default function DelhiMap({
                   }}
                   className="text-[#7A7269] hover:text-[#1A202C] p-0.5 cursor-pointer text-xs"
                 >
-                  ✕
+                  <XIcon className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
@@ -876,7 +889,7 @@ export default function DelhiMap({
                   : 'bg-[#FCE7F3] text-[#BE185D] border-[#FBCFE8] hover:bg-[#FBCFE8]'
               }`}
             >
-              <span>🚆</span>
+              <TrainIcon className="w-3.5 h-3.5" />
               <span>Metro</span>
             </button>
 
@@ -892,7 +905,7 @@ export default function DelhiMap({
                   : 'bg-[#E0F2FE] text-[#0369A1] border-[#BAE6FD] hover:bg-[#BAE6FD]'
               }`}
             >
-              <span>🚌</span>
+              <BusIcon className="w-3.5 h-3.5" />
               <span>Bus</span>
             </button>
 
@@ -908,7 +921,7 @@ export default function DelhiMap({
                   : 'bg-[#DCFCE7] text-[#15803D] border-[#BBF7D0]'
               }`}
             >
-              <span>✓</span>
+              <CheckIcon className="w-3.5 h-3.5" />
               <span>Both</span>
             </button>
 
@@ -917,7 +930,7 @@ export default function DelhiMap({
               onClick={() => setShowLiveVehicles(prev => !prev)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border bg-[#F3E8FF] text-[#7E22CE] border-[#E9D5FF] hover:bg-[#E9D5FF] transition-all cursor-pointer shadow-xs"
             >
-              <span>⚡</span>
+              <ZapIcon className="w-3.5 h-3.5" />
               <span>EV/Shared</span>
             </button>
 
@@ -927,7 +940,7 @@ export default function DelhiMap({
               className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2] transition-colors cursor-pointer shadow-xs"
             >
               <span>More</span>
-              <span>▾</span>
+              <ChevronDownIcon className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -935,12 +948,12 @@ export default function DelhiMap({
         {/* Row 2: Secondary Station Quick Pills Strip matching Target */}
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5 pointer-events-auto">
           {[
-            { name: 'Rajiv Chowk', coord: RAJIV_COORD, color: '#EA580C', icon: '•' },
-            { name: 'New Delhi', coord: NDLS_COORD, color: '#EA580C', icon: '•' },
-            { name: 'IGI Airport', coord: AIRPORT_T3_COORD, color: '#0284C7', icon: '✈️' },
-            { name: 'Kashmere Gate', coord: KASHMERE_COORD, color: '#166534', icon: '•' },
-            { name: 'AIIMS', coord: AIIMS_COORD, color: '#0284C7', icon: '🏥' },
-            { name: 'Noida City Centre', coord: NOIDA_COORD, color: '#0284C7', icon: '•' },
+            { name: 'Rajiv Chowk', coord: RAJIV_COORD, color: '#EA580C', type: 'dot' },
+            { name: 'New Delhi', coord: NDLS_COORD, color: '#EA580C', type: 'dot' },
+            { name: 'IGI Airport', coord: AIRPORT_T3_COORD, color: '#0284C7', type: 'plane' },
+            { name: 'Kashmere Gate', coord: KASHMERE_COORD, color: '#166534', type: 'dot' },
+            { name: 'AIIMS', coord: AIIMS_COORD, color: '#0284C7', type: 'hospital' },
+            { name: 'Noida City Centre', coord: NOIDA_COORD, color: '#0284C7', type: 'dot' },
           ].map(hub => (
             <button
               key={hub.name}
@@ -948,7 +961,13 @@ export default function DelhiMap({
               onClick={() => handleFlyToCoord(hub.coord, 14)}
               className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/95 hover:bg-[#FAF7F2] border border-[#EDE8E1] text-xs font-bold text-[#1A2E3B] shadow-2xs transition-all cursor-pointer shrink-0 active:scale-95"
             >
-              <span style={{ color: hub.color }}>{hub.icon}</span>
+              {hub.type === 'plane' ? (
+                <PlaneIcon className="w-3 h-3 text-[#0284C7]" />
+              ) : hub.type === 'hospital' ? (
+                <HospitalIcon className="w-3 h-3 text-[#0284C7]" />
+              ) : (
+                <span style={{ color: hub.color }}>•</span>
+              )}
               <span>{hub.name}</span>
             </button>
           ))}
@@ -1022,7 +1041,7 @@ export default function DelhiMap({
           aria-label="Locate active route"
           className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
         >
-          <span>🎯</span>
+          <NavigationIcon className="w-4 h-4 text-[#1A2E3B]" />
         </button>
 
         {/* Zoom Out (-) Button */}
@@ -1044,7 +1063,7 @@ export default function DelhiMap({
           aria-label="Toggle Satellite Imagery"
           className="flex h-9 w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white overflow-hidden shadow-md transition-all cursor-pointer hover:border-[#C49A43] active:scale-95"
         >
-          <span className="text-base">🗺️</span>
+          <LayersIcon className="w-4 h-4 text-[#1A2E3B]" />
         </button>
       </div>
 

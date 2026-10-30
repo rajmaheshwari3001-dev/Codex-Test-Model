@@ -262,7 +262,7 @@ export default function CashbackPerksModal({ isOpen, onClose }: Props) {
             onClick={onClose}
             className="rounded-xl bg-gradient-to-r from-[#C49A43] via-[#BA8F39] to-[#AF842F] hover:from-[#B88E3B] hover:via-[#AF842F] hover:to-[#A17528] px-6 py-2.5 text-xs font-bold text-white shadow-[0_4px_14px_rgba(196,154,67,0.3)] hover:shadow-[0_6px_20px_rgba(196,154,67,0.4)] transition-all cursor-pointer active:scale-95"
           >
-            Done ✓
+            Done
           </button>
         </div>
       </div>

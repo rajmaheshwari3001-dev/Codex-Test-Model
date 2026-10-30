@@ -23,6 +23,8 @@ import {
   AlertTriangleIcon,
   ArrowRightIcon,
   TrainIcon,
+  MapIcon,
+  XIcon,
 } from '../components/common/Icons'
 
 interface NoResultContext {
@@ -106,6 +108,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
   const [showProvenanceModal, setShowProvenanceModal] = useState(false)
   const [showCashbackModal, setShowCashbackModal] = useState(false)
   const [poochhoEstimate, setPoochhOEstimate] = useState<PoochhOEstimate | null>(null)
+  const [showRouteMap, setShowRouteMap] = useState(false)
 
   // Console active tab: 'plan' | 'assistant' | 'saved'
   const [activeConsoleTab, setActiveConsoleTab] = useState<'plan' | 'assistant' | 'saved'>('plan')
@@ -375,10 +378,10 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         </button>
       </div>
 
-      {/* 3-COLUMN UNIFIED DESKTOP LAYOUT (Matching Figma Design Specification) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* COLUMN 1: LEFT (~3 of 12) - PLANNER & ASK COPILOT CARD */}
-        <div className={`lg:col-span-4 xl:col-span-3 space-y-4 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+      {/* 2-COLUMN SPACIOUS & LIGHTWEIGHT DESKTOP LAYOUT (Uncongested, Breathable & Fast) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+        {/* COLUMN 1: LEFT (5 of 12) - PLANNER, POPULAR DESTINATIONS & COPILOT PROMPT */}
+        <div className={`lg:col-span-5 space-y-5 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
           <JourneyPlanner
             stops={stops}
             origin={origin}
@@ -398,6 +401,15 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             onSearch={handleSearch}
             loading={loading}
             onOpenCashbackModal={() => setShowCashbackModal(true)}
+          />
+
+          {/* Popular Destinations Photo Strip */}
+          <PopularDestinationsBar
+            currentDestinationStopId={destination}
+            onSelectDestination={(destStopId) => {
+              setDestination(destStopId)
+              handleSearch(origin, destStopId, time, preference, serviceDay, modePreference, maxBudget)
+            }}
           />
 
           {/* Ask Aaroh-Saarthi Card Matching Figma */}
@@ -425,7 +437,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
               className="w-full flex items-center justify-between gap-2 rounded-2xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/50 p-3.5 text-left text-[13px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
             >
               <div className="flex items-center gap-2 truncate">
-                <span className="text-amber-500 text-xs">✨</span>
+                <SparklesIcon className="w-3.5 h-3.5 text-[#C49A43]" />
                 <span className="truncate">Try "Best way to India Gate from Janakpuri?"</span>
               </div>
               <ArrowRightIcon className="w-4 h-4 text-[#C49A43] group-hover:translate-x-1 transition-transform shrink-0" />
@@ -433,29 +445,8 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           </div>
         </div>
 
-        {/* COLUMN 2: CENTER (~5 of 12) - INTERACTIVE DELHI TRANSIT MAP */}
-        <div className={`lg:col-span-4 xl:col-span-5 flex flex-col min-h-[500px] lg:min-h-[660px] sticky top-20 ${activeConsoleTab !== 'plan' && 'hidden lg:flex'}`}>
-          <DelhiMap
-            stops={stops}
-            routes={routes}
-            selectedJourney={selected}
-            originStopId={origin}
-            destinationStopId={destination}
-            onSelectOrigin={handleSelectOriginFromMap}
-            onSelectDestination={handleSelectDestinationFromMap}
-          />
-
-          <PopularDestinationsBar
-            currentDestinationStopId={destination}
-            onSelectDestination={(destStopId) => {
-              setDestination(destStopId)
-              handleSearch(origin, destStopId, time, preference, serviceDay, modePreference, maxBudget)
-            }}
-          />
-        </div>
-
-        {/* COLUMN 3: RIGHT (~4 of 12) - ROUTE OPTIONS / CHOOSE YOUR WAY */}
-        <div className={`lg:col-span-4 xl:col-span-4 space-y-4 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
+        {/* COLUMN 2: RIGHT (7 of 12) - ROUTE OPTIONS / CHOOSE YOUR WAY & OPTIONAL MAP PREVIEW */}
+        <div className={`lg:col-span-7 space-y-5 ${activeConsoleTab !== 'plan' && 'hidden lg:block'}`}>
           <JourneyComparison
             options={options}
             selected={selected}
@@ -471,7 +462,46 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
             originName={originName}
             destinationName={destinationName}
             serviceDay={serviceDay}
+            showMap={showRouteMap}
+            onToggleMap={() => setShowRouteMap(prev => !prev)}
           />
+
+          {/* Optional Expandable Route Map Preview (Lightweight, uncrowded, shown only when user toggles) */}
+          {showRouteMap && (
+            <div className="rounded-3xl border border-[#EDE8E1] bg-white p-4 sm:p-5 shadow-lg animate-fade-in space-y-3">
+              <div className="flex items-center justify-between border-b border-[#F2ECE1] pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FAF0D9] text-[#9A721C]">
+                    <MapIcon className="w-4 h-4 text-[#C49A43]" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-[#1A2E3B]">Interactive Route Map</h3>
+                    <p className="text-[11px] text-[#7A7269]">Live visual corridor for {originName} to {destinationName}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowRouteMap(false)}
+                  className="flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold text-[#7A7269] hover:text-[#1A2E3B] bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] transition-all cursor-pointer"
+                >
+                  <XIcon className="w-3.5 h-3.5" />
+                  <span>Hide Map</span>
+                </button>
+              </div>
+
+              <div className="min-h-[480px] rounded-2xl overflow-hidden border border-[#EDE8E1]">
+                <DelhiMap
+                  stops={stops}
+                  routes={routes}
+                  selectedJourney={selected}
+                  originStopId={origin}
+                  destinationStopId={destination}
+                  onSelectOrigin={handleSelectOriginFromMap}
+                  onSelectDestination={handleSelectDestinationFromMap}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

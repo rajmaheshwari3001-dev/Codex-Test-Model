@@ -1,5 +1,6 @@
 import type { JourneyOption } from '../../types'
 import { formatTime12 } from '../../utils/time'
+import { SparklesIcon, ZapIcon, TagIcon } from '../common/Icons'
 
 interface Props {
   option: JourneyOption
@@ -73,29 +74,29 @@ export default function JourneyCard({
       <div className="flex items-center justify-between">
         {isFastest ? (
           <>
-            {/* ✦ Recommended */}
+            {/* Recommended */}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
-              <span>✦</span>
+              <SparklesIcon className="w-3.5 h-3.5 text-[#92400E]" />
               <span>Recommended</span>
             </span>
 
-            {/* ⚡ Fastest */}
+            {/* Fastest */}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-semibold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
-              <span>⚡</span>
+              <ZapIcon className="w-3.5 h-3.5 text-[#92400E]" />
               <span>Fastest</span>
             </span>
           </>
         ) : (
           <>
-            {/* ⚡ Lowest Cost */}
+            {/* Lowest Cost */}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-semibold bg-[#F5F3FF] text-[#7E22CE] border border-[#DDD6FE]">
-              <span>⚡</span>
+              <ZapIcon className="w-3.5 h-3.5 text-[#7E22CE]" />
               <span>Lowest Cost</span>
             </span>
 
-            {/* 🏷️ Save ₹30 */}
+            {/* Save ₹30 */}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-semibold bg-[#DCFCE7] text-[#15803D] border border-[#BBF7D0]">
-              <span>🏷️</span>
+              <TagIcon className="w-3.5 h-3.5 text-[#15803D]" />
               <span>Save ₹30</span>
             </span>
           </>

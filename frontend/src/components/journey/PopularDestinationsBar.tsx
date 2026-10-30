@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SparklesIcon, MapPinIcon } from '../common/Icons'
 
 interface DestinationItem {
   id: string
@@ -6,7 +7,6 @@ interface DestinationItem {
   name: string
   durationText: string
   imageUrl: string
-  fallbackEmoji: string
 }
 
 const POPULAR_DESTINATIONS: DestinationItem[] = [
@@ -16,7 +16,6 @@ const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: 'India Gate',
     durationText: '~ 28 min',
     imageUrl: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=160&q=80',
-    fallbackEmoji: '🏛️',
   },
   {
     id: 'connaught-place',
@@ -24,7 +23,6 @@ const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: 'Connaught Place',
     durationText: '~ 35 min',
     imageUrl: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=160&q=80',
-    fallbackEmoji: '🏛️',
   },
   {
     id: 'akshardham',
@@ -32,7 +30,6 @@ const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: 'Akshardham',
     durationText: '~ 42 min',
     imageUrl: 'https://images.unsplash.com/photo-1608958435020-e8a7109ba809?auto=format&fit=crop&w=160&q=80',
-    fallbackEmoji: '🛕',
   },
   {
     id: 'igi-airport',
@@ -40,7 +37,6 @@ const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: 'IGI Airport',
     durationText: '~ 55 min',
     imageUrl: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=160&q=80',
-    fallbackEmoji: '✈️',
   },
   {
     id: 'hauz-khas',
@@ -48,7 +44,6 @@ const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: 'Hauz Khas',
     durationText: '~ 38 min',
     imageUrl: 'https://images.unsplash.com/photo-1599818816788-518ca8d33a1e?auto=format&fit=crop&w=160&q=80',
-    fallbackEmoji: '🏰',
   },
 ]
 
@@ -67,7 +62,7 @@ export default function PopularDestinationsBar({
     <section aria-label="Popular Delhi Destinations" className="space-y-2 mt-3">
       {/* Header */}
       <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-bold text-[#C49A43] tracking-wide">
-        <span className="text-amber-500 text-sm">★</span>
+        <SparklesIcon className="w-3.5 h-3.5 text-[#C49A43]" />
         <span>Popular Destinations</span>
       </div>
 
@@ -101,7 +96,7 @@ export default function PopularDestinationsBar({
                     loading="lazy"
                   />
                 ) : (
-                  <span className="text-lg">{dest.fallbackEmoji}</span>
+                  <MapPinIcon className="w-5 h-5 text-[#C49A43]" />
                 )}
               </div>
 

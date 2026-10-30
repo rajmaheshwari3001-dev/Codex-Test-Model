@@ -8,6 +8,10 @@ import {
   TagIcon,
   ArrowRightIcon,
   ClockIcon,
+  MapPinIcon,
+  DollarSignIcon,
+  SunIcon,
+  MoonIcon,
 } from '../common/Icons'
 
 interface Props {
@@ -62,7 +66,7 @@ function getDelhiFareTier(time24: string): {
   if (isMorningOffPeak || isAfternoonOffPeak || isNightOffPeak) {
     return {
       isOffPeak: true,
-      badge: '💳 20% Off-Peak Active',
+      badge: '20% Off-Peak Active',
       tagline: 'DMRC SmartCard 20% statutory fare discount applies for this departure slot.',
       savings: 'Save ₹4–₹12 on Metro leg',
     }
@@ -70,7 +74,7 @@ function getDelhiFareTier(time24: string): {
 
   return {
     isOffPeak: false,
-    badge: '⚡ Peak Transit Rush',
+    badge: 'Peak Transit Rush',
     tagline: 'Statutory standard fares apply with high-frequency metro trains every 2.5 mins.',
     savings: 'Maximum train frequency',
   }
@@ -212,7 +216,7 @@ export default function JourneyPlanner({
       {/* Title & Subtitle Matching Target: PLAN FOR A DELHI DAY */}
       <header className="space-y-1.5">
         <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-[#C49A43] select-none">
-          <span>📍</span>
+          <MapPinIcon className="w-3.5 h-3.5 text-[#C49A43]" />
           <span>PLAN FOR A DELHI DAY</span>
         </div>
         <h2 id="journey-planner-heading" className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#1A2E3B] leading-tight">
@@ -356,7 +360,7 @@ export default function JourneyPlanner({
               title="Click to customize departure time & clock"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <span className="text-sm">🕐</span>
+                <ClockIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
                 <span className="font-bold text-xs sm:text-sm truncate">
                   Today, {formattedDisplay}
                 </span>
@@ -396,7 +400,7 @@ export default function JourneyPlanner({
                     onClick={() => setShowClockCustomizer(false)}
                     className="text-xs font-bold text-[#C49A43] hover:underline cursor-pointer"
                   >
-                    Done ✓
+                    Done
                   </button>
                 </div>
               </div>
@@ -502,7 +506,7 @@ export default function JourneyPlanner({
                   {[
                     { label: '−30m', delta: -30 },
                     { label: '−15m', delta: -15 },
-                    { label: '⏱️ NOW', delta: 0, isNow: true },
+                    { label: 'NOW', delta: 0, isNow: true },
                     { label: '+15m', delta: 15 },
                     { label: '+30m', delta: 30 },
                     { label: '+1h', delta: 60 },
@@ -534,8 +538,12 @@ export default function JourneyPlanner({
                     : 'bg-[#FAF0D9] border-[#EFE0C2] text-[#9A721C]'
                 }`}
               >
-                <span className="text-base leading-none">
-                  {fareTier.isOffPeak ? '💳' : '⚡'}
+                <span className="flex items-center justify-center w-5 h-5 shrink-0 mt-0.5">
+                  {fareTier.isOffPeak ? (
+                    <DollarSignIcon className="w-4 h-4 text-[#2E7D32]" />
+                  ) : (
+                    <ZapIcon className="w-4 h-4 text-[#C49A43]" />
+                  )}
                 </span>
                 <div className="space-y-0.5 leading-tight">
                   <div className="font-extrabold flex items-center gap-1.5">
@@ -581,10 +589,10 @@ export default function JourneyPlanner({
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
                   {[
-                    { label: '🌅 08:30 AM Morning Peak', value: '08:30', tag: 'High Frequency' },
-                    { label: '☀️ 01:00 PM Midday Off-Peak', value: '13:00', tag: '💳 20% Off' },
-                    { label: '🌆 06:00 PM Evening Peak', value: '18:00', tag: '2.5m Headway' },
-                    { label: '🌙 09:30 PM Night Feeder', value: '21:30', tag: '💳 20% Off' },
+                    { label: '08:30 AM Morning Peak', value: '08:30', tag: 'High Frequency' },
+                    { label: '01:00 PM Midday Off-Peak', value: '13:00', tag: '20% Off' },
+                    { label: '06:00 PM Evening Peak', value: '18:00', tag: '2.5m Headway' },
+                    { label: '09:30 PM Night Feeder', value: '21:30', tag: '20% Off' },
                   ].map(preset => (
                     <button
                       key={preset.value}
@@ -682,7 +690,7 @@ export default function JourneyPlanner({
                   : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
               }`}
             >
-              <span>⚡</span>
+              <ZapIcon className={`w-4 h-4 ${preference === 'fastest' ? 'text-white' : 'text-[#166534]'}`} />
               <span>Fastest</span>
             </button>
 
@@ -696,7 +704,7 @@ export default function JourneyPlanner({
                   : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
               }`}
             >
-              <span>🏷️</span>
+              <TagIcon className={`w-4 h-4 ${preference === 'cheapest' ? 'text-white' : 'text-[#C49A43]'}`} />
               <span>Cheapest</span>
             </button>
           </div>

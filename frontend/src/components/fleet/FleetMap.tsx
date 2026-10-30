@@ -185,7 +185,7 @@ export default function FleetMap({
         className: 'fleet-depot-marker',
         html: `
           <div style="background: #1A2E3B; color: #FFF; padding: 2px 7px; border-radius: 6px; font-size: 10px; font-weight: 800; border: 1.5px solid #C49A43; white-space: nowrap; transform: translate(-50%, -100%); margin-top: -4px;">
-            🏬 ${d.name}
+            DEPOT • ${d.name}
           </div>
         `,
         iconSize: [0, 0],
@@ -248,7 +248,7 @@ export default function FleetMap({
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             white-space: nowrap;
           ">
-            <span>${isBroken ? '⚠️' : isSpare ? '🅿️' : '🚌'}</span>
+            <span style="font-weight: 800; background: rgba(255,255,255,0.25); border-radius: 4px; padding: 0 3px;">${isBroken ? '!' : isSpare ? 'P' : 'B'}</span>
             <span>${bus.bus_id}</span>
             <span style="font-size: 8px; opacity: 0.9; background: rgba(255,255,255,0.25); padding: 1px 4px; border-radius: 4px;">
               ${statusLabel}
@@ -370,7 +370,7 @@ export default function FleetMap({
                   : 'text-[#7A7269] hover:text-[#1A2E3B]'
               }`}
             >
-              🗺️ Classic
+              Classic
             </button>
             <button
               type="button"
@@ -381,7 +381,7 @@ export default function FleetMap({
                   : 'text-[#7A7269] hover:text-[#1A2E3B]'
               }`}
             >
-              🌙 Dark
+              Dark
             </button>
             <button
               type="button"
@@ -392,7 +392,7 @@ export default function FleetMap({
                   : 'text-[#7A7269] hover:text-[#1A2E3B]'
               }`}
             >
-              🛰️ Aerial
+              Aerial
             </button>
           </div>
 

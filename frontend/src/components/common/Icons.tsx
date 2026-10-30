@@ -955,3 +955,172 @@ export function BotIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
   )
 }
 
+export function UserIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  )
+}
+
+export function RefreshIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <path d="M23 4v6h-6" />
+      <path d="M1 20v-6h6" />
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    </svg>
+  )
+}
+
+export function HospitalIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M12 8v8" />
+      <path d="M8 12h8" />
+    </svg>
+  )
+}
+
+export function SunIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  )
+}
+
+export function BatteryIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <rect x="2" y="7" width="16" height="10" rx="2" ry="2" />
+      <line x1="22" y1="11" x2="22" y2="13" />
+    </svg>
+  )
+}
+
+export function ActivityIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+    </svg>
+  )
+}
+
+export function ParkingIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M9 17V7h4a3 3 0 0 1 0 6H9" />
+    </svg>
+  )
+}
+
+export function MoreHorizontalIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <circle cx="12" cy="12" r="1.5" />
+      <circle cx="19" cy="12" r="1.5" />
+      <circle cx="5" cy="12" r="1.5" />
+    </svg>
+  )
+}
+

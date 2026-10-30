@@ -18,6 +18,8 @@ import {
   CheckIcon,
   ChevronDownIcon,
   RotateCcwIcon,
+  SearchIcon,
+  TrainIcon,
 } from '../common/Icons'
 
 interface AppHeaderProps {
@@ -25,11 +27,11 @@ interface AppHeaderProps {
 }
 
 const DELHI_REGIONS = [
-  { id: 'Delhi NCR', label: 'Delhi NCR (Full)', icon: '🟢', subtitle: 'All 20 multi-modal stations' },
-  { id: 'Central Delhi', label: 'Central Delhi Hub', icon: '🟡', subtitle: 'Rajiv Chowk, CP, Mandi House' },
-  { id: 'South Delhi', label: 'South Delhi Zone', icon: '🔵', subtitle: 'AIIMS, Saket, Dilli Haat INA' },
-  { id: 'Dwarka Hub', label: 'Dwarka & Airport Hub', icon: '🟣', subtitle: 'Dwarka Sec 21, Airport Link' },
-  { id: 'Noida NCR', label: 'Noida & Trans-Yamuna', icon: '🔴', subtitle: 'Noida City Centre, Anand Vihar' },
+  { id: 'Delhi NCR', label: 'Delhi NCR (Full)', subtitle: 'All 20 multi-modal stations' },
+  { id: 'Central Delhi', label: 'Central Delhi Hub', subtitle: 'Rajiv Chowk, CP, Mandi House' },
+  { id: 'South Delhi', label: 'South Delhi Zone', subtitle: 'AIIMS, Saket, Dilli Haat INA' },
+  { id: 'Dwarka Hub', label: 'Dwarka & Airport Hub', subtitle: 'Dwarka Sec 21, Airport Link' },
+  { id: 'Noida NCR', label: 'Noida & Trans-Yamuna', subtitle: 'Noida City Centre, Anand Vihar' },
 ]
 
 export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
@@ -151,7 +153,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
             <NavLink to="/" className="flex items-center gap-3 group focus:outline-none" aria-label="AAROH-SAARTHI Home">
               {/* Target Emblem: Circular Transit Icon */}
               <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#FFF9EE] via-[#FAF0D9] to-[#EBD5A8] border-2 border-[#C49A43]/70 text-[#1A2E3B] shadow-sm group-hover:scale-105 transition-transform shrink-0 relative">
-                <span className="text-lg">🚎</span>
+                <TrainIcon className="w-5 h-5 text-[#9A721C]" />
                 <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-[#166534] border-2 border-white" />
               </div>
               <div className="flex flex-col">
@@ -208,7 +210,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
           <div role="toolbar" aria-label="User Controls" className="flex items-center gap-2.5 shrink-0">
             {/* Search stations/routes input box */}
             <div className="hidden xl:flex items-center gap-2 bg-[#FAF7F2] border border-[#EDE8E1] rounded-full px-3.5 py-1.5 focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20 shadow-2xs">
-              <span className="text-[#7A7269] text-xs">🔍</span>
+              <SearchIcon className="w-3.5 h-3.5 text-[#7A7269]" />
               <input
                 type="text"
                 placeholder="Search stations, routes..."
@@ -224,9 +226,11 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               type="button"
               title="Toggle Dark / Light Theme"
               aria-label="Toggle Theme"
-              className="flex items-center justify-center h-9 w-9 rounded-full border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] transition-colors cursor-pointer shadow-2xs active:scale-95"
+              className="flex items-center justify-center h-9 w-9 rounded-full border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#6E665D] hover:text-[#1A2E3B] transition-colors cursor-pointer shadow-2xs active:scale-95"
             >
-              <span className="text-sm">🌙</span>
+              <svg className="w-4 h-4 text-[#6E665D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
             </button>
 
             {/* User Profile Pill ("Hi, Raj ▾") */}

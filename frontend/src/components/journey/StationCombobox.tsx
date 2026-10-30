@@ -7,6 +7,10 @@ import {
   ChevronDownIcon,
   CheckIcon,
   MapPinIcon,
+  TrainIcon,
+  BusIcon,
+  RefreshIcon,
+  HospitalIcon,
 } from '../common/Icons'
 
 interface Props {
@@ -27,11 +31,11 @@ function getFigmaStationName(stop: Stop): string {
 }
 
 const POPULAR_HUBS = [
-  { id: 'S13', label: 'Dwarka Sec 21', icon: '🚇' },
-  { id: 'S01', label: 'Rajiv Chowk', icon: '🔄' },
-  { id: 'S02', label: 'Kashmere Gate', icon: '🚌' },
-  { id: 'S19', label: 'Noida City Centre', icon: '🚇' },
-  { id: 'S10', label: 'AIIMS', icon: '🏥' },
+  { id: 'S13', label: 'Dwarka Sec 21', type: 'metro' },
+  { id: 'S01', label: 'Rajiv Chowk', type: 'interchange' },
+  { id: 'S02', label: 'Kashmere Gate', type: 'bus' },
+  { id: 'S19', label: 'Noida City Centre', type: 'metro' },
+  { id: 'S10', label: 'AIIMS', type: 'hospital' },
 ]
 
 export default function StationCombobox({
@@ -113,7 +117,9 @@ export default function StationCombobox({
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation()
+    e.preventDefault()
     onChange('')
+    setIsOpen(false)
   }
 
   // Keyboard navigation
@@ -151,12 +157,7 @@ export default function StationCombobox({
         className="text-[13px] font-bold text-[#1A2E3B] flex items-center justify-between"
       >
         <span className="flex items-center gap-1.5">
-          <span
-            className="flex h-4 w-4 items-center justify-center rounded-full text-xs font-bold"
-            style={{ color: pinColor }}
-          >
-            📍
-          </span>
+          <MapPinIcon className="w-3.5 h-3.5 shrink-0" style={{ color: pinColor }} />
           <span className="font-bold text-[13px] text-[#1A2E3B] capitalize">{label.toLowerCase()}</span>
         </span>
       </label>
@@ -279,13 +280,21 @@ export default function StationCombobox({
                       key={hub.id}
                       type="button"
                       onClick={() => handleSelect(hub.id)}
-                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         isCurrent
                           ? 'bg-[#1A2E3B] text-white shadow-xs'
                           : 'bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] border border-[#EBE5DC]'
                       }`}
                     >
-                      <span className="text-xs">{hub.icon}</span>
+                      {hub.type === 'metro' ? (
+                        <TrainIcon className="w-3 h-3 text-[#C49A43]" />
+                      ) : hub.type === 'interchange' ? (
+                        <RefreshIcon className="w-3 h-3 text-[#547A60]" />
+                      ) : hub.type === 'hospital' ? (
+                        <HospitalIcon className="w-3 h-3 text-[#0284C7]" />
+                      ) : (
+                        <BusIcon className="w-3 h-3 text-[#243B4A]" />
+                      )}
                       <span>{hub.label}</span>
                     </button>
                   )
@@ -336,13 +345,13 @@ export default function StationCombobox({
                             : 'bg-[#FAF7F2] border border-[#EBE5DC] text-[#7A7269]'
                         }`}
                       >
-                        {meta.interchanges.some(i => i.includes('Blue'))
-                          ? '🚇'
-                          : meta.interchanges.some(i => i.includes('Yellow'))
-                          ? '🟡'
-                          : meta.interchanges.some(i => i.includes('Bus') || i.includes('Terminal'))
-                          ? '🚌'
-                          : '📍'}
+                        {meta.interchanges.some(i => i.includes('Blue') || i.includes('Yellow') || i.includes('Metro')) ? (
+                          <TrainIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+                        ) : meta.interchanges.some(i => i.includes('Bus') || i.includes('Terminal')) ? (
+                          <BusIcon className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                        ) : (
+                          <MapPinIcon className="w-3.5 h-3.5 text-[#7A7269]" />
+                        )}
                       </span>
 
                       <div className="min-w-0 flex-1">

@@ -176,9 +176,10 @@ export default function AllSavedJourneysModal({
               <button
                 type="button"
                 onClick={() => setFilterQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#7A7269] hover:text-[#1A2E3B]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-xs text-[#7A7269] hover:text-[#1A2E3B] cursor-pointer"
+                aria-label="Clear filter"
               >
-                ✕
+                <XIcon className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
@@ -265,24 +266,26 @@ export default function AllSavedJourneysModal({
                 <button
                   type="button"
                   onClick={() => setPreference('fastest')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     preference === 'fastest'
-                      ? 'bg-[#C49A43] text-white shadow-2xs'
+                      ? 'bg-[#166534] text-white shadow-2xs'
                       : 'bg-white text-[#7A7269] border border-[#EBE5DC]'
                   }`}
                 >
-                  ⚡ Fastest
+                  <ZapIcon className="w-3 h-3" />
+                  <span>Fastest</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreference('cheapest')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     preference === 'cheapest'
-                      ? 'bg-[#C49A43] text-white shadow-2xs'
+                      ? 'bg-[#166534] text-white shadow-2xs'
                       : 'bg-white text-[#7A7269] border border-[#EBE5DC]'
                   }`}
                 >
-                  ₹ Cheapest
+                  <TagIcon className="w-3 h-3" />
+                  <span>Cheapest</span>
                 </button>
               </div>
 

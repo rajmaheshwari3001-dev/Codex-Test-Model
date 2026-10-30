@@ -10,31 +10,16 @@ import {
   ArrowRightIcon,
   CompassIcon,
   ClockIcon,
+  BotIcon,
+  UserIcon,
+  CopyIcon,
+  ZapIcon,
+  DollarSignIcon,
+  BusIcon,
+  AutoRickshawIcon,
+  PlaneIcon,
+  RefreshIcon,
 } from '../common/Icons'
-
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  text: string
-  timestamp: string
-  suggestedRoute?: {
-    originId: string
-    originName: string
-    destId: string
-    destName: string
-    fareEstimate?: string
-    durationEstimate?: string
-  }
-}
-
-interface Props {
-  isOpen?: boolean
-  onClose?: () => void
-  initialPrompt?: string
-  onRouteRecommendation?: (originId: string, destId: string) => void
-  stops?: Stop[]
-  serviceDay?: ServiceDay
-}
 
 type ChipCategory = 'routes' | 'fares' | 'schedules' | 'fleet'
 
@@ -42,28 +27,28 @@ interface PromptChip {
   category: ChipCategory
   label: string
   query: string
-  icon: string
+  type: 'zap' | 'dollar' | 'plane' | 'auto' | 'clock' | 'refresh' | 'bus'
 }
 
 const CATEGORIZED_CHIPS: PromptChip[] = [
   // Routes & Corridors
-  { category: 'routes', icon: '⚡', label: 'Dwarka to Noida (Fastest)', query: 'Which line is faster from Dwarka Sector 21 to Noida City Centre?' },
-  { category: 'routes', icon: '💰', label: 'Kashmere Gate to Saket', query: 'How do I travel cheapest from Kashmere Gate to Saket?' },
-  { category: 'routes', icon: '✈️', label: 'Rajiv Chowk to Airport', query: 'How do I reach Dwarka Sector 21 from Rajiv Chowk?' },
+  { category: 'routes', type: 'zap', label: 'Dwarka to Noida (Fastest)', query: 'Which line is faster from Dwarka Sector 21 to Noida City Centre?' },
+  { category: 'routes', type: 'dollar', label: 'Kashmere Gate to Saket', query: 'How do I travel cheapest from Kashmere Gate to Saket?' },
+  { category: 'routes', type: 'plane', label: 'Rajiv Chowk to Airport', query: 'How do I reach Dwarka Sector 21 from Rajiv Chowk?' },
 
   // Fares & Discounts
-  { category: 'fares', icon: '🛺', label: 'Poochh-O Auto Fare (DIMTS)', query: 'What is the statutory Poochh-O auto-rickshaw fare from AIIMS to Saket?' },
-  { category: 'fares', icon: '💳', label: 'Metro Smart Card Perks', query: 'What are the Delhi Metro Smart Card discounts and cashback perks?' },
-  { category: 'fares', icon: '⚖️', label: 'Compare Metro vs Bus', query: 'Is there a cheaper route between Dwarka and Noida?' },
+  { category: 'fares', type: 'auto', label: 'Poochh-O Auto Fare (DIMTS)', query: 'What is the statutory Poochh-O auto-rickshaw fare from AIIMS to Saket?' },
+  { category: 'fares', type: 'dollar', label: 'Metro Smart Card Perks', query: 'What are the Delhi Metro Smart Card discounts and cashback perks?' },
+  { category: 'fares', type: 'zap', label: 'Compare Metro vs Bus', query: 'Is there a cheaper route between Dwarka and Noida?' },
 
   // Schedules & Transits
-  { category: 'schedules', icon: '⏰', label: 'Daily Operating Hours', query: 'What are the active daily Delhi transit operating hours?' },
-  { category: 'schedules', icon: '🔄', label: 'Rajiv Chowk Interchange', query: 'Which metro lines and buses interchange at Rajiv Chowk?' },
-  { category: 'schedules', icon: '⏱️', label: 'Next Departures: Rajiv Chowk', query: 'When is the next departure from Rajiv Chowk after 08:30 AM?' },
+  { category: 'schedules', type: 'clock', label: 'Daily Operating Hours', query: 'What are the active daily Delhi transit operating hours?' },
+  { category: 'schedules', type: 'refresh', label: 'Rajiv Chowk Interchange', query: 'Which metro lines and buses interchange at Rajiv Chowk?' },
+  { category: 'schedules', type: 'clock', label: 'Next Departures: Rajiv Chowk', query: 'When is the next departure from Rajiv Chowk after 08:30 AM?' },
 
   // Bus Fleet
-  { category: 'fleet', icon: '🚌', label: 'City Bus 764 Route', query: 'Tell me about DTC City Bus 764 electric route and frequency.' },
-  { category: 'fleet', icon: '⚠️', label: 'Live Delay Status', query: 'Are there any delays or transit disruptions right now?' },
+  { category: 'fleet', type: 'bus', label: 'City Bus 764 Route', query: 'Tell me about DTC City Bus 764 electric route and frequency.' },
+  { category: 'fleet', type: 'zap', label: 'Live Delay Status', query: 'Are there any delays or transit disruptions right now?' },
 ]
 
 export default function AssistantPanel({
@@ -190,25 +175,25 @@ export default function AssistantPanel({
       const qLower = question.toLowerCase()
       if (qLower.includes('timetable') || qLower.includes('hour') || qLower.includes('operating')) {
         localReply =
-          '⏰ Active Delhi transit timetable operates daily from 06:00 AM to 11:35 PM across 20 mapped hub stations with 120 scheduled trips.'
+          'Active Delhi transit timetable operates daily from 06:00 AM to 11:35 PM across 20 mapped hub stations with 120 scheduled trips.'
       } else if (qLower.includes('dwarka') && (qLower.includes('noida') || qLower.includes('faster'))) {
         localReply =
-          '⚡ Fastest Route: Blue Line Metro from Dwarka Sector 21 to Rajiv Chowk (32 min), then transfer to City Bus 764 to Noida City Centre (14 min). Total travel time is 46 min at ₹60 fare (₹54 with Smart Card).'
+          'Fastest Route: Blue Line Metro from Dwarka Sector 21 to Rajiv Chowk (32 min), then transfer to City Bus 764 to Noida City Centre (14 min). Total travel time is 46 min at ₹60 fare (₹54 with Smart Card).'
       } else if (qLower.includes('kashmere') && qLower.includes('saket')) {
         localReply =
-          '🚇 Kashmere Gate to Saket: Board Green Line (R02) to Rajiv Chowk or AIIMS, then transfer to Yellow Line (R04) directly to Saket. Estimated travel duration is 42 minutes with an approximate fare of ₹40.'
+          'Kashmere Gate to Saket: Board Green Line (R02) to Rajiv Chowk or AIIMS, then transfer to Yellow Line (R04) directly to Saket. Estimated travel duration is 42 minutes with an approximate fare of ₹40.'
       } else if (qLower.includes('auto') || qLower.includes('fare') || qLower.includes('poochh')) {
         localReply =
-          '🛺 Poochh-O (DIMTS) Delhi statutory auto-rickshaw fare is ₹30 for the first 1.5 km, then ₹11/km thereafter. A 25% night surcharge applies between 23:00 and 05:00.'
+          'Poochh-O (DIMTS) Delhi statutory auto-rickshaw fare is ₹30 for the first 1.5 km, then ₹11/km thereafter. A 25% night surcharge applies between 23:00 and 05:00.'
       } else if (qLower.includes('card') || qLower.includes('discount') || qLower.includes('cashback')) {
         localReply =
-          '💳 Delhi Metro Smart Card offers 10% instant discount on every journey, plus an extra 10% (total 20% off) during designated off-peak hours (06:00-08:00 AM, 12:00-05:00 PM, and after 09:00 PM).'
+          'Delhi Metro Smart Card offers 10% instant discount on every journey, plus an extra 10% (total 20% off) during designated off-peak hours (06:00-08:00 AM, 12:00-05:00 PM, and after 09:00 PM).'
       } else if (qLower.includes('rajiv chowk') || qLower.includes('interchange')) {
         localReply =
-          '🔄 Rajiv Chowk is Delhi’s central transit interchange connecting Blue Line (Dwarka Sec-21 to Anand Vihar), Yellow Express corridor, and DTC Red Ring feeder bus services.'
+          'Rajiv Chowk is Delhi’s central transit interchange connecting Blue Line (Dwarka Sec-21 to Anand Vihar), Yellow Express corridor, and DTC Red Ring feeder bus services.'
       } else if (qLower.includes('764') || qLower.includes('bus')) {
         localReply =
-          '🚌 DTC City Bus 764 operates every 10 minutes from Rajiv Chowk via Mandi House and Mayur Vihar to Noida City Centre with electric air-conditioned low-floor buses (flat ₹30 fare).'
+          'DTC City Bus 764 operates every 10 minutes from Rajiv Chowk via Mandi House and Mayur Vihar to Noida City Centre with electric air-conditioned low-floor buses (flat ₹30 fare).'
       }
 
       const suggestedRoute = findRouteSuggestion(question + ' ' + localReply)
@@ -293,7 +278,7 @@ export default function AssistantPanel({
       <header className="flex items-center justify-between border-b-2 border-[#C49A43] px-4 sm:px-6 py-4 sm:py-4.5 bg-[#1A2E3B] text-white select-none shrink-0 shadow-md">
         <div className="flex items-center gap-3 sm:gap-3.5">
           <div className="flex h-12 w-12 sm:h-13 sm:w-13 items-center justify-center rounded-2xl bg-white/10 border-2 border-[#C49A43]/60 text-white shadow-md relative shrink-0">
-            <span className="text-2xl sm:text-3xl">🚆</span>
+            <BotIcon className="w-6 h-6 text-[#C49A43]" />
             <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-[#2E7D32] border-2 border-[#1A2E3B] animate-pulse" />
           </div>
           <div>
@@ -350,10 +335,10 @@ export default function AssistantPanel({
 
           <div className="flex items-center gap-1.5">
             {[
-              { id: 'routes', label: '⚡ Corridors' },
-              { id: 'fares', label: '💰 Fares & Auto' },
-              { id: 'schedules', label: '⏰ Timetables' },
-              { id: 'fleet', label: '🚌 Bus 764' },
+              { id: 'routes', label: 'Corridors' },
+              { id: 'fares', label: 'Fares & Auto' },
+              { id: 'schedules', label: 'Timetables' },
+              { id: 'fleet', label: 'Bus 764' },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -381,7 +366,21 @@ export default function AssistantPanel({
               onClick={() => handleSend(chip.query)}
               className="flex items-center gap-2 rounded-xl border border-[#D8CFBF] bg-white px-3.5 py-2 text-xs sm:text-sm font-bold text-[#1A2E3B] hover:border-[#C49A43] hover:bg-[#FAF0D9] transition-all disabled:opacity-50 cursor-pointer shadow-2xs shrink-0 active:scale-[0.98]"
             >
-              <span>{chip.icon}</span>
+              {chip.type === 'zap' ? (
+                <ZapIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+              ) : chip.type === 'dollar' ? (
+                <DollarSignIcon className="w-3.5 h-3.5 text-[#2E7D32]" />
+              ) : chip.type === 'plane' ? (
+                <PlaneIcon className="w-3.5 h-3.5 text-[#0284C7]" />
+              ) : chip.type === 'auto' ? (
+                <AutoRickshawIcon className="w-3.5 h-3.5 text-[#2E7D32]" />
+              ) : chip.type === 'clock' ? (
+                <ClockIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+              ) : chip.type === 'refresh' ? (
+                <RefreshIcon className="w-3.5 h-3.5 text-[#547A60]" />
+              ) : (
+                <BusIcon className="w-3.5 h-3.5 text-[#1D4ED8]" />
+              )}
               <span className="truncate">{chip.label}</span>
             </button>
           ))}
@@ -403,13 +402,13 @@ export default function AssistantPanel({
             <div className="flex items-start gap-3 max-w-[94%] sm:max-w-[88%]">
               {m.role === 'assistant' && (
                 <div className="flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1A2E3B] to-[#253D4E] border-2 border-[#C49A43] text-white shadow-md text-base sm:text-lg mt-0.5">
-                  🚆
+                  <BotIcon className="w-5 h-5 text-white" />
                 </div>
               )}
 
               {m.role === 'user' && (
                 <div className="flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#C49A43] to-[#A77B32] text-white font-extrabold text-xs sm:text-sm shadow-sm order-last mt-0.5">
-                  👤
+                  <UserIcon className="w-4 h-4 text-white" />
                 </div>
               )}
 
@@ -423,7 +422,7 @@ export default function AssistantPanel({
                 {/* Author Name Tag */}
                 <div className="flex items-center justify-between gap-4 mb-2 pb-1.5 border-b border-black/8 select-none">
                   <span className={`text-xs font-extrabold uppercase tracking-wider ${m.role === 'user' ? 'text-white/80' : 'text-[#C49A43]'}`}>
-                    {m.role === 'user' ? '👤 Passenger' : '🚆 Aaroh-Saarthi Engine'}
+                    {m.role === 'user' ? 'Passenger' : 'Aaroh-Saarthi Engine'}
                   </span>
                   <time className="text-xs opacity-75 font-mono">
                     {m.timestamp}
@@ -457,7 +456,7 @@ export default function AssistantPanel({
                     <div className="rounded-2xl border-2 border-[#C49A43]/50 bg-[#FFF9EE] p-3.5 flex items-center justify-between gap-3 shadow-xs">
                       <div className="min-w-0 space-y-1">
                         <div className="text-sm sm:text-base font-extrabold text-[#1A2E3B] truncate">
-                          {m.suggestedRoute.originName} ➔ {m.suggestedRoute.destName}
+                          {m.suggestedRoute.originName} → {m.suggestedRoute.destName}
                         </div>
                         {m.suggestedRoute.durationEstimate && (
                           <div className="text-xs sm:text-sm text-[#5A5248] flex items-center gap-1.5 font-semibold">
@@ -495,7 +494,7 @@ export default function AssistantPanel({
                     {copiedId === m.id ? (
                       <CheckIcon className="w-4 h-4 text-[#2E7D32]" />
                     ) : (
-                      <span className="text-xs">📋</span>
+                      <CopyIcon className="w-4 h-4 text-[#7A7269]" />
                     )}
                   </button>
                 )}
@@ -547,9 +546,10 @@ export default function AssistantPanel({
               <button
                 type="button"
                 onClick={() => setInput('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-[#7A7269] hover:text-[#1A202C] p-1 cursor-pointer"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-[#7A7269] hover:text-[#1A202C] cursor-pointer"
+                aria-label="Clear input"
               >
-                ✕
+                <XIcon className="w-4 h-4" />
               </button>
             )}
           </div>
