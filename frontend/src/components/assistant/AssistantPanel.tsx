@@ -21,6 +21,30 @@ import {
   RefreshIcon,
 } from '../common/Icons'
 
+interface Message {
+  id: string
+  role: 'user' | 'assistant'
+  text: string
+  timestamp: string
+  suggestedRoute?: {
+    originId: string
+    originName: string
+    destId: string
+    destName: string
+    fareEstimate?: string
+    durationEstimate?: string
+  }
+}
+
+interface Props {
+  isOpen?: boolean
+  onClose?: () => void
+  initialPrompt?: string
+  onRouteRecommendation?: (originId: string, destId: string) => void
+  stops?: Stop[]
+  serviceDay?: ServiceDay
+}
+
 type ChipCategory = 'routes' | 'fares' | 'schedules' | 'fleet'
 
 interface PromptChip {

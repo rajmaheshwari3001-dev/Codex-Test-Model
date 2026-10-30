@@ -277,11 +277,11 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                     <Icon className={`w-4 h-4 ${item.active ? 'text-[#C49A43]' : 'text-[#7A7269]'}`} />
                     <span>{item.label}</span>
                   </div>
-                  {item.badge === 'live' && (
-                    <span className="px-2 py-0.5 rounded-full bg-[#EAF5EC] text-[#22702E] text-[10px] font-bold uppercase tracking-wider">
-                      Live
+                  {item.badgeCount ? (
+                    <span className="px-2 py-0.5 rounded-full bg-[#FDE8E8] text-[#9B1C1C] text-[10px] font-bold uppercase tracking-wider">
+                      {item.badgeCount}
                     </span>
-                  )}
+                  ) : null}
                 </NavLink>
               )
             })}
@@ -306,7 +306,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                         : 'bg-[#FAF7F2] text-[#1A2E3B] border border-[#EBE5DC]'
                     }`}
                   >
-                    {reg.icon} {reg.id}
+                    {reg.id}
                   </button>
                 ))}
               </div>

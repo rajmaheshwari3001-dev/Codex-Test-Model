@@ -932,6 +932,25 @@ export function ChevronDownIcon({ className = 'w-4 h-4', size, ...props }: IconP
   )
 }
 
+export function ChevronUpIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      {...props}
+    >
+      <polyline points="18 15 12 9 6 15" />
+    </svg>
+  )
+}
+
 export function BotIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
   return (
     <svg

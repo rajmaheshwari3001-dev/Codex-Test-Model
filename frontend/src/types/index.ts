@@ -42,6 +42,7 @@ export interface JourneyLeg {
   distance_km?: number | null
   route_distance_km?: number | null
   fare_provenance?: string | null
+  duration_minutes?: number | null
 }
 
 export interface TransferInfo {
@@ -72,6 +73,8 @@ export interface JourneyOption {
   primary_mode?: 'metro' | 'bus' | 'multimodal' | 'auto'
   fare_comparison_note?: string | null
   budget_status?: string | null
+  transfers_count?: number
+  carbon_kg?: number | null
 }
 
 export interface SavedRoute {

@@ -553,7 +553,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           <AssistantPanel
             stops={stops}
             serviceDay={serviceDay}
-            onRouteRecommendation={(orig, dest) => {
+            onRouteRecommendation={(orig: string, dest: string) => {
               setOrigin(orig)
               setDestination(dest)
               setActiveConsoleTab('plan')
@@ -603,7 +603,7 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
                 initialPrompt={copilotPrompt}
                 stops={stops}
                 serviceDay={serviceDay}
-                onRouteRecommendation={(orig, dest) => {
+                onRouteRecommendation={(orig: string, dest: string) => {
                   setOrigin(orig)
                   setDestination(dest)
                   handleSearch(orig, dest, time, preference, serviceDay, modePreference, maxBudget)
