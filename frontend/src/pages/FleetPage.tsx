@@ -5,8 +5,19 @@ export default function FleetPage() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto py-2">
       {/* Operations Control Center Command Header */}
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-7 text-white shadow-md">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <section className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-7 text-white shadow-md">
+        {/* Background artwork with responsive PC vs Mobile switching */}
+        <picture className="absolute inset-0 z-0 opacity-25">
+          <source media="(min-width: 768px)" srcSet="/images/delhi_transit_pc.jpg" />
+          <img
+            src="/images/delhi_transit_mobile.jpg"
+            alt="Delhi Transit Fleet Network"
+            className="w-full h-full object-cover object-center"
+          />
+        </picture>
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-slate-950/95 via-slate-900/85 to-slate-900/50" />
+
+        <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3 py-0.5 text-xs font-semibold text-slate-200">

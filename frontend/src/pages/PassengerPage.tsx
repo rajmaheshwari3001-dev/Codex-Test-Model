@@ -291,15 +291,16 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
 
       {/* HERO BANNER SECTION */}
       <section className="relative overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 text-white shadow-lg">
-        {/* Background artwork with subtle dark overlay */}
-        <div className="absolute inset-0 z-0 opacity-25 mix-blend-luminosity">
+        {/* Background artwork with responsive PC vs Mobile switching */}
+        <picture className="absolute inset-0 z-0 opacity-35">
+          <source media="(min-width: 768px)" srcSet="/images/delhi_transit_pc.jpg" />
           <img
-            src="/images/delhi_transit_hero.jpg"
+            src="/images/delhi_transit_mobile.jpg"
             alt="Delhi Transit Infrastructure Network"
             className="w-full h-full object-cover object-center"
           />
-        </div>
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-slate-950 via-slate-900/90 to-slate-900/60" />
+        </picture>
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-slate-950/95 via-slate-900/85 to-slate-900/50" />
 
         <div className="relative z-10 p-6 sm:p-8 space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

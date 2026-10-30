@@ -268,3 +268,26 @@ textarea {
   background: #FFFFFF !important;
   border: 1px solid #E2E8F0 !important;
 }
+
+/* Responsive Delhi Transit Ambient Background (Mobile vs PC) */
+.app-transit-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/images/delhi_transit_mobile.jpg');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  opacity: 0.28;
+  transition: opacity 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .app-transit-backdrop {
+    background-image: url('/images/delhi_transit_pc.jpg');
+    background-position: center top;
+    opacity: 0.25;
+  }
+}
