@@ -312,16 +312,16 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
           role="tab"
           aria-selected={activeConsoleTab === 'plan'}
           onClick={() => setActiveConsoleTab('plan')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
             activeConsoleTab === 'plan'
               ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
               : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
           }`}
         >
-          <CompassIcon className="w-3.5 h-3.5" />
+          <CompassIcon className="w-4 h-4" />
           <span>Plan & Routes</span>
           {options.length > 0 && (
-            <span className="rounded-full bg-[#C49A43] text-white px-1.5 py-0.2 text-[9px] font-mono">
+            <span className="rounded-full bg-[#C49A43] text-white px-2 py-0.5 text-[10px] font-mono">
               {options.length}
             </span>
           )}
@@ -332,13 +332,13 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
           role="tab"
           aria-selected={activeConsoleTab === 'saved'}
           onClick={() => setActiveConsoleTab('saved')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
             activeConsoleTab === 'saved'
               ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
               : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
           }`}
         >
-          <BookmarkIcon className="w-3.5 h-3.5" />
+          <BookmarkIcon className="w-4 h-4" />
           <span>Shortcuts</span>
         </button>
 
@@ -347,13 +347,13 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
           role="tab"
           aria-selected={activeConsoleTab === 'assistant'}
           onClick={() => setActiveConsoleTab('assistant')}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
             activeConsoleTab === 'assistant'
               ? 'bg-[#243B4A] text-[#FFFCF5] shadow-xs'
               : 'text-[#77766D] hover:text-[#243B4A] hover:bg-[#EEE5D6]'
           }`}
         >
-          <SparklesIcon className="w-3.5 h-3.5" />
+          <SparklesIcon className="w-4 h-4" />
           <span>Copilot</span>
         </button>
       </div>
@@ -384,23 +384,23 @@ export default function PassengerPage({ defaultTab: _defaultTab }: PassengerPage
           />
 
           {/* Ask Aaroh-Saarthi Card Matching Figma */}
-          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 shadow-xs space-y-2.5">
+          <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs space-y-2.5">
             <div className="flex items-center gap-2">
               <SparklesIcon className="w-4 h-4 text-[#C49A43]" />
-              <h3 className="font-serif text-base font-normal text-[#1A2E3B]">
+              <h3 className="font-serif text-base sm:text-lg font-normal text-[#1A2E3B]">
                 Ask Aaroh-Saarthi
               </h3>
             </div>
-            <p className="text-xs font-normal text-[#7A7269] leading-relaxed">
+            <p className="text-xs sm:text-sm font-normal text-[#7A7269] leading-relaxed">
               An easier way to navigate the city.
             </p>
             <button
               type="button"
               onClick={() => setShowCopilotModal(true)}
-              className="w-full flex items-center justify-between rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 p-3 text-left text-xs font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
+              className="w-full flex items-center justify-between rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 p-3 sm:p-3.5 text-left text-xs sm:text-sm font-semibold text-[#6E665D] hover:text-[#1A2E3B] transition-all cursor-pointer group active:scale-[0.99] shadow-2xs"
             >
-              <span className="truncate text-xs">Try: "Which line is faster from Janakpuri to..."</span>
-              <ArrowRightIcon className="w-3.5 h-3.5 text-[#C49A43] group-hover:translate-x-1 transition-transform shrink-0" />
+              <span className="truncate text-xs sm:text-sm">Try: "Which line is faster from Janakpuri to..."</span>
+              <ArrowRightIcon className="w-4 h-4 text-[#C49A43] group-hover:translate-x-1 transition-transform shrink-0" />
             </button>
           </div>
         </div>

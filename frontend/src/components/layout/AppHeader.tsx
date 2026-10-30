@@ -105,11 +105,11 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
           <NavLink to="/" className="flex flex-col group focus:outline-none" aria-label="AAROH-SAARTHI Home">
             <div className="flex items-center gap-2">
-              <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#1A2E3B]">
+              <span className="font-serif text-xl sm:text-2xl lg:text-[26px] font-normal tracking-tight text-[#1A2E3B]">
                 AAROH<span className="text-[#C49A43] mx-1.5">•</span>SAARTHI
               </span>
             </div>
-            <span className="text-[9px] font-bold uppercase tracking-widest text-[#7A7269] -mt-0.5 hidden xs:block">
+            <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269] -mt-0.5 hidden xs:block">
               YOUR JOURNEY, RE-IMAGINED IN DELHI
             </span>
           </NavLink>
@@ -122,7 +122,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               <NavLink
                 key={item.label}
                 to={item.to}
-                className={`relative flex items-center h-full text-xs transition-colors duration-200 cursor-pointer ${
+                className={`relative flex items-center h-full text-xs sm:text-sm transition-colors duration-200 cursor-pointer ${
                   item.active
                     ? 'text-[#1A2E3B] font-extrabold'
                     : 'text-[#7A7269] hover:text-[#1A2E3B] font-semibold'
@@ -140,18 +140,18 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
         {/* Right: Quick Action Controls */}
         <div role="toolbar" aria-label="Quick Actions" className="flex items-center gap-2.5 shrink-0">
           {/* Live Data Badge */}
-          <div className="hidden xl:flex items-center gap-1.5 rounded-full bg-[#EAF5EC] border border-[#D1E7D5] px-3 py-1 text-[10px] font-extrabold tracking-wider uppercase text-[#22702E]">
+          <div className="hidden xl:flex items-center gap-1.5 rounded-full bg-[#EAF5EC] border border-[#D1E7D5] px-3 py-1 text-xs sm:text-[11px] font-extrabold tracking-wider uppercase text-[#22702E]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#22702E] animate-pulse" />
             <span>DATA UPDATED 2 MIN AGO</span>
           </div>
 
           {/* Location Selector */}
-          <div className="hidden xs:flex items-center gap-1.5 rounded-xl bg-[#FAF7F2] border border-[#EBE5DC] px-3 py-1.5 text-xs font-semibold text-[#1A2E3B] shadow-2xs">
-            <span className="text-xs text-[#C49A43]">📍</span>
+          <div className="hidden xs:flex items-center gap-1.5 rounded-xl bg-[#FAF7F2] border border-[#EBE5DC] px-3 py-1.5 text-xs sm:text-sm font-semibold text-[#1A2E3B] shadow-2xs">
+            <span className="text-xs sm:text-sm text-[#C49A43]">📍</span>
             <select
               value={selectedCity}
               onChange={e => setSelectedCity(e.target.value)}
-              className="bg-transparent text-xs font-bold text-[#1A2E3B] focus:outline-none cursor-pointer"
+              className="bg-transparent text-xs sm:text-sm font-bold text-[#1A2E3B] focus:outline-none cursor-pointer"
               aria-label="Select Transit Region"
             >
               <option value="Delhi NCR">Delhi NCR</option>
@@ -165,7 +165,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
           <button
             type="button"
             onClick={handleShareTrip}
-            className="flex items-center gap-1.5 rounded-xl bg-[#1A2E3B] hover:bg-[#253D4E] active:scale-[0.97] px-3.5 py-1.5 text-xs font-bold text-white shadow-[0_2px_8px_rgba(26,46,59,0.2)] hover:shadow-[0_4px_12px_rgba(26,46,59,0.3)] transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl bg-[#1A2E3B] hover:bg-[#253D4E] active:scale-[0.97] px-3.5 py-1.5 text-xs sm:text-sm font-bold text-white shadow-[0_2px_8px_rgba(26,46,59,0.2)] hover:shadow-[0_4px_12px_rgba(26,46,59,0.3)] transition-all cursor-pointer"
             aria-label="Share current trip"
           >
             {shareToast ? (
@@ -185,7 +185,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
           <button
             type="button"
             onClick={() => setShowCashbackModal(true)}
-            className="hidden md:flex items-center gap-1.5 rounded-xl border border-[#E8D4AE] bg-[#FAF0D9] hover:bg-[#F5E6C7] active:scale-[0.97] px-3 py-1.5 text-xs font-bold text-[#9A721C] transition-all cursor-pointer shadow-2xs"
+            className="hidden md:flex items-center gap-1.5 rounded-xl border border-[#E8D4AE] bg-[#FAF0D9] hover:bg-[#F5E6C7] active:scale-[0.97] px-3 py-1.5 text-xs sm:text-sm font-bold text-[#9A721C] transition-all cursor-pointer shadow-2xs"
             title="Delhi Transit Cashback & Concessions"
             aria-label="Open Transit Cashback and Concessions Calculator"
           >

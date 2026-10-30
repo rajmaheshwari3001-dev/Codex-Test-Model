@@ -331,13 +331,13 @@ export default function DelhiMap({
         </div>
 
         {/* Live Station Status Floating Card Matching Figma: Kashmere Gate Operating normally */}
-        <div className="hidden md:flex items-center gap-2.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
+        <div className="hidden md:flex items-center gap-2.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 sm:py-2.5 shadow-md backdrop-blur-md pointer-events-auto">
           <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
           <div className="text-left">
-            <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#1A2E3B]">
+            <div className="text-xs font-extrabold uppercase tracking-wider text-[#1A2E3B]">
               KASHMERE GATE
             </div>
-            <div className="text-[10px] text-[#22702E] font-bold">
+            <div className="text-xs text-[#22702E] font-semibold">
               Operating normally • Next train in 2 min
             </div>
           </div>
@@ -345,7 +345,7 @@ export default function DelhiMap({
       </div>
 
       {/* Floating Bus Fleet Card Matching Figma: CITY BUS 764 with Delhi Bus Graphic */}
-      <div className="absolute bottom-4 right-4 z-[500] hidden sm:flex items-center gap-3 rounded-2xl border border-[#EBE5DC] bg-white/95 p-3 shadow-lg backdrop-blur-md pointer-events-auto max-w-[240px] animate-fade-in">
+      <div className="absolute bottom-4 right-4 z-[500] hidden sm:flex items-center gap-3 rounded-2xl border border-[#EBE5DC] bg-white/95 p-3 sm:p-3.5 shadow-lg backdrop-blur-md pointer-events-auto max-w-[260px] animate-fade-in">
         <div className="flex h-11 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1A2E3B] text-white shadow-xs">
           <svg
             className="w-7 h-7"
@@ -363,26 +363,26 @@ export default function DelhiMap({
           </svg>
         </div>
         <div className="text-left">
-          <div className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#1A2E3B]">
+          <div className="text-xs font-extrabold uppercase tracking-wider text-[#1A2E3B]">
             CITY BUS 764
           </div>
-          <div className="text-[10px] text-[#7A7269] font-medium leading-tight">
+          <div className="text-xs text-[#7A7269] font-medium leading-tight">
             Every 10 min from Rajiv Chowk
           </div>
         </div>
       </div>
 
       {/* Floating Bottom-Left Legend Matching Figma: — Metro, — Bus, ○ Transfer */}
-      <div className="absolute bottom-4 left-4 z-[500] flex items-center gap-3.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 shadow-md backdrop-blur-md pointer-events-auto">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1A2E3B]">
+      <div className="absolute bottom-4 left-4 z-[500] flex items-center gap-3.5 rounded-xl border border-[#EBE5DC] bg-white/95 px-3.5 py-2 sm:py-2.5 shadow-md backdrop-blur-md pointer-events-auto">
+        <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#1A2E3B]">
           <span className="h-1.5 w-4 rounded-full bg-[#C49A43] inline-block" />
           <span>Metro</span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1A2E3B]">
+        <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#1A2E3B]">
           <span className="h-1.5 w-4 rounded-full bg-[#1A2E3B] inline-block" />
           <span>Bus</span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#1A2E3B]">
+        <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#1A2E3B]">
           <span className="h-2.5 w-2.5 rounded-full border-2 border-[#1A2E3B] bg-[#C49A43] inline-block" />
           <span>Transfer</span>
         </div>

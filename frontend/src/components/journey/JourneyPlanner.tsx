@@ -126,14 +126,14 @@ export default function JourneyPlanner({
       className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs text-[#1A202C] space-y-4 animate-fade-in"
     >
       {/* Title & Subtitle Matching Figma: PLAN FOR A DELHI DAY */}
-      <header className="space-y-1">
-        <div className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#C49A43] select-none">
+      <header className="space-y-1 sm:space-y-1.5">
+        <div className="text-xs sm:text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#C49A43] select-none">
           PLAN FOR A DELHI DAY
         </div>
-        <h2 id="journey-planner-heading" className="font-serif text-2xl font-normal tracking-tight text-[#1A2E3B]">
+        <h2 id="journey-planner-heading" className="font-serif text-2xl sm:text-2xl lg:text-[26px] font-normal tracking-tight text-[#1A2E3B] leading-tight">
           Where would you like to go?
         </h2>
-        <p className="text-xs font-normal text-[#7A7269] leading-relaxed">
+        <p className="text-xs sm:text-sm font-normal text-[#7A7269] leading-relaxed">
           Compare metro, bus and multimodal routes
         </p>
       </header>
@@ -141,11 +141,11 @@ export default function JourneyPlanner({
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         {/* FROM INPUT (Origin Pin Gold Circle) */}
         <div className="space-y-1.5">
-          <label htmlFor="journey-origin" className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269] flex items-center gap-1.5">
+          <label htmlFor="journey-origin" className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269] flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#C49A43]" />
             <span>FROM</span>
           </label>
-          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 text-xs transition-all shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 sm:py-3 transition-all shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
             <select
               id="journey-origin"
               value={origin}
@@ -153,7 +153,7 @@ export default function JourneyPlanner({
                 setOrigin(e.target.value)
                 if (error) setError('')
               }}
-              className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none cursor-pointer text-xs"
+              className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none cursor-pointer text-xs sm:text-sm"
             >
               <option value="">Select origin station or hub...</option>
               {stops.map(s => (
@@ -192,11 +192,11 @@ export default function JourneyPlanner({
 
         {/* TO INPUT (Destination Pin Terracotta Circle) */}
         <div className="space-y-1.5">
-          <label htmlFor="journey-destination" className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269] flex items-center gap-1.5">
+          <label htmlFor="journey-destination" className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269] flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-[#A6533C]" />
             <span>TO</span>
           </label>
-          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 text-xs transition-all shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
+          <div className="relative flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3.5 py-2.5 sm:py-3 transition-all shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
             <select
               id="journey-destination"
               value={destination}
@@ -204,7 +204,7 @@ export default function JourneyPlanner({
                 setDestination(e.target.value)
                 if (error) setError('')
               }}
-              className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none cursor-pointer text-xs"
+              className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none cursor-pointer text-xs sm:text-sm"
             >
               <option value="">Select destination station...</option>
               {stops.map(s => (
@@ -229,12 +229,12 @@ export default function JourneyPlanner({
 
         {/* DEPARTURE (With quick NOW badge matching Figma: Today, 08:40 AM) */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269]">
+          <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269]">
             DEPARTURE
           </label>
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3 py-2 text-xs shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20 transition-all">
-              <span className="text-xs mr-1.5">📅</span>
+            <div className="flex items-center rounded-xl border border-[#EBE5DC] bg-white px-3 py-2 sm:py-2.5 shadow-2xs hover:border-[#D8CFBF] focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20 transition-all">
+              <span className="text-sm mr-1.5">📅</span>
               <input
                 type="text"
                 value={time ? `Today, ${time}` : 'Today, 08:40 AM'}
@@ -244,13 +244,13 @@ export default function JourneyPlanner({
                 }}
                 placeholder="Today, 08:40 AM"
                 aria-label="Departure Time"
-                className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none text-xs"
+                className="w-full bg-transparent font-semibold text-[#1A202C] focus:outline-none text-xs sm:text-sm"
               />
             </div>
             <button
               type="button"
               onClick={handleSelectNow}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 px-3 py-2 text-xs font-bold text-[#1A2E3B] transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-[#1A2E3B] transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-[#C49A43] animate-pulse" />
               <span>NOW • {time || '08:40'}</span>
@@ -260,14 +260,14 @@ export default function JourneyPlanner({
 
         {/* TRAVEL PREFERENCE (Fastest vs Cheapest Toggle Matching Figma) */}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#7A7269]">
+          <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269]">
             TRAVEL PREFERENCE
           </label>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => setPreference('fastest')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'fastest'
                   ? 'bg-[#C49A43] text-white shadow-[0_2px_8px_rgba(196,154,67,0.3)] ring-1 ring-[#C49A43]'
                   : 'bg-[#FAF7F2] text-[#6E665D] border border-[#EBE5DC] hover:bg-[#F4EFE6] hover:text-[#1A2E3B] hover:border-[#D8CFBF]'
@@ -280,7 +280,7 @@ export default function JourneyPlanner({
             <button
               type="button"
               onClick={() => setPreference('cheapest')}
-              className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 sm:py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'cheapest'
                   ? 'bg-[#C49A43] text-white shadow-[0_2px_8px_rgba(196,154,67,0.3)] ring-1 ring-[#C49A43]'
                   : 'bg-[#FAF7F2] text-[#6E665D] border border-[#EBE5DC] hover:bg-[#F4EFE6] hover:text-[#1A2E3B] hover:border-[#D8CFBF]'
@@ -298,7 +298,7 @@ export default function JourneyPlanner({
           id="btn-search-journey"
           disabled={loading}
           aria-label="Find my route"
-          className="group w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#C49A43] via-[#BA8F39] to-[#AF842F] hover:from-[#B88E3B] hover:via-[#AF842F] hover:to-[#A17528] text-white font-bold py-3.5 px-4 text-xs tracking-wide shadow-[0_4px_14px_rgba(196,154,67,0.32)] hover:shadow-[0_6px_20px_rgba(196,154,67,0.42)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
+          className="group w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#C49A43] via-[#BA8F39] to-[#AF842F] hover:from-[#B88E3B] hover:via-[#AF842F] hover:to-[#A17528] text-white font-bold py-3.5 sm:py-4 px-4 text-xs sm:text-sm tracking-wide shadow-[0_4px_14px_rgba(196,154,67,0.32)] hover:shadow-[0_6px_20px_rgba(196,154,67,0.42)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <>

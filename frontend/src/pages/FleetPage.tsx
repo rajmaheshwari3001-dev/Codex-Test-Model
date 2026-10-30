@@ -9,15 +9,15 @@ export default function FleetPage() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+              <span className="text-xs sm:text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#C49A43] select-none">
                 OPERATIONS & CONTROL CENTRE
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#EAF5EC] border border-[#D1E7D5] px-2.5 py-0.5 text-[11px] font-bold text-[#2E7D32]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EAF5EC] border border-[#D1E7D5] px-2.5 py-0.5 text-xs font-bold text-[#2E7D32]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#2E7D32] animate-pulse" />
                 <span>Simulator Active</span>
               </span>
             </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#1A2E3B]">
+            <h1 className="font-serif text-2xl sm:text-3xl lg:text-[34px] font-normal tracking-tight text-[#1A2E3B] leading-tight">
               Fleet Telemetry & Incident Coordination
             </h1>
             <p className="max-w-3xl text-xs sm:text-sm text-[#7A7269] leading-relaxed">

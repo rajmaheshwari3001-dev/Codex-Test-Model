@@ -172,37 +172,14 @@ textarea {
   background: #C49A43;
 }
 
-/* Media Queries for Typography & Responsiveness */
+/* Responsive Typography & Controls Touch Targets */
 @media (max-width: 640px) {
-  h1 {
-    font-size: clamp(1.25rem, 5vw, 1.5rem) !important;
-    line-height: 1.25 !important;
-  }
-  h2 {
-    font-size: clamp(1.1rem, 4.2vw, 1.25rem) !important;
-    line-height: 1.3 !important;
-  }
   button, 
   [role="button"],
   select,
   input[type="button"],
   input[type="submit"] {
-    min-height: 40px;
-  }
-}
-
-@media (min-width: 641px) and (max-width: 1024px) {
-  h1 {
-    font-size: clamp(1.5rem, 3vw, 1.85rem) !important;
-  }
-  h2 {
-    font-size: clamp(1.2rem, 2.5vw, 1.4rem) !important;
-  }
-}
-
-@media (min-width: 1025px) {
-  h1 {
-    font-size: clamp(1.75rem, 2.5vw, 2.25rem) !important;
+    min-height: 42px;
   }
 }
 

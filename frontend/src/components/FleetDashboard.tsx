@@ -252,14 +252,14 @@ export default function FleetDashboard() {
       {/* Fleet Overview & Table */}
       <div className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#EBE5DC] gap-2">
-          <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+          <div className="space-y-1">
+            <div className="text-xs sm:text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#C49A43] select-none">
               LIVE ROSTER
             </div>
-            <h2 className="font-serif text-xl font-bold text-[#1A2E3B]">Fleet Telemetry Roster</h2>
-            <p className="text-xs text-[#7A7269]">Real-time operational status, position, and passenger crowding across vehicles</p>
+            <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#1A2E3B]">Fleet Telemetry Roster</h2>
+            <p className="text-xs sm:text-sm text-[#7A7269] leading-relaxed">Real-time operational status, position, and passenger crowding across vehicles</p>
           </div>
-          <div className="text-xs text-[#7A7269] font-mono">
+          <div className="text-xs sm:text-sm text-[#7A7269] font-mono">
             {buses.length} vehicles registered
           </div>
         </div>
@@ -386,12 +386,12 @@ export default function FleetDashboard() {
 
       {/* Disruption Simulation Trigger Panel */}
       <div ref={disruptionRef} className="rounded-2xl border border-[#EBE5DC] bg-white p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="pb-3 border-b border-[#EBE5DC]">
-          <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#C49A43]">
+        <div className="pb-3 border-b border-[#EBE5DC] space-y-1">
+          <div className="text-xs sm:text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#C49A43] select-none">
             INCIDENT CONTROL
           </div>
-          <h2 className="font-serif text-xl font-bold text-[#1A2E3B]">Simulate Operational Disruption</h2>
-          <p className="text-xs text-[#7A7269]">
+          <h2 className="font-serif text-xl sm:text-2xl font-normal text-[#1A2E3B]">Simulate Operational Disruption</h2>
+          <p className="text-xs sm:text-sm text-[#7A7269] leading-relaxed">
             Inject operational incidents to evaluate algorithm dispatch recommendations and alternative fleet mitigation plans
           </p>
         </div>
