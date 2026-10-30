@@ -236,3 +236,4 @@ class PoochhOScraper:
         hours = road_distance / speed_kmh
         duration_minutes = max(int(math.ceil(hours * 60)), 5)
         return road_distance, duration_minutes
+

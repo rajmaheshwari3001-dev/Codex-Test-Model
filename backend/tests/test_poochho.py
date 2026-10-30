@@ -177,3 +177,4 @@ def test_api_journey_search_mode_auto(client):
     assert len(data["options"]) == 1
     assert data["options"][0]["primary_mode"] == "auto"
     assert data["options"][0]["total_fare"] is not None
+
