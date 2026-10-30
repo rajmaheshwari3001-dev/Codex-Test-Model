@@ -22,8 +22,8 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      {/* Clean Editorial Footer Matching Figma */}
-      <footer className="border-t border-[#EBE5DC] bg-[#FAF7F2] px-4 sm:px-6 lg:px-8 py-4 text-center text-[11px] font-bold tracking-widest text-[#7A7269] uppercase relative z-10">
+      {/* Clean Minimal Editorial Footnote (Zero awkward overflow) */}
+      <footer className="py-2 text-center text-[10px] font-bold tracking-widest text-[#A1988B] uppercase select-none relative z-10">
         AAROH-SAARTHI • DESIGNED FOR THE CITIZENS OF DELHI NCR
       </footer>
     </div>

@@ -7,6 +7,7 @@ import { parseToTime24 } from '../utils/time'
 
 import JourneyPlanner from '../components/journey/JourneyPlanner'
 import AssistantPanel from '../components/assistant/AssistantPanel'
+import MovableCopilotLauncher from '../components/assistant/MovableCopilotLauncher'
 import DelhiMap from '../components/map/DelhiMap'
 import JourneyComparison from '../components/routes/JourneyComparison'
 import SavedJourneysBar from '../components/saved/SavedJourneysBar'
@@ -514,51 +515,13 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
           document.body
         )}
 
-      {/* Floating AI Transit Copilot Quick Launcher (Dimensionally Responsive for Mobile, Tablet & Desktop) */}
-      <aside style={{ zIndex: 9999 }} className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6">
-        {/* Mobile View: Circular Tactile FAB with Glowing Badge */}
-        <button
-          type="button"
-          onClick={() => {
-            setCopilotPrompt('')
-            setShowCopilotModal(true)
-          }}
-          className="flex md:hidden h-14 w-14 items-center justify-center rounded-full border-2 border-[#C49A43] bg-[#1A2E3B] text-white shadow-[0_8px_24px_rgba(26,46,59,0.4)] active:scale-90 transition-transform cursor-pointer relative"
-          title="Open Aaroh-Saarthi AI Transit Copilot"
-          aria-label="Open Aaroh-Saarthi AI Transit Copilot"
-        >
-          <SparklesIcon className="w-7 h-7 text-[#C49A43]" />
-          <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-[#2E7D32] border-2 border-[#1A2E3B] animate-pulse" />
-        </button>
-
-        {/* Tablet & Desktop View: Dimensionally Responsive Pill Launcher with Subtitle */}
-        <button
-          type="button"
-          onClick={() => {
-            setCopilotPrompt('')
-            setShowCopilotModal(true)
-          }}
-          className="hidden md:flex h-14 sm:h-15 px-5 sm:px-6 rounded-full border-2 border-[#C49A43]/50 bg-[#1A2E3B] hover:bg-[#243B4A] text-white shadow-[0_10px_30px_rgba(26,46,59,0.35)] hover:shadow-[0_14px_36px_rgba(196,154,67,0.45)] hover:scale-105 active:scale-95 transition-all duration-300 items-center gap-3.5 cursor-pointer group"
-          title="Open Aaroh-Saarthi AI Transit Copilot"
-          aria-label="Open Aaroh-Saarthi AI Transit Copilot"
-        >
-          <span className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#C49A43] to-[#A77B32] text-white shadow-md group-hover:rotate-12 transition-transform shrink-0">
-            <SparklesIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-          </span>
-          <div className="flex flex-col text-left">
-            <span className="text-xs sm:text-sm font-extrabold tracking-wide leading-tight text-white">
-              Ask Copilot
-            </span>
-            <span className="text-[10px] sm:text-[11px] font-semibold text-[#EBE5DC] leading-tight">
-              Multimodal Transit AI
-            </span>
-          </div>
-          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#2E7D32]/20 border border-[#2E7D32]/50 text-[#79D48A] text-[10px] font-mono font-extrabold shrink-0">
-            <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
-            <span>LIVE</span>
-          </span>
-        </button>
-      </aside>
+      {/* Movable & Draggable AI Transit Copilot Quick Launcher (Can be dragged anywhere on screen) */}
+      <MovableCopilotLauncher
+        onOpen={() => {
+          setCopilotPrompt('')
+          setShowCopilotModal(true)
+        }}
+      />
 
       {/* Modals */}
       <DataProvenanceModal
