@@ -63,7 +63,166 @@ const AIRPORT_T3_COORD: [number, number] = [28.5560, 77.0850]
 const BOTANICAL_COORD: [number, number] = [28.5645, 77.3340]
 
 
-type MapStyle = 'sandstone' | 'dark' | 'satellite'
+export type MapStyle =
+  | 'voyager'
+  | 'dark'
+  | 'positron'
+  | 'satellite'
+  | 'streets'
+  | 'topo'
+  | 'hot'
+  | 'natgeo'
+  | 'gray'
+  | 'dark_gray'
+  | 'sandstone'
+
+export interface MapStyleConfig {
+  id: MapStyle
+  name: string
+  engine: string
+  category: 'apple' | 'satellite' | 'transit'
+  tagline: string
+  badge: string
+  swatchBg: string
+  url: string
+  attribution: string
+  maxZoom: number
+  subdomains: string
+}
+
+export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
+  {
+    id: 'voyager',
+    name: 'Apple Maps (Voyager)',
+    engine: 'CARTO Fastly CDN',
+    category: 'apple',
+    tagline: 'Signature Apple Maps look with smooth roads, clean pastel greenery & zero clutter.',
+    badge: 'Apple Style',
+    swatchBg: 'from-[#E0F2FE] via-[#BAE6FD] to-[#38BDF8]',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; CARTO &copy; OpenStreetMap',
+    maxZoom: 19,
+    subdomains: 'abcd',
+  },
+  {
+    id: 'dark',
+    name: 'Apple Midnight (Dark)',
+    engine: 'CARTO Dark Matter',
+    category: 'apple',
+    tagline: 'Apple Dark Mode with deep obsidian contrast for glowing metro lines.',
+    badge: 'Night Mode',
+    swatchBg: 'from-[#0F172A] via-[#1E293B] to-[#334155]',
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; CARTO &copy; OpenStreetMap',
+    maxZoom: 19,
+    subdomains: 'abcd',
+  },
+  {
+    id: 'positron',
+    name: 'Minimal Light (Positron)',
+    engine: 'CARTO Positron',
+    category: 'apple',
+    tagline: 'Ultra-clean Apple monochrome style for high readability and focus.',
+    badge: 'Clean Vector',
+    swatchBg: 'from-[#F8FAFC] via-[#E2E8F0] to-[#CBD5E1]',
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; CARTO &copy; OpenStreetMap',
+    maxZoom: 19,
+    subdomains: 'abcd',
+  },
+  {
+    id: 'satellite',
+    name: 'Photoreal Satellite',
+    engine: 'Esri World Imagery',
+    category: 'satellite',
+    tagline: 'High-resolution aerial satellite photography across Delhi NCR & Yamuna.',
+    badge: 'Photoreal',
+    swatchBg: 'from-[#064E3B] via-[#047857] to-[#10B981]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+    maxZoom: 18,
+    subdomains: 'abc',
+  },
+  {
+    id: 'streets',
+    name: 'World Street Navigation',
+    engine: 'Esri World Streets',
+    category: 'satellite',
+    tagline: 'High-detail turn-by-turn arterial clarity, flyovers, and highways.',
+    badge: 'Navigation',
+    swatchBg: 'from-[#FEF3C7] via-[#FDE68A] to-[#F59E0B]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, HERE, Garmin',
+    maxZoom: 19,
+    subdomains: 'abc',
+  },
+  {
+    id: 'topo',
+    name: 'Delhi Topographic',
+    engine: 'Esri World Topo',
+    category: 'satellite',
+    tagline: 'Contour elevations, Delhi Ridge green belt, and terrain relief.',
+    badge: 'Topographic',
+    swatchBg: 'from-[#DCFCE7] via-[#BBF7D0] to-[#22C55E]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, USGS, FAO',
+    maxZoom: 19,
+    subdomains: 'abc',
+  },
+  {
+    id: 'hot',
+    name: 'Urban Transit (HOT)',
+    engine: 'OSM Humanitarian',
+    category: 'transit',
+    tagline: 'Pedestrian corridors, bus priority lanes, and city landmarks.',
+    badge: 'Transit Focus',
+    swatchBg: 'from-[#FFE4E6] via-[#FECDD3] to-[#FB7185]',
+    url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+    attribution: '&copy; OpenStreetMap contributors, Humanitarian OSM',
+    maxZoom: 19,
+    subdomains: 'abc',
+  },
+  {
+    id: 'natgeo',
+    name: 'National Geographic',
+    engine: 'Esri NatGeo',
+    category: 'transit',
+    tagline: 'Classic warm parchment cartography with landmark typography.',
+    badge: 'Vintage',
+    swatchBg: 'from-[#FEF3C7] via-[#FDE68A] to-[#D97706]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; National Geographic, Esri',
+    maxZoom: 16,
+    subdomains: 'abc',
+  },
+  {
+    id: 'gray',
+    name: 'Light Gray Canvas',
+    engine: 'Esri Canvas Light',
+    category: 'transit',
+    tagline: 'Soft studio gray base engineered for bus GPS & route clarity.',
+    badge: 'Data Canvas',
+    swatchBg: 'from-[#F1F5F9] via-[#E2E8F0] to-[#94A3B8]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, HERE, Garmin',
+    maxZoom: 16,
+    subdomains: 'abc',
+  },
+  {
+    id: 'dark_gray',
+    name: 'Dark Slate Canvas',
+    engine: 'Esri Canvas Dark',
+    category: 'transit',
+    tagline: 'Modern midnight charcoal canvas for night travel and telemetry.',
+    badge: 'Dark Slate',
+    swatchBg: 'from-[#0F172A] via-[#1E293B] to-[#475569]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, DeLorme, NAVTEQ',
+    maxZoom: 16,
+    subdomains: 'abc',
+  },
+]
+
 
 export default function DelhiMap({
   stops,
@@ -82,7 +241,38 @@ export default function DelhiMap({
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
   const mapSearchRef = useRef<HTMLDivElement>(null)
-  const [mapStyle, setMapStyle] = useState<MapStyle>('sandstone')
+  const [mapStyle, setMapStyle] = useState<MapStyle>(() => {
+    try {
+      const saved = localStorage.getItem('aaroh_map_style') as MapStyle
+      if (saved && MAP_STYLES_CATALOG.some(s => s.id === saved)) return saved
+      const savedTheme = localStorage.getItem('aaroh_theme')
+      if (savedTheme === 'dark') return 'dark'
+    } catch {}
+    return 'voyager' // Default to Apple Maps style
+  })
+  const [showLayerDrawer, setShowLayerDrawer] = useState(false)
+  const [layerFilter, setLayerFilter] = useState<'all' | 'apple' | 'satellite' | 'transit'>('all')
+  const layerDrawerRef = useRef<HTMLDivElement>(null)
+
+  // Persist user map style
+  useEffect(() => {
+    try {
+      localStorage.setItem('aaroh_map_style', mapStyle)
+    } catch {}
+  }, [mapStyle])
+
+  // Close layer drawer on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (layerDrawerRef.current && !layerDrawerRef.current.contains(e.target as Node)) {
+        setShowLayerDrawer(false)
+      }
+    }
+    if (showLayerDrawer) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showLayerDrawer])
 
   // Map Filter Toggles
   const [showMetro, setShowMetro] = useState(true)
@@ -123,7 +313,7 @@ export default function DelhiMap({
       if (customEvent.detail?.theme === 'dark') {
         setMapStyle('dark')
       } else {
-        setMapStyle('sandstone')
+        setMapStyle('voyager')
       }
     }
     try {
@@ -145,36 +335,21 @@ export default function DelhiMap({
     }
   }, [onSelectOrigin, onSelectDestination])
 
-  // Change Basemap Tiles dynamically based on mapStyle (Clean OpenStreetMap tiles, zero API key watermark)
+  // Change Basemap Tiles dynamically using 10 Free Map APIs (CARTO, Esri, OSM)
   const updateTileLayer = useCallback((style: MapStyle, map: L.Map) => {
     if (tileLayerRef.current) {
       map.removeLayer(tileLayerRef.current)
     }
 
-    let url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-    let attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    let maxZoom = 19
-    let subdomains = 'abc'
+    // Resolve 'sandstone' alias to 'voyager' (Apple Maps style)
+    const effectiveId = style === 'sandstone' ? 'voyager' : style
+    const conf = MAP_STYLES_CATALOG.find(s => s.id === effectiveId) || MAP_STYLES_CATALOG[0]
 
-    if (style === 'satellite') {
-      // High-resolution aerial satellite imagery (Esri World Imagery)
-      url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      attribution = '&copy; Esri, Maxar, Earthstar Geographics'
-      maxZoom = 18
-      subdomains = 'abc'
-    } else if (style === 'dark') {
-      // Clean Dark Map Tiles
-      url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-      attribution = '&copy; OpenStreetMap contributors'
-      maxZoom = 19
-      subdomains = 'abc'
-    }
-
-    const newLayer = L.tileLayer(url, {
-      attribution,
-      maxZoom,
+    const newLayer = L.tileLayer(conf.url, {
+      attribution: conf.attribution,
+      maxZoom: conf.maxZoom,
       minZoom: 9,
-      subdomains,
+      subdomains: conf.subdomains,
     }).addTo(map)
 
     tileLayerRef.current = newLayer
@@ -209,7 +384,28 @@ export default function DelhiMap({
       map.remove()
       mapRef.current = null
     }
-  }, [mapStyle, updateTileLayer])
+  }, [updateTileLayer])
+
+  // ResizeObserver & Window Resize for 100% Map Responsiveness across viewports
+  useEffect(() => {
+    if (!containerRef.current || !mapRef.current) return
+    const ro = new ResizeObserver(() => {
+      mapRef.current?.invalidateSize({ debounceMoveend: true })
+    })
+    ro.observe(containerRef.current)
+
+    const handleResize = () => {
+      mapRef.current?.invalidateSize()
+    }
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
+
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
+    }
+  }, [])
 
   // Handle map style changes
   useEffect(() => {
@@ -598,13 +794,19 @@ export default function DelhiMap({
     showBus,
   ])
 
-  // Fit active journey bounds
+  // Fit active journey bounds dynamically based on selected origin/dest
   const handleFitRoute = () => {
     if (!mapRef.current) return
-    mapRef.current.fitBounds(
-      L.latLngBounds([DWARKA_COORD, RAJIV_COORD, NOIDA_COORD]),
-      { padding: [60, 60], maxZoom: 13 }
-    )
+    const points: [number, number][] = []
+    const orig = stops.find(s => s.stop_id === originStopId)
+    const dest = stops.find(s => s.stop_id === destinationStopId)
+    if (orig && isValidCoord(orig.stop_lat, orig.stop_lon)) points.push([orig.stop_lat, orig.stop_lon])
+    if (dest && isValidCoord(dest.stop_lat, dest.stop_lon)) points.push([dest.stop_lat, dest.stop_lon])
+    if (points.length >= 2) {
+      mapRef.current.fitBounds(L.latLngBounds(points), { padding: [50, 50], maxZoom: 14 })
+    } else {
+      mapRef.current.setView([28.625, 77.215], 12)
+    }
   }
 
   // Reset to full Delhi NCR overview
@@ -846,18 +1048,18 @@ export default function DelhiMap({
 
         {/* Map / Satellite & Zoom Controls */}
         <div className="flex items-center gap-1.5 pointer-events-auto shrink-0 ml-auto">
-          {/* Map / Satellite Toggle Pill */}
+          {/* Quick Apple Maps / Satellite Toggle Pill */}
           <div className="flex rounded-full bg-white border border-[#EDE8E1] p-0.5 sm:p-1 shadow-md">
             <button
               type="button"
-              onClick={() => setMapStyle('sandstone')}
+              onClick={() => setMapStyle('voyager')}
               className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
-                mapStyle === 'sandstone'
+                mapStyle === 'voyager' || mapStyle === 'sandstone' || mapStyle === 'positron'
                   ? 'bg-[#1A2E3B] text-white shadow-2xs'
                   : 'text-[#6E665D] hover:text-[#1A2E3B]'
               }`}
             >
-              Map
+              Apple Maps
             </button>
             <button
               type="button"
@@ -876,7 +1078,7 @@ export default function DelhiMap({
           <button
             type="button"
             onClick={handleFitRoute}
-            title="Locate Route"
+            title="Locate Active Route"
             aria-label="Locate active route"
             className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
           >
@@ -894,23 +1096,153 @@ export default function DelhiMap({
             <span>—</span>
           </button>
 
-          {/* Layers Thumbnail Button */}
+          {/* Layers Popover Button (Opens 10 Free Map Styles Selector) */}
           <button
             type="button"
-            onClick={() => setMapStyle(prev => (prev === 'satellite' ? 'sandstone' : 'satellite'))}
-            title="Toggle Satellite Imagery"
-            aria-label="Toggle Satellite Imagery"
-            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white overflow-hidden shadow-md transition-all cursor-pointer hover:border-[#C49A43] active:scale-95"
+            onClick={() => setShowLayerDrawer(prev => !prev)}
+            title="Choose from 10 Free Map Styles"
+            aria-label="Choose from 10 Free Map Styles"
+            className={`flex h-8 sm:h-9 items-center gap-1.5 px-2.5 sm:px-3 rounded-2xl border shadow-md transition-all cursor-pointer active:scale-95 ${
+              showLayerDrawer
+                ? 'bg-[#1A2E3B] text-white border-[#1A2E3B]'
+                : 'bg-white text-[#1A2E3B] border-[#EDE8E1] hover:border-[#C49A43]'
+            }`}
           >
-            <LayersIcon className="w-4 h-4 text-[#1A2E3B]" />
+            <LayersIcon className="w-4 h-4 text-[#C49A43]" />
+            <span className="text-[11px] font-bold hidden sm:inline">10 Maps</span>
           </button>
         </div>
       </div>
 
+      {/* Floating Apple Maps & 10 Free Map Styles Popover Sheet */}
+      {showLayerDrawer && (
+        <div
+          ref={layerDrawerRef}
+          className="absolute bottom-16 right-3.5 sm:right-4 z-[600] w-[340px] sm:w-[420px] max-w-[calc(100vw-28px)] rounded-3xl border border-[#EDE8E1] bg-white/98 backdrop-blur-2xl shadow-2xl p-4 sm:p-5 animate-fade-in pointer-events-auto divide-y divide-[#F5EFE6]"
+        >
+          {/* Header */}
+          <div className="pb-3 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-[#0284C7] to-[#0369A1] text-white shadow-md">
+                <LayersIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-serif text-sm sm:text-base font-bold text-[#1A2E3B] leading-tight">
+                  Apple Maps & Free Map APIs
+                </h4>
+                <p className="text-[11px] text-[#7A7269]">
+                  10 High-Performance Engines • 100% Free
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowLayerDrawer(false)}
+              className="rounded-full p-1.5 text-[#7A7269] hover:bg-[#FAF7F2] hover:text-[#1A2E3B] transition-colors cursor-pointer"
+              aria-label="Close Map Styles"
+            >
+              <XIcon className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Category Filter Tabs */}
+          <div className="py-2.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none text-[11px] font-bold">
+            {[
+              { id: 'all', label: 'All (10)' },
+              { id: 'apple', label: 'Apple & Clean' },
+              { id: 'satellite', label: 'Satellite & Street' },
+              { id: 'transit', label: 'Transit & Topo' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setLayerFilter(tab.id as any)}
+                className={`px-3 py-1 rounded-full border transition-all cursor-pointer whitespace-nowrap ${
+                  layerFilter === tab.id
+                    ? 'bg-[#1A2E3B] text-white border-[#1A2E3B] shadow-xs'
+                    : 'bg-[#FAF7F2] text-[#6E665D] border-[#EDE8E1] hover:border-[#C49A43]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Catalog Grid */}
+          <div className="pt-2 max-h-[300px] sm:max-h-[340px] overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+            {MAP_STYLES_CATALOG.filter(item => layerFilter === 'all' || item.category === layerFilter).map(item => {
+              const isSelected = mapStyle === item.id || (item.id === 'voyager' && mapStyle === 'sandstone')
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setMapStyle(item.id)
+                    setShowLayerDrawer(false)
+                  }}
+                  className={`w-full text-left p-2.5 rounded-2xl border transition-all cursor-pointer flex items-center gap-3 ${
+                    isSelected
+                      ? 'border-[#C49A43] bg-[#FAF4E6]/50 ring-2 ring-[#C49A43]/20 shadow-xs'
+                      : 'border-[#EDE8E1] bg-white hover:bg-[#FAF7F2] hover:border-[#D8C8AA]'
+                  }`}
+                >
+                  {/* Swatch visual icon */}
+                  <div
+                    className={`h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-br ${item.swatchBg} border border-black/10 flex items-center justify-center shrink-0 shadow-xs`}
+                  >
+                    <LayersIcon className="w-4 h-4 text-white/90 drop-shadow-xs" />
+                  </div>
+
+                  {/* Meta */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-[13px] font-bold text-[#1A2E3B] truncate">
+                        {item.name}
+                      </span>
+                      <span
+                        className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md ${
+                          item.badge === 'Apple Style'
+                            ? 'bg-[#E0F2FE] text-[#0369A1]'
+                            : item.badge === 'Night Mode'
+                            ? 'bg-[#EDE9FE] text-[#6D28D9]'
+                            : 'bg-[#FAF0D9] text-[#9A721C]'
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    </div>
+                    <p className="text-[10px] sm:text-[11px] text-[#7A7269] line-clamp-1 mt-0.5">
+                      {item.tagline}
+                    </p>
+                  </div>
+
+                  {/* Active Radio Badge */}
+                  <div className="shrink-0 pl-1">
+                    {isSelected ? (
+                      <div className="h-5 w-5 rounded-full bg-[#C49A43] text-white flex items-center justify-center shadow-xs">
+                        <CheckIcon className="w-3 h-3 stroke-[3]" />
+                      </div>
+                    ) : (
+                      <div className="h-5 w-5 rounded-full border-2 border-[#D8C8AA]" />
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Footer Note */}
+          <div className="pt-2.5 mt-2 flex items-center justify-between text-[10px] text-[#7A7269]">
+            <span>Powered by OpenStreetMap, CARTO & Esri</span>
+            <span className="font-bold text-[#166534]">100% Free • No API Key</span>
+          </div>
+        </div>
+      )}
+
       {/* Main Leaflet Map Canvas */}
       <div
         ref={containerRef}
-        className="w-full h-full flex-1 min-h-[480px] sm:min-h-[580px] z-10"
+        className="w-full h-full flex-1 min-h-[440px] sm:min-h-[540px] lg:min-h-[620px] z-10"
         aria-label="Leaflet cartography canvas"
       />
     </figure>

@@ -381,17 +381,28 @@ textarea {
   animation: stationHalo 2.2s infinite ease-out;
 }
 
-/* Map Style Filters */
-.map-tiles-sandstone .leaflet-tile {
-  filter: brightness(0.97) contrast(1.04) saturate(0.85);
+/* Map Style Filters - Zero Distortion for High-Res Basemaps */
+.map-tiles-sandstone .leaflet-tile,
+.map-tiles-voyager .leaflet-tile {
+  filter: contrast(1.02) brightness(1.01);
 }
 
-.map-tiles-dark .leaflet-tile {
-  filter: brightness(0.65) invert(1) contrast(2.4) hue-rotate(205deg) saturate(0.35);
-}
-
-.map-tiles-satellite .leaflet-tile {
+.map-tiles-dark .leaflet-tile,
+.map-tiles-dark_gray .leaflet-tile {
   filter: none !important;
+}
+
+.map-tiles-satellite .leaflet-tile,
+.map-tiles-streets .leaflet-tile,
+.map-tiles-topo .leaflet-tile,
+.map-tiles-hot .leaflet-tile,
+.map-tiles-natgeo .leaflet-tile,
+.map-tiles-gray .leaflet-tile {
+  filter: none !important;
+}
+
+.map-tiles-positron .leaflet-tile {
+  filter: contrast(1.04) brightness(1.02);
 }
 
 /* Soft Pastel Delhi Gradient with Faint Monument Skyline */
