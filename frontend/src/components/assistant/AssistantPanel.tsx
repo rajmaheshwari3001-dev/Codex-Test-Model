@@ -289,16 +289,16 @@ export default function AssistantPanel({
       aria-labelledby="assistant-panel-heading"
       className="flex flex-col h-full w-full bg-white text-[#1A202C] shadow-2xl overflow-hidden"
     >
-      {/* 1. High-Visibility Header with Status, Controls & Badges */}
-      <header className="flex items-center justify-between border-b-2 border-[#E5DDD0] px-6 py-4.5 bg-[#FAF7F2] select-none shrink-0 shadow-2xs">
+      {/* 1. High-Visibility Deep Navy Banner Header (Unmistakable Contrast) */}
+      <header className="flex items-center justify-between border-b-2 border-[#C49A43] px-6 py-4.5 bg-[#1A2E3B] text-white select-none shrink-0 shadow-md">
         <div className="flex items-center gap-3.5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1A2E3B] text-white shadow-md relative shrink-0">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 border border-[#C49A43]/50 text-white shadow-md relative shrink-0">
             <span className="text-2xl">🚆</span>
-            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-[#2E7D32] border-2 border-white animate-pulse" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-[#2E7D32] border-2 border-[#1A2E3B] animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 id="assistant-panel-heading" className="font-serif text-xl sm:text-2xl font-bold text-[#1A2E3B] leading-tight">
+              <h2 id="assistant-panel-heading" className="font-serif text-xl sm:text-2xl font-bold text-white tracking-wide leading-tight">
                 Aaroh-Saarthi Copilot
               </h2>
               <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-[#22702E] bg-[#EAF5EC] px-2.5 py-0.5 rounded-full border border-[#C5E1CB]">
@@ -306,7 +306,7 @@ export default function AssistantPanel({
                 <span>Live GTFS</span>
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-[#5A5248] font-semibold leading-tight mt-0.5">
+            <p className="text-xs sm:text-sm text-[#EBE5DC] font-medium leading-tight mt-0.5">
               Delhi Multimodal AI • Schedules, Metro Tariffs & DTC Buses
             </p>
           </div>
@@ -320,7 +320,7 @@ export default function AssistantPanel({
             onClick={handleClear}
             title="Reset conversation"
             aria-label="Clear chat conversation"
-            className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#5A5248] hover:text-[#1A2E3B] px-3 py-2 rounded-xl border border-[#D8CFBF] bg-white hover:bg-[#F2ECE1] transition-all cursor-pointer shadow-2xs"
+            className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#EBE5DC] hover:text-white px-3 py-2 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 transition-all cursor-pointer shadow-2xs"
           >
             <RotateCcwIcon className="w-4 h-4 text-[#C49A43]" />
             <span className="hidden sm:inline">Reset</span>
@@ -332,7 +332,7 @@ export default function AssistantPanel({
               type="button"
               onClick={onClose}
               aria-label="Close copilot"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#D8CFBF] bg-white text-[#5A5248] hover:text-[#9B1C1C] hover:bg-[#FDE8E8] hover:border-[#F8B4B4] transition-all cursor-pointer shadow-2xs"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white hover:text-white hover:bg-[#9B1C1C] hover:border-[#9B1C1C] transition-all cursor-pointer shadow-2xs font-bold"
             >
               <XIcon className="w-5 h-5" />
             </button>

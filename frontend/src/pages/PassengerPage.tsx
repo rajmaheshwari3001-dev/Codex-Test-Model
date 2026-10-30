@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useSearchParams } from 'react-router-dom'
 import type { Stop, Route, JourneyOption, SavedRoute, ServiceDay, ModePreference, PoochhOEstimate } from '../types'
 import { getStops, getRoutes, searchJourneys, createSavedRoute } from '../services/api'
@@ -475,34 +476,36 @@ export default function PassengerPage({ defaultTab }: PassengerPageProps) {
         />
       </div>
 
-      {/* Transit Copilot Slide-Over Drawer (Z-[9999] High-Visibility Overlay) */}
-      {showCopilotModal && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-[9999] flex items-stretch justify-end bg-slate-900/70 backdrop-blur-sm animate-fade-in"
-          onClick={() => setShowCopilotModal(false)}
-        >
+      {/* Transit Copilot Slide-Over Drawer (Rendered via React Portal onto document.body to strictly overlay everything including navbar) */}
+      {showCopilotModal &&
+        createPortal(
           <div
-            className="relative w-full sm:w-[560px] md:w-[620px] lg:w-[660px] h-full flex flex-col bg-white shadow-2xl border-l-2 border-[#D8CFBF] overflow-hidden"
-            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 z-[999999] flex items-stretch justify-end bg-black/70 backdrop-blur-sm animate-fade-in"
+            onClick={() => setShowCopilotModal(false)}
           >
-            <AssistantPanel
-              isOpen={showCopilotModal}
-              onClose={() => setShowCopilotModal(false)}
-              initialPrompt={copilotPrompt}
-              stops={stops}
-              serviceDay={serviceDay}
-              onRouteRecommendation={(orig, dest) => {
-                setOrigin(orig)
-                setDestination(dest)
-                handleSearch(orig, dest, time, preference, serviceDay, modePreference, maxBudget)
-                setShowCopilotModal(false)
-              }}
-            />
-          </div>
-        </div>
-      )}
+            <div
+              className="relative w-full sm:w-[580px] md:w-[640px] lg:w-[680px] h-full flex flex-col bg-white shadow-2xl border-l-2 border-[#C49A43] overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <AssistantPanel
+                isOpen={showCopilotModal}
+                onClose={() => setShowCopilotModal(false)}
+                initialPrompt={copilotPrompt}
+                stops={stops}
+                serviceDay={serviceDay}
+                onRouteRecommendation={(orig, dest) => {
+                  setOrigin(orig)
+                  setDestination(dest)
+                  handleSearch(orig, dest, time, preference, serviceDay, modePreference, maxBudget)
+                  setShowCopilotModal(false)
+                }}
+              />
+            </div>
+          </div>,
+          document.body
+        )}
 
       {/* Floating AI Transit Copilot Quick Launcher Button */}
       <aside className="fixed bottom-6 right-6 z-40 hidden md:block">
