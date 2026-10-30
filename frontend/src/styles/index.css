@@ -1,52 +1,78 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+@theme {
+  --font-serif: "DM Serif Display", Georgia, serif;
+  --font-sans: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --color-background: #F5F0E6;
+  --color-surface: #FBF8F1;
+  --color-surface-secondary: #EDE7DB;
+
+  --color-accent-gold: #C49A43;
+  --color-accent-gold-dark: #A97C2E;
+  --color-accent-gold-light: #F7F1E5;
+
+  --color-navy: #172D3B;
+  --color-navy-dark: #0F1E28;
+  --color-navy-light: #244255;
+
+  --color-text-primary: #29343A;
+  --color-text-secondary: #73766F;
+  --color-text-muted: #949690;
+
+  --color-border: #DAD3C6;
+  --color-border-subtle: #E8E2D6;
+
+  --color-success: #547A60;
+  --color-success-light: #EBF2ED;
+  --color-warning: #B8873B;
+  --color-danger: #A64C42;
+  --color-danger-light: #F9EBEA;
+}
+
 :root {
-  /* Aaroh-Saarthi Visual Identity — Forest Green & Warm Ivory */
-  --color-forest-green: #173B32;
-  --color-forest-green-hover: #1f4d42;
-  --color-forest-green-dark: #0f2721;
-  --color-warm-ivory: #F5F0E6;
-  --color-warm-ivory-light: #FAF7F2;
-  --color-warm-ivory-border: #E8DFCE;
-  --color-card-white: #FFFFFF;
-  --color-muted-brass: #B88A43;
-  --color-muted-brass-light: #F4EBD9;
-  --color-charcoal: #25312D;
-  --color-charcoal-muted: #53645F;
-  --color-brick-red: #A44735;
-  --color-brick-red-light: #F8ECE9;
-  --color-operational-green: #236B56;
-  --color-operational-green-light: #EBF4F0;
+  --background: #F5F0E6;
+  --surface: #FBF8F1;
+  --surface-secondary: #EDE7DB;
 
-  /* Aliases for consistency */
-  --color-page: var(--color-warm-ivory);
-  --color-surface: var(--color-card-white);
-  --color-surface-subtle: var(--color-warm-ivory-light);
-  --color-text: var(--color-charcoal);
-  --color-text-secondary: var(--color-charcoal-muted);
-  --color-border: var(--color-warm-ivory-border);
-  --color-primary: var(--color-forest-green);
-  --color-primary-hover: var(--color-forest-green-hover);
-  --color-accent: var(--color-muted-brass);
-  --color-success: var(--color-operational-green);
-  --color-danger: var(--color-brick-red);
+  --accent-gold: #C49A43;
+  --accent-gold-dark: #A97C2E;
 
-  /* Subtle, restrained shadows — no neon glows */
-  --shadow-card: 0 1px 3px rgba(37, 49, 45, 0.05), 0 4px 12px rgba(37, 49, 45, 0.03);
-  --shadow-dropdown: 0 4px 16px rgba(37, 49, 45, 0.08);
+  --navy: #172D3B;
+  --text-primary: #29343A;
+  --text-secondary: #73766F;
 
+  --border: #DAD3C6;
+
+  --success: #547A60;
+  --warning: #B8873B;
+  --danger: #A64C42;
+
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
 
 body {
   min-width: 320px;
-  background-color: var(--color-warm-ivory);
-  color: var(--color-charcoal);
+  background-color: var(--background);
+  color: var(--text-primary);
   overflow-x: hidden;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-serif {
+  font-family: 'DM Serif Display', Georgia, serif;
+}
+
+.font-sans {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Tabular numerals for fares, times and telemetry */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 button,
@@ -58,11 +84,11 @@ textarea {
 
 ::selection {
   color: #ffffff;
-  background-color: var(--color-forest-green);
+  background-color: #C49A43;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-muted-brass);
+  outline: 2px solid #C49A43;
   outline-offset: 2px;
 }
 
@@ -75,11 +101,11 @@ textarea {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #DAD3C6;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #C49A43;
 }
 
 .no-scrollbar {
@@ -89,60 +115,70 @@ textarea {
   display: none;
 }
 
-/* Leaflet Container Styling */
+/* Leaflet Container Styling for Low-Contrast Warm Delhi Map */
 .leaflet-container {
-  font-family: inherit;
-  background-color: var(--color-warm-ivory);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #F5F0E6;
 }
 
+/* Map tiles filter: warm, subtle, low-contrast cartography matching reference */
 .leaflet-tile {
-  filter: saturate(0.9) contrast(1.02);
+  filter: sepia(0.08) saturate(0.85) contrast(0.96) brightness(1.02);
 }
 
-.leaflet-control-zoom a {
-  color: var(--color-charcoal) !important;
+/* Leaflet Zoom Control Styling */
+.leaflet-bar {
+  border: 1px solid #DAD3C6 !important;
+  box-shadow: 0 1px 3px rgba(41, 52, 58, 0.08) !important;
   border-radius: 8px !important;
-  background: white !important;
-  box-shadow: 0 2px 6px rgba(37, 49, 45, 0.1) !important;
-  border: 1px solid var(--color-warm-ivory-border) !important;
+  overflow: hidden;
 }
 
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  box-shadow: 0 4px 16px rgba(37, 49, 45, 0.12) !important;
+.leaflet-bar a {
+  background-color: #FBF8F1 !important;
+  color: #29343A !important;
+  border-bottom: 1px solid #DAD3C6 !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-weight: 700 !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: #EDE7DB !important;
+  color: #172D3B !important;
+}
+
+/* Leaflet Tooltips */
+.leaflet-tooltip {
+  background: #FBF8F1 !important;
+  color: #29343A !important;
+  border: 1px solid #DAD3C6 !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 6px rgba(41, 52, 58, 0.08) !important;
+}
+
+.leaflet-tooltip-top:before {
+  border-top-color: #DAD3C6 !important;
+}
+
+/* Leaflet Popups */
+.leaflet-popup-content-wrapper {
+  background: #FBF8F1 !important;
+  color: #29343A !important;
+  border: 1px solid #DAD3C6 !important;
   border-radius: 12px !important;
-  padding: 4px !important;
-  border: 1px solid var(--color-warm-ivory-border) !important;
-  background-color: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(41, 52, 58, 0.12) !important;
+  padding: 0 !important;
 }
 
-/* Subtle indicator pulse */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.96);
-    box-shadow: 0 0 0 0 rgba(23, 59, 50, 0.6);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 8px rgba(23, 59, 50, 0);
-  }
-  100% {
-    transform: scale(0.96);
-    box-shadow: 0 0 0 0 rgba(23, 59, 50, 0);
-  }
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+  line-height: 1.4 !important;
 }
 
-.animate-pulse-ring {
-  animation: pulse-ring 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+.leaflet-popup-tip {
+  background: #FBF8F1 !important;
+  border: 1px solid #DAD3C6 !important;
 }
