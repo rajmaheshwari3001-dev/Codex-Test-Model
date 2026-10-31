@@ -287,48 +287,8 @@ export default function DelhiMap({
     const lg = layerGroupRef.current
     lg.clearLayers()
 
-    // 1. SERENE & UNCLUTTERED TRANSIT MAP (Hero Route First, Zero Spiderweb Chaos)
-    // Background lines removed so the clean street/transit basemap shines through without visual noise.
-
-    // 2. SUBTLE MAJOR TRANSIT HUBS (Only key interchanges for one-tap destination planning)
-    const KEY_HUBS = ['S01', 'S02', 'S04', 'S09'] // Rajiv Chowk, Kashmere Gate, New Delhi, Hauz Khas
-    stops.forEach(stop => {
-      if (!isValidCoord(stop.stop_lat, stop.stop_lon)) return
-      if (!KEY_HUBS.includes(stop.stop_id)) return
-      if (stop.stop_id === originStopId || stop.stop_id === destinationStopId) return
-
-      const hubDot = L.circleMarker([stop.stop_lat, stop.stop_lon], {
-        radius: 4,
-        color: '#FFFFFF',
-        fillColor: '#C49A43',
-        fillOpacity: 0.85,
-        weight: 1.5,
-      }).addTo(lg)
-
-      hubDot.bindTooltip(
-        `<strong>${stop.stop_name}</strong><br/><span style="font-size: 10px; color: #7A7269;">Major Transit Hub</span>`,
-        { direction: 'top', offset: [0, -5] }
-      )
-
-      hubDot.bindPopup(`
-        <div style="font-family: 'Plus Jakarta Sans', sans-serif; min-width: 180px; padding: 2px;">
-          <div style="font-size: 10px; font-weight: 800; color: #C49A43; text-transform: uppercase;">
-            Major Interchange Hub
-          </div>
-          <div style="font-size: 14px; font-weight: 800; color: #1A2E3B; margin-top: 2px;">
-            ${stop.stop_name}
-          </div>
-          <div style="display: flex; gap: 6px; margin-top: 8px;">
-            <button onclick="window.__selectOrigin && window.__selectOrigin('${stop.stop_id}')" style="flex: 1; padding: 5px 8px; font-size: 11px; font-weight: 800; background: #FAF0D9; color: #9A721C; border: 1px solid #E8D4AE; border-radius: 8px; cursor: pointer;">
-              From
-            </button>
-            <button onclick="window.__selectDest && window.__selectDest('${stop.stop_id}')" style="flex: 1; padding: 5px 8px; font-size: 11px; font-weight: 800; background: #1A2E3B; color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer;">
-              To →
-            </button>
-          </div>
-        </div>
-      `)
-    })
+    // 1. SERENE & UNCLUTTERED TRANSIT MAP (Hero Route First, Zero Noise)
+    // Extra hub clutter and unsolicited tags removed for an editorial, distraction-free map experience.
 
     // 3. DYNAMIC ACTIVE ROUTE & JOURNEY RENDERING
     const activeJourney = selectedJourney
@@ -422,8 +382,8 @@ export default function DelhiMap({
             className: 'delhi-pin-transfer',
             html: `
               <div style="position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 6px; pointer-events: auto;">
-                <div style="background: #0284C7; color: #FFFFFF; padding: 4px 11px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 2px solid #FFFFFF; white-space: nowrap; box-shadow: 0 4px 14px rgba(2,132,199,0.45); display: flex; align-items: center; gap: 5px;">
-                  <span style="font-size: 11px;">⇄</span>
+                <div style="background: #142B38; color: #FFFFFF; font-family: 'General Sans', sans-serif; padding: 4px 11px; border-radius: 99px; font-size: 11px; font-weight: 700; border: 2px solid #FFFFFF; white-space: nowrap; box-shadow: 0 4px 14px rgba(20,43,56,0.35); display: flex; align-items: center; gap: 5px;">
+                  <span style="color: #D6A33B; font-weight: 800;">⇄</span>
                   <span>${transferStopName.toUpperCase()} • transfer</span>
                 </div>
               </div>
@@ -445,8 +405,8 @@ export default function DelhiMap({
           className: 'delhi-pin-origin',
           html: `
             <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
-              <div style="background-color: #B45309; color: #FFFFFF; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(180,83,9,0.45); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
-                <span style="font-size: 10px; background: rgba(255,255,255,0.25); border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">●</span>
+              <div style="background-color: #142B38; color: #FFFFFF; font-family: 'General Sans', sans-serif; padding: 5px 12px; border-radius: 99px; font-weight: 700; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(20,43,56,0.4); white-space: nowrap; border: 2px solid #D6A33B; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 10px; background: #D6A33B; color: #142B38; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800;">A</span>
                 <span>${originLabel.toUpperCase()}</span>
               </div>
             </div>
@@ -467,8 +427,8 @@ export default function DelhiMap({
           className: 'delhi-pin-dest',
           html: `
             <div style="position: absolute; transform: translate(-50%, -100%); margin-top: -6px; pointer-events: auto;">
-              <div style="background-color: #1A2E3B; color: #FFFFFF; padding: 5px 12px; border-radius: 20px; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(26,46,59,0.5); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
-                <span style="color: #E11D48; font-size: 12px;">●</span>
+              <div style="background-color: #176B43; color: #FFFFFF; font-family: 'General Sans', sans-serif; padding: 5px 12px; border-radius: 99px; font-weight: 700; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 4px 16px rgba(23,107,67,0.4); white-space: nowrap; border: 2px solid #FFFFFF; display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 10px; background: #FFFFFF; color: #176B43; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-weight: 800;">B</span>
                 <span>${destLabel.toUpperCase()}</span>
               </div>
             </div>
@@ -571,8 +531,8 @@ export default function DelhiMap({
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
           {/* Search Bar */}
           <div ref={mapSearchRef} className="relative flex-1 min-w-[150px] max-w-sm pointer-events-auto">
-            <div className="flex items-center rounded-2xl border border-[#EDE8E1] bg-white/95 px-3 py-1.5 sm:py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#C49A43] focus-within:ring-2 focus-within:ring-[#C49A43]/20">
-              <SearchIcon className="w-4 h-4 text-[#C49A43] mr-2 shrink-0" />
+            <div className="flex items-center rounded-2xl border border-[#EDE8E1] bg-white/95 px-3 py-1.5 sm:py-2 shadow-md backdrop-blur-md transition-colors focus-within:border-[#D6A33B] focus-within:ring-2 focus-within:ring-[#D6A33B]/20">
+              <SearchIcon className="w-4 h-4 text-[#D6A33B] mr-2 shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
@@ -593,7 +553,7 @@ export default function DelhiMap({
                 }}
                 placeholder="Search station or landmark (e.g. Dwarka, Noida)..."
                 aria-label="Search Delhi transit stops"
-                className="w-full bg-transparent text-xs sm:text-[13px] font-semibold text-[#1A202C] placeholder-[#7A7269] focus:outline-none"
+                className="w-full bg-transparent text-xs sm:text-[13px] font-semibold text-[#142B38] placeholder-[#7A7269] focus:outline-none"
               />
               {searchQuery && (
                 <button
@@ -602,7 +562,7 @@ export default function DelhiMap({
                     setSearchQuery('')
                     setShowSearchResults(false)
                   }}
-                  className="text-[#7A7269] hover:text-[#1A202C] p-0.5 cursor-pointer text-xs"
+                  className="text-[#7A7269] hover:text-[#142B38] p-0.5 cursor-pointer text-xs"
                   aria-label="Clear map search"
                 >
                   <XIcon className="w-3.5 h-3.5" />
@@ -628,11 +588,11 @@ export default function DelhiMap({
                       className="flex items-center justify-between p-2 rounded-xl text-xs hover:bg-[#FAF7F2] transition-colors cursor-pointer group"
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <div className="w-6 h-6 rounded-lg bg-[#FAF0D9] text-[#9A721C] flex items-center justify-center shrink-0 group-hover:bg-[#C49A43] group-hover:text-white transition-colors">
+                        <div className="w-6 h-6 rounded-lg bg-[#FAF0D9] text-[#9A721C] flex items-center justify-center shrink-0 group-hover:bg-[#D6A33B] group-hover:text-white transition-colors">
                           <TrainIcon className="w-3.5 h-3.5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="font-bold text-[#1A202C] truncate">{s.stop_name}</div>
+                          <div className="font-bold text-[#142B38] truncate">{s.stop_name}</div>
                           <div className="text-[10px] text-[#7A7269] truncate">Zone {s.zone_id} • {lines}</div>
                         </div>
                       </div>
@@ -655,7 +615,7 @@ export default function DelhiMap({
                             e.stopPropagation()
                             handleSelectSearchStop(s, 'destination')
                           }}
-                          className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#1A2E3B] text-white hover:bg-[#253D4E] transition-colors cursor-pointer"
+                          className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#142B38] text-white hover:bg-[#253D4E] transition-colors cursor-pointer"
                           title="Set as Destination"
                         >
                           To →
@@ -710,7 +670,7 @@ export default function DelhiMap({
               }}
               className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold border transition-all cursor-pointer shadow-xs shrink-0 ${
                 showMetro && showBus
-                  ? 'bg-[#1E4D2B] text-white border-[#1E4D2B] shadow-sm'
+                  ? 'bg-[#176B43] text-white border-[#176B43] shadow-sm'
                   : 'bg-[#DCFCE7] text-[#15803D] border-[#BBF7D0]'
               }`}
             >
@@ -721,7 +681,7 @@ export default function DelhiMap({
             <button
               type="button"
               onClick={handleFitRoute}
-              className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2] transition-colors cursor-pointer shadow-xs shrink-0"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-white text-[#142B38] border border-[#EDE8E1] hover:bg-[#FAF7F2] transition-colors cursor-pointer shadow-xs shrink-0"
             >
               <span>Fit Route</span>
             </button>
@@ -732,10 +692,10 @@ export default function DelhiMap({
       {/* Floating Bottom HUD Controls (Legend & Layer Switchers - Responsive, Non-Overlapping) */}
       <div className="absolute bottom-3.5 left-3.5 right-3.5 z-[500] flex items-center justify-between gap-2 pointer-events-none flex-wrap">
         {/* Dynamic Active Route Indicator (Zero Clutter) */}
-        <div className="flex items-center gap-2 rounded-full border border-[#EDE8E1] bg-white/95 px-3.5 py-1.5 shadow-md backdrop-blur-md pointer-events-auto text-[11px] sm:text-xs font-bold text-[#1A2E3B]">
+        <div className="flex items-center gap-2 rounded-full border border-[#EDE8E1] bg-white/95 px-3.5 py-1.5 shadow-md backdrop-blur-md pointer-events-auto text-[11px] sm:text-xs font-bold text-[#142B38]">
           <span className="h-2.5 w-2.5 rounded-full bg-[#166534] animate-pulse" />
           <span className="text-[#9A721C] font-extrabold">Active Transit Route</span>
-          <span className="text-[#C49A43]">•</span>
+          <span className="text-[#D6A33B]">•</span>
           <span className="truncate max-w-[150px] sm:max-w-none">
             {getStopName(originStopId) || 'Dwarka Sec 21'} → {getStopName(destinationStopId) || 'Noida City Centre'}
           </span>
@@ -750,8 +710,8 @@ export default function DelhiMap({
               onClick={() => setMapStyle('streets')}
               className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                 mapStyle === 'streets' || mapStyle === 'hot' || mapStyle === 'gray' || mapStyle === 'voyager' || mapStyle === 'sandstone'
-                  ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                  : 'text-[#6E665D] hover:text-[#1A2E3B]'
+                  ? 'bg-[#142B38] text-white shadow-2xs'
+                  : 'text-[#6E665D] hover:text-[#142B38]'
               }`}
             >
               Apple Maps
@@ -761,8 +721,8 @@ export default function DelhiMap({
               onClick={() => setMapStyle('satellite')}
               className={`px-2.5 sm:px-3 py-1 rounded-full text-[11px] sm:text-xs font-bold transition-all cursor-pointer ${
                 mapStyle === 'satellite'
-                  ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                  : 'text-[#6E665D] hover:text-[#1A2E3B]'
+                  ? 'bg-[#142B38] text-white shadow-2xs'
+                  : 'text-[#6E665D] hover:text-[#142B38]'
               }`}
             >
               Satellite
@@ -775,9 +735,9 @@ export default function DelhiMap({
             onClick={handleFitRoute}
             title="Locate Active Route"
             aria-label="Locate active route"
-            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#142B38] hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
           >
-            <NavigationIcon className="w-4 h-4 text-[#1A2E3B]" />
+            <NavigationIcon className="w-4 h-4 text-[#142B38]" />
           </button>
 
           {/* Zoom Out (-) Button */}
@@ -786,7 +746,7 @@ export default function DelhiMap({
             onClick={() => mapRef.current?.zoomOut()}
             title="Zoom Out"
             aria-label="Zoom Out"
-            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#1A2E3B] font-bold text-base hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
+            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-2xl border border-[#EDE8E1] bg-white text-[#142B38] font-bold text-base hover:bg-[#FAF7F2] shadow-md transition-all cursor-pointer active:scale-95"
           >
             <span>—</span>
           </button>
@@ -799,11 +759,11 @@ export default function DelhiMap({
             aria-label="Choose from 10 Free Map Styles"
             className={`flex h-8 sm:h-9 items-center gap-1.5 px-2.5 sm:px-3 rounded-2xl border shadow-md transition-all cursor-pointer active:scale-95 ${
               showLayerDrawer
-                ? 'bg-[#1A2E3B] text-white border-[#1A2E3B]'
-                : 'bg-white text-[#1A2E3B] border-[#EDE8E1] hover:border-[#C49A43]'
+                ? 'bg-[#142B38] text-white border-[#142B38]'
+                : 'bg-white text-[#142B38] border-[#EDE8E1] hover:border-[#D6A33B]'
             }`}
           >
-            <LayersIcon className="w-4 h-4 text-[#C49A43]" />
+            <LayersIcon className="w-4 h-4 text-[#D6A33B]" />
             <span className="text-[11px] font-bold hidden sm:inline">10 Maps</span>
           </button>
         </div>
@@ -822,7 +782,7 @@ export default function DelhiMap({
                 <LayersIcon className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-serif text-sm sm:text-base font-bold text-[#1A2E3B] leading-tight">
+                <h4 className="font-sans font-bold text-sm sm:text-base font-bold text-[#142B38] leading-tight">
                   Apple Maps & Free Map APIs
                 </h4>
                 <p className="text-[11px] text-[#7A7269]">
@@ -833,7 +793,7 @@ export default function DelhiMap({
             <button
               type="button"
               onClick={() => setShowLayerDrawer(false)}
-              className="rounded-full p-1.5 text-[#7A7269] hover:bg-[#FAF7F2] hover:text-[#1A2E3B] transition-colors cursor-pointer"
+              className="rounded-full p-1.5 text-[#7A7269] hover:bg-[#FAF7F2] hover:text-[#142B38] transition-colors cursor-pointer"
               aria-label="Close Map Styles"
             >
               <XIcon className="w-4 h-4" />
@@ -854,8 +814,8 @@ export default function DelhiMap({
                 onClick={() => setLayerFilter(tab.id as any)}
                 className={`px-3 py-1 rounded-full border transition-all cursor-pointer whitespace-nowrap ${
                   layerFilter === tab.id
-                    ? 'bg-[#1A2E3B] text-white border-[#1A2E3B] shadow-xs'
-                    : 'bg-[#FAF7F2] text-[#6E665D] border-[#EDE8E1] hover:border-[#C49A43]'
+                    ? 'bg-[#142B38] text-white border-[#142B38] shadow-xs'
+                    : 'bg-[#FAF7F2] text-[#6E665D] border-[#EDE8E1] hover:border-[#D6A33B]'
                 }`}
               >
                 {tab.label}
@@ -877,7 +837,7 @@ export default function DelhiMap({
                   }}
                   className={`w-full text-left p-2.5 rounded-2xl border transition-all cursor-pointer flex items-center gap-3 ${
                     isSelected
-                      ? 'border-[#C49A43] bg-[#FAF4E6]/50 ring-2 ring-[#C49A43]/20 shadow-xs'
+                      ? 'border-[#D6A33B] bg-[#FAF4E6]/50 ring-2 ring-[#D6A33B]/20 shadow-xs'
                       : 'border-[#EDE8E1] bg-white hover:bg-[#FAF7F2] hover:border-[#D8C8AA]'
                   }`}
                 >
@@ -891,7 +851,7 @@ export default function DelhiMap({
                   {/* Meta */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs sm:text-[13px] font-bold text-[#1A2E3B] truncate">
+                      <span className="text-xs sm:text-[13px] font-bold text-[#142B38] truncate">
                         {item.name}
                       </span>
                       <span
@@ -914,7 +874,7 @@ export default function DelhiMap({
                   {/* Active Radio Badge */}
                   <div className="shrink-0 pl-1">
                     {isSelected ? (
-                      <div className="h-5 w-5 rounded-full bg-[#C49A43] text-white flex items-center justify-center shadow-xs">
+                      <div className="h-5 w-5 rounded-full bg-[#D6A33B] text-white flex items-center justify-center shadow-xs">
                         <CheckIcon className="w-3 h-3 stroke-[3]" />
                       </div>
                     ) : (

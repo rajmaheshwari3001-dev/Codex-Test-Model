@@ -113,7 +113,7 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="provenance-modal-title"
-      className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#1A2E3B]/70 p-3 sm:p-4 backdrop-blur-sm pointer-events-auto overflow-y-auto animate-fade-in"
+      className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#142B38]/70 p-3 sm:p-4 backdrop-blur-sm pointer-events-auto overflow-y-auto animate-fade-in"
       onClick={e => {
         if (e.target === e.currentTarget) {
           onClose()
@@ -127,11 +127,11 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#EBE5DC] pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FAF0D9] border border-[#E8D4AE] text-[#9A721C] shadow-2xs">
-              <DatabaseIcon className="w-5 h-5 text-[#C49A43]" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#FAF4E8] border border-[#E8D4AE] text-[#9A721C] shadow-2xs">
+              <DatabaseIcon className="w-5 h-5 text-[#D6A33B]" />
             </div>
             <div>
-              <h2 id="provenance-modal-title" className="font-serif text-xl sm:text-2xl font-normal text-[#1A2E3B] tracking-tight">
+              <h2 id="provenance-modal-title" className="font-sans font-bold text-xl sm:text-2xl font-normal text-[#142B38] tracking-tight">
                 Data Sources & Pipeline Provenance
               </h2>
               <p className="text-xs sm:text-sm text-[#7A7269] leading-relaxed">
@@ -142,7 +142,7 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EBE5DC] bg-[#FAF7F2] text-[#7A7269] hover:text-[#1A2E3B] hover:bg-[#F2ECE1] transition-all cursor-pointer active:scale-90 shadow-2xs"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EBE5DC] bg-[#F7F5F0] text-[#7A7269] hover:text-[#142B38] hover:bg-[#F2ECE1] transition-all cursor-pointer active:scale-90 shadow-2xs"
             aria-label="Close dialog"
           >
             <XIcon className="w-4 h-4" />
@@ -157,12 +157,12 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
         ) : (
           <div className="space-y-5 text-xs py-4">
             {/* Pipeline Overview Banner */}
-            <div className="rounded-2xl border border-[#EBE5DC] bg-[#FAF7F2] p-4 space-y-2">
+            <div className="rounded-2xl border border-[#EBE5DC] bg-[#F7F5F0] p-4 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-[#1A2E3B] text-sm">
+                <span className="font-bold text-[#142B38] text-sm">
                   {data?.application || 'Aaroh-Saarthi Delhi Multimodal Engine'}
                 </span>
-                <span className="font-mono text-[11px] text-[#1A2E3B] font-bold bg-white px-2.5 py-0.5 rounded-full border border-[#EBE5DC]">
+                <span className="font-mono text-[11px] text-[#142B38] font-bold bg-white px-2.5 py-0.5 rounded-full border border-[#EBE5DC]">
                   v{data?.version || '2.1.0'}
                 </span>
               </div>
@@ -184,19 +184,19 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
                 </h3>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div className="rounded-2xl border border-[#EBE5DC] bg-white p-3.5 shadow-2xs">
-                    <div className="text-2xl font-black text-[#1A2E3B]">
+                    <div className="text-2xl font-black text-[#142B38]">
                       {data.metrics.total_stations_and_stops}
                     </div>
                     <div className="text-[11px] text-[#7A7269] font-semibold mt-0.5">Stations & Stops</div>
                   </div>
                   <div className="rounded-2xl border border-[#EBE5DC] bg-white p-3.5 shadow-2xs">
-                    <div className="text-2xl font-black text-[#C49A43]">
+                    <div className="text-2xl font-black text-[#D6A33B]">
                       {data.metrics.total_scheduled_trips}
                     </div>
                     <div className="text-[11px] text-[#7A7269] font-semibold mt-0.5">Daily Scheduled Trips</div>
                   </div>
                   <div className="rounded-2xl border border-[#EBE5DC] bg-white p-3.5 shadow-2xs">
-                    <div className="text-2xl font-black text-[#2E7D32]">
+                    <div className="text-2xl font-black text-[#176B43]">
                       {data.metrics.total_multimodal_interchanges}
                     </div>
                     <div className="text-[11px] text-[#7A7269] font-semibold mt-0.5">Interchanges</div>
@@ -212,17 +212,17 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
               </h3>
               <div className="space-y-2.5">
                 {/* 1. Delhi Transport Stack */}
-                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#C49A43] transition-colors">
+                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#D6A33B] transition-colors">
                   <div className="flex items-center justify-between">
-                    <div className="font-bold text-[#1A2E3B] flex items-center gap-2">
-                      <DatabaseIcon className="w-4 h-4 text-[#C49A43]" />
+                    <div className="font-bold text-[#142B38] flex items-center gap-2">
+                      <DatabaseIcon className="w-4 h-4 text-[#D6A33B]" />
                       <span>Delhi Transport Stack (Primary Source)</span>
                     </div>
                     <a
                       href="https://delhi.transportstack.in/"
                       target="_blank"
                       rel="noreferrer"
-                      className="font-mono text-[11px] text-[#1A2E3B] hover:text-[#C49A43] hover:underline flex items-center gap-1 font-semibold"
+                      className="font-mono text-[11px] text-[#142B38] hover:text-[#D6A33B] hover:underline flex items-center gap-1 font-semibold"
                     >
                       <span>delhi.transportstack.in</span>
                       <ExternalLinkIcon className="w-3 h-3" />
@@ -234,17 +234,17 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
                 </div>
 
                 {/* 2. DTC Official Schedules & Tariffs */}
-                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#1A2E3B] transition-colors">
+                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#142B38] transition-colors">
                   <div className="flex items-center justify-between">
-                    <div className="font-bold text-[#1A2E3B] flex items-center gap-2">
-                      <BusIcon className="w-4 h-4 text-[#1A2E3B]" />
+                    <div className="font-bold text-[#142B38] flex items-center gap-2">
+                      <BusIcon className="w-4 h-4 text-[#142B38]" />
                       <span>Delhi Transport Corporation (DTC)</span>
                     </div>
                     <a
                       href="https://dtc.delhi.gov.in/dtc/services-and-time-table"
                       target="_blank"
                       rel="noreferrer"
-                      className="font-mono text-[11px] text-[#1A2E3B] hover:text-[#C49A43] hover:underline flex items-center gap-1 font-semibold"
+                      className="font-mono text-[11px] text-[#142B38] hover:text-[#D6A33B] hover:underline flex items-center gap-1 font-semibold"
                     >
                       <span>dtc.delhi.gov.in</span>
                       <ExternalLinkIcon className="w-3 h-3" />
@@ -256,17 +256,17 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
                 </div>
 
                 {/* 3. DMRC Official Metro Tariffs */}
-                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#C49A43] transition-colors">
+                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#D6A33B] transition-colors">
                   <div className="flex items-center justify-between">
-                    <div className="font-bold text-[#1A2E3B] flex items-center gap-2">
-                      <TrainIcon className="w-4 h-4 text-[#C49A43]" />
+                    <div className="font-bold text-[#142B38] flex items-center gap-2">
+                      <TrainIcon className="w-4 h-4 text-[#D6A33B]" />
                       <span>Delhi Metro Rail Corporation (DMRC)</span>
                     </div>
                     <a
                       href="https://delhimetrorail.com/fare"
                       target="_blank"
                       rel="noreferrer"
-                      className="font-mono text-[11px] text-[#1A2E3B] hover:text-[#C49A43] hover:underline flex items-center gap-1 font-semibold"
+                      className="font-mono text-[11px] text-[#142B38] hover:text-[#D6A33B] hover:underline flex items-center gap-1 font-semibold"
                     >
                       <span>delhimetrorail.com</span>
                       <ExternalLinkIcon className="w-3 h-3" />
@@ -278,17 +278,17 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
                 </div>
 
                 {/* 4. Delhi Open Transit Data (OTD) */}
-                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#2E7D32] transition-colors">
+                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#176B43] transition-colors">
                   <div className="flex items-center justify-between">
-                    <div className="font-bold text-[#1A2E3B] flex items-center gap-2">
-                      <BarChartIcon className="w-4 h-4 text-[#2E7D32]" />
+                    <div className="font-bold text-[#142B38] flex items-center gap-2">
+                      <BarChartIcon className="w-4 h-4 text-[#176B43]" />
                       <span>Delhi Open Transit Data (OTD)</span>
                     </div>
                     <a
                       href="https://otd.delhi.gov.in/"
                       target="_blank"
                       rel="noreferrer"
-                      className="font-mono text-[11px] text-[#1A2E3B] hover:text-[#C49A43] hover:underline flex items-center gap-1 font-semibold"
+                      className="font-mono text-[11px] text-[#142B38] hover:text-[#D6A33B] hover:underline flex items-center gap-1 font-semibold"
                     >
                       <span>otd.delhi.gov.in</span>
                       <ExternalLinkIcon className="w-3 h-3" />
@@ -300,17 +300,17 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
                 </div>
 
                 {/* 5. Poochh-O (DIMTS) Auto & Taxi Model */}
-                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#2E7D32] transition-colors">
+                <div className="rounded-2xl border border-[#EBE5DC] p-3.5 space-y-1.5 bg-white shadow-2xs hover:border-[#176B43] transition-colors">
                   <div className="flex items-center justify-between">
-                    <div className="font-bold text-[#1A2E3B] flex items-center gap-2">
-                      <AutoRickshawIcon className="w-4 h-4 text-[#2E7D32]" />
+                    <div className="font-bold text-[#142B38] flex items-center gap-2">
+                      <AutoRickshawIcon className="w-4 h-4 text-[#176B43]" />
                       <span>Poochh-O (DIMTS) Auto-Rickshaw & Taxi</span>
                     </div>
                     <a
                       href="https://play.google.com/store/apps/details?id=com.dimts.delhiautojunction"
                       target="_blank"
                       rel="noreferrer"
-                      className="font-mono text-[11px] text-[#1A2E3B] hover:text-[#C49A43] hover:underline flex items-center gap-1 font-semibold"
+                      className="font-mono text-[11px] text-[#142B38] hover:text-[#D6A33B] hover:underline flex items-center gap-1 font-semibold"
                     >
                       <span>dimts.delhiautojunction</span>
                       <ExternalLinkIcon className="w-3 h-3" />
@@ -329,13 +329,13 @@ export default function DataProvenanceModal({ isOpen, onClose }: Props) {
                 type="button"
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="flex items-center gap-2 rounded-xl bg-[#1A2E3B] hover:bg-[#253D4E] px-4 py-2.5 font-bold text-white transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95"
+                className="flex items-center gap-2 rounded-xl bg-[#142B38] hover:bg-[#253D4E] px-4 py-2.5 font-bold text-white transition-all disabled:opacity-50 cursor-pointer shadow-sm active:scale-95"
               >
-                <RotateCcwIcon className={`w-3.5 h-3.5 text-[#C49A43] ${refreshing ? 'animate-spin' : ''}`} />
+                <RotateCcwIcon className={`w-3.5 h-3.5 text-[#D6A33B] ${refreshing ? 'animate-spin' : ''}`} />
                 <span>{refreshing ? 'Normalizing Pipeline...' : 'Re-Normalize Transit Pipeline'}</span>
               </button>
               {refreshMsg && (
-                <span className="font-semibold text-[#2E7D32] text-xs">
+                <span className="font-semibold text-[#176B43] text-xs">
                   {refreshMsg}
                 </span>
               )}

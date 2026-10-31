@@ -213,16 +213,16 @@ export default function JourneyPlanner({
   return (
     <section
       aria-labelledby="journey-planner-heading"
-      className="rounded-3xl border border-[#EDE8E1] bg-white p-5 sm:p-6 shadow-[0_8px_30px_rgba(26,46,59,0.05)] text-[#1A202C] space-y-5 animate-fade-in"
+      className="rounded-3xl border border-[#E5E0D8] bg-white p-5 sm:p-6 shadow-[0_8px_30px_rgba(26,46,59,0.05)] text-[#1A202C] space-y-5 animate-fade-in"
     >
       {/* Title & Subtitle Matching Target: PLAN FOR A DELHI DAY */}
       <header className="space-y-1.5">
-        <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-[#C49A43] select-none">
-          <MapPinIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+        <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-[#D6A33B] select-none">
+          <MapPinIcon className="w-3.5 h-3.5 text-[#D6A33B]" />
           <span>PLAN FOR A DELHI DAY</span>
         </div>
-        <h2 id="journey-planner-heading" className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#1A2E3B] leading-tight">
-          Where would you <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4A338] via-[#C49A43] to-[#B38728]">like to go?</span>
+        <h2 id="journey-planner-heading" className="font-sans font-bold text-2xl sm:text-3xl font-bold tracking-tight text-[#142B38] leading-tight">
+          Where would you <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D6A33B] via-[#D6A33B] to-[#BF8E2E]">like to go?</span>
         </h2>
         <p className="text-[14px] font-medium text-[#6E665D] leading-relaxed">
           Compare metro, bus and multimodal routes across Delhi
@@ -230,7 +230,7 @@ export default function JourneyPlanner({
       </header>
 
       {/* Trip Type Segmented Bar (One Way / Round Trip / Explore) */}
-      <div className="flex items-center bg-[#FAF7F2] p-1 rounded-full border border-[#EDE8E1] w-full" role="tablist">
+      <div className="flex items-center bg-[#F7F5F0] p-1 rounded-full border border-[#E5E0D8] w-full" role="tablist">
         <button
           type="button"
           role="tab"
@@ -238,8 +238,8 @@ export default function JourneyPlanner({
           onClick={() => setTripType('oneway')}
           className={`flex-1 py-1.5 px-3 rounded-full text-[13px] font-bold transition-all cursor-pointer ${
             tripType === 'oneway'
-              ? 'bg-[#1A2E3B] text-white shadow-xs'
-              : 'text-[#7A7269] hover:text-[#1A2E3B]'
+              ? 'bg-[#142B38] text-white shadow-xs'
+              : 'text-[#7A7269] hover:text-[#142B38]'
           }`}
         >
           One Way
@@ -251,8 +251,8 @@ export default function JourneyPlanner({
           onClick={() => setTripType('round')}
           className={`flex-1 py-1.5 px-3 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
             tripType === 'round'
-              ? 'bg-[#1A2E3B] text-white shadow-xs font-bold'
-              : 'text-[#7A7269] hover:text-[#1A2E3B]'
+              ? 'bg-[#142B38] text-white shadow-xs font-bold'
+              : 'text-[#7A7269] hover:text-[#142B38]'
           }`}
         >
           Round Trip
@@ -264,8 +264,8 @@ export default function JourneyPlanner({
           onClick={() => setTripType('explore')}
           className={`flex-1 py-1.5 px-3 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
             tripType === 'explore'
-              ? 'bg-[#1A2E3B] text-white shadow-xs font-bold'
-              : 'text-[#7A7269] hover:text-[#1A2E3B]'
+              ? 'bg-[#142B38] text-white shadow-xs font-bold'
+              : 'text-[#7A7269] hover:text-[#142B38]'
           }`}
         >
           Explore
@@ -279,7 +279,7 @@ export default function JourneyPlanner({
           <StationCombobox
             id="journey-origin"
             label="From"
-            pinColor="#C49A43"
+            pinColor="#D6A33B"
             value={origin}
             onChange={newId => {
               setOrigin(newId)
@@ -296,7 +296,7 @@ export default function JourneyPlanner({
               type="button"
               onClick={handleSwap}
               aria-label="Swap origin and destination endpoints"
-              className="group flex h-9 w-9 items-center justify-center rounded-full border border-[#EDE8E1] bg-white hover:bg-[#FAF7F2] hover:border-[#C49A43] shadow-md hover:shadow-lg active:scale-90 transition-all duration-200 text-[#1A2E3B] hover:text-[#C49A43] cursor-pointer"
+              className="group flex h-9 w-9 items-center justify-center rounded-full border border-[#E5E0D8] bg-white hover:bg-[#F7F5F0] hover:border-[#D6A33B] shadow-md hover:shadow-lg active:scale-90 transition-all duration-200 text-[#142B38] hover:text-[#D6A33B] cursor-pointer"
             >
               <span className={`inline-block transition-transform duration-300 ${isSwapping ? 'rotate-180' : ''}`}>
                 <ArrowUpDownIcon className="w-4 h-4" />
@@ -324,31 +324,31 @@ export default function JourneyPlanner({
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold uppercase tracking-[0.1em] text-[#7A7269] flex items-center gap-1.5">
-              <ClockIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+              <ClockIcon className="w-3.5 h-3.5 text-[#D6A33B]" />
               <span>DEPARTURE</span>
             </label>
             <div className="flex items-center gap-2">
               {fareTier.isOffPeak ? (
-                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[#2E7D32] bg-[#EAF5EC] px-2 py-0.5 rounded-full border border-[#C5E5CC]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#2E7D32]" />
+                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[#176B43] bg-[#EAF5EC] px-2 py-0.5 rounded-full border border-[#C5E5CC]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#176B43]" />
                   <span>20% Off-Peak</span>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[#9A721C] bg-[#FAF0D9] px-2 py-0.5 rounded-full border border-[#EFE0C2]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#C49A43]" />
+                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-[#9A721C] bg-[#FAF4E8] px-2 py-0.5 rounded-full border border-[#EFE0C2]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#D6A33B]" />
                   <span>Peak Hours</span>
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => setShowClockCustomizer(prev => !prev)}
-                className="inline-flex items-center gap-1 text-[11px] font-bold text-[#C49A43] hover:text-[#A77B32] transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-[#D6A33B] hover:text-[#A77B32] transition-colors cursor-pointer"
               >
                 <span>{showClockCustomizer ? 'Hide Clock' : 'Customize Clock'}</span>
                 {showClockCustomizer ? (
-                  <ChevronUpIcon className="w-3 h-3 text-[#C49A43]" />
+                  <ChevronUpIcon className="w-3 h-3 text-[#D6A33B]" />
                 ) : (
-                  <ChevronDownIcon className="w-3 h-3 text-[#C49A43]" />
+                  <ChevronDownIcon className="w-3 h-3 text-[#D6A33B]" />
                 )}
               </button>
             </div>
@@ -361,12 +361,12 @@ export default function JourneyPlanner({
               onClick={() => setShowClockCustomizer(prev => !prev)}
               className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2 sm:py-2.5 transition-all shadow-2xs cursor-pointer group active:scale-[0.99] ${
                 showClockCustomizer
-                  ? 'border-[#C49A43] bg-[#FAF0D9]/70 text-[#1A2E3B] ring-2 ring-[#C49A43]/20'
-                  : 'border-[#EBE5DC] bg-white hover:border-[#D8CFBF] text-[#1A2E3B]'
+                  ? 'border-[#D6A33B] bg-[#FAF4E8]/70 text-[#142B38] ring-2 ring-[#D6A33B]/20'
+                  : 'border-[#E5E0D8] bg-white hover:border-[#D8CFBF] text-[#142B38]'
               }`}
               title="Click to customize departure time & clock"
             >
-              <ClockIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
+              <ClockIcon className="w-4 h-4 text-[#D6A33B] shrink-0" />
               <span className="font-bold text-xs sm:text-sm whitespace-nowrap">
                 Today, {formattedDisplay}
               </span>
@@ -376,31 +376,31 @@ export default function JourneyPlanner({
             <button
               type="button"
               onClick={handleSelectNow}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] hover:bg-[#F2ECE1] hover:border-[#C49A43]/40 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-[#1A2E3B] transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[#E5E0D8] bg-[#F7F5F0] hover:bg-[#F2ECE1] hover:border-[#D6A33B]/40 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-[#142B38] transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
               title="Set departure to current Delhi clock"
             >
-              <span className="h-2 w-2 rounded-full bg-[#2E7D32] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-[#176B43] animate-pulse" />
               <span>NOW • {time || '08:40'}</span>
             </button>
           </div>
 
           {/* Interactive Customize Time & Clock Console */}
           {showClockCustomizer && (
-            <div className="rounded-2xl border border-[#C49A43]/40 bg-[#FAF7F2] p-3.5 space-y-3.5 animate-fade-in shadow-sm mt-2">
+            <div className="rounded-2xl border border-[#D6A33B]/40 bg-[#F7F5F0] p-3.5 space-y-3.5 animate-fade-in shadow-sm mt-2">
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-[#EBE5DC] pb-2">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#C49A43] flex items-center gap-1.5">
-                  <ClockIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+              <div className="flex items-center justify-between border-b border-[#E5E0D8] pb-2">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#D6A33B] flex items-center gap-1.5">
+                  <ClockIcon className="w-3.5 h-3.5 text-[#D6A33B]" />
                   <span>TRANSIT CLOCK & FARE CONSOLE</span>
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-extrabold text-[#1A2E3B] bg-white px-2 py-0.5 rounded-md border border-[#EBE5DC] shadow-2xs">
+                  <span className="text-xs font-mono font-extrabold text-[#142B38] bg-white px-2 py-0.5 rounded-md border border-[#E5E0D8] shadow-2xs">
                     {formattedDisplay}
                   </span>
                   <button
                     type="button"
                     onClick={() => setShowClockCustomizer(false)}
-                    className="text-xs font-bold text-[#C49A43] hover:underline cursor-pointer"
+                    className="text-xs font-bold text-[#D6A33B] hover:underline cursor-pointer"
                   >
                     Done
                   </button>
@@ -408,27 +408,27 @@ export default function JourneyPlanner({
               </div>
 
               {/* 1. Large Digital Transit Flip Stepper Console */}
-              <div className="flex items-center justify-center gap-3 bg-white p-3 rounded-xl border border-[#EBE5DC] shadow-2xs">
+              <div className="flex items-center justify-center gap-3 bg-white p-3 rounded-xl border border-[#E5E0D8] shadow-2xs">
                 {/* Hour Stepper */}
                 <div className="flex flex-col items-center">
                   <button
                     type="button"
                     onClick={() => stepHour(1)}
-                    className="h-6 w-12 flex items-center justify-center rounded-t-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
+                    className="h-6 w-12 flex items-center justify-center rounded-t-md bg-[#F7F5F0] hover:bg-[#FAF4E8] text-[#142B38] transition-colors cursor-pointer border border-[#E5E0D8] active:bg-[#F2E5C9]"
                     title="Increment Hour"
                   >
-                    <ChevronUpIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
+                    <ChevronUpIcon className="w-3.5 h-3.5 text-[#142B38]" />
                   </button>
-                  <div className="w-12 h-11 flex items-center justify-center bg-[#1A2E3B] text-white font-mono text-2xl font-black rounded-none shadow-inner select-none">
+                  <div className="w-12 h-11 flex items-center justify-center bg-[#142B38] text-white font-mono text-2xl font-black rounded-none shadow-inner select-none">
                     {String(hour12).padStart(2, '0')}
                   </div>
                   <button
                     type="button"
                     onClick={() => stepHour(-1)}
-                    className="h-6 w-12 flex items-center justify-center rounded-b-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
+                    className="h-6 w-12 flex items-center justify-center rounded-b-md bg-[#F7F5F0] hover:bg-[#FAF4E8] text-[#142B38] transition-colors cursor-pointer border border-[#E5E0D8] active:bg-[#F2E5C9]"
                     title="Decrement Hour"
                   >
-                    <ChevronDownIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
+                    <ChevronDownIcon className="w-3.5 h-3.5 text-[#142B38]" />
                   </button>
                   <span className="text-[9px] font-bold text-[#7A7269] mt-1 tracking-wider">
                     HOUR
@@ -436,7 +436,7 @@ export default function JourneyPlanner({
                 </div>
 
                 {/* Colon */}
-                <div className="font-mono text-2xl font-black text-[#C49A43] animate-pulse pb-4 select-none">
+                <div className="font-mono text-2xl font-black text-[#D6A33B] animate-pulse pb-4 select-none">
                   :
                 </div>
 
@@ -445,21 +445,21 @@ export default function JourneyPlanner({
                   <button
                     type="button"
                     onClick={() => stepMinute(5)}
-                    className="h-6 w-12 flex items-center justify-center rounded-t-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
+                    className="h-6 w-12 flex items-center justify-center rounded-t-md bg-[#F7F5F0] hover:bg-[#FAF4E8] text-[#142B38] transition-colors cursor-pointer border border-[#E5E0D8] active:bg-[#F2E5C9]"
                     title="Advance +5 Minutes"
                   >
-                    <ChevronUpIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
+                    <ChevronUpIcon className="w-3.5 h-3.5 text-[#142B38]" />
                   </button>
-                  <div className="w-12 h-11 flex items-center justify-center bg-[#1A2E3B] text-white font-mono text-2xl font-black rounded-none shadow-inner select-none">
+                  <div className="w-12 h-11 flex items-center justify-center bg-[#142B38] text-white font-mono text-2xl font-black rounded-none shadow-inner select-none">
                     {String(minute).padStart(2, '0')}
                   </div>
                   <button
                     type="button"
                     onClick={() => stepMinute(-5)}
-                    className="h-6 w-12 flex items-center justify-center rounded-b-md bg-[#FAF7F2] hover:bg-[#FAF0D9] text-[#1A2E3B] transition-colors cursor-pointer border border-[#EBE5DC] active:bg-[#F2E5C9]"
+                    className="h-6 w-12 flex items-center justify-center rounded-b-md bg-[#F7F5F0] hover:bg-[#FAF4E8] text-[#142B38] transition-colors cursor-pointer border border-[#E5E0D8] active:bg-[#F2E5C9]"
                     title="Rewind -5 Minutes"
                   >
-                    <ChevronDownIcon className="w-3.5 h-3.5 text-[#1A2E3B]" />
+                    <ChevronDownIcon className="w-3.5 h-3.5 text-[#142B38]" />
                   </button>
                   <span className="text-[9px] font-bold text-[#7A7269] mt-1 tracking-wider">
                     MIN (5m)
@@ -468,14 +468,14 @@ export default function JourneyPlanner({
 
                 {/* AM / PM Toggle */}
                 <div className="flex flex-col items-center pl-2">
-                  <div className="flex flex-col rounded-xl border border-[#EBE5DC] bg-[#FAF7F2] p-1 gap-1">
+                  <div className="flex flex-col rounded-xl border border-[#E5E0D8] bg-[#F7F5F0] p-1 gap-1">
                     <button
                       type="button"
                       onClick={() => handlePeriodChange('AM')}
                       className={`px-3 py-1.5 text-xs font-extrabold rounded-lg transition-all cursor-pointer ${
                         currentPeriod === 'AM'
-                          ? 'bg-[#1A2E3B] text-white shadow-xs'
-                          : 'text-[#7A7269] hover:text-[#1A2E3B] bg-transparent'
+                          ? 'bg-[#142B38] text-white shadow-xs'
+                          : 'text-[#7A7269] hover:text-[#142B38] bg-transparent'
                       }`}
                     >
                       AM
@@ -485,8 +485,8 @@ export default function JourneyPlanner({
                       onClick={() => handlePeriodChange('PM')}
                       className={`px-3 py-1.5 text-xs font-extrabold rounded-lg transition-all cursor-pointer ${
                         currentPeriod === 'PM'
-                          ? 'bg-[#1A2E3B] text-white shadow-xs'
-                          : 'text-[#7A7269] hover:text-[#1A2E3B] bg-transparent'
+                          ? 'bg-[#142B38] text-white shadow-xs'
+                          : 'text-[#7A7269] hover:text-[#142B38] bg-transparent'
                       }`}
                     >
                       PM
@@ -502,7 +502,7 @@ export default function JourneyPlanner({
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#7A7269]">
                   <span>Quick Time Shifters</span>
-                  <span className="text-[#C49A43]">1-Tap Adjust</span>
+                  <span className="text-[#D6A33B]">1-Tap Adjust</span>
                 </div>
                 <div className="grid grid-cols-6 gap-1">
                   {[
@@ -523,7 +523,7 @@ export default function JourneyPlanner({
                           shiftMinutes(shifter.delta)
                         }
                       }}
-                      className="py-1.5 px-1 rounded-lg border border-[#EBE5DC] bg-white hover:border-[#C49A43] hover:bg-[#FAF0D9]/50 text-[11px] font-bold text-[#1A2E3B] transition-all cursor-pointer text-center active:scale-95 shadow-2xs truncate"
+                      className="py-1.5 px-1 rounded-lg border border-[#E5E0D8] bg-white hover:border-[#D6A33B] hover:bg-[#FAF4E8]/50 text-[11px] font-bold text-[#142B38] transition-all cursor-pointer text-center active:scale-95 shadow-2xs truncate"
                       title={shifter.isNow ? 'Sync with live Delhi local time' : `Shift departure time by ${shifter.label}`}
                     >
                       {shifter.label}
@@ -537,14 +537,14 @@ export default function JourneyPlanner({
                 className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-xs transition-colors ${
                   fareTier.isOffPeak
                     ? 'bg-[#EAF5EC] border-[#C5E5CC] text-[#22702E]'
-                    : 'bg-[#FAF0D9] border-[#EFE0C2] text-[#9A721C]'
+                    : 'bg-[#FAF4E8] border-[#EFE0C2] text-[#9A721C]'
                 }`}
               >
                 <span className="flex items-center justify-center w-5 h-5 shrink-0 mt-0.5">
                   {fareTier.isOffPeak ? (
-                    <DollarSignIcon className="w-4 h-4 text-[#2E7D32]" />
+                    <DollarSignIcon className="w-4 h-4 text-[#176B43]" />
                   ) : (
-                    <ZapIcon className="w-4 h-4 text-[#C49A43]" />
+                    <ZapIcon className="w-4 h-4 text-[#D6A33B]" />
                   )}
                 </span>
                 <div className="space-y-0.5 leading-tight">
@@ -561,10 +561,10 @@ export default function JourneyPlanner({
               </div>
 
               {/* 4. Interactive Time Scrubber Dial (06:00 to 23:30) */}
-              <div className="space-y-1.5 pt-1 border-t border-[#EBE5DC]">
+              <div className="space-y-1.5 pt-1 border-t border-[#E5E0D8]">
                 <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[#7A7269]">
                   <span>Delhi Transit Timeline Scrubber</span>
-                  <span className="font-mono text-[#1A2E3B]">{time24}</span>
+                  <span className="font-mono text-[#142B38]">{time24}</span>
                 </div>
                 <input
                   type="range"
@@ -573,7 +573,7 @@ export default function JourneyPlanner({
                   step={5}
                   value={Math.max(360, Math.min(1410, currentTotalMins))}
                   onChange={e => handleSliderScrub(Number(e.target.value))}
-                  className="w-full h-2 bg-[#EBE5DC] rounded-lg appearance-none cursor-pointer accent-[#C49A43]"
+                  className="w-full h-2 bg-[#E5E0D8] rounded-lg appearance-none cursor-pointer accent-[#D6A33B]"
                   aria-label="Departure time slider from 6 AM to 11:30 PM"
                 />
                 <div className="flex justify-between text-[9px] text-[#7A7269] font-medium px-0.5">
@@ -585,7 +585,7 @@ export default function JourneyPlanner({
               </div>
 
               {/* 5. Commuter Rush Presets */}
-              <div className="space-y-1.5 pt-1 border-t border-[#EBE5DC]">
+              <div className="space-y-1.5 pt-1 border-t border-[#E5E0D8]">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-[#7A7269]">
                   Commuter Rush Presets
                 </div>
@@ -606,8 +606,8 @@ export default function JourneyPlanner({
                       }}
                       className={`flex flex-col p-2 rounded-xl border text-left transition-all cursor-pointer shadow-2xs ${
                         time === preset.value
-                          ? 'border-[#C49A43] bg-[#FAF0D9] text-[#9A721C] font-bold'
-                          : 'border-[#EBE5DC] bg-white text-[#1A2E3B] hover:border-[#C49A43]'
+                          ? 'border-[#D6A33B] bg-[#FAF4E8] text-[#9A721C] font-bold'
+                          : 'border-[#E5E0D8] bg-white text-[#142B38] hover:border-[#D6A33B]'
                       }`}
                     >
                       <div className="text-[11px] font-bold">{preset.label}</div>
@@ -620,7 +620,7 @@ export default function JourneyPlanner({
               </div>
 
               {/* 6. System Clock & Weekday / Weekend Category */}
-              <div className="flex items-center justify-between pt-1 border-t border-[#EBE5DC] text-[11px] gap-2">
+              <div className="flex items-center justify-between pt-1 border-t border-[#E5E0D8] text-[11px] gap-2">
                 <label className="flex items-center gap-1.5 font-bold text-[#7A7269]">
                   <span>System:</span>
                   <input
@@ -632,18 +632,18 @@ export default function JourneyPlanner({
                         if (error) setError('')
                       }
                     }}
-                    className="rounded-lg border border-[#EBE5DC] bg-white px-2 py-0.5 text-xs font-bold text-[#1A2E3B] focus:outline-none focus:border-[#C49A43] cursor-pointer"
+                    className="rounded-lg border border-[#E5E0D8] bg-white px-2 py-0.5 text-xs font-bold text-[#142B38] focus:outline-none focus:border-[#D6A33B] cursor-pointer"
                   />
                 </label>
 
-                <div className="flex rounded-lg border border-[#EBE5DC] bg-white p-0.5">
+                <div className="flex rounded-lg border border-[#E5E0D8] bg-white p-0.5">
                   <button
                     type="button"
                     onClick={() => onServiceDayChange('weekday')}
                     className={`px-2 py-1 rounded-md font-bold text-[10px] transition-all cursor-pointer ${
                       serviceDay === 'weekday'
-                        ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                        : 'text-[#7A7269] hover:text-[#1A2E3B]'
+                        ? 'bg-[#142B38] text-white shadow-2xs'
+                        : 'text-[#7A7269] hover:text-[#142B38]'
                     }`}
                   >
                     Weekday
@@ -653,8 +653,8 @@ export default function JourneyPlanner({
                     onClick={() => onServiceDayChange('weekend')}
                     className={`px-2 py-1 rounded-md font-bold text-[10px] transition-all cursor-pointer ${
                       serviceDay === 'weekend'
-                        ? 'bg-[#1A2E3B] text-white shadow-2xs'
-                        : 'text-[#7A7269] hover:text-[#1A2E3B]'
+                        ? 'bg-[#142B38] text-white shadow-2xs'
+                        : 'text-[#7A7269] hover:text-[#142B38]'
                     }`}
                   >
                     Weekend
@@ -668,13 +668,13 @@ export default function JourneyPlanner({
         {/* TRAVEL PREFERENCE (Fastest & Cheapest) */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-[13px] font-bold text-[#1A2E3B]">
+            <label className="text-[13px] font-bold text-[#142B38]">
               Travel Preference
             </label>
             <button
               type="button"
               onClick={() => setShowClockCustomizer(prev => !prev)}
-              className="text-[12px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] flex items-center gap-1 cursor-pointer"
+              className="text-[12px] font-semibold text-[#6E665D] hover:text-[#142B38] flex items-center gap-1 cursor-pointer"
             >
               <span>Customize Clock</span>
               <span>↗</span>
@@ -688,11 +688,11 @@ export default function JourneyPlanner({
               onClick={() => setPreference('fastest')}
               className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'fastest'
-                  ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
-                  : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
+                  ? 'bg-[#176B43] text-white shadow-sm ring-1 ring-[#176B43]'
+                  : 'bg-white text-[#142B38] border border-[#E5E0D8] hover:bg-[#F7F5F0]'
               }`}
             >
-              <ZapIcon className={`w-4 h-4 ${preference === 'fastest' ? 'text-white' : 'text-[#166534]'}`} />
+              <ZapIcon className={`w-4 h-4 ${preference === 'fastest' ? 'text-white' : 'text-[#176B43]'}`} />
               <span>Fastest</span>
             </button>
 
@@ -702,11 +702,11 @@ export default function JourneyPlanner({
               onClick={() => setPreference('cheapest')}
               className={`flex items-center justify-center gap-2 py-3 px-4 rounded-2xl text-[14px] font-bold transition-all duration-200 cursor-pointer active:scale-[0.98] ${
                 preference === 'cheapest'
-                  ? 'bg-[#166534] text-white shadow-sm ring-1 ring-[#166534]'
-                  : 'bg-white text-[#1A2E3B] border border-[#EDE8E1] hover:bg-[#FAF7F2]'
+                  ? 'bg-[#176B43] text-white shadow-sm ring-1 ring-[#176B43]'
+                  : 'bg-white text-[#142B38] border border-[#E5E0D8] hover:bg-[#F7F5F0]'
               }`}
             >
-              <TagIcon className={`w-4 h-4 ${preference === 'cheapest' ? 'text-white' : 'text-[#C49A43]'}`} />
+              <TagIcon className={`w-4 h-4 ${preference === 'cheapest' ? 'text-white' : 'text-[#D6A33B]'}`} />
               <span>Cheapest</span>
             </button>
           </div>
@@ -718,7 +718,7 @@ export default function JourneyPlanner({
           id="btn-search-journey"
           disabled={loading}
           aria-label="Find My Route"
-          className="group w-full flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#D4A338] via-[#C49A43] to-[#B38728] hover:from-[#C49A43] hover:to-[#A77B32] text-white font-ubuntu font-bold py-4 px-5 text-[15px] tracking-normal shadow-[0_4px_16px_rgba(196,154,67,0.35)] hover:shadow-[0_6px_22px_rgba(196,154,67,0.45)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
+          className="group w-full flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#D6A33B] via-[#D6A33B] to-[#BF8E2E] hover:from-[#D6A33B] hover:to-[#A77B32] text-white font-sans font-bold py-4 px-5 text-[15px] tracking-normal shadow-[0_4px_16px_rgba(196,154,67,0.35)] hover:shadow-[0_6px_22px_rgba(196,154,67,0.45)] active:scale-[0.985] transition-all duration-200 cursor-pointer disabled:opacity-50"
         >
           {loading ? (
             <>

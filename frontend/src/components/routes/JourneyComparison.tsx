@@ -93,10 +93,10 @@ export default function JourneyComparison({
       {/* Top Banner Matching Target Screenshot */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         {/* Data updated pill */}
-        <div className="flex items-center gap-2 rounded-full bg-[#EAF5EC] border border-[#C5E5CC] px-3.5 py-1.5 text-xs font-bold text-[#166534] shadow-2xs">
+        <div className="flex items-center gap-2 rounded-full bg-[#EAF5EC] border border-[#C5E5CC] px-3.5 py-1.5 text-xs font-bold text-[#176B43] shadow-2xs">
           <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#166534] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#166534]" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#176B43] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#176B43]" />
           </span>
           <span>Data updated 2 min ago</span>
         </div>
@@ -106,7 +106,7 @@ export default function JourneyComparison({
           <button
             type="button"
             onClick={handleShare}
-            className="flex items-center gap-1.5 rounded-full bg-[#1A2E3B] hover:bg-[#243B4A] text-white px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
+            className="flex items-center gap-1.5 rounded-full bg-[#142B38] hover:bg-[#243B4A] text-white px-3 sm:px-3.5 py-1.5 text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 shrink-0"
             title="Copy trip share link to clipboard"
           >
             {copied ? (
@@ -125,7 +125,7 @@ export default function JourneyComparison({
           <button
             type="button"
             onClick={onOpenCashbackModal}
-            className="flex items-center gap-1.5 rounded-full bg-[#FAF0D9] hover:bg-[#F5E6C7] text-[#9A721C] border border-[#E8D4AE] px-2.5 sm:px-3 py-1.5 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0"
+            className="flex items-center gap-1.5 rounded-full bg-[#FAF4E8] hover:bg-[#F5E6C7] text-[#9A721C] border border-[#E8D4AE] px-2.5 sm:px-3 py-1.5 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0"
           >
             <SparklesIcon className="w-3.5 h-3.5 text-[#9A721C]" />
             <span>Perks</span>
@@ -133,7 +133,7 @@ export default function JourneyComparison({
           <button
             type="button"
             aria-label="More route actions"
-            className="flex h-7 w-7 items-center justify-center rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] text-[#7A7269] text-xs font-bold transition-all cursor-pointer"
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F7F5F0] hover:bg-[#F2ECE1] border border-[#E5E0D8] text-[#7A7269] text-xs font-bold transition-all cursor-pointer"
           >
             <MoreHorizontalIcon className="w-3.5 h-3.5" />
           </button>
@@ -142,13 +142,13 @@ export default function JourneyComparison({
 
       {/* Header Matching Target */}
       <header className="space-y-1">
-        <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#C49A43] select-none">
+        <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#D6A33B] select-none">
           YOUR ROUTE OPTIONS
         </div>
         <div className="flex items-baseline justify-between gap-3 flex-wrap">
           <h2
             id="comparison-heading"
-            className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#1A2E3B] leading-tight"
+            className="font-sans font-bold text-2xl sm:text-3xl font-bold tracking-tight text-[#142B38] leading-tight"
           >
             Choose your way
           </h2>
@@ -157,7 +157,7 @@ export default function JourneyComparison({
             <span>Sort by</span>
             <button
               type="button"
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#EDE8E1] text-[#1A2E3B] font-bold shadow-2xs cursor-pointer hover:border-[#C49A43]"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-[#E5E0D8] text-[#142B38] font-bold shadow-2xs cursor-pointer hover:border-[#D6A33B]"
             >
               <span>Recommended</span>
               <ChevronDownIcon className="w-3.5 h-3.5 text-[#6E665D]" />
@@ -165,7 +165,7 @@ export default function JourneyComparison({
           </div>
         </div>
         <p className="text-[14px] font-medium text-[#6E665D] leading-relaxed">
-          {displayOptions.length} routes found for 08:40 AM departure
+          {displayOptions.length} {displayOptions.length === 1 ? 'route' : 'routes'} found for {displayOptions[0]?.departure_time ? formatTime12(displayOptions[0].departure_time) : '08:40 AM'} departure
         </p>
       </header>
 
@@ -191,14 +191,14 @@ export default function JourneyComparison({
         <div className="space-y-3 animate-fade-in">
           <section
             role="status"
-            className="rounded-2xl border border-[#EBE5DC] bg-[#FAF7F2] p-4 text-xs text-[#1A202C] space-y-2.5 shadow-xs"
+            className="rounded-2xl border border-[#EBE5DC] bg-[#F7F5F0] p-4 text-xs text-[#1A202C] space-y-2.5 shadow-xs"
           >
             <div className="flex items-center justify-between border-b border-[#EBE5DC] pb-2">
-              <span className="font-bold text-[#1A2E3B] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                <ClockIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+              <span className="font-bold text-[#142B38] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <ClockIcon className="w-3.5 h-3.5 text-[#D6A33B]" />
                 <span>Timetable Advisory</span>
               </span>
-              <span className="font-mono font-bold text-[#1A2E3B]">
+              <span className="font-mono font-bold text-[#142B38]">
                 {formatTime12(noResultContext.time)}
               </span>
             </div>
@@ -221,7 +221,7 @@ export default function JourneyComparison({
 
             {onRetryTime && (
               <div className="pt-2 border-t border-[#EBE5DC] space-y-1.5">
-                <div className="text-[11px] font-bold text-[#1A2E3B]">
+                <div className="text-[11px] font-bold text-[#142B38]">
                   Try active schedule hours:
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -230,7 +230,7 @@ export default function JourneyComparison({
                       key={retryTime}
                       type="button"
                       onClick={() => onRetryTime(retryTime)}
-                      className="rounded-lg border border-[#EBE5DC] bg-white px-2.5 py-1 text-[11px] font-bold text-[#1A2E3B] hover:border-[#C49A43] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                      className="rounded-lg border border-[#EBE5DC] bg-white px-2.5 py-1 text-[11px] font-bold text-[#142B38] hover:border-[#D6A33B] hover:bg-[#F7F5F0] transition-colors cursor-pointer"
                     >
                       {formatTime12(retryTime)}
                     </button>

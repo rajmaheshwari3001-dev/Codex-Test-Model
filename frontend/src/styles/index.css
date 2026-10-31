@@ -1,54 +1,103 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+/* =========================================================================
+   AAROH-SAARTHI DESIGN SYSTEM: GENERAL SANS SELF-HOSTED TYPEFACE
+   Weights: 400 (Regular), 500 (Medium), 600 (Semibold), 700 (Bold)
+   ========================================================================= */
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans/GeneralSans-Regular.woff2') format('woff2'),
+       url('https://cdn.fontshare.com/wf/MFQT7HFGCR2L5ULQTW6YXYZXXHMPKLJ3/YWQ244D6TACUX5JBKATPOW5I5MGJ3G73/7YY3ZAAE3TRV2LANYOLXNHTPHLXVWTKH.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans/GeneralSans-Medium.woff2') format('woff2'),
+       url('https://cdn.fontshare.com/wf/3RZHWSNONLLWJK3RLPEKUZOMM56GO4LJ/BPDRY7AHVI3MCDXXVXTQQ76H3UXA63S3/SB2OEB6IKZPRR6JT4GFJ2TFT6HBB6AZN.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans/GeneralSans-Semibold.woff2') format('woff2'),
+       url('https://cdn.fontshare.com/wf/K46YRH762FH3QJ25IQM3VAXAKCHEXXW4/ISLWQPUZHZF33LRIOTBMFOJL57GBGQ4B/3ZLMEXZEQPLTEPMHTQDAUXP5ZZXCZAEN.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('/fonts/general-sans/GeneralSans-Bold.woff2') format('woff2'),
+       url('https://cdn.fontshare.com/wf/KWXO5X3YW4X7OLUMPO4X24HQJGJU7E2Q/VOWUQZS3YLP66ZHPTXAFSH6YACY4WJHT/NIQ54PVBBIWVK3PFSOIOUJSXIJ5WTNDP.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
 @theme {
-  --font-serif: "Playfair Display", "DM Serif Display", Georgia, serif;
-  --font-sans: "Plus Jakarta Sans", "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-ubuntu: "Ubuntu", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-ubuntu: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  --color-sandstone: #FAF7F2;
+  /* Aaroh-Saarthi Brand Colors */
+  --color-brand-navy: #142B38;
+  --color-brand-gold: #D6A33B;
+  --color-brand-canvas: #F7F5F0;
+  --color-brand-surface: #FFFFFF;
+  --color-brand-green: #176B43;
+
+  --color-sandstone: #F7F5F0;
   --color-ivory: #FFFFFF;
-  --color-ivory-secondary: #F7F3EC;
+  --color-ivory-secondary: #F4F1EA;
 
-  --color-primary: #C49A43;
-  --color-primary-hover: #A77B32;
+  --color-primary: #D6A33B;
+  --color-primary-hover: #BF8E2E;
 
-  --color-navy: #1A2E3B;
-  --color-forest: #166534;
-  --color-green: #1E4D2B;
-  --color-success: #2E7D32;
+  --color-navy: #142B38;
+  --color-forest: #176B43;
+  --color-green: #176B43;
+  --color-success: #176B43;
   --color-terracotta: #A6533C;
 
-  --color-text-primary: #1A202C;
-  --color-text-secondary: #6E665D;
+  --color-text-primary: #142B38;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #8E887E;
 
-  --color-border: #EDE8E1;
+  --color-border: #E5E0D8;
+  --color-border-subtle: #EDE8E1;
 }
 
 :root {
-  --background: #FAF7F2;
+  --background: #F7F5F0;
   --surface: #FFFFFF;
-  --surface-secondary: #F8F5F0;
+  --surface-secondary: #F4F1EA;
 
-  --primary: #C49A43;
-  --primary-hover: #A77B32;
+  --primary: #D6A33B;
+  --primary-hover: #BF8E2E;
 
-  --navy: #1A2E3B;
-  --forest: #166534;
-  --green: #1E4D2B;
-  --success: #2E7D32;
+  --navy: #142B38;
+  --forest: #176B43;
+  --green: #176B43;
+  --success: #176B43;
   --terracotta: #A6533C;
 
-  --text-primary: #1A202C;
-  --text-secondary: #6E665D;
+  --text-primary: #142B38;
+  --text-secondary: #6B7280;
+  --text-muted: #8E887E;
 
-  --border: #EDE8E1;
+  --border: #E5E0D8;
+  --border-subtle: #EDE8E1;
 
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light;
   text-rendering: optimizeLegibility;
-  letter-spacing: normal;
-  word-spacing: normal;
   font-size: 15px;
   line-height: 1.5;
 }
@@ -58,23 +107,17 @@ body {
   background-color: var(--background);
   color: var(--text-primary);
   overflow-x: hidden;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  letter-spacing: normal;
-  word-spacing: normal;
+  font-family: 'General Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.01em;
   font-size: 15px;
   line-height: 1.5;
 }
 
-.font-serif {
-  font-family: 'Playfair Display', 'DM Serif Display', Georgia, serif;
-}
-
-.font-sans {
-  font-family: 'Plus Jakarta Sans', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.font-ubuntu {
-  font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+.font-serif,
+.font-sans,
+.font-ubuntu,
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'General Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 .tabular-nums {
@@ -85,16 +128,16 @@ button,
 input,
 select,
 textarea {
-  font: inherit;
+  font-family: 'General Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 ::selection {
   color: #ffffff;
-  background-color: #C49A43;
+  background-color: #D6A33B;
 }
 
 :focus-visible {
-  outline: 2px solid #C49A43;
+  outline: 2px solid #D6A33B;
   outline-offset: 2px;
 }
 
@@ -253,11 +296,11 @@ textarea {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D8C8AA;
+  background: #E5E0D8;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C49A43;
+  background: #D6A33B;
 }
 
 /* Responsive Typography & Controls Touch Targets */
@@ -273,8 +316,8 @@ textarea {
 
 /* Leaflet Container Styling */
 .leaflet-container {
-  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #EEE5D6;
+  font-family: 'General Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #F7F5F0;
 }
 
 /* Clean, crisp tiles without washed-out sepia */
@@ -284,18 +327,18 @@ textarea {
 
 /* Leaflet Bar */
 .leaflet-bar {
-  border: 1px solid #D8C8AA !important;
-  box-shadow: 0 4px 12px rgba(36, 59, 74, 0.08) !important;
-  border-radius: 8px !important;
+  border: 1px solid #E5E0D8 !important;
+  box-shadow: 0 4px 12px rgba(20, 43, 56, 0.08) !important;
+  border-radius: 10px !important;
   overflow: hidden;
 }
 
 .leaflet-bar a {
-  background-color: #FFFCF5 !important;
-  color: #243B4A !important;
-  border-bottom: 1px solid #D8C8AA !important;
-  font-family: 'Manrope', sans-serif !important;
-  font-weight: 700 !important;
+  background-color: #FFFFFF !important;
+  color: #142B38 !important;
+  border-bottom: 1px solid #E5E0D8 !important;
+  font-family: 'General Sans', sans-serif !important;
+  font-weight: 600 !important;
 }
 
 .leaflet-bar a:hover {

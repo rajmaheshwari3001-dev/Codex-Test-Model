@@ -324,7 +324,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
       className="sticky top-2 sm:top-3 z-[1000] w-full px-3 sm:px-6 lg:px-8 pointer-events-none transition-all duration-300 animate-page-slide-down"
     >
       {/* Floating Island / Capsule Bar matching Figma prototype styling */}
-      <div className="pointer-events-auto max-w-[1720px] mx-auto rounded-2xl sm:rounded-full border border-[#EDE8E1] bg-white/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(26,46,59,0.06),0_2px_6px_rgba(26,46,59,0.02)] px-4 sm:px-6 py-2.5 transition-all hover:border-[#C49A43]/40">
+      <div className="pointer-events-auto max-w-[1720px] mx-auto rounded-2xl sm:rounded-full border border-[#E5E0D8] bg-white/95 backdrop-blur-xl shadow-[0_8px_30px_rgba(26,46,59,0.06),0_2px_6px_rgba(26,46,59,0.02)] px-4 sm:px-6 py-2.5 transition-all hover:border-[#D6A33B]/40">
         <div className="flex h-12 sm:h-13 items-center justify-between gap-3">
           {/* Left: Brand Mark with Emblem & Tagline */}
           <div className="flex items-center gap-3 shrink-0">
@@ -333,22 +333,22 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               onClick={onOpenMobileMenu || (() => setMobileNavOpen(prev => !prev))}
               aria-label="Toggle navigation menu"
               aria-expanded={mobileNavOpen}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#EDE8E1] bg-[#FAF7F2] text-[#1A2E3B] hover:bg-[#F2ECE1] lg:hidden transition-colors cursor-pointer active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#E5E0D8] bg-[#F7F5F0] text-[#142B38] hover:bg-[#F2ECE1] lg:hidden transition-colors cursor-pointer active:scale-95"
             >
               {mobileNavOpen ? <XIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
             </button>
 
             <NavLink to="/" className="flex items-center gap-3 group focus:outline-none" aria-label="AAROH-SAARTHI Home">
               {/* Target Emblem: Circular Transit Icon */}
-              <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#FFF9EE] via-[#FAF0D9] to-[#EBD5A8] border-2 border-[#C49A43]/70 text-[#1A2E3B] shadow-sm group-hover:scale-105 transition-transform shrink-0 relative">
+              <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#FFF9EE] via-[#FAF0D9] to-[#EBD5A8] border-2 border-[#D6A33B]/70 text-[#142B38] shadow-sm group-hover:scale-105 transition-transform shrink-0 relative">
                 <TrainIcon className="w-5 h-5 text-[#9A721C]" />
-                <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-[#166534] border-2 border-white" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-[#176B43] border-2 border-white" />
               </div>
               <div className="flex flex-col">
-                <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#1A2E3B] group-hover:text-[#C49A43] transition-colors leading-none">
-                  AAROH<span className="text-[#C49A43] mx-1">•</span>SAARTHI
+                <span className="font-sans font-bold text-xl sm:text-2xl font-bold tracking-tight text-[#142B38] group-hover:text-[#D6A33B] transition-colors leading-none">
+                  AAROH<span className="text-[#D6A33B] mx-1">•</span>SAARTHI
                 </span>
-                <span className="text-[11px] sm:text-[12px] font-ubuntu font-medium text-[#7A7269] mt-1 hidden xs:block leading-none">
+                <span className="text-[11px] sm:text-[12px] font-sans font-medium text-[#7A7269] mt-1 hidden xs:block leading-none">
                   Move Smarter. A Greener Delhi.
                 </span>
               </div>
@@ -358,7 +358,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
           {/* Center: Segmented Navigation Capsule matching target */}
           <nav
             aria-label="Main Navigation"
-            className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#FAF7F2] border border-[#EDE8E1] shadow-2xs"
+            className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-[#F7F5F0] border border-[#E5E0D8] shadow-2xs"
           >
             {navItems.map(item => {
               const { Icon } = item
@@ -368,11 +368,11 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                   to={item.to}
                   className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold transition-all duration-200 cursor-pointer ${
                     item.active
-                      ? 'bg-[#1A2E3B] text-white shadow-xs'
-                      : 'text-[#6E665D] hover:text-[#1A2E3B] hover:bg-white/80'
+                      ? 'bg-[#142B38] text-white shadow-xs'
+                      : 'text-[#6E665D] hover:text-[#142B38] hover:bg-white/80'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${item.active ? 'text-[#C49A43]' : 'text-[#7A7269]'}`} />
+                  <Icon className={`w-4 h-4 ${item.active ? 'text-[#D6A33B]' : 'text-[#7A7269]'}`} />
                   <span>{item.label}</span>
                   {item.badgeCount ? (
                     <span className="flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-[#E11D48] text-white text-[10px] font-mono font-bold leading-none">
@@ -387,7 +387,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
             <button
               type="button"
               onClick={() => setShowProvenanceModal(true)}
-              className="flex items-center gap-1 px-3 py-2 rounded-full text-[13px] font-semibold text-[#6E665D] hover:text-[#1A2E3B] hover:bg-white/80 transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-3 py-2 rounded-full text-[13px] font-semibold text-[#6E665D] hover:text-[#142B38] hover:bg-white/80 transition-colors cursor-pointer"
             >
               <span>More</span>
               <ChevronDownIcon className="w-3.5 h-3.5 text-[#7A7269]" />
@@ -401,11 +401,11 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               <div
                 className={`flex items-center gap-2 rounded-full border transition-all duration-300 ${
                   searchOpen
-                    ? 'w-72 xl:w-84 bg-white border-[#C49A43] ring-2 ring-[#C49A43]/20 shadow-md'
-                    : 'w-48 xl:w-60 bg-[#FAF7F2] border-[#EDE8E1] hover:border-[#C49A43]/50 shadow-2xs'
+                    ? 'w-72 xl:w-84 bg-white border-[#D6A33B] ring-2 ring-[#D6A33B]/20 shadow-md'
+                    : 'w-48 xl:w-60 bg-[#F7F5F0] border-[#E5E0D8] hover:border-[#D6A33B]/50 shadow-2xs'
                 } px-3.5 py-1.5`}
               >
-                <SearchIcon className="w-3.5 h-3.5 text-[#C49A43] shrink-0" />
+                <SearchIcon className="w-3.5 h-3.5 text-[#D6A33B] shrink-0" />
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -427,7 +427,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                   }}
                   placeholder="Search stations, routes..."
                   aria-label="Search Delhi transit network"
-                  className="bg-transparent text-xs sm:text-[13px] text-[#1A2E3B] placeholder-[#9C9488] focus:outline-none w-full font-semibold"
+                  className="bg-transparent text-xs sm:text-[13px] text-[#142B38] placeholder-[#9C9488] focus:outline-none w-full font-semibold"
                 />
                 {headerSearchQuery ? (
                   <button
@@ -436,7 +436,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                       setHeaderSearchQuery('')
                       setSearchOpen(false)
                     }}
-                    className="text-[#7A7269] hover:text-[#1A2E3B] p-0.5 cursor-pointer text-xs"
+                    className="text-[#7A7269] hover:text-[#142B38] p-0.5 cursor-pointer text-xs"
                     aria-label="Clear search query"
                   >
                     <XIcon className="w-3.5 h-3.5" />
@@ -447,7 +447,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                       searchInputRef.current?.focus()
                       setSearchOpen(true)
                     }}
-                    className="text-[10px] font-mono font-bold text-[#A8A196] bg-white border border-[#EDE8E1] rounded px-1.5 py-0.5 cursor-pointer hover:border-[#C49A43] shrink-0"
+                    className="text-[10px] font-mono font-bold text-[#A8A196] bg-white border border-[#E5E0D8] rounded px-1.5 py-0.5 cursor-pointer hover:border-[#D6A33B] shrink-0"
                     title="Press ⌘K or Ctrl+K to search"
                   >
                     ⌘K
@@ -457,7 +457,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
               {/* Autocomplete Dropdown Menu */}
               {searchOpen && (
-                <div className="absolute top-full right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white border border-[#EDE8E1] shadow-2xl p-2 z-[700] animate-fade-in divide-y divide-[#F5EFE6]">
+                <div className="absolute top-full right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white border border-[#E5E0D8] shadow-2xl p-2 z-[700] animate-fade-in divide-y divide-[#F5EFE6]">
                   <div className="px-2.5 py-1.5 flex items-center justify-between text-[10px] font-extrabold uppercase tracking-wider text-[#A1988B]">
                     <span>{headerSearchQuery ? 'Matching Stations' : 'Popular Delhi Hubs'}</span>
                     <span>{filteredHeaderStops.length} Found</span>
@@ -472,15 +472,15 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                         return (
                           <div
                             key={s.stop_id}
-                            className="p-2 sm:p-2.5 rounded-xl hover:bg-[#FAF7F2] transition-colors flex items-center justify-between gap-2 group cursor-pointer"
+                            className="p-2 sm:p-2.5 rounded-xl hover:bg-[#F7F5F0] transition-colors flex items-center justify-between gap-2 group cursor-pointer"
                             onClick={() => handleSelectStation(s.stop_id, 'destination')}
                           >
                             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF0D9] text-[#9A721C] font-bold shrink-0 group-hover:bg-[#C49A43] group-hover:text-white transition-colors">
+                              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FAF0D9] text-[#9A721C] font-bold shrink-0 group-hover:bg-[#D6A33B] group-hover:text-white transition-colors">
                                 <TrainIcon className="w-4 h-4" />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <div className="text-xs sm:text-[13px] font-bold text-[#1A2E3B] truncate">
+                                <div className="text-xs sm:text-[13px] font-bold text-[#142B38] truncate">
                                   {s.stop_name}
                                 </div>
                                 <div className="text-[10px] text-[#7A7269] truncate">
@@ -508,7 +508,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                                   e.stopPropagation()
                                   handleSelectStation(s.stop_id, 'destination')
                                 }}
-                                className="text-[10px] font-bold px-2 py-1 rounded-lg bg-[#1A2E3B] text-white hover:bg-[#253D4E] transition-colors cursor-pointer"
+                                className="text-[10px] font-bold px-2 py-1 rounded-lg bg-[#142B38] text-white hover:bg-[#253D4E] transition-colors cursor-pointer"
                                 title="Set as Destination and Plan Route"
                               >
                                 To →
@@ -519,7 +519,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                       })
                     ) : (
                       <div className="py-6 px-4 text-center text-xs text-[#7A7269] space-y-1">
-                        <p className="font-bold text-[#1A2E3B]">No stations matching "{headerSearchQuery}"</p>
+                        <p className="font-bold text-[#142B38]">No stations matching "{headerSearchQuery}"</p>
                         <p className="text-[11px]">Try searching Rajiv Chowk, Kashmere Gate, Dwarka, or Hauz Khas.</p>
                       </div>
                     )}
@@ -537,7 +537,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
               className={`flex items-center justify-center h-9 w-9 rounded-full border transition-all cursor-pointer shadow-2xs active:scale-95 ${
                 theme === 'dark'
                   ? 'bg-[#1E293B] text-[#F59E0B] border-[#F59E0B]/50 hover:bg-[#334155] shadow-[0_0_10px_rgba(245,158,11,0.3)]'
-                  : 'bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#6E665D] hover:text-[#1A2E3B] border-[#EDE8E1]'
+                  : 'bg-[#F7F5F0] hover:bg-[#F2ECE1] text-[#6E665D] hover:text-[#142B38] border-[#E5E0D8]'
               }`}
             >
               {theme === 'dark' ? (
@@ -567,14 +567,14 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                 <button
                   type="button"
                   onClick={() => setUserMenuOpen(prev => !prev)}
-                  className="flex items-center gap-2 bg-[#FAF7F2] hover:bg-[#F2ECE1] border border-[#EDE8E1] hover:border-[#C49A43] rounded-full pl-1.5 pr-3 py-1 cursor-pointer transition-colors shadow-2xs"
+                  className="flex items-center gap-2 bg-[#F7F5F0] hover:bg-[#F2ECE1] border border-[#E5E0D8] hover:border-[#D6A33B] rounded-full pl-1.5 pr-3 py-1 cursor-pointer transition-colors shadow-2xs"
                   aria-expanded={userMenuOpen}
                   aria-label="User profile and transit account menu"
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#D4A338] to-[#B38728] text-white font-bold text-xs shadow-xs">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
-                  <span className="text-xs sm:text-[13px] font-bold text-[#1A2E3B]">Hi, {user.name}</span>
+                  <span className="text-xs sm:text-[13px] font-bold text-[#142B38]">Hi, {user.name}</span>
                   <ChevronDownIcon className={`w-3.5 h-3.5 text-[#7A7269] transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
               ) : (
@@ -584,7 +584,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                   className="flex items-center gap-1.5 bg-[#FAF0D9] hover:bg-[#F2E5C9] border border-[#E8D4AE] text-[#9A721C] rounded-full px-3 py-1.5 text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95"
                   aria-label="Sign in to your Delhi Transit account"
                 >
-                  <span className="w-2 h-2 rounded-full bg-[#C49A43]" />
+                  <span className="w-2 h-2 rounded-full bg-[#D6A33B]" />
                   <span>Sign In</span>
                 </button>
               )}
@@ -599,30 +599,30 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-sm text-[#1A2E3B] truncate">{user.name} Maheshwari</span>
+                        <span className="font-bold text-sm text-[#142B38] truncate">{user.name} Maheshwari</span>
                         <span className="w-2 h-2 rounded-full bg-emerald-500" title="Active Commuter" />
                       </div>
                       <div className="text-[11px] text-[#7A7269] truncate">{user.email}</div>
-                      <div className="inline-block text-[9px] font-extrabold uppercase tracking-wider text-[#C49A43] bg-[#FAF0D9] px-1.5 py-0.5 rounded mt-1">
+                      <div className="inline-block text-[9px] font-extrabold uppercase tracking-wider text-[#D6A33B] bg-[#FAF0D9] px-1.5 py-0.5 rounded mt-1">
                         Verified Commuter • #DL-8821
                       </div>
                     </div>
                   </div>
 
                   {/* DMRC SmartCard Balance Card */}
-                  <div className="rounded-xl border border-[#EDE8E1] bg-[#FAF7F2] p-3 space-y-2">
+                  <div className="rounded-xl border border-[#E5E0D8] bg-[#F7F5F0] p-3 space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-bold text-[#7A7269]">DMRC Metro SmartCard</span>
                       <span className="font-mono text-[11px] text-[#9A721C] font-extrabold">20% Off-Peak Active</span>
                     </div>
                     <div className="flex items-baseline justify-between">
-                      <span className="font-serif text-2xl font-bold text-[#1A2E3B] tabular-nums">
+                      <span className="font-sans font-bold text-2xl font-bold text-[#142B38] tabular-nums">
                         ₹{user.cardBalance}.00
                       </span>
                       <button
                         type="button"
                         onClick={handleTopupCard}
-                        className="text-xs font-bold text-white bg-[#C49A43] hover:bg-[#B38728] px-2.5 py-1 rounded-lg transition-colors shadow-2xs cursor-pointer active:scale-95"
+                        className="text-xs font-bold text-white bg-[#D6A33B] hover:bg-[#B38728] px-2.5 py-1 rounded-lg transition-colors shadow-2xs cursor-pointer active:scale-95"
                       >
                         + ₹100 Top-up
                       </button>
@@ -631,19 +631,19 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
                   {/* Quick Concessions */}
                   <div className="space-y-1.5 text-xs">
-                    <div className="flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-[#FAF7F2] text-[#1A2E3B]">
+                    <div className="flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-[#F7F5F0] text-[#142B38]">
                       <span className="flex items-center gap-2 font-medium">
                         <CheckIcon className="w-3.5 h-3.5 text-emerald-600" />
                         <span>DTC Pink Pass Scheme</span>
                       </span>
                       <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">Eligible</span>
                     </div>
-                    <div className="flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-[#FAF7F2] text-[#1A2E3B]">
+                    <div className="flex items-center justify-between py-1 px-1.5 rounded-lg hover:bg-[#F7F5F0] text-[#142B38]">
                       <span className="flex items-center gap-2 font-medium">
                         <CheckIcon className="w-3.5 h-3.5 text-emerald-600" />
                         <span>Green Carbon Saver</span>
                       </span>
-                      <span className="text-[10px] font-bold text-[#C49A43]">1.4 kg CO₂ saved</span>
+                      <span className="text-[10px] font-bold text-[#D6A33B]">1.4 kg CO₂ saved</span>
                     </div>
                   </div>
 
@@ -655,10 +655,10 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                         setShowCashbackModal(true)
                         setUserMenuOpen(false)
                       }}
-                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold text-[#1A2E3B] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold text-[#142B38] hover:bg-[#F7F5F0] transition-colors cursor-pointer"
                     >
                       <span>Fare Concessions & Cashback</span>
-                      <span className="text-[#C49A43]">→</span>
+                      <span className="text-[#D6A33B]">→</span>
                     </button>
                     <button
                       type="button"
@@ -666,7 +666,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                         setShowProvenanceModal(true)
                         setUserMenuOpen(false)
                       }}
-                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold text-[#1A2E3B] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+                      className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-bold text-[#142B38] hover:bg-[#F7F5F0] transition-colors cursor-pointer"
                     >
                       <span>Transit Data Sources & GTFS</span>
                       <span className="text-[#7A7269]">ℹ</span>
@@ -702,7 +702,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
             <button
               type="button"
               onClick={() => setShowCashbackModal(true)}
-              className="flex md:hidden items-center justify-center h-9 w-9 rounded-full border border-[#EDE8E1] bg-[#FAF0D9] text-[#9A721C] transition-colors cursor-pointer shadow-2xs"
+              className="flex md:hidden items-center justify-center h-9 w-9 rounded-full border border-[#E5E0D8] bg-[#FAF0D9] text-[#9A721C] transition-colors cursor-pointer shadow-2xs"
               title="Perks"
             >
               <SparklesIcon className="w-4 h-4 text-[#9A721C]" />
@@ -725,12 +725,12 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                   onClick={() => setMobileNavOpen(false)}
                   className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                     item.active
-                      ? 'text-[#1A2E3B] bg-[#FAF0D9] font-extrabold border-l-4 border-[#C49A43]'
-                      : 'text-[#7A7269] hover:text-[#1A2E3B] hover:bg-[#FAF7F2]'
+                      ? 'text-[#142B38] bg-[#FAF0D9] font-extrabold border-l-4 border-[#D6A33B]'
+                      : 'text-[#7A7269] hover:text-[#142B38] hover:bg-[#F7F5F0]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${item.active ? 'text-[#C49A43]' : 'text-[#7A7269]'}`} />
+                    <Icon className={`w-4 h-4 ${item.active ? 'text-[#D6A33B]' : 'text-[#7A7269]'}`} />
                     <span>{item.label}</span>
                   </div>
                   {item.badgeCount ? (
@@ -758,8 +758,8 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                     }}
                     className={`px-2.5 py-1.5 rounded-lg text-xs font-bold text-left truncate transition-colors ${
                       selectedCity === reg.id
-                        ? 'bg-[#1A2E3B] text-white'
-                        : 'bg-[#FAF7F2] text-[#1A2E3B] border border-[#EBE5DC]'
+                        ? 'bg-[#142B38] text-white'
+                        : 'bg-[#F7F5F0] text-[#142B38] border border-[#EBE5DC]'
                     }`}
                   >
                     {reg.id}
@@ -794,16 +794,16 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
             onClick={() => setShowLoginModal(false)}
           >
             <div
-              className="w-full max-w-sm rounded-3xl border border-[#EDE8E1] bg-white p-6 shadow-2xl space-y-4 pointer-events-auto"
+              className="w-full max-w-sm rounded-3xl border border-[#E5E0D8] bg-white p-6 shadow-2xl space-y-4 pointer-events-auto"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-[#F0EAE1] pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FAF0D9] text-[#9A721C] font-bold">
-                    <TrainIcon className="w-5 h-5 text-[#C49A43]" />
+                    <TrainIcon className="w-5 h-5 text-[#D6A33B]" />
                   </div>
                   <div>
-                    <h3 id="commuter-signin-title" className="font-serif text-lg font-bold text-[#1A2E3B] leading-tight">
+                    <h3 id="commuter-signin-title" className="font-sans font-bold text-lg font-bold text-[#142B38] leading-tight">
                       Commuter Sign In
                     </h3>
                     <p className="text-xs text-[#7A7269]">Aaroh-Saarthi Delhi Transit</p>
@@ -812,7 +812,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                 <button
                   type="button"
                   onClick={() => setShowLoginModal(false)}
-                  className="rounded-lg p-1 text-[#7A7269] hover:bg-[#FAF7F2] hover:text-[#1A2E3B] cursor-pointer transition-colors"
+                  className="rounded-lg p-1 text-[#7A7269] hover:bg-[#F7F5F0] hover:text-[#142B38] cursor-pointer transition-colors"
                   aria-label="Close sign in modal"
                 >
                   <XIcon className="w-4 h-4" />
@@ -821,7 +821,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
 
               <form onSubmit={handleLogin} className="space-y-3.5">
                 <div>
-                  <label htmlFor="commuter-name-input" className="block text-xs font-bold text-[#1A2E3B] mb-1">
+                  <label htmlFor="commuter-name-input" className="block text-xs font-bold text-[#142B38] mb-1">
                     Commuter Name
                   </label>
                   <input
@@ -831,13 +831,13 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                     onChange={e => setLoginName(e.target.value)}
                     placeholder="e.g. Raj"
                     autoFocus
-                    className="w-full rounded-xl border border-[#EDE8E1] px-3.5 py-2 text-sm font-semibold text-[#1A2E3B] focus:border-[#C49A43] focus:outline-none transition-colors"
+                    className="w-full rounded-xl border border-[#E5E0D8] px-3.5 py-2 text-sm font-semibold text-[#142B38] focus:border-[#D6A33B] focus:outline-none transition-colors"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="commuter-card-input" className="block text-xs font-bold text-[#1A2E3B] mb-1">
+                  <label htmlFor="commuter-card-input" className="block text-xs font-bold text-[#142B38] mb-1">
                     DMRC SmartCard or Mobile No.
                   </label>
                   <input
@@ -846,14 +846,14 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                     value={loginPhone}
                     onChange={e => setLoginPhone(e.target.value)}
                     placeholder="e.g. 9876543210"
-                    className="w-full rounded-xl border border-[#EDE8E1] px-3.5 py-2 text-sm font-semibold text-[#1A2E3B] focus:border-[#C49A43] focus:outline-none transition-colors"
+                    className="w-full rounded-xl border border-[#E5E0D8] px-3.5 py-2 text-sm font-semibold text-[#142B38] focus:border-[#D6A33B] focus:outline-none transition-colors"
                   />
                 </div>
 
                 <div className="pt-1 space-y-2">
                   <button
                     type="submit"
-                    className="w-full rounded-xl bg-gradient-to-r from-[#D4A338] to-[#B38728] hover:from-[#C49A43] hover:to-[#A77B32] text-white font-bold py-2.5 text-sm transition-all shadow-md cursor-pointer active:scale-98"
+                    className="w-full rounded-xl bg-gradient-to-r from-[#D4A338] to-[#B38728] hover:from-[#D6A33B] hover:to-[#A77B32] text-white font-bold py-2.5 text-sm transition-all shadow-md cursor-pointer active:scale-98"
                   >
                     Sign In as {loginName.trim() || 'Commuter'}
                   </button>
@@ -874,7 +874,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
                       setAuthToast('Welcome back, Raj! Your DMRC SmartCard & Passes are active.')
                       setTimeout(() => setAuthToast(''), 3500)
                     }}
-                    className="w-full rounded-xl border border-[#EDE8E1] bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] font-bold py-2 text-xs transition-colors cursor-pointer active:scale-98"
+                    className="w-full rounded-xl border border-[#E5E0D8] bg-[#F7F5F0] hover:bg-[#F2ECE1] text-[#142B38] font-bold py-2 text-xs transition-colors cursor-pointer active:scale-98"
                   >
                     Quick 1-Click Demo Login (Raj)
                   </button>
@@ -895,7 +895,7 @@ export default function AppHeader({ onOpenMobileMenu }: AppHeaderProps) {
             style={{ zIndex: 9999999, position: 'fixed' }}
             className="bottom-6 right-6 flex items-center gap-2.5 rounded-2xl border border-[#E8D4AE] bg-[#FAF0D9] text-[#9A721C] px-4 py-3 text-xs font-bold shadow-xl animate-fade-in pointer-events-auto"
           >
-            <CheckIcon className="w-4 h-4 text-[#C49A43] shrink-0" />
+            <CheckIcon className="w-4 h-4 text-[#D6A33B] shrink-0" />
             <span>{authToast}</span>
           </aside>,
           document.body

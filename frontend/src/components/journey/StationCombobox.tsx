@@ -154,11 +154,11 @@ export default function StationCombobox({
       {/* Label with colored pin indicator */}
       <label
         htmlFor={id}
-        className="text-[13px] font-bold text-[#1A2E3B] flex items-center justify-between"
+        className="text-[13px] font-bold text-[#142B38] flex items-center justify-between"
       >
         <span className="flex items-center gap-1.5">
           <MapPinIcon className="w-3.5 h-3.5 shrink-0" style={{ color: pinColor }} />
-          <span className="font-bold text-[13px] text-[#1A2E3B] capitalize">{label.toLowerCase()}</span>
+          <span className="font-bold text-[13px] text-[#142B38] capitalize">{label.toLowerCase()}</span>
         </span>
       </label>
 
@@ -174,8 +174,8 @@ export default function StationCombobox({
         onKeyDown={handleKeyDown}
         className={`w-full flex items-center justify-between gap-3 rounded-2xl border bg-white px-4 py-3 transition-all duration-200 cursor-pointer shadow-xs text-left group ${
           isOpen
-            ? 'border-[#C49A43] ring-2 ring-[#C49A43]/20 shadow-sm'
-            : 'border-[#EDE8E1] hover:border-[#C49A43]/60 hover:bg-[#FFFCF8]'
+            ? 'border-[#D6A33B] ring-2 ring-[#D6A33B]/20 shadow-sm'
+            : 'border-[#E5E0D8] hover:border-[#D6A33B]/60 hover:bg-[#FFFCF8]'
         }`}
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -192,7 +192,7 @@ export default function StationCombobox({
           {selectedStop ? (
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="text-[15px] font-bold text-[#1A2E3B] truncate tracking-normal">
+                <span className="text-[15px] font-bold text-[#142B38] truncate tracking-normal">
                   {getFigmaStationName(selectedStop)}
                 </span>
               </div>
@@ -222,15 +222,15 @@ export default function StationCombobox({
               }}
               title="Clear selection"
               aria-label="Clear station"
-              className="p-1 rounded-md text-[#7A7269] hover:text-[#A6533C] hover:bg-[#FAF7F2] transition-colors cursor-pointer"
+              className="p-1 rounded-md text-[#7A7269] hover:text-[#A6533C] hover:bg-[#F7F5F0] transition-colors cursor-pointer"
             >
               <XIcon className="w-3.5 h-3.5" />
             </span>
           )}
 
           <ChevronDownIcon
-            className={`w-4 h-4 text-[#7A7269] transition-transform duration-200 group-hover:text-[#1A2E3B] ${
-              isOpen ? 'rotate-180 text-[#C49A43]' : ''
+            className={`w-4 h-4 text-[#7A7269] transition-transform duration-200 group-hover:text-[#142B38] ${
+              isOpen ? 'rotate-180 text-[#D6A33B]' : ''
             }`}
           />
         </div>
@@ -240,12 +240,12 @@ export default function StationCombobox({
       {isOpen && (
         <div
           style={{ zIndex: 60 }}
-          className="absolute left-0 right-0 top-full mt-2 rounded-2xl border-2 border-[#C49A43]/50 bg-white shadow-2xl overflow-hidden animate-fade-in"
+          className="absolute left-0 right-0 top-full mt-2 rounded-2xl border-2 border-[#D6A33B]/50 bg-white shadow-2xl overflow-hidden animate-fade-in"
         >
           {/* Search Input Box */}
-          <div className="p-2.5 border-b border-[#EBE5DC] bg-[#FFFDF9]">
+          <div className="p-2.5 border-b border-[#E5E0D8] bg-[#FFFDF9]">
             <div className="relative flex items-center">
-              <SearchIcon className="absolute left-3 w-4 h-4 text-[#C49A43]" />
+              <SearchIcon className="absolute left-3 w-4 h-4 text-[#D6A33B]" />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -253,13 +253,13 @@ export default function StationCombobox({
                 onChange={e => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search station, metro line, or hub..."
-                className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white border border-[#EBE5DC] focus:border-[#C49A43] focus:ring-2 focus:ring-[#C49A43]/20 focus:outline-none text-[#1A2E3B] placeholder:text-[#A1988B]"
+                className="w-full pl-9 pr-8 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white border border-[#E5E0D8] focus:border-[#D6A33B] focus:ring-2 focus:ring-[#D6A33B]/20 focus:outline-none text-[#142B38] placeholder:text-[#A1988B]"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 p-0.5 text-[#7A7269] hover:text-[#1A2E3B]"
+                  className="absolute right-2.5 p-0.5 text-[#7A7269] hover:text-[#142B38]"
                   aria-label="Clear search"
                 >
                   <XIcon className="w-3.5 h-3.5" />
@@ -282,12 +282,12 @@ export default function StationCombobox({
                       onClick={() => handleSelect(hub.id)}
                       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                         isCurrent
-                          ? 'bg-[#1A2E3B] text-white shadow-xs'
-                          : 'bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1A2E3B] border border-[#EBE5DC]'
+                          ? 'bg-[#142B38] text-white shadow-xs'
+                          : 'bg-[#F7F5F0] hover:bg-[#F2ECE1] text-[#142B38] border border-[#E5E0D8]'
                       }`}
                     >
                       {hub.type === 'metro' ? (
-                        <TrainIcon className="w-3 h-3 text-[#C49A43]" />
+                        <TrainIcon className="w-3 h-3 text-[#D6A33B]" />
                       ) : hub.type === 'interchange' ? (
                         <RefreshIcon className="w-3 h-3 text-[#547A60]" />
                       ) : hub.type === 'hospital' ? (
@@ -312,7 +312,7 @@ export default function StationCombobox({
           >
             {filteredStops.length === 0 ? (
               <li className="py-6 text-center text-xs sm:text-sm text-[#7A7269] font-medium">
-                No stations match <span className="font-bold text-[#1A2E3B]">"{searchQuery}"</span>
+                No stations match <span className="font-bold text-[#142B38]">"{searchQuery}"</span>
               </li>
             ) : (
               filteredStops.map((stop, index) => {
@@ -330,9 +330,9 @@ export default function StationCombobox({
                     onMouseEnter={() => setFocusedIndex(index)}
                     className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer transition-colors ${
                       isSelected
-                        ? 'bg-[#FAF0D9] text-[#1A2E3B]'
+                        ? 'bg-[#FAF4E8] text-[#142B38]'
                         : isFocused
-                        ? 'bg-[#FAF7F2] text-[#1A2E3B]'
+                        ? 'bg-[#F7F5F0] text-[#142B38]'
                         : 'hover:bg-[#FFFDF9] text-[#1A202C]'
                     }`}
                   >
@@ -341,12 +341,12 @@ export default function StationCombobox({
                       <span
                         className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-extrabold shrink-0 ${
                           isSelected
-                            ? 'bg-[#C49A43] text-white shadow-xs'
-                            : 'bg-[#FAF7F2] border border-[#EBE5DC] text-[#7A7269]'
+                            ? 'bg-[#D6A33B] text-white shadow-xs'
+                            : 'bg-[#F7F5F0] border border-[#E5E0D8] text-[#7A7269]'
                         }`}
                       >
                         {meta.interchanges.some(i => i.includes('Blue') || i.includes('Yellow') || i.includes('Metro')) ? (
-                          <TrainIcon className="w-3.5 h-3.5 text-[#C49A43]" />
+                          <TrainIcon className="w-3.5 h-3.5 text-[#D6A33B]" />
                         ) : meta.interchanges.some(i => i.includes('Bus') || i.includes('Terminal')) ? (
                           <BusIcon className="w-3.5 h-3.5 text-[#1D4ED8]" />
                         ) : (
@@ -356,11 +356,11 @@ export default function StationCombobox({
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className={`text-xs sm:text-sm font-bold truncate ${isSelected ? 'text-[#1A2E3B]' : 'text-[#1A202C]'}`}>
+                          <span className={`text-xs sm:text-sm font-bold truncate ${isSelected ? 'text-[#142B38]' : 'text-[#1A202C]'}`}>
                             {getFigmaStationName(stop)}
                           </span>
                           {isOther && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FAF7F2] text-[#7A7269] border border-[#EBE5DC]">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#F7F5F0] text-[#7A7269] border border-[#E5E0D8]">
                               Currently {label === 'FROM' ? 'Destination' : 'Origin'}
                             </span>
                           )}
@@ -371,8 +371,8 @@ export default function StationCombobox({
                           <span>{meta.landmark}</span>
                           {meta.interchanges.length > 0 && (
                             <>
-                              <span className="text-[#C49A43]">•</span>
-                              <span className="font-semibold text-[#1A2E3B]">
+                              <span className="text-[#D6A33B]">•</span>
+                              <span className="font-semibold text-[#142B38]">
                                 {meta.interchanges.slice(0, 2).join(' / ')}
                               </span>
                             </>
@@ -383,11 +383,11 @@ export default function StationCombobox({
 
                     {/* Zone Tag & Checkmark */}
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white border border-[#EBE5DC] text-[#7A7269]">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white border border-[#E5E0D8] text-[#7A7269]">
                         Z{stop.zone_id}
                       </span>
                       {isSelected && (
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#2E7D32] text-white shadow-2xs">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#176B43] text-white shadow-2xs">
                           <CheckIcon className="w-3 h-3 text-white" />
                         </span>
                       )}
@@ -399,7 +399,7 @@ export default function StationCombobox({
           </ul>
 
           {/* Footer count indicator */}
-          <div className="px-3.5 py-2 bg-[#FAF7F2] border-t border-[#EBE5DC] flex items-center justify-between text-[11px] font-bold text-[#7A7269]">
+          <div className="px-3.5 py-2 bg-[#F7F5F0] border-t border-[#E5E0D8] flex items-center justify-between text-[11px] font-bold text-[#7A7269]">
             <span>{filteredStops.length} Delhi Stations</span>
             <span>Esc to close</span>
           </div>

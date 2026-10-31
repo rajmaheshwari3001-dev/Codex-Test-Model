@@ -98,13 +98,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           aria-label="Close menu backdrop"
           onClick={onCloseMobile}
           onKeyDown={e => e.key === 'Escape' && onCloseMobile()}
-          className="fixed inset-0 z-50 bg-[#243B4A]/70 backdrop-blur-xs transition-opacity"
+          className="fixed inset-0 z-50 bg-[#142B38]/70 backdrop-blur-xs transition-opacity"
         />
       )}
 
       {/* Slide-over Drawer */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between border-r border-[#D8C8AA]/30 bg-[#243B4A] text-[#FFFCF5] transition-transform duration-200 ease-in-out shadow-2xl ${
+        className={`fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between border-r border-[#D8C8AA]/30 bg-[#142B38] text-[#FFFCF5] transition-transform duration-200 ease-in-out shadow-2xl ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -112,13 +112,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
           {/* Brand Header */}
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#C49A43] text-white font-mono text-base font-extrabold shadow-md">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#D6A33B] text-white font-mono text-base font-extrabold shadow-md">
                 AS
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-serif text-base font-bold tracking-tight text-[#FFFCF5]">
-                    AAROH<span className="text-[#C49A43]">—</span>SAARTHI
+                  <span className="font-sans font-bold text-base font-bold tracking-tight text-[#FFFCF5]">
+                    AAROH<span className="text-[#D6A33B]">—</span>SAARTHI
                   </span>
                 </div>
                 <p className="text-[11px] font-medium text-[#EEE5D6]/80">
@@ -155,7 +155,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
                         onClick={() => onCloseMobile()}
                         className={`group flex items-center justify-between rounded-xl px-3 py-2.5 font-medium transition-all cursor-pointer ${
                           item.active
-                            ? 'bg-[#C49A43] text-white font-bold shadow-xs'
+                            ? 'bg-[#D6A33B] text-white font-bold shadow-xs'
                             : 'text-[#EEE5D6] hover:bg-white/10 hover:text-white'
                         }`}
                       >
@@ -179,7 +179,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }: SidebarProps) {
         <div className="border-t border-white/10 p-4 text-[11px] text-[#EEE5D6]/80 space-y-2">
           <div className="flex items-center justify-between">
             <span className="font-semibold text-white">Delhi GTFS</span>
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 font-mono text-[10px] text-[#C49A43] border border-white/15">
+            <span className="rounded-full bg-white/10 px-2.5 py-0.5 font-mono text-[10px] text-[#D6A33B] border border-white/15">
               20 Stations
             </span>
           </div>

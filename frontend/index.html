@@ -18,7 +18,7 @@
     />
     <meta name="author" content="Government of NCT of Delhi / Aaroh-Saarthi Mobility Team" />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#1B4D3E" />
+    <meta name="theme-color" content="#142B38" />
     <link rel="canonical" href="https://aaroh-saarthi.delhi.gov.in/" />
 
     <!-- Delhi NCT Geo-Coordinates for Local Search -->
@@ -136,13 +136,14 @@
       }
     </script>
 
-    <!-- Google Fonts: Playfair Display, Plus Jakarta Sans, DM Serif Display, Manrope & Ubuntu -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- General Sans Typeface (Primary Typography for Aaroh-Saarthi) -->
+    <link rel="preload" href="/fonts/general-sans/GeneralSans-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/general-sans/GeneralSans-Medium.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/general-sans/GeneralSans-Semibold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/general-sans/GeneralSans-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" />
+
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -150,37 +151,37 @@
       crossorigin=""
     />
   </head>
-  <body class="min-h-screen bg-gradient-to-br from-[#FFF6ED] via-[#FDF9F4] to-[#F1EEFA] text-[#1A202C] font-sans antialiased selection:bg-[#C49A43] selection:text-white">
+  <body class="min-h-screen bg-[#F7F5F0] text-[#142B38] font-sans antialiased selection:bg-[#D6A33B] selection:text-white">
     <div id="root">
-      <div id="pre-react-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#FAF7F2;z-index:99999;font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;">
+      <div id="pre-react-loader" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#F7F5F0;z-index:99999;font-family:'General Sans',-apple-system,BlinkMacSystemFont,sans-serif;">
         <!-- Glowing Ambient Rings -->
         <div style="position:relative;width:96px;height:96px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-          <div style="position:absolute;inset:-10px;border-radius:50%;border:2px dashed rgba(196,154,67,0.4);animation:spin 12s linear infinite;"></div>
-          <div style="position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle, rgba(196,154,67,0.25) 0%, transparent 70%);animation:pulse 2s ease-in-out infinite;"></div>
-          <div style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg, #FFF9EE, #FAF0D9, #EBD5A8);border:2.5px solid #C49A43;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px rgba(196,154,67,0.25);">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9A721C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div style="position:absolute;inset:-10px;border-radius:50%;border:2px dashed rgba(214,163,59,0.4);animation:spin 12s linear infinite;"></div>
+          <div style="position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle, rgba(214,163,59,0.25) 0%, transparent 70%);animation:pulse 2s ease-in-out infinite;"></div>
+          <div style="width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg, #FFF9EE, #FAF0D9, #EBD5A8);border:2.5px solid #D6A33B;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 25px rgba(214,163,59,0.25);">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D6A33B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4" y="3" width="16" height="16" rx="2"></rect>
               <path d="M4 11h16"></path>
               <path d="M12 3v8"></path>
               <path d="m8 19-2 3"></path>
               <path d="m16 19 2 3"></path>
-              <circle cx="8" cy="15" r="1" fill="#9A721C"></circle>
-              <circle cx="16" cy="15" r="1" fill="#9A721C"></circle>
+              <circle cx="8" cy="15" r="1" fill="#D6A33B"></circle>
+              <circle cx="16" cy="15" r="1" fill="#D6A33B"></circle>
             </svg>
           </div>
         </div>
         <!-- Brand Title & Tagline -->
-        <div style="font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:700;color:#1A2E3B;letter-spacing:-0.5px;margin:0 0 6px 0;">
-          AAROH<span style="color:#C49A43;margin:0 6px;">•</span>SAARTHI
+        <div style="font-family:'General Sans',-apple-system,BlinkMacSystemFont,sans-serif;font-size:24px;font-weight:700;color:#142B38;letter-spacing:-0.5px;margin:0 0 6px 0;">
+          AAROH<span style="color:#D6A33B;margin:0 6px;">•</span>SAARTHI
         </div>
-        <div style="font-size:11px;color:#7A7269;margin:0 0 22px 0;letter-spacing:0.8px;font-weight:600;text-transform:uppercase;">
-          DELHI MULTIMODAL TRANSIT ENGINE
+        <div style="font-size:11px;color:#71717A;margin:0 0 22px 0;letter-spacing:1px;font-weight:600;text-transform:uppercase;">
+          DELHI MULTIMODAL MOBILITY PLATFORM
         </div>
         <!-- Transit Progress Bar -->
         <div style="width:200px;height:4px;background:#EDE8E1;border-radius:99px;overflow:hidden;position:relative;">
-          <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:linear-gradient(90deg, #C49A43, #166534, #C49A43);border-radius:99px;animation:transitSweep 1.4s ease-in-out infinite;"></div>
+          <div style="position:absolute;top:0;left:0;height:100%;width:40%;background:linear-gradient(90deg, #D6A33B, #176B43, #D6A33B);border-radius:99px;animation:transitSweep 1.4s ease-in-out infinite;"></div>
         </div>
-        <div style="font-size:11px;color:#A1988B;margin-top:14px;font-weight:600;letter-spacing:0.3px;">
+        <div style="font-size:11px;color:#8E887E;margin-top:14px;font-weight:600;letter-spacing:0.3px;">
           Synchronizing Real-Time GTFS Telemetry...
         </div>
       </div>
