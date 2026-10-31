@@ -113,22 +113,26 @@ export default function FleetMap({
     let url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
     let attribution = '&copy; Esri, HERE, Garmin'
     let maxZoom = 19
+    let maxNativeZoom = 17
 
     if (style === 'hot') {
       url = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png'
       attribution = '&copy; OpenStreetMap contributors, Humanitarian OSM Team'
       maxZoom = 19
+      maxNativeZoom = 19
     } else if (style === 'dark') {
       url = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
       attribution = '&copy; Esri, DeLorme, NAVTEQ'
-      maxZoom = 16
+      maxZoom = 19
+      maxNativeZoom = 16
     } else if (style === 'satellite') {
       url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
       attribution = '&copy; Esri, Maxar, Earthstar Geographics'
-      maxZoom = 18
+      maxZoom = 19
+      maxNativeZoom = 18
     }
 
-    const newLayer = L.tileLayer(url, { attribution, maxZoom, minZoom: 9 }).addTo(map)
+    const newLayer = L.tileLayer(url, { attribution, maxZoom, maxNativeZoom, minZoom: 9 }).addTo(map)
     tileLayerRef.current = newLayer
   }, [])
 

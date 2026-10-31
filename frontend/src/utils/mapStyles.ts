@@ -25,13 +25,28 @@ export interface MapStyleConfig {
   url: string
   attribution: string
   maxZoom: number
+  maxNativeZoom: number
   subdomains: string
 }
 
 export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
   {
+    id: 'streets',
+    name: 'Mapple Street Navigation',
+    engine: 'Esri World Streets',
+    category: 'mapple',
+    tagline: 'High-detail turn-by-turn arterial clarity, flyovers, and highways.',
+    badge: 'Mapple Nav',
+    swatchBg: 'from-[#FEF3C7] via-[#FDE68A] to-[#F59E0B]',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri, HERE, Garmin',
+    maxZoom: 19,
+    maxNativeZoom: 17, // Native tiles up to 17; Leaflet automatically upscales for zoom 18-19 to avoid 'Map data not yet available'
+    subdomains: 'abc',
+  },
+  {
     id: 'hot',
-    name: 'Mapple Pastel (Humanitarian)',
+    name: 'Mapple Clean (Humanitarian)',
     engine: 'OSM Humanitarian CDN',
     category: 'mapple',
     tagline: 'Mapple Maps pastel aesthetic with soft green parks, warm cream roads & zero watermarks.',
@@ -40,6 +55,7 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
     attribution: '&copy; OpenStreetMap contributors, Humanitarian OSM Team',
     maxZoom: 19,
+    maxNativeZoom: 19,
     subdomains: 'abc',
   },
   {
@@ -52,7 +68,8 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     swatchBg: 'from-[#F8FAFC] via-[#E2E8F0] to-[#CBD5E1]',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; Esri, HERE, Garmin',
-    maxZoom: 16,
+    maxZoom: 19,
+    maxNativeZoom: 16, // Native tiles up to 16; Leaflet upscales for zoom 17-19
     subdomains: 'abc',
   },
   {
@@ -65,20 +82,8 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     swatchBg: 'from-[#0F172A] via-[#1E293B] to-[#334155]',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; Esri, DeLorme, NAVTEQ',
-    maxZoom: 16,
-    subdomains: 'abc',
-  },
-  {
-    id: 'streets',
-    name: 'Mapple Street Navigation',
-    engine: 'Esri World Streets',
-    category: 'mapple',
-    tagline: 'High-detail turn-by-turn arterial clarity, flyovers, and highways.',
-    badge: 'Mapple Nav',
-    swatchBg: 'from-[#FEF3C7] via-[#FDE68A] to-[#F59E0B]',
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-    attribution: '&copy; Esri, HERE, Garmin',
     maxZoom: 19,
+    maxNativeZoom: 16, // Native tiles up to 16; Leaflet upscales for zoom 17-19
     subdomains: 'abc',
   },
   {
@@ -91,7 +96,8 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     swatchBg: 'from-[#064E3B] via-[#047857] to-[#10B981]',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; Esri, Maxar, Earthstar Geographics',
-    maxZoom: 18,
+    maxZoom: 19,
+    maxNativeZoom: 18,
     subdomains: 'abc',
   },
   {
@@ -105,6 +111,7 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; Esri, USGS, FAO',
     maxZoom: 19,
+    maxNativeZoom: 17,
     subdomains: 'abc',
   },
   {
@@ -118,6 +125,7 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     url: 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
     attribution: '&copy; OpenStreetMap contributors, CyclOSM',
     maxZoom: 19,
+    maxNativeZoom: 19,
     subdomains: 'abc',
   },
   {
@@ -130,7 +138,8 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     swatchBg: 'from-[#FEF3C7] via-[#FDE68A] to-[#D97706]',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; National Geographic, Esri',
-    maxZoom: 16,
+    maxZoom: 19,
+    maxNativeZoom: 16,
     subdomains: 'abc',
   },
   {
@@ -144,6 +153,7 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution: '&copy; OpenStreetMap contributors',
     maxZoom: 19,
+    maxNativeZoom: 19,
     subdomains: 'abc',
   },
   {
@@ -156,7 +166,8 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
     swatchBg: 'from-[#FEF3C7] via-[#FDE68A] to-[#B45309]',
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     attribution: '&copy; OpenStreetMap contributors, SRTM',
-    maxZoom: 17,
+    maxZoom: 19,
+    maxNativeZoom: 17,
     subdomains: 'abc',
   },
 ]

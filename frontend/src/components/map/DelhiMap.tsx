@@ -198,7 +198,8 @@ export default function DelhiMap({
 
     const newLayer = L.tileLayer(conf.url, {
       attribution: conf.attribution,
-      maxZoom: conf.maxZoom,
+      maxZoom: conf.maxZoom || 19,
+      maxNativeZoom: conf.maxNativeZoom || 17,
       minZoom: 9,
       subdomains: conf.subdomains,
     }).addTo(map)
