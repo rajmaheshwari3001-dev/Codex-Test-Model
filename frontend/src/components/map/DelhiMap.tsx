@@ -99,7 +99,7 @@ export default function DelhiMap({
     return 'streets' // Default to World Street Navigation (Clean, Serene, Zero Watermark)
   })
   const [showLayerDrawer, setShowLayerDrawer] = useState(false)
-  const [layerFilter, setLayerFilter] = useState<'all' | 'apple' | 'satellite' | 'transit'>('all')
+  const [layerFilter, setLayerFilter] = useState<'all' | 'mapple' | 'satellite' | 'transit'>('all')
   const layerDrawerRef = useRef<HTMLDivElement>(null)
 
   // Persist user map style
@@ -714,7 +714,7 @@ export default function DelhiMap({
                   : 'text-[#6E665D] hover:text-[#142B38]'
               }`}
             >
-              Apple Maps
+              Mapple Maps
             </button>
             <button
               type="button"
@@ -783,7 +783,7 @@ export default function DelhiMap({
               </div>
               <div>
                 <h4 className="font-sans font-bold text-sm sm:text-base font-bold text-[#142B38] leading-tight">
-                  Apple Maps & Free Map APIs
+                  Mapple Maps & Free Map APIs
                 </h4>
                 <p className="text-[11px] text-[#7A7269]">
                   10 High-Performance Engines • 100% Free
@@ -804,7 +804,7 @@ export default function DelhiMap({
           <div className="py-2.5 flex items-center gap-1.5 overflow-x-auto scrollbar-none text-[11px] font-bold">
             {[
               { id: 'all', label: 'All (10)' },
-              { id: 'apple', label: 'Apple & Clean' },
+              { id: 'mapple', label: 'Mapple & Clean' },
               { id: 'satellite', label: 'Satellite & Street' },
               { id: 'transit', label: 'Transit & Topo' },
             ].map(tab => (
@@ -856,7 +856,7 @@ export default function DelhiMap({
                       </span>
                       <span
                         className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md ${
-                          item.badge === 'Apple Style'
+                          item.badge.includes('Mapple')
                             ? 'bg-[#E0F2FE] text-[#0369A1]'
                             : item.badge === 'Night Mode'
                             ? 'bg-[#EDE9FE] text-[#6D28D9]'

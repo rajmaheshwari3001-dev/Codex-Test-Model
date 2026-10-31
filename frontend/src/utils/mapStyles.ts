@@ -18,7 +18,7 @@ export interface MapStyleConfig {
   id: MapStyle
   name: string
   engine: string
-  category: 'apple' | 'satellite' | 'transit'
+  category: 'mapple' | 'satellite' | 'transit'
   tagline: string
   badge: string
   swatchBg: string
@@ -31,11 +31,11 @@ export interface MapStyleConfig {
 export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
   {
     id: 'hot',
-    name: 'Apple Pastel (Humanitarian)',
+    name: 'Mapple Pastel (Humanitarian)',
     engine: 'OSM Humanitarian CDN',
-    category: 'apple',
-    tagline: 'Apple Maps pastel aesthetic with soft green parks, warm cream roads & zero watermarks.',
-    badge: 'Apple Style',
+    category: 'mapple',
+    tagline: 'Mapple Maps pastel aesthetic with soft green parks, warm cream roads & zero watermarks.',
+    badge: 'Mapple Style',
     swatchBg: 'from-[#E0F2FE] via-[#BAE6FD] to-[#38BDF8]',
     url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
     attribution: '&copy; OpenStreetMap contributors, Humanitarian OSM Team',
@@ -44,11 +44,11 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
   },
   {
     id: 'gray',
-    name: 'Apple Minimal (Light Gray)',
+    name: 'Mapple Minimal (Light Gray)',
     engine: 'Esri Canvas Light',
-    category: 'apple',
-    tagline: 'Ultra-clean Apple monochrome light canvas with maximum transit route contrast.',
-    badge: 'Clean Vector',
+    category: 'mapple',
+    tagline: 'Ultra-clean Mapple monochrome light canvas with maximum transit route contrast.',
+    badge: 'Mapple Canvas',
     swatchBg: 'from-[#F8FAFC] via-[#E2E8F0] to-[#CBD5E1]',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; Esri, HERE, Garmin',
@@ -57,9 +57,9 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
   },
   {
     id: 'dark',
-    name: 'Apple Midnight (Dark Slate)',
+    name: 'Mapple Midnight (Dark Slate)',
     engine: 'Esri Canvas Dark',
-    category: 'apple',
+    category: 'mapple',
     tagline: 'Pure obsidian dark mode where neon Delhi Metro lines glow with zero watermarks.',
     badge: 'Night Mode',
     swatchBg: 'from-[#0F172A] via-[#1E293B] to-[#334155]',
@@ -70,11 +70,11 @@ export const MAP_STYLES_CATALOG: MapStyleConfig[] = [
   },
   {
     id: 'streets',
-    name: 'World Street Navigation',
+    name: 'Mapple Street Navigation',
     engine: 'Esri World Streets',
-    category: 'satellite',
+    category: 'mapple',
     tagline: 'High-detail turn-by-turn arterial clarity, flyovers, and highways.',
-    badge: 'Navigation',
+    badge: 'Mapple Nav',
     swatchBg: 'from-[#FEF3C7] via-[#FDE68A] to-[#F59E0B]',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
     attribution: '&copy; Esri, HERE, Garmin',
